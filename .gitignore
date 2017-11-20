@@ -1,0 +1,6 @@
+auto-save-list/
+elpa/
+fonts/
+server/
+.emacs.desktop
+.emacs.desktop.lock

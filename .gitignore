@@ -1,6 +1,9 @@
+.emacs.desktop
+.emacs.desktop.lock
+anaconda-mode/
 auto-save-list/
 elpa/
 fonts/
 server/
-.emacs.desktop
-.emacs.desktop.lock
+snippets/
+url/

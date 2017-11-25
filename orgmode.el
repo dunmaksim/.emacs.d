@@ -4,6 +4,7 @@
 
 ;;; Code:
 
-(use-package org-mode)
+(use-package org
+:pin org)
 
 ;;; orgmode.el ends here

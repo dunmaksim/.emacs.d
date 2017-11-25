@@ -1,10 +1,10 @@
 ;;; package --- Summary
 ;;; Commentary:
 ;;; Settings for base company mode
-
+;;; Code:
 
 (use-package company
   :init
-  (add-hook 'after-init-hook 'global-company-mode))
+  (global-company-mode 1))
 
 ;;; company.el ends here

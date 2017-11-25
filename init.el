@@ -15,6 +15,7 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/"))
 
 (setq package-enable-at-startup nil)
 (package-initialize nil)
@@ -123,7 +124,7 @@ Extension el is added automatically."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;; LOADING USER SETTINGS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq custom-file "customize.el")
+(setq custom-file "~/.emacs.d/customize.el")
 (load-user-file "customize")
 
 ;;; init.el ends here

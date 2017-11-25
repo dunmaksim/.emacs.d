@@ -14,3 +14,6 @@
   :bind
   ("<f8>" . neotree-toggle)
   )
+
+
+;;; neotree.el ends here

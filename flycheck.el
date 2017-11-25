@@ -5,9 +5,8 @@
 ;;; Code:
 
 (use-package flycheck
-  :pin melpa-stable
-  :config
-  (global-flycheck-mode))
+  :init
+  (global-flycheck-mode 1))
 
 
 ;;; flycheck.el ends here

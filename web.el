@@ -20,7 +20,7 @@
   (setq web-mode-enable-css-colorization t)
   )
 
-(use-package web-beutify
+(use-package web-beautify
   :init ;;; Auto beautify before file save
   (eval-after-load 'js
     '(add-hook 'js-mode-hook

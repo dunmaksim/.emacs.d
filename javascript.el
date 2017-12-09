@@ -13,4 +13,12 @@
 (use-package js2-mode
   :mode "\\.js\\'")
 
+(use-package tide
+  :init
+  (tide-hl-identifier-mode +1)
+  :config
+  (add-hook 'before-save-hook 'tide-format-before-save)
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+  )
+
 ;;; javascript.el ends here

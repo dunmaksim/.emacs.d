@@ -1,4 +1,4 @@
-;;; Package --- Summary:
+;;; flycheck.el --- Summary:
 ;;; Commentary:
 ;;; Settings for Flycheck -- better syntax checker in the world
 
@@ -6,6 +6,8 @@
 
 (use-package flycheck
   :init
+  (global-flycheck-mode 1)
+  :config
   (global-flycheck-mode 1))
 
 

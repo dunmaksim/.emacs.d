@@ -5,8 +5,7 @@
 ;;; Code:
 (use-package neotree
   :ensure t
-  :init ((setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-	 (setq neo-autorefresh nil)) ;; Don't change working dir for neotree
+  :init (setq neo-autorefresh nil) ;; Don't change working dir for neotree
   :config (neotree-dir "~/repo")
   :bind ("<f8>" . neotree-toggle))
 

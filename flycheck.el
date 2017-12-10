@@ -5,10 +5,10 @@
 ;;; Code:
 
 (use-package flycheck
-  :init
-  (global-flycheck-mode 1)
-  :config
-  (global-flycheck-mode 1))
+:ensure t
+:init
+(global-flycheck-mode)
+)
 
 
 ;;; flycheck.el ends here

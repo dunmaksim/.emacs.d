@@ -1,4 +1,4 @@
-;;; Package --- Summary
+;;; themes-and-fonts.el --- Summary
 ;;; Commentary:
 ;;; Themes and fonts
 
@@ -9,12 +9,13 @@
   (set-face-attribute 'default nil :font "DejaVu Sans Mono"))
 
 (use-package monokai-theme
-  :ensure t)
+  :init
+  (load-theme 'monokai))
 
 (use-package powerline)
 
 (use-package airline-themes
-  :config
+  :init
   (load-theme 'airline-molokai))
 
 ;;; themes-and-fonts.el ends here

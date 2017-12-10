@@ -1,10 +1,10 @@
-;;; package --- Summary
+;;; company.el --- Summary
 ;;; Commentary:
-;;; Settings for base company mode
+;;; Settings for company-mode - Emacs autocompletion
 ;;; Code:
 
 (use-package company
   :init
-  (global-company-mode 1))
+  (global-company-mode))
 
 ;;; company.el ends here

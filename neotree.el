@@ -1,14 +1,13 @@
 ;;; Neotree --- Summary
 ;;; Commentary:
-;;; Настройки для NeoTree
+;;; Neotree settings
 
 ;;; Code:
 (use-package neotree
   :ensure t
-  :pin melpa-stable
   :init
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-  (setq neo-window-width 40)
+  (setq neo-autorefresh nil) ;; Don't change working dir for neotree
   :config
   (neotree-dir "~/repo")
   :bind

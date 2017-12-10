@@ -49,6 +49,9 @@ Extension el is added automatically."
     (message "File %s does not exists" full-user-file-path)
     ))
 
+;;; Enable loading any themes without asking
+(setq custom-safe-themes t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;; ЗАГРУЗКА ОСНОВНЫХ МОДУЛЕЙ ПРОИСХОДИТ ЗДЕСЬ ;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

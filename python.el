@@ -16,8 +16,9 @@
 
 (use-package python-mode
   :mode "\\.py\\'"
-  :config
+  :init
   (setq python-indent-offset 4)
+  :config
   (add-to-list 'interpreter-mode-alist '("python" . python-mode)))
 
 (use-package anaconda-mode)
@@ -25,19 +26,19 @@
 (use-package company-anaconda
   :init
   (eval-after-load "company" '(add-to-list 'company-backends 'company-anaconda))
-  (add-hook 'python-mode-hook 'anaconda-mode))
+  :hook
+  (python-mode-hook . anaconda-mode))
 
 (use-package py-autopep8
-  :init
-  (add-hook 'python-mode-hook 'py-autopep8-enable-on-save))
+  :hook
+  (python-mode-hook . py-autopep8-enable-on-save))
 
 (use-package elpy
-  :pin elpy
   :init
   (elpy-enable))
 
 (use-package py-isort
-  :init
+  :hook
   (add-hook 'before-save-hook 'py-isort-before-save)
   :config
   (setq py-isort-options '("-sl")))

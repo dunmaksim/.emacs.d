@@ -14,21 +14,16 @@
   :mode "\\.js\\'")
 
 (use-package tide
-  :init
-  (tide-hl-identifier-mode +1)
-  :config
-  (add-hook 'before-save-hook 'tide-format-before-save)
-  (add-hook 'typescript-mode-hook #'setup-tide-mode)
-  )
+  :init (tide-hl-identifier-mode +1)
+  :hook ((before-save-hook . tide-format-before-save)
+	 (typescript-mode-hook . setup-tide-mode)))
 
 (use-package company)
 (use-package company-tern
-  :init
-  (add-to-list 'company-backends 'company-tern)
-  (add-hook 'js2-mode-hook (lambda () (tern-mode)(company-mode)))
+  :init  (add-to-list 'company-backends 'company-tern)
+  :hook  (js2-mode-hook . (lambda () (tern-mode)(company-mode)))
   :bind
   ("M-." . nil)
   ("M-m" . nil))
-
 
 ;;; javascript.el ends here

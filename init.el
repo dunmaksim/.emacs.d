@@ -20,24 +20,22 @@
 (setq package-enable-at-startup nil)
 (package-initialize nil)
 
-;;; Если пакет use-package не установлен, его нужно скачать и установить
+;;; Load and install use-package if required
 (unless (package-installed-p 'use-package)
   (message "EMACS install use-package.el")
   (package-refresh-contents)
   (package-install 'use-package))
 
-;;; Установили, загрузили, указали, что недостающие пакеты нужно
-;;; автоматически загружать и устанавливать.
-(require 'use-package)
-(setq use-package-always-ensure t)
+(require 'use-package) ;;; Loading use-package
+(setq use-package-always-ensure t) ;;; Automatically load required packages
 
-;;; Указываем откуда брать части настроек.
+;;; Select folder for loading settings
 (defconst user-init-dir
   (cond ((boundp 'user-emacs-directory) user-emacs-directory)
         ((boundp 'user-init-directory) user-init-directory)
         (t "~/.emacs.d/")))
 
-;;; Функция для загрузки настроек из указанного файла.
+;;; Function for loading custom settings from dedicated file.
 (defun load-user-file (file)
   "Check FILE existing and then load part of Emacs config.
 Extension el is added automatically."
@@ -49,11 +47,10 @@ Extension el is added automatically."
     (message "File %s does not exists" full-user-file-path)
     ))
 
-;;; Enable loading any themes without asking
-(setq custom-safe-themes t)
+(setq custom-safe-themes t) ;;; Enable loading any themes without asking
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;; ЗАГРУЗКА ОСНОВНЫХ МОДУЛЕЙ ПРОИСХОДИТ ЗДЕСЬ ;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;           LOADING SETTINGS PARTS           ;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar user-files-list '(
 			  neotree
@@ -68,8 +65,7 @@ Extension el is added automatically."
 			  orgmode
 			  yasnippet
 			  web
-			  magit
-			  ))
+			  magit))
 
 (dolist (user-file user-files-list)
   (load-user-file user-file))
@@ -118,15 +114,13 @@ Extension el is added automatically."
 
 ;;; Rainbow delimiters
 (use-package rainbow-delimiters
-  :config
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+  :hook
+  (prog-mode-hook . rainbow-delimiters-mode))
 
 (use-package all-the-icons) ;;; Show icons for files in neotree, ibuffer and more
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;; LOADING USER SETTINGS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; Save user settings in dedicated file
 (setq custom-file "~/.emacs.d/customize.el")
 (load-file "~/.emacs.d/customize.el")
 

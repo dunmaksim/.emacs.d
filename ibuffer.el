@@ -1,10 +1,9 @@
-;;; Package --- Summary
+;;; ibuffer.el --- Summary
 ;;; Commentary:
 ;;; Settings for ibuffer
 
 ;;; Code:
 
-;;; Default hotkeys: C+X, C+B
 (require 'ibuffer)
 
 ;; Use human readable Size column instead of original one
@@ -32,19 +31,14 @@
 
 (defadvice ibuffer (after collapse-helm)
   (dolist (group mp/ibuffer-collapsed-groups)
-      (progn
-        (goto-char 1)
-        (when (search-forward (concat "[ " group " ]") (point-max) t)
-          (progn
-        (move-beginning-of-line nil)
-        (ibuffer-toggle-filter-group)
-        )
-          )
-        )
-      )
-    (goto-char 1)
-    (search-forward "[ " (point-max) t)
-  )
+    (progn
+      (goto-char 1)
+      (when (search-forward (concat "[ " group " ]") (point-max) t)
+	(progn
+	  (move-beginning-of-line nil)
+	  (ibuffer-toggle-filter-group)))))
+  (goto-char 1)
+  (search-forward "[ " (point-max) t))
 
 (ad-activate 'ibuffer)
 

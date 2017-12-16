@@ -5,10 +5,10 @@
 ;;; Code:
 
 (use-package flycheck
-:ensure t
-:init
-(global-flycheck-mode)
-)
+  :commands flycheck-mode
+  :config
+  (defalias 'show-error-at-point-soon
+    'flycheck-show-error-at-point))
 
 
 ;;; flycheck.el ends here

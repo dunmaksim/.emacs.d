@@ -4,6 +4,25 @@
 
 ;;; Code:
 
+(eval-and-compile
+  (defsubst emacs-path (path)
+    (expand-file-name path user-emacs-directory))
+
+  (defsubst add-load-path (path)
+    (add-to-list 'load-path (emacs-path path)))
+
+  (defsubst lookup-password (host user port)
+    (require 'auth-source)
+    (funcall (plist-get (car (auth-source-search :host host :user user
+                                                 :type 'netrc :port port))
+                        :secret)))
+
+  (defun get-jobhours-string ()
+    (with-current-buffer (get-buffer-create "*scratch*")
+      (let ((str (shell-command-to-string "jobhours")))
+        (require 'ansi-color)
+(ansi-color-apply (substring str 0 (1- (length str))))))))
+
 (require 'package)
 
 ;;; Sources for package installing. Stable is very stable, but not
@@ -115,10 +134,13 @@ Extension el is added automatically."
 ;;; Rainbow delimiters
 (use-package rainbow-delimiters
   :hook
-  (prog-mode-hook . rainbow-delimiters-mode))
+  (prog-mode . rainbow-delimiters-mode))
 
 (use-package all-the-icons) ;;; Show icons for files in neotree, ibuffer and more
 
+(use-package beacon
+:diminish
+:commands beacon-mode)
 
 ;;; Save user settings in dedicated file
 (setq custom-file "~/.emacs.d/customize.el")

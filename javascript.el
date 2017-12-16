@@ -11,7 +11,14 @@
 ;;   )
 
 (use-package js2-mode
-  :mode "\\.js\\'")
+  :mode "\\.js\\'"
+  :bind (:map js2-mode-map
+	      ("M-n" . flycheck-next-error)
+	      ("M-p" . flycheck-previous-error))
+  :config
+  (add-to-list 'flycheck-disabled-checkers #'javascript-jshint)
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-mode 1))
 
 (use-package tide
   :init (tide-hl-identifier-mode +1)

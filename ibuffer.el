@@ -5,7 +5,6 @@
 ;;; Code:
 
 (require 'ibuffer)
-
 ;; Use human readable Size column instead of original one
 (define-ibuffer-column size-h
   (:name "Size" :inline t)

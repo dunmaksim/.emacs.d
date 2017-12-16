@@ -9,4 +9,7 @@
 	 ("\\.bowerrc\\'" . json-mode)
 	 ("\\.jshintrc\\'" . json-mode)))
 
+(use-package json-reformat
+  :after json-mode)
+
 ;;; json.el ends here

@@ -20,10 +20,7 @@
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (flycheck-mode 1))
 
-(use-package tide
-  :init (tide-hl-identifier-mode +1)
-  :hook ((before-save-hook . tide-format-before-save)
-	 (typescript-mode-hook . setup-tide-mode)))
+
 
 (use-package company)
 (use-package company-tern

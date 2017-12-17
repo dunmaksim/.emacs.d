@@ -4,29 +4,16 @@
 
 ;;; Code:
 
-(eval-and-compile
-  (defsubst emacs-path (path)
-    (expand-file-name path user-emacs-directory))
 
-  (defsubst add-load-path (path)
-    (add-to-list 'load-path (emacs-path path)))
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
 
-  (defsubst lookup-password (host user port)
-    (require 'auth-source)
-    (funcall (plist-get (car (auth-source-search :host host :user user
-                                                 :type 'netrc :port port))
-                        :secret)))
-
-  (defun get-jobhours-string ()
-    (with-current-buffer (get-buffer-create "*scratch*")
-      (let ((str (shell-command-to-string "jobhours")))
-        (require 'ansi-color)
-(ansi-color-apply (substring str 0 (1- (length str))))))))
+(eval-when-compile(require 'cl))
 
 (require 'package)
-
-;;; Sources for package installing. Stable is very stable, but not
-;;; have somebody packages.
 
 (setq package-archives nil)
 
@@ -39,111 +26,270 @@
 (setq package-enable-at-startup nil)
 (package-initialize nil)
 
-;;; Load and install use-package if required
-(unless (package-installed-p 'use-package)
+;; ; Load and install use-package if required
+(unless(package-installed-p 'use-package)
   (message "EMACS install use-package.el")
   (package-refresh-contents)
   (package-install 'use-package))
 
-(require 'use-package) ;;; Loading use-package
-(setq use-package-always-ensure t) ;;; Automatically load required packages
+(require 'use-package)
 
-;;; Select folder for loading settings
-(defconst user-init-dir
-  (cond ((boundp 'user-emacs-directory) user-emacs-directory)
-        ((boundp 'user-init-directory) user-init-directory)
-        (t "~/.emacs.d/")))
+(defun cfg:reverse-input-method (input-method)
+  "Build the reverse mapping of single letters from INPUT-METHOD."
+  (interactive
+   (list (read-input-method-name "Use input method (default current): ")))
+  (if (and input-method (symbolp input-method))
+      (setq input-method (symbol-name input-method)))
+  (let ((current current-input-method)
+        (modifiers '(nil (control) (meta) (control meta))))
+    (when input-method
+      (activate-input-method input-method))
+    (when (and current-input-method quail-keyboard-layout)
+      (dolist (map (cdr (quail-map)))
+        (let* ((to (car map))
+               (from (quail-get-translation
+                      (cadr map) (char-to-string to) 1)))
+          (when (and (characterp from) (characterp to))
+            (dolist (mod modifiers)
+              (define-key local-function-key-map
+                (vector (append mod (list from)))
+                (vector (append mod (list to)))))))))
+    (when input-method
+      (activate-input-method current))))
 
-;;; Function for loading custom settings from dedicated file.
-(defun load-user-file (file)
-  "Check FILE existing and then load part of Emacs config.
-Extension el is added automatically."
-  (interactive "f")
-  "Load a file in current user's configuration directory"
-  (setq full-user-file-path (expand-file-name (format "%s.el" file) user-init-dir))
-  (if (file-readable-p full-user-file-path)
-      (load-file full-user-file-path)
-    (message "File %s does not exists" full-user-file-path)
-    ))
+(cfg:reverse-input-method 'russian-computer)
 
-(setq custom-safe-themes t) ;;; Enable loading any themes without asking
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;           LOADING SETTINGS PARTS           ;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defvar user-files-list '(
-			  neotree
-			  keyboard
-			  ibuffer
-			  themes-and-fonts
-			  company
-			  python
-			  javascript
-			  json
-			  markdown
-			  orgmode
-			  yasnippet
-			  web
-			  magit))
+;; Resize windows
+(global-set-key(kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key(kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key(kbd "S-C-<down>") 'shrink-window)
+(global-set-key(kbd "S-C-<up>") 'enlarge-window)
 
-(dolist (user-file user-files-list)
-  (load-user-file user-file))
+;; Isearch
+(global-set-key (kbd "C-M-r") 'isearch-backward-other-window)
+(global-set-key (kbd "C-M-s") 'isearch-forward-other-window)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;; GLOBAL SETTINGS WITHOUT CATEGORY ;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Kill *scratch* with fire!!!
-(when (get-buffer "*scratch*")
+(defun xah-new-empty-buffer()
+  "Open a new empty buffer.
+  URL `http: // ergoemacs.org / emacs / emacs_new_empty_buffer.html'
+  Version 2015 - 06 - 12"
+  (interactive)
+  (let((ξbuf(generate-new-buffer "untitled")))
+    (switch-to-buffer ξbuf)
+    (funcall(and initial-major-mode))
+    (setq buffer-offer-save t)))
+
+;; Save/close/open
+(global-set-key(kbd "C-w") 'kill-this-buffer)
+(global-set-key(kbd "C-s") 'save-buffer)
+(global-set-key(kbd "C-S-s") 'write-file)
+(global-set-key(kbd "C-r") 'revert-buffer)
+(global-set-key(kbd "C-a") 'mark-whole-buffer)
+(global-set-key(kbd "M-'") 'comment-or-uncomment-region)
+(global-set-key(kbd "C-o") 'dired)
+(global-set-key(kbd "C-n") 'xah-new-empty-buffer)
+(global-set-key(kbd "C-+") 'text-scale-increase)
+(global-set-key(kbd "C--") 'text-scale-decrease)
+
+;; Buffers and windows
+(global-set-key(kbd "C-<next>") 'next-buffer)
+(global-set-key(kbd "C-<prior>") 'previous-buffer)
+(global-set-key(kbd "C-<tab>") 'other-window)
+
+(global-set-key(kbd "M-3") 'delete-other-windows)
+(global-set-key(kbd "M-4") 'split-window-horizontally)
+(global-set-key(kbd "M-5") 'split-window-vertically)
+(global-set-key(kbd "M-6") 'balance-windows)
+
+(global-set-key(kbd "C-f") 'isearch-forward)
+(global-set-key(kbd "C-h") 'query-replace)
+(global-set-key(kbd "C-S-h") 'query-replace-regexp)
+
+(global-set-key(kbd "M-a") 'execute-extended-command)
+(global-set-key(kbd "M-x") 'kill-whole-line)
+(global-set-key(kbd "<esc>") 'keyboard-quit)
+
+(when(get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
 
-;;; Scrolling
-(setq scroll-step               1) ;; one line
-(setq scroll-margin            10) ;; scroll buffer to 10 lines at going to last line
-(setq scroll-conservatively 10000)
-(setq-default save-place t)        ;; Save cursor position between sessions
-
-;;; Disable overwrite mode-line
-(define-key global-map [(insert)] nil)
+(fset 'yes-or-no-p 'y-or-n-p); ; ; Shortcuts for yea and no
 
 ;;; Format file before save
-(defun format-current-buffer()
-  (indent-region (point-min) (point-max)))
-(defun untabify-current-buffer()
-  (if (not indent-tabs-mode)
-      (untabify (point-min) (point-max)))
-  nil)
-(add-to-list 'write-file-functions 'untabify-current-buffer)
-(add-to-list 'write-file-functions 'delete-trailing-whitespace)
+;;; (defun format-current-buffer()
+;;;  (indent-region (point-min) (point-max)))
+;;; (defun untabify-current-buffer()
+;;;  (if (not indent-tabs-mode)
+;;;      (untabify (point-min) (point-max)))
+;;;  nil)
+;;; (add-to-list 'write-file-functions 'untabify-current-buffer)
+;;; (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
-(cua-mode 1)                   ;;; Windows-like Ctrl-C, Ctrl-V
-(fset 'yes-or-no-p 'y-or-n-p)  ;;; Shortcuts for yea and no
-(global-hl-line-mode 1)        ;;; Highlight current line always
-(global-linum-mode 1)          ;;; Show line numbers globally
-(menu-bar-mode -1)             ;;; Disable menu
-(scroll-bar-mode -1)           ;;; Disable scrollbar
-(tool-bar-mode -1)             ;;; Disable toolbar
-(desktop-save-mode 1)          ;;; Auto save desktop
-(linum-mode t)                 ;;; Always show line numbers
-(electric-pair-mode t)         ;;; Auto close brackets
-(setq ring-bell-function 'ignore) ;;; Turn off bell
 
-;;; Turn off backups creation
-(setq make-backup-files nil)
-(setq auto-save-default nil)
+;;; Save user settings in dedicated file
+(setq custom-file "~/.emacs.d/settings.el")
+(load-file "~/.emacs.d/settings.el")
 
-;;; Rainbow delimiters
+(use-package airline-themes
+  :requires powerline
+  :init
+  (load-theme 'airline-molokai))
+
+(use-package all-the-icons)
+
+(use-package beacon
+  :diminish
+  :commands beacon-mode)
+
+(use-package company
+  :diminish
+  :commands company-mode
+  :config
+  ;; From https://github.com/company-mode/company-mode/issues/87
+  ;; See also https://github.com/company-mode/company-mode/issues/123
+  (defadvice company-pseudo-tooltip-unless-just-one-frontend
+      (around only-show-tooltip-when-invoked activate)
+    (when (company-explicit-action-p)
+      ad-do-it))
+
+  (defun check-expansion ()
+    (save-excursion
+      (if (outline-on-heading-p t)
+          nil
+        (if (looking-at "\\_>") t
+          (backward-char 1)
+          (if (looking-at "\\.") t
+            (backward-char 1)
+            (if (looking-at "->") t nil))))))
+
+  (define-key company-mode-map [tab]
+    '(menu-item "maybe-company-expand" nil
+                :filter (lambda (&optional _)
+                          (when (check-expansion)
+                            #'company-complete-common))))
+
+  (eval-after-load "yasnippet"
+    '(progn
+       (defun company-mode/backend-with-yas (backend)
+         (if (and (listp backend) (member 'company-yasnippet backend))
+             backend
+           (append (if (consp backend) backend (list backend))
+                   '(:with company-yasnippet))))
+       (setq company-backends
+             (mapcar #'company-mode/backend-with-yas company-backends)))))
+
+(use-package company-quickhelp
+  :bind
+  (:map company-active-map
+        ("C-c h" . company-quickhelp-manual-begin)))
+
+(use-package css-mode
+  :mode "\\.css\\'")
+
+(use-package elpy
+  :requires python-mode
+  :init
+  (elpy-enable))
+
+(use-package emmet-mode
+  :mode  ("\\.html\\'" . emmet-mode)
+  :bind
+  ("C-j" . emmet-expand-line))
+
+(use-package flycheck
+  :commands flycheck-mode
+  :init(add-hook 'after-init-hook #'global-flycheck-mode))
+
+(use-package highlight-numbers
+  :hook(prog-mode . highlight-numbers-mode))
+
+(use-package ibuffer
+  :bind([f2] . ibuffer)
+  :init
+  (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
+
+(use-package js2-mode
+  :mode "\\.js\\'"
+  :requires flycheck
+  :bind(
+	:map js2-mode-map
+             ("M-n" . flycheck-next-error)
+             ("M-p" . flycheck-previous-error))
+  :config
+  (add-to-list 'flycheck-disabled-checkers #'javascript-jshint)
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-mode 1))
+
+(use-package json-mode
+  :mode "\\.json\\'")
+
+(use-package magit
+  :bind([f5] . magit-status))
+
+(use-package markdown-mode
+  :mode "\\.md\\'")
+
+(use-package monokai-theme
+  :init(load-theme 'monokai))
+
+(use-package neotree
+  :requires all-the-icons
+  :bind
+  ([f8] . neotree-toggle))
+
+(use-package powerline)
+
+(use-package py-autopep8
+  :mode "\\.py\\'"
+  :hook
+  (add-hook 'before-save-hook 'py-autopep8-buffer))
+
+(use-package py-isort
+  :hook
+  (add-hook 'before-save-hook 'py-isort-before-save))
+
+(use-package python-mode
+  :mode "\\.py\\'"
+  :interpreter ("python" . python-mode))
+
 (use-package rainbow-delimiters
   :hook
   (prog-mode . rainbow-delimiters-mode))
 
-(use-package all-the-icons) ;;; Show icons for files in neotree, ibuffer and more
+(use-package tide
+  :mode "\\.js\\'"
+  :init
+  (tide-hl-identifier-mode+ 1)
+  :hook(
+        (before-save-hook . tide-format-before-save)
+        (typescript-mode-hook . setup-tide-mode)))
 
-(use-package beacon
-:diminish
-:commands beacon-mode)
+(use-package web-beautify
+  :hook(
+        (js2-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-js-buffer t t)))
+        (json-mode- hook . (lambda ()(add- hook 'before-save-hook 'web-beautify-js-buffer t t)))
+        (web-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-html-buffer t t)))
+        (css-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-css-buffer t t)))))
 
-;;; Save user settings in dedicated file
-(setq custom-file "~/.emacs.d/customize.el")
-(load-file "~/.emacs.d/customize.el")
+(use-package web-mode
+  :commands web-mode
+  :mode(("\\.phtml\\'" . web-mode)
+        ("\\.html\\'" . web-mode))
+  ;; :custom(
+  ;;         (web-mode-markup-indent-ffset 2)
+  ;;         (web-mode-css-indent-offset 2)
+  ;;         (web-mode-enable-css-colorization t))))
+
+(use-package yasnippet
+  :after prog-mode
+  :defer 10
+  :diminish yas-minor-mode
+  :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
+  :config
+  (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
+  (yas-global-mode 1))
+
+(use-package yasnippet-snippets
+  :after yasnippet)
 
 ;;; init.el ends here

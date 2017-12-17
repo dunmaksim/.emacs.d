@@ -34,6 +34,10 @@
 
 (require 'use-package)
 
+(set-face-attribute 'default nil :height 110)
+(when (member "DejaVu Sans Mono" (font-family-list))
+  (set-face-attribute 'default nil :font "DejaVu Sans Mono"))
+
 (defun cfg:reverse-input-method (input-method)
   "Build the reverse mapping of single letters from INPUT-METHOD."
   (interactive
@@ -191,7 +195,8 @@
   :requires python-mode
   :hook (add-hook 'before-save-hook #'elpy-autopep8-fix-code)
   :init
-  (elpy-enable))
+  (elpy-enable)
+  (defalias 'workon 'pyvenv-workon))
 
 (use-package emmet-mode
   :mode  ("\\.html\\'" . emmet-mode)
@@ -214,7 +219,7 @@
   :mode "\\.js\\'"
   :requires flycheck
   :bind(
-	:map js2-mode-map
+        :map js2-mode-map
              ("M-n" . flycheck-next-error)
              ("M-p" . flycheck-previous-error))
   :config

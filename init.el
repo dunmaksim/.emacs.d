@@ -116,14 +116,14 @@
 (fset 'yes-or-no-p 'y-or-n-p); ; ; Shortcuts for yea and no
 
 ;;; Format file before save
-;;; (defun format-current-buffer()
-;;;  (indent-region (point-min) (point-max)))
-;;; (defun untabify-current-buffer()
-;;;  (if (not indent-tabs-mode)
-;;;      (untabify (point-min) (point-max)))
-;;;  nil)
-;;; (add-to-list 'write-file-functions 'untabify-current-buffer)
-;;; (add-to-list 'write-file-functions 'delete-trailing-whitespace)
+(defun format-current-buffer()
+ (indent-region (point-min) (point-max)))
+(defun untabify-current-buffer()
+ (if (not indent-tabs-mode)
+     (untabify (point-min) (point-max)))
+ nil)
+(add-to-list 'write-file-functions 'untabify-current-buffer)
+(add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
 
 ;;; Save user settings in dedicated file
@@ -187,7 +187,9 @@
   :mode "\\.css\\'")
 
 (use-package elpy
+  :mode "\\.py\\'"
   :requires python-mode
+  :hook (add-hook 'before-save-hook #'elpy-autopep8-fix-code)
   :init
   (elpy-enable))
 
@@ -221,7 +223,12 @@
   (flycheck-mode 1))
 
 (use-package json-mode
-  :mode "\\.json\\'")
+  :mode (("\\.json\\'" . json-mode)
+         ("\\.bowerrc\\'" . json-mode)
+         ("\\.jshintrc\\'" . json-mode)))
+
+(use-package json-reformat
+  :after json-mode)
 
 (use-package magit
   :bind([f5] . magit-status))
@@ -239,18 +246,13 @@
 
 (use-package powerline)
 
-(use-package py-autopep8
-  :mode "\\.py\\'"
-  :hook
-  (add-hook 'before-save-hook 'py-autopep8-buffer))
-
 (use-package py-isort
   :hook
   (add-hook 'before-save-hook 'py-isort-before-save))
 
-(use-package python-mode
-  :mode "\\.py\\'"
-  :interpreter ("python" . python-mode))
+;; (use-package python-mode
+;;   :mode "\\.py\\'"
+;;   :interpreter ("python" . python-mode))
 
 (use-package rainbow-delimiters
   :hook
@@ -258,8 +260,6 @@
 
 (use-package tide
   :mode "\\.js\\'"
-  :init
-  (tide-hl-identifier-mode+ 1)
   :hook(
         (before-save-hook . tide-format-before-save)
         (typescript-mode-hook . setup-tide-mode)))
@@ -267,7 +267,7 @@
 (use-package web-beautify
   :hook(
         (js2-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-js-buffer t t)))
-        (json-mode- hook . (lambda ()(add- hook 'before-save-hook 'web-beautify-js-buffer t t)))
+        (json-mode-hook . (lambda ()(add- hook 'before-save-hook 'web-beautify-js-buffer t t)))
         (web-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-html-buffer t t)))
         (css-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-css-buffer t t)))))
 
@@ -280,16 +280,16 @@
   ;;         (web-mode-css-indent-offset 2)
   ;;         (web-mode-enable-css-colorization t))))
 
-(use-package yasnippet
-  :after prog-mode
-  :defer 10
-  :diminish yas-minor-mode
-  :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
-  :config
-  (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
-  (yas-global-mode 1))
+  (use-package yasnippet
+    :after prog-mode
+    :defer 10
+    :diminish yas-minor-mode
+    :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
+    :config
+    (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
+    (yas-global-mode 1))
 
-(use-package yasnippet-snippets
-  :after yasnippet)
+  (use-package yasnippet-snippets
+    :after yasnippet)
 
 ;;; init.el ends here

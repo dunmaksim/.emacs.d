@@ -16,11 +16,7 @@
 
 (use-package python-mode
   :mode "\\.py\\'"
-  :interpreter ("python" . python-mode)
-  :config
-  (setq python-indent-offset 4)
-
-  )
+  :interpreter ("python" . python-mode))
 
 (use-package anaconda-mode)
 

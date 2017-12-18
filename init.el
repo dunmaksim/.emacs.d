@@ -121,11 +121,11 @@
 
 ;;; Format file before save
 (defun format-current-buffer()
- (indent-region (point-min) (point-max)))
+  (indent-region (point-min) (point-max)))
 (defun untabify-current-buffer()
- (if (not indent-tabs-mode)
-     (untabify (point-min) (point-max)))
- nil)
+  (if (not indent-tabs-mode)
+      (untabify (point-min) (point-max)))
+  nil)
 (add-to-list 'write-file-functions 'untabify-current-buffer)
 (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
@@ -180,7 +180,8 @@
            (append (if (consp backend) backend (list backend))
                    '(:with company-yasnippet))))
        (setq company-backends
-             (mapcar #'company-mode/backend-with-yas company-backends)))))
+             (mapcar #'company-mode/backend-with-yas company-backends))))
+  :init (global-company-mode t))
 
 (use-package company-quickhelp
   :bind
@@ -193,7 +194,7 @@
 (use-package elpy
   :mode "\\.py\\'"
   :requires python-mode
-  :hook (add-hook 'before-save-hook #'elpy-autopep8-fix-code)
+  :hook (add-hook 'before-save-hook #'elpy-format-code)
   :init
   (elpy-enable)
   (defalias 'workon 'pyvenv-workon))
@@ -216,7 +217,7 @@
   (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
 
 (use-package js2-mode
-  :mode "\\.js\\'"
+  :mode ("\\.js\\'" . js2-mode)
   :requires flycheck
   :bind(
         :map js2-mode-map
@@ -225,7 +226,8 @@
   :config
   (add-to-list 'flycheck-disabled-checkers #'javascript-jshint)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  (flycheck-mode 1))
+  (flycheck-mode 1)
+  (js2-highlight-unused-variables-mode t))
 
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
@@ -263,38 +265,35 @@
   :hook
   (prog-mode . rainbow-delimiters-mode))
 
+(scroll-bar-mode -1)
+
 (use-package tide
-  :mode "\\.js\\'"
+  :after js2-mode
+  :requires js2-mode
+  :mode ("\\.js\\'" . tide-mode)
   :hook(
         (before-save-hook . tide-format-before-save)
         (typescript-mode-hook . setup-tide-mode)))
 
-(use-package web-beautify
-  :hook(
-        (js2-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-js-buffer t t)))
-        (json-mode-hook . (lambda ()(add- hook 'before-save-hook 'web-beautify-js-buffer t t)))
-        (web-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-html-buffer t t)))
-        (css-mode-hook . (lambda ()(add-hook 'before-save-hook 'web-beautify-css-buffer t t)))))
+(use-package web-beautify)
 
 (use-package web-mode
   :commands web-mode
-  :mode(("\\.phtml\\'" . web-mode)
-        ("\\.html\\'" . web-mode))
-  ;; :custom(
-  ;;         (web-mode-markup-indent-ffset 2)
-  ;;         (web-mode-css-indent-offset 2)
-  ;;         (web-mode-enable-css-colorization t))))
+  :requires web-beautify
+  :mode("\\.phtml\\'" . web-mode)
+  ("\\.html\\'" . web-mode)
+  :hook (add-hook 'before-save-hook 'web-beautify-html-buffer t t))
 
-  (use-package yasnippet
-    :after prog-mode
-    :defer 10
-    :diminish yas-minor-mode
-    :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
-    :config
-    (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
-    (yas-global-mode 1))
+(use-package yasnippet
+  :after prog-mode
+  :defer 10
+  :diminish yas-minor-mode
+  :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
+  :config
+  (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
+  (yas-global-mode 1))
 
-  (use-package yasnippet-snippets
-    :after yasnippet)
+(use-package yasnippet-snippets
+  :after yasnippet)
 
 ;;; init.el ends here

@@ -45,7 +45,8 @@
         (mode . compilation-mode)))
       ("Python"
        (or
-        (mode . python-mode)))
+        (mode . python-mode)
+        (mode . elpy-mode)))
       ("Lisp"
        (mode . emacs-lisp-mode))
       ("Dired"
@@ -56,6 +57,11 @@
         (mode . magit-log-mode)
         (name . "^\\*magit")
         (name . "git-monitor")))
+      ("Web"
+       (or
+        (mode . web-mode)
+        (mode . js2-mode)
+        (mode . tide-mode)))
       ("Emacs"
        (or
         (name . "^\\*scratch\\*$")

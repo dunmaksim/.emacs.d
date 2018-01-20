@@ -11,6 +11,12 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-save-default nil)
+ '(company-dabbrev-code-ignore-case nil)
+ '(company-dabbrev-downcase nil)
+ '(company-dabbrev-ignore-case nil)
+ '(company-idle-delay 0)
+ '(company-minimum-prefix-length 4)
+ '(company-tooltip-align-annotations t)
  '(cua-mode t nil (cua-base))
  '(custom-safe-themes t)
  '(delete-by-moving-to-trash t)
@@ -37,31 +43,32 @@
  '(ibuffer-saved-filter-groups
    (quote
     (("default"
-      ("Commands"
-       (or
-        (mode . shell-mode)
-        (mode . eshell-mode)
-        (mode . term-mode)
-        (mode . compilation-mode)))
-      ("Python"
-       (or
-        (mode . python-mode)
-        (mode . elpy-mode)))
       ("Lisp"
        (mode . emacs-lisp-mode))
       ("Dired"
        (mode . dired-mode))
+      ("Python"
+       (or
+        (mode . python-mode)
+        (mode . elpy-mode)))
+      ("Web"
+       (or
+        (mode . web-mode)
+        (mode . js2-mode)
+        (mode . tide-mode)
+        (mode . typescript-mode)))
       ("Magit"
        (or
         (mode . magit-status-mode)
         (mode . magit-log-mode)
         (name . "^\\*magit")
         (name . "git-monitor")))
-      ("Web"
+      ("Commands"
        (or
-        (mode . web-mode)
-        (mode . js2-mode)
-        (mode . tide-mode)))
+        (mode . shell-mode)
+        (mode . eshell-mode)
+        (mode . term-mode)
+        (mode . compilation-mode)))
       ("Emacs"
        (or
         (name . "^\\*scratch\\*$")
@@ -84,7 +91,11 @@
  '(next-line-add-newlines nil)
  '(package-selected-packages
    (quote
-    (elpy python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+    (helm typescript persp-mode elpy python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+ '(persp-auto-resume-time 0)
+ '(persp-auto-save-opt 0)
+ '(persp-autokill-buffer-on-remove (quote kill-weak))
+ '(persp-keymap-prefix (kbd "C-x p"))
  '(py-isort-options (quote ("-sl")))
  '(python-indent-offset 4)
  '(query-replace-highlight t)
@@ -96,6 +107,10 @@
  '(scroll-step 1)
  '(search-highlight t)
  '(select-enable-clipboard t)
+ '(tide-format-options
+   (quote
+    (:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil)))
+ '(tide-hl-identifier-mode 1 t)
  '(tool-bar-mode nil)
  '(undo-limit 800000)
  '(undo-tree-mode-lighter "")
@@ -105,16 +120,18 @@
  '(user-full-name "Maxim Dunaevsky")
  '(user-mail-address "dunaevsky@outlook.com")
  '(version-control t)
- '(warning-minimum-log-level :error)
- '(web-mode-css-indent-offset 2 t)
- '(web-mode-enable-css-colorization t t)
- '(web-mode-markup-indent-offset 2 t)
+ '(warning-minimum-log-level :warning)
+ '(web-mode-css-indent-offset 2)
+ '(web-mode-enable-css-colorization t)
+ '(web-mode-markup-indent-offset 2)
+ '(wg-morph-on nil)
  '(whitespace-auto-cleanup t t))
 
-;;; settings.el ends here
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;;; settings.el ends here

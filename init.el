@@ -63,7 +63,6 @@
 
 (cfg:reverse-input-method 'russian-computer)
 
-
 ;; Resize windows
 (global-set-key(kbd "S-C-<left>") 'shrink-window-horizontally)
 (global-set-key(kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -208,6 +207,9 @@
   :commands flycheck-mode
   :init(add-hook 'after-init-hook #'global-flycheck-mode))
 
+(use-package helm
+  :bind ([f10] . helm-buffers-list))
+
 (use-package highlight-numbers
   :hook(prog-mode . highlight-numbers-mode))
 
@@ -241,15 +243,20 @@
   :bind([f5] . magit-status))
 
 (use-package markdown-mode
-  :mode "\\.md\\'")
+  :mode "\\.md\\'"
+  :commands markdown-mode)
 
 (use-package monokai-theme
-  :init(load-theme 'monokai))
+  :config (load-theme 'monokai t)
+  :init (setq frame-background-mode 'dark))
 
 (use-package neotree
   :requires all-the-icons
   :bind
   ([f8] . neotree-toggle))
+
+(use-package persp-mode
+  :init (persp-mode +1))
 
 (use-package powerline)
 
@@ -268,20 +275,53 @@
 (scroll-bar-mode -1)
 
 (use-package tide
-  :after js2-mode
-  :requires js2-mode
-  :mode ("\\.js\\'" . tide-mode)
-  :hook(
-        (before-save-hook . tide-format-before-save)
-        (typescript-mode-hook . setup-tide-mode)))
+  :commands tide-setup tide-mode setup-tide-mode
+  :config
+  (defun setup-tide-mode ()
+    (interactive)
+    ;;(require 'typescript-mode)
+    (tide-setup)
+    (tide-mode +1)
+    (flycheck-mode +1)
+    (setq-default tab-width 2)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))
+    (eldoc-mode +1)
+    (tide-hl-identifier-mode +1)
+    (company-mode +1))
+  (require 'typescript-mode)
+  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+  ;; aligns annotation to the right hand side
+  (setq company-tooltip-align-annotations t)
+  ;; format options
+  ;; (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+  ;; support for JS files
+  (add-hook 'js2-mode-hook #'setup-tide-mode)
+  ;; from now on web-mode is required
+  (require 'web-mode)
+  ;; support for TSX files
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+  (add-hook 'web-mode-hook
+            (lambda ()
+              (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                (setup-tide-mode))))
+  ;; support for JSX files
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+  (add-hook 'web-mode-hook
+            (lambda ()
+              (when (string-equal "jsx" (file-name-extension buffer-file-name))
+                (setup-tide-mode)))))
+
+(use-package typescript-mode
+  :commands typescript-mode)
 
 (use-package web-beautify)
 
 (use-package web-mode
   :commands web-mode
   :requires web-beautify
-  :mode("\\.phtml\\'" . web-mode)
-  ("\\.html\\'" . web-mode)
+  :mode(("\\.phtml\\'" . web-mode)
+        ("\\.html\\'" . web-mode))
   :hook (add-hook 'before-save-hook 'web-beautify-html-buffer t t))
 
 (use-package yasnippet

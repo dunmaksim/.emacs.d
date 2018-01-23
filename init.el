@@ -135,10 +135,13 @@
 
 (use-package airline-themes
   :requires powerline
-  :init
-  (load-theme 'airline-molokai))
+  :config (load-theme 'airline-molokai))
 
 (use-package all-the-icons)
+
+(use-package anaconda-mode
+  :hook ((python-mode-hook . anaconda-mode)
+         (python-mode-hook . anaconda-eldoc-mode)))
 
 (use-package beacon
   :diminish
@@ -182,6 +185,11 @@
              (mapcar #'company-mode/backend-with-yas company-backends))))
   :init (global-company-mode t))
 
+(use-package company-anaconda
+  :requires anaconda-mode
+  :config
+  (add-to-list 'company-backends '(company-anaconda :with company-capf)))
+
 (use-package company-quickhelp
   :bind
   (:map company-active-map
@@ -190,13 +198,13 @@
 (use-package css-mode
   :mode "\\.css\\'")
 
-(use-package elpy
-  :mode "\\.py\\'"
-  :requires python-mode
-  :hook (add-hook 'before-save-hook #'elpy-format-code)
-  :init
-  (elpy-enable)
-  (defalias 'workon 'pyvenv-workon))
+;; (use-package elpy
+;;   :mode "\\.py\\'"
+;;   :requires python-mode
+;;   :hook (add-hook 'before-save-hook #'elpy-format-code)
+;;   :init
+;;   (elpy-enable)
+;;   (defalias 'workon 'pyvenv-workon))
 
 (use-package emmet-mode
   :mode  ("\\.html\\'" . emmet-mode)
@@ -264,9 +272,9 @@
   :hook
   (add-hook 'before-save-hook 'py-isort-before-save))
 
-;; (use-package python-mode
-;;   :mode "\\.py\\'"
-;;   :interpreter ("python" . python-mode))
+(use-package python-mode
+  :mode "\\.py\\'"
+  :interpreter ("python" . python-mode))
 
 (use-package rainbow-delimiters
   :hook

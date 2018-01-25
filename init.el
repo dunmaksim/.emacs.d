@@ -255,8 +255,7 @@
   :commands markdown-mode)
 
 (use-package monokai-theme
-  :config (load-theme 'monokai t)
-  :init (setq frame-background-mode 'dark))
+  :config (load-theme 'monokai t))
 
 (use-package neotree
   :requires all-the-icons

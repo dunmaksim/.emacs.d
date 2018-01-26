@@ -282,42 +282,79 @@
 (scroll-bar-mode -1)
 
 (use-package tide
-  :commands tide-setup tide-mode setup-tide-mode
-  :config
-  (defun setup-tide-mode ()
+  :ensure t
+  :commands (tide-setup)
+  :init
+  (defun +tide-setup ()
     (interactive)
-    ;;(require 'typescript-mode)
+    (when (locate-dominating-file default-directory "tsfmt.json")
+      (add-hook 'before-save-hook #'tide-format-before-save nil t))
+    ;; Disable `flycheck' linting for Typescript Definition files.
+    (when (and (buffer-file-name)
+               (string-match-p ".d.ts$" (buffer-file-name)))
+      (when (fboundp 'flycheck-mode)
+        (flycheck-mode -1)))
     (tide-setup)
-    (tide-mode +1)
-    (flycheck-mode +1)
-    (setq-default tab-width 2)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled))
-    (eldoc-mode +1)
-    (tide-hl-identifier-mode +1)
-    (company-mode +1))
-  (require 'typescript-mode)
-  (add-hook 'typescript-mode-hook #'setup-tide-mode)
+    (tide-hl-identifier-mode +1))
+  (add-hook 'typescript-mode-hook #'+tide-setup)
 
-  ;; aligns annotation to the right hand side
-  (setq company-tooltip-align-annotations t)
-  ;; format options
-  ;; (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
-  ;; support for JS files
-  (add-hook 'js2-mode-hook #'setup-tide-mode)
-  ;; from now on web-mode is required
-  (require 'web-mode)
-  ;; support for TSX files
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+  (add-hook 'js2-mode-hook
+            (lambda ()
+              (when (or
+                     (locate-dominating-file default-directory "tsconfig.json")
+                     (locate-dominating-file default-directory "jsconfig.json"))
+                (+tide-setup))))
+
   (add-hook 'web-mode-hook
             (lambda ()
-              (when (string-equal "tsx" (file-name-extension buffer-file-name))
-                (setup-tide-mode))))
-  ;; support for JSX files
-  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
-  (add-hook 'web-mode-hook
-            (lambda ()
-              (when (string-equal "jsx" (file-name-extension buffer-file-name))
-                (setup-tide-mode)))))
+              ;; Set up Tide mode if Typescript.
+              (when (string-equal (file-name-extension buffer-file-name) "tsx")
+                (setq-local web-mode-enable-auto-quoting nil)
+                (when (fboundp 'yas-activate-extra-mode)
+                  (yas-activate-extra-mode 'typescript-mode))
+                (+tide-setup))))
+  :config
+  ;; Set up Typescript linting with `web-mode'.
+  (with-eval-after-load 'flycheck
+    (flycheck-add-mode 'typescript-tslint 'web-mode)))
+
+;; (use-package tide
+;;   :commands tide-setup tide-mode setup-tide-mode
+;;   :config
+;;   (defun setup-tide-mode ()
+;;     (interactive)
+;;     ;;(require 'typescript-mode)
+;;     (tide-setup)
+;;     (tide-mode +1)
+;;     (flycheck-mode +1)
+;;     (setq-default tab-width 2)
+;;     (setq flycheck-check-syntax-automatically '(save mode-enabled))
+;;     (eldoc-mode +1)
+;;     (tide-hl-identifier-mode +1)
+;;     (company-mode +1))
+;;   (require 'typescript-mode)
+;;   (add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+;;   ;; aligns annotation to the right hand side
+;;   (setq company-tooltip-align-annotations t)
+;;   ;; format options
+;;   ;; (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+;;   ;; support for JS files
+;;   (add-hook 'js2-mode-hook #'setup-tide-mode)
+;;   ;; from now on web-mode is required
+;;   (require 'web-mode)
+;;   ;; support for TSX files
+;;   (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+;;   (add-hook 'web-mode-hook
+;;             (lambda ()
+;;               (when (string-equal "tsx" (file-name-extension buffer-file-name))
+;;                 (setup-tide-mode))))
+;;   ;; support for JSX files
+;;   (add-to-list 'auto-mode-alist '("\\.jsx\\'" . web-mode))
+;;   (add-hook 'web-mode-hook
+;;             (lambda ()
+;;               (when (string-equal "jsx" (file-name-extension buffer-file-name))
+;;                 (setup-tide-mode)))))
 
 (use-package typescript-mode
   :commands typescript-mode)

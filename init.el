@@ -195,19 +195,6 @@
   (add-hook 'after-init-hook 'server-start t)
   (add-hook 'after-init-hook 'edit-server-start t))
 
-;; (use-package elpy
-;;   :requires (company
-;;              py-isort
-;;              python-mode)
-;;   :init
-;;   (add-hook 'before-save-hook 'elpy-format-code)
-;;   (add-hook 'before-save-hook 'py-isort-before-save)
-;;   :config
-;;   (python-mode)
-;;   (add-to-list 'company-backends 'elpy-company-backend)
-;;   (elpy-enable)
-;;   (defalias 'workon 'pyvenv-workon))
-
 (use-package emmet-mode
   :mode  ("\\.html\\'" . emmet-mode)
   :bind
@@ -277,6 +264,8 @@
   :mode ("\\.py\\'" . python-mode)
   :config
   (use-package elpy
+    :bind
+    ("M-," . elpy-goto-definition)
     :config
     (add-to-list 'company-backends 'elpy-company-backend)
     (elpy-enable)

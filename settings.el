@@ -22,8 +22,8 @@
  '(cua-mode t nil (cua-base))
  '(custom-safe-themes t)
  '(delete-by-moving-to-trash t)
- '(desktop-save-mode t)
  '(desktop-load-locked-desktop t)
+ '(desktop-save-mode t)
  '(electric-pair-mode t)
  '(elpy-rpc-backend "jedi")
  '(flycheck-display-errors-delay 0.0)
@@ -60,7 +60,8 @@
         (mode . web-mode)
         (mode . js2-mode)
         (mode . tide-mode)
-        (mode . typescript-mode)))
+        (mode . typescript-mode)
+        (mode . javascript-mode)))
       ("Magit"
        (or
         (mode . magit-status-mode)
@@ -87,15 +88,16 @@
  '(initial-major-mode (quote text-mode))
  '(initial-scratch-message "")
  '(line-number-mode t)
- '(linum-mode t)
+ '(linum-mode t t)
  '(make-backup-files nil)
  '(menu-bar-mode nil)
  '(neo-smart-open 0)
  '(neo-theme (if (display-graphic-p) (quote icons) (quote arrow)))
  '(next-line-add-newlines nil)
+ '(package-menu--hide-packages 1 t)
  '(package-selected-packages
    (quote
-    (monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode elpy python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+    (2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode elpy python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
  '(persp-auto-resume-time 0)
  '(persp-auto-save-opt 0)
  '(persp-autokill-buffer-on-remove (quote kill-weak))

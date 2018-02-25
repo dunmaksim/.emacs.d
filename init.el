@@ -1,4 +1,4 @@
-;;; init.el --- Summary
+;;; Summary
 ;;; Commentary:
 ;;; Main EMACS settings file, load settings from parts.
 
@@ -75,8 +75,8 @@
 
 (defun xah-new-empty-buffer()
   "Open a new empty buffer.
-  URL `http: // ergoemacs.org / emacs / emacs_new_empty_buffer.html'
-  Version 2015 - 06 - 12"
+  URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+  Version 2015-06-12"
   (interactive)
   (let((ξbuf(generate-new-buffer "untitled")))
     (switch-to-buffer ξbuf)
@@ -139,13 +139,10 @@
 
 (use-package all-the-icons)
 
-;; (use-package anaconda-mode
-;;   :mode "\\.py\\'"
-;;   :hook ((python-mode-hook . anaconda-mode)
-;;          (python-mode-hook . anaconda-eldoc-mode)))
-
 (use-package beacon
   :commands beacon-mode)
+
+(use-package clang-format)
 
 (use-package company
   :commands company-mode
@@ -174,12 +171,6 @@
                             #'company-complete-common))))
   ;; :init
   (global-company-mode t))
-
-;; (use-package company-anaconda
-;;   :requires (company anaconda-mode)
-;;   :after anaconda-mode
-;;   :config
-;;   (add-to-list 'company-backends '(company-anaconda :with company-capf)))
 
 (use-package company-quickhelp
   :bind
@@ -218,7 +209,6 @@
 
 (use-package js2-mode
   :mode ("\\.js\\'" . js2-mode)
-  :requires flycheck
   :bind(
         :map js2-mode-map
              ("M-n" . flycheck-next-error)
@@ -227,7 +217,42 @@
   (add-to-list 'flycheck-disabled-checkers #'javascript-jshint)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (flycheck-mode 1)
-  (js2-highlight-unused-variables-mode t))
+  (js2-highlight-unused-variables-mode t)
+  (use-package tide
+    :commands (tide-setup)
+    :init
+    (defun +tide-setup ()
+      (interactive)
+      (when (locate-dominating-file default-directory "tsfmt.json")
+        (add-hook 'before-save-hook #'tide-format-before-save nil t))
+      ;; Disable `flycheck' linting for Typescript Definition files.
+      (when (and (buffer-file-name)
+                 (string-match-p ".d.ts$" (buffer-file-name)))
+        (when (fboundp 'flycheck-mode)
+          (flycheck-mode -1)))
+      (tide-setup)
+      (tide-hl-identifier-mode +1))
+    (add-hook 'typescript-mode-hook #'+tide-setup)
+
+    (add-hook 'js2-mode-hook
+              (lambda ()
+                (when (or
+                       (locate-dominating-file default-directory "tsconfig.json")
+                       (locate-dominating-file default-directory "jsconfig.json"))
+                  (+tide-setup))))
+
+    (add-hook 'web-mode-hook
+              (lambda ()
+                ;; Set up Tide mode if Typescript.
+                (when (string-equal (file-name-extension buffer-file-name) "tsx")
+                  (setq-local web-mode-enable-auto-quoting nil)
+                  (when (fboundp 'yas-activate-extra-mode)
+                    (yas-activate-extra-mode 'typescript-mode))
+                  (+tide-setup))))
+    :config
+    ;; Set up Typescript linting with `web-mode'.
+    (with-eval-after-load 'flycheck
+      (flycheck-add-mode 'typescript-tslint 'web-mode))))
 
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
@@ -260,22 +285,27 @@
 (use-package powerline)
 
 (use-package python-mode
-  :requires (company)
   :mode ("\\.py\\'" . python-mode)
+  :init(add-hook 'python-mode-hook #'elpy-enable)
   :config
   (use-package elpy
     :bind
     ("M-," . elpy-goto-definition)
+    :init
+    (elpy-enable)
+    (defalias 'workon 'pyvenv-workon)
     :config
     (add-to-list 'company-backends 'elpy-company-backend)
-    (elpy-enable)
-    (defalias 'workon 'pyvenv-workon))
+    (elpy-enable))
   (use-package py-autopep8
     :hook
     (python-mode . py-autopep8-enable-on-save))
   (use-package py-isort
     :init
-    (add-hook 'before-save-hook #'py-isort-before-save)))
+    (add-hook 'before-save-hook #'py-isort-before-save))
+  (use-package pipenv
+    :hook
+    (python-mode . pipenv-mode)))
 
 (use-package rainbow-delimiters
   :commands rainbow-delimiters-mode
@@ -287,47 +317,10 @@
 
 (scroll-bar-mode -1)
 
-(use-package tide
-  :ensure t
-  :commands (tide-setup)
-  :init
-  (defun +tide-setup ()
-    (interactive)
-    (when (locate-dominating-file default-directory "tsfmt.json")
-      (add-hook 'before-save-hook #'tide-format-before-save nil t))
-    ;; Disable `flycheck' linting for Typescript Definition files.
-    (when (and (buffer-file-name)
-               (string-match-p ".d.ts$" (buffer-file-name)))
-      (when (fboundp 'flycheck-mode)
-        (flycheck-mode -1)))
-    (tide-setup)
-    (tide-hl-identifier-mode +1))
-  (add-hook 'typescript-mode-hook #'+tide-setup)
-
-  (add-hook 'js2-mode-hook
-            (lambda ()
-              (when (or
-                     (locate-dominating-file default-directory "tsconfig.json")
-                     (locate-dominating-file default-directory "jsconfig.json"))
-                (+tide-setup))))
-
-  (add-hook 'web-mode-hook
-            (lambda ()
-              ;; Set up Tide mode if Typescript.
-              (when (string-equal (file-name-extension buffer-file-name) "tsx")
-                (setq-local web-mode-enable-auto-quoting nil)
-                (when (fboundp 'yas-activate-extra-mode)
-                  (yas-activate-extra-mode 'typescript-mode))
-                (+tide-setup))))
-  :config
-  ;; Set up Typescript linting with `web-mode'.
-  (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'typescript-tslint 'web-mode)))
-
 (use-package typescript-mode
   :commands typescript-mode)
 
-(use-package web-beautify)
+;; (use-package web-beautify)
 
 (use-package web-mode
   :commands web-mode

@@ -186,6 +186,8 @@
   (add-hook 'after-init-hook 'server-start t)
   (add-hook 'after-init-hook 'edit-server-start t))
 
+(use-package elp)
+
 (use-package emmet-mode
   :mode  ("\\.html\\'" . emmet-mode)
   :bind
@@ -320,7 +322,7 @@
 (use-package typescript-mode
   :commands typescript-mode)
 
-;; (use-package web-beautify)
+(use-package web-beautify)
 
 (use-package web-mode
   :commands web-mode
@@ -328,15 +330,15 @@
         ("\\.html\\'" . web-mode))
   :hook (add-hook 'before-save-hook 'web-beautify-html-buffer t t))
 
-;; (use-package yasnippet
-;;   :requires prog-mode
-;;   :defer 10
-;;   :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
-;;   :config
-;;   (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
-;;   (yas-global-mode 1))
+(use-package yasnippet
+  :requires prog-mode
+  :defer 10
+  :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
+  :config
+  (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
+  (yas-global-mode 1))
 
-;; (use-package yasnippet-snippets
-;;   :requires yasnippet)
+(use-package yasnippet-snippets
+  :requires yasnippet)
 
 ;;; init.el ends here

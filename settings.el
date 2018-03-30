@@ -97,7 +97,7 @@
  '(package-menu--hide-packages 1 t)
  '(package-selected-packages
    (quote
-    (chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode elpy python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+    (racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode elpy python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
  '(persp-auto-resume-time 0)
  '(persp-auto-save-opt 0)
  '(persp-autokill-buffer-on-remove (quote kill-weak))

@@ -200,6 +200,11 @@
 (use-package helm
   :bind ([f10] . helm-buffers-list))
 
+(use-package helm-company
+  :bind
+  (:map company-mode-map ("C-:" . helm-company))
+  (:map company-active-map ("C-:" . helm-company)))
+
 (use-package highlight-numbers
   :init(add-hook 'prog-mode-hook 'highlight-numbers-mode))
 ;; :hook(prog-mode . highlight-numbers-mode))
@@ -264,6 +269,9 @@
 (use-package json-reformat
   :requires json-mode)
 
+;; (use-package less-css-mode
+;;   :mode(("\\.less\\'" . less-mode)))
+
 (global-linum-mode t)
 
 (use-package magit
@@ -273,6 +281,8 @@
   :mode "\\.md\\'"
   :commands markdown-mode)
 
+(use-package mode-icons)
+
 (use-package monokai-theme
   :config (load-theme 'monokai t))
 
@@ -280,6 +290,8 @@
   :requires all-the-icons
   :bind
   ([f8] . neotree-toggle))
+
+(overwrite-mode nil)
 
 (use-package persp-mode
   :init (persp-mode +1))
@@ -318,6 +330,12 @@
   (electric-pair-mode 1))
 
 (scroll-bar-mode -1)
+
+(use-package tide
+  :mode("\\.ts\\'" . tide-mode)
+  :init(tide-format-before-save)
+  :config
+  (tide-setup))
 
 (use-package typescript-mode
   :commands typescript-mode)

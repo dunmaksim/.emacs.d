@@ -4,7 +4,6 @@
 
 ;;; Code:
 
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -26,8 +25,9 @@
  '(desktop-save-mode t)
  '(electric-pair-mode t)
  '(elpy-rpc-backend "jedi")
- '(flycheck-display-errors-delay 0.0)
- '(flycheck-standard-error-navigation nil)
+ '(flycheck-checkers
+   (quote
+    (ada-gnat asciidoctor asciidoc c/c++-clang c/c++-gcc c/c++-cppcheck cfengine chef-foodcritic coffee coffee-coffeelint coq css-csslint css-stylelint cwl d-dmd dockerfile-hadolint emacs-lisp emacs-lisp-checkdoc erlang-rebar3 erlang eruby-erubis fortran-gfortran go-gofmt go-golint go-vet go-build go-test go-errcheck go-unconvert go-megacheck groovy haml handlebars haskell-stack-ghc haskell-ghc haskell-hlint html-tidy javascript-eslint javascript-jshint javascript-standard json-jsonlint json-python-json jsonnet less less-stylelint llvm-llc lua-luacheck lua perl perl-perlcritic php php-phpmd php-phpcs processing proselint protobuf-protoc pug puppet-parser puppet-lint python-pylint python-pycompile r-lintr racket rpm-rpmlint markdown-markdownlint-cli markdown-mdl nix rst-sphinx rst ruby-rubocop ruby-reek ruby-rubylint ruby ruby-jruby rust-cargo rust rust-clippy scala scala-scalastyle scheme-chicken scss-lint scss-stylelint sass/scss-sass-lint sass scss sh-bash sh-posix-dash sh-posix-bash sh-zsh sh-shellcheck slim slim-lint sql-sqlint systemd-analyze tcl-nagelfar tex-chktex tex-lacheck texinfo typescript-tslint verilog-verilator vhdl-ghdl xml-xmlstarlet xml-xmllint yaml-jsyaml yaml-ruby)))
  '(global-hl-line-mode t)
  '(ibuffer-default-display-maybe-show-predicates t)
  '(ibuffer-expert t)
@@ -91,15 +91,16 @@
  '(linum-mode t t)
  '(make-backup-files nil)
  '(menu-bar-mode nil)
+ '(mode-icons-change-mode-name nil)
  '(neo-smart-open 0)
  '(neo-theme (if (display-graphic-p) (quote icons) (quote arrow)))
  '(neo-window-fixed-size nil)
- '(neo-window-width 40)
+ '(neo-window-width 35)
  '(next-line-add-newlines nil)
  '(package-menu--hide-packages 1 t)
  '(package-selected-packages
    (quote
-    (tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode elpy python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+    (lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode elpy python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
  '(persp-auto-resume-time 0)
  '(persp-auto-save-opt 0)
  '(persp-autokill-buffer-on-remove (quote kill-weak))
@@ -116,6 +117,7 @@
  '(scroll-step 1)
  '(search-highlight t)
  '(select-enable-clipboard t)
+ '(tide-format-before-save t)
  '(tide-format-options
    (quote
     (:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil)))

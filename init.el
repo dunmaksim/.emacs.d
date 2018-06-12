@@ -216,6 +216,7 @@
 
 (use-package js2-mode
   :mode ("\\.js\\'" . js2-mode)
+  :after (company-mode flycheck)
   :bind(
         :map js2-mode-map
              ("M-n" . flycheck-next-error)
@@ -224,42 +225,8 @@
   (add-to-list 'flycheck-disabled-checkers #'javascript-jshint)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (flycheck-mode 1)
-  (js2-highlight-unused-variables-mode t)
-  (use-package tide
-    :commands (tide-setup)
-    :init
-    (defun +tide-setup ()
-      (interactive)
-      (when (locate-dominating-file default-directory "tsfmt.json")
-        (add-hook 'before-save-hook #'tide-format-before-save nil t))
-      ;; Disable `flycheck' linting for Typescript Definition files.
-      (when (and (buffer-file-name)
-                 (string-match-p ".d.ts$" (buffer-file-name)))
-        (when (fboundp 'flycheck-mode)
-          (flycheck-mode -1)))
-      (tide-setup)
-      (tide-hl-identifier-mode +1))
-    (add-hook 'typescript-mode-hook #'+tide-setup)
-
-    (add-hook 'js2-mode-hook
-              (lambda ()
-                (when (or
-                       (locate-dominating-file default-directory "tsconfig.json")
-                       (locate-dominating-file default-directory "jsconfig.json"))
-                  (+tide-setup))))
-
-    (add-hook 'web-mode-hook
-              (lambda ()
-                ;; Set up Tide mode if Typescript.
-                (when (string-equal (file-name-extension buffer-file-name) "tsx")
-                  (setq-local web-mode-enable-auto-quoting nil)
-                  (when (fboundp 'yas-activate-extra-mode)
-                    (yas-activate-extra-mode 'typescript-mode))
-                  (+tide-setup))))
-    :config
-    ;; Set up Typescript linting with `web-mode'.
-    (with-eval-after-load 'flycheck
-      (flycheck-add-mode 'typescript-tslint 'web-mode))))
+  (prettier-js-mode 1)
+  (js2-highlight-unused-variables-mode t))
 
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
@@ -298,6 +265,8 @@
 
 (use-package powerline)
 
+(use-package prettier-js)
+
 (use-package python-mode
   :mode ("\\.py\\'" . python-mode)
   :init(add-hook 'python-mode-hook #'elpy-enable)
@@ -332,13 +301,22 @@
 (scroll-bar-mode -1)
 
 (use-package tide
-  :mode("\\.ts\\'" . tide-mode)
-  :init(tide-format-before-save)
-  :config
-  (tide-setup))
+  :ensure t
+  :after (typescript-mode company flycheck)
+  :hook (typescript-mode .(lambda ()
+            (tide-setup)
+            (flycheck-mode +1)
+            (eldoc-mode +1)
+            (company-mode)
+            (setq fill-column 120)))
+  (typescript-mode . tide-hl-identifier-mode)
+  (before-save . tide-format-before-save))
 
 (use-package typescript-mode
-  :commands typescript-mode)
+  :hook (typescript-mode . tide-setup)
+  :mode
+  ("\\.ts\\'" . typescript-mode)
+  ("\\.d.ts\\'" . typescript-mode))
 
 (use-package web-beautify)
 

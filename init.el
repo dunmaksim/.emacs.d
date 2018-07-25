@@ -236,9 +236,6 @@
 (use-package json-reformat
   :requires json-mode)
 
-;; (use-package less-css-mode
-;;   :mode(("\\.less\\'" . less-mode)))
-
 (global-linum-mode t)
 
 (use-package magit
@@ -313,7 +310,6 @@
   (before-save . tide-format-before-save))
 
 (use-package typescript-mode
-  :hook (typescript-mode . tide-setup)
   :mode
   ("\\.ts\\'" . typescript-mode)
   ("\\.d.ts\\'" . typescript-mode))

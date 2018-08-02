@@ -139,7 +139,9 @@
   :requires powerline
   :config (load-theme 'airline-molokai))
 
-(use-package all-the-icons)
+(use-package all-the-icons
+  :config
+  (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
 
 (use-package beacon
   :commands beacon-mode)

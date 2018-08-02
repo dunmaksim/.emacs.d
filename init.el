@@ -113,6 +113,8 @@
 (global-set-key(kbd "M-x") 'kill-whole-line)
 (global-set-key(kbd "<esc>") 'keyboard-quit)
 
+(global-set-key (kbd "<insert>") nil) ;; Disable overwrite mode
+
 (when(get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
 
@@ -331,6 +333,9 @@
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
+  :init
+  ;; Checking existing 'snippets' dir. Required for yasnippet.
+  (unless (file-directory-p "~/.emacs.d/snippets/") (mkdir "~/.emacs.d/snippets/"))
   :requires yasnippet)
 
 ;;; init.el ends here

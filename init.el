@@ -114,11 +114,12 @@
 (global-set-key(kbd "<esc>") 'keyboard-quit)
 
 (global-set-key (kbd "<insert>") nil) ;; Disable overwrite mode
+(global-set-key (kbd "M-,") nil) ;; Disable M-, as markers
 
 (when(get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
 
-(fset 'yes-or-no-p 'y-or-n-p); ; ; Shortcuts for yea and no
+(fset 'yes-or-no-p 'y-or-n-p); ; ; Shortcuts for yes and no
 
 ;;; Format file before save
 (defun format-current-buffer()
@@ -191,6 +192,11 @@
   (add-hook 'after-init-hook 'edit-server-start t))
 
 (use-package elp)
+
+(use-package elpy
+  :init
+  (defalias 'workon 'pyvenv-workon)
+  (defalias 'deactivate 'pyvenv-deactivate))
 
 (use-package emmet-mode
   :mode  ("\\.html\\'" . emmet-mode)

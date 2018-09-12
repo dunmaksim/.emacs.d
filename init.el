@@ -113,8 +113,8 @@
 (global-set-key(kbd "M-x") 'kill-whole-line)
 (global-set-key(kbd "<esc>") 'keyboard-quit)
 
-(global-set-key (kbd "<insert>") nil) ;; Disable overwrite mode
-(global-set-key (kbd "M-,") nil) ;; Disable M-, as markers
+(global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
+(global-unset-key (kbd "M-,")) ;; Disable M-, as markers
 
 (when(get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
@@ -177,6 +177,9 @@
   ;; :init
   (global-company-mode t))
 
+(use-package company-c-headers
+  :config (add-to-list 'company-backends 'company-c-headers))
+
 (use-package company-quickhelp
   :bind
   (:map company-active-map
@@ -184,6 +187,9 @@
 
 (use-package css-mode
   :mode "\\.css\\'")
+
+(use-package highlight-doxygen
+  :config(highlight-doxygen-global-mode 1))
 
 (use-package edit-server
   :if window-system
@@ -206,6 +212,8 @@
 (use-package flycheck
   :commands flycheck-mode
   :init(add-hook 'after-init-hook #'global-flycheck-mode))
+
+(use-package format-all)
 
 (use-package helm
   :bind ([f10] . helm-buffers-list))

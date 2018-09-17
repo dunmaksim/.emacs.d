@@ -96,7 +96,7 @@
  '(neo-smart-open 0)
  '(neo-theme (if (display-graphic-p) (quote icons) (quote arrow)))
  '(neo-window-fixed-size nil)
- '(neo-window-width 35)
+ '(neo-window-width 30)
  '(next-line-add-newlines nil)
  '(package-menu--hide-packages 1 t)
  '(package-selected-packages

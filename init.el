@@ -14,6 +14,7 @@
 (eval-when-compile(require 'cl))
 
 (require 'package)
+(cua-mode t)
 
 (setq package-archives nil)
 

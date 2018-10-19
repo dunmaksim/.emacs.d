@@ -22,7 +22,6 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("elpy" . "https://jorgenschaefer.github.io/packages/") t)
 
 (setq package-enable-at-startup nil)
 (package-initialize nil)
@@ -214,6 +213,21 @@
   :commands flycheck-mode
   :init(add-hook 'after-init-hook #'global-flycheck-mode))
 
+(use-package flycheck-clang-analyzer
+  :ensure t
+  :after flycheck
+  :config (flycheck-clang-analyzer-setup))
+
+(use-package flycheck-pos-tip
+  :ensure t
+  :after flycheck
+  :config (flycheck-pos-tip-mode))
+
+(use-package flycheck-rust
+  :ensure t
+  :after flycheck
+  :config (flycheck-rust-setup))
+
 (use-package format-all)
 
 (use-package helm
@@ -232,6 +246,9 @@
   :bind([f2] . ibuffer)
   :init
   (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
+
+(use-package isortify
+  :hook (python-mode-hook . isortify-mode))
 
 (use-package js2-mode
   :mode ("\\.js\\'" . js2-mode)
@@ -286,6 +303,7 @@
 (use-package python-mode
   :mode ("\\.py\\'" . python-mode)
   :init(add-hook 'python-mode-hook #'elpy-enable)
+  (add-hook 'python-mode-hook 'isortify-mode)
   :config
   (use-package elpy
     :bind
@@ -296,12 +314,12 @@
     :config
     (add-to-list 'company-backends 'elpy-company-backend)
     (elpy-enable))
+  (use-package isortify
+    :hook
+    (python-mode-hook . isortify-mode))
   (use-package py-autopep8
     :hook
     (python-mode . py-autopep8-enable-on-save))
-  (use-package py-isort
-    :init
-    (add-hook 'before-save-hook #'py-isort-before-save))
   (use-package pipenv
     :hook
     (python-mode . pipenv-mode)))

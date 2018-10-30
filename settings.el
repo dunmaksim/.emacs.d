@@ -87,6 +87,8 @@
  '(inhibit-startup-screen t)
  '(initial-major-mode (quote text-mode))
  '(initial-scratch-message "")
+ '(js2-highlight-undeclared-vars t)
+ '(js2-highlight-unused-variables t)
  '(js2-strict-trailing-comma-warning t)
  '(line-number-mode t)
  '(linum-mode t t)
@@ -101,11 +103,13 @@
  '(package-menu--hide-packages 1 t)
  '(package-selected-packages
    (quote
-    (darkokai-theme flycheck-clang-analyzer flycheck-pos-tip flycheck-pycheckers yasnippet night-owl-theme prettier-js ace-window lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+    (pydoc pyenv-mode darkokai-theme flycheck-clang-analyzer flycheck-pos-tip flycheck-pycheckers yasnippet night-owl-theme prettier-js ace-window lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
  '(persp-auto-resume-time 0)
  '(persp-auto-save-opt 0)
  '(persp-autokill-buffer-on-remove (quote kill-weak))
  '(persp-keymap-prefix (kbd "C-x p"))
+ '(prettier-js-args '(
+                      "--tab-width" "4"))
  '(py-isort-options (quote ("-sl")))
  '(python-indent-guess-indent-offset 4)
  '(python-indent-offset 4)

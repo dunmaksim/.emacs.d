@@ -63,6 +63,9 @@
 
 (cfg:reverse-input-method 'russian-computer)
 
+;; Show line numbers everywhere
+(global-linum-mode t)
+
 ;; Resize windows
 (global-set-key(kbd "S-C-<left>") 'shrink-window-horizontally)
 (global-set-key(kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -144,6 +147,12 @@
   :config
   (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
 
+(use-package anaconda-mode
+  :hook (python-mode . anaconda-mode))
+
+(use-package py-autopep8
+  :hook (python-mode . py-autopep8-enable-on-save))
+
 (use-package beacon
   :commands beacon-mode)
 
@@ -176,6 +185,9 @@
                             #'company-complete-common))))
   ;; :init
   (global-company-mode t))
+
+(use-package company-anaconda
+  :config (add-to-list 'company-backends 'company-anaconda))
 
 (use-package company-c-headers
   :config (add-to-list 'company-backends 'company-c-headers))
@@ -240,7 +252,6 @@
 
 (use-package highlight-numbers
   :init(add-hook 'prog-mode-hook 'highlight-numbers-mode))
-;; :hook(prog-mode . highlight-numbers-mode))
 
 (use-package ibuffer
   :bind([f2] . ibuffer)
@@ -248,21 +259,12 @@
   (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
 
 (use-package isortify
-  :hook (python-mode-hook . isortify-mode))
+  :hook (python-mode . isortify-mode))
 
 (use-package js2-mode
-  :mode ("\\.js\\'" . js2-mode)
-  :after (company-mode flycheck)
-  :bind(
-        :map js2-mode-map
-             ("M-n" . flycheck-next-error)
-             ("M-p" . flycheck-previous-error))
+  :mode "\\.js\\'"
   :config
-  (add-to-list 'flycheck-disabled-checkers #'javascript-jshint)
-  (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  (flycheck-mode 1)
-  (prettier-js-mode 1)
-  (js2-highlight-unused-variables-mode t))
+  (prettier-js-mode 1))
 
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
@@ -272,14 +274,11 @@
 (use-package json-reformat
   :requires json-mode)
 
-(global-linum-mode t)
-
 (use-package magit
   :bind([f5] . magit-status))
 
 (use-package markdown-mode
-  :mode "\\.md\\'"
-  :commands markdown-mode)
+  :mode "\\.md\\'")
 
 (use-package mode-icons)
 
@@ -298,31 +297,13 @@
 
 (use-package powerline)
 
-(use-package prettier-js)
+(use-package prettier-js
+  :mode (js2-mode . prettier-js-mode))
+
+(use-package pyenv-mode)
 
 (use-package python-mode
-  :mode ("\\.py\\'" . python-mode)
-  :init(add-hook 'python-mode-hook #'elpy-enable)
-  (add-hook 'python-mode-hook 'isortify-mode)
-  :config
-  (use-package elpy
-    :bind
-    ("M-," . elpy-goto-definition)
-    :init
-    (elpy-enable)
-    (defalias 'workon 'pyvenv-workon)
-    :config
-    (add-to-list 'company-backends 'elpy-company-backend)
-    (elpy-enable))
-  (use-package isortify
-    :hook
-    (python-mode-hook . isortify-mode))
-  (use-package py-autopep8
-    :hook
-    (python-mode . py-autopep8-enable-on-save))
-  (use-package pipenv
-    :hook
-    (python-mode . pipenv-mode)))
+  :mode ("\\.py\\'" . python-mode))
 
 (use-package rainbow-delimiters
   :commands rainbow-delimiters-mode

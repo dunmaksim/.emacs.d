@@ -147,8 +147,16 @@
   :config
   (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
 
+
+(use-package all-the-icons-dired
+  ;;; Show icons in the dired mode
+  :hook (dired-mode . all-the-icons-dired-mode))
+
 (use-package anaconda-mode
   :hook (python-mode . anaconda-mode))
+
+(use-package auto-virtualenvwrapper
+  :hook (python-mode . auto-virtualenvwrapper-activate))
 
 (use-package py-autopep8
   :hook (python-mode . py-autopep8-enable-on-save))
@@ -262,9 +270,7 @@
   :hook (python-mode . isortify-mode))
 
 (use-package js2-mode
-  :mode "\\.js\\'"
-  :config
-  (prettier-js-mode 1))
+  :mode "\\.js\\'")
 
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
@@ -280,7 +286,8 @@
 (use-package markdown-mode
   :mode "\\.md\\'")
 
-(use-package mode-icons)
+(use-package mode-icons
+  :config (mode-icons-mode))
 
 (use-package monokai-theme
   :config (load-theme 'monokai t))
@@ -298,7 +305,8 @@
 (use-package powerline)
 
 (use-package prettier-js
-  :mode (js2-mode . prettier-js-mode))
+  :hook
+  (js2-mode . prettier-js-mode))
 
 (use-package pyenv-mode)
 
@@ -320,12 +328,9 @@
   :after (typescript-mode company flycheck)
   :hook (typescript-mode .(lambda ()
             (tide-setup)
-            (flycheck-mode +1)
-            (eldoc-mode +1)
             (company-mode)
             (setq fill-column 120)))
-  (typescript-mode . tide-hl-identifier-mode)
-  (before-save . tide-format-before-save))
+  (typescript-mode . tide-hl-identifier-mode))
 
 (use-package typescript-mode
   :mode

@@ -94,22 +94,26 @@
  '(linum-mode t t)
  '(make-backup-files nil)
  '(menu-bar-mode nil)
+ '(minimap-width-fraction 0.1)
+ '(minimap-window-location "right")
  '(mode-icons-change-mode-name nil)
  '(neo-smart-open 0)
  '(neo-theme (if (display-graphic-p) (quote icons) (quote arrow)))
  '(neo-window-fixed-size nil)
  '(neo-window-width 30)
  '(next-line-add-newlines nil)
+ '(package-hidden-regexps
+   (quote
+    ("\\`2048-game" "\\`0blayout" "\\flymake*" "\\ac-*" "\\aa-edit-mode" "\\abc-mode" "\\abgaben" "\\ada-*" "\\aes" "\\adoc-mode" "\\ahk-mode" "\\alchemist" "\\alda-mode" "\\anaphora" "\\android-mode" "\\angular-mode" "\\annotate*" "\\ansi" "\\ant" "\\anx-api")))
  '(package-menu--hide-packages 1 t)
  '(package-selected-packages
    (quote
-    (pydoc pyenv-mode darkokai-theme flycheck-clang-analyzer flycheck-pos-tip flycheck-pycheckers yasnippet night-owl-theme prettier-js ace-window lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+    (dired-sidebar zones pydoc pyenv-mode darkokai-theme flycheck-clang-analyzer flycheck-pos-tip flycheck-pycheckers yasnippet night-owl-theme prettier-js ace-window lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
  '(persp-auto-resume-time 0)
  '(persp-auto-save-opt 0)
  '(persp-autokill-buffer-on-remove (quote kill-weak))
  '(persp-keymap-prefix (kbd "C-x p"))
- '(prettier-js-args '(
-                      "--tab-width" "4"))
+ '(prettier-js-args (quote ("--tab-width" "4")))
  '(py-isort-options (quote ("-sl")))
  '(python-indent-guess-indent-offset 4)
  '(python-indent-offset 4)

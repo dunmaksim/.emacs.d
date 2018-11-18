@@ -127,11 +127,11 @@
 ;;; Format file before save
 (defun format-current-buffer()
   (indent-region (point-min) (point-max)))
-(defun untabify-current-buffer()
-  (if (not indent-tabs-mode)
-      (untabify (point-min) (point-max)))
-  nil)
-(add-to-list 'write-file-functions 'untabify-current-buffer)
+;; (defun untabify-current-buffer()
+;;   (if (not indent-tabs-mode)
+;;       (untabify (point-min) (point-max)))
+;;   nil)
+;; (add-to-list 'write-file-functions 'untabify-current-buffer)
 (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
 
@@ -326,11 +326,9 @@
 (use-package tide
   :ensure t
   :after (typescript-mode company flycheck)
-  :hook (typescript-mode .(lambda ()
-            (tide-setup)
-            (company-mode)
-            (setq fill-column 120)))
-  (typescript-mode . tide-hl-identifier-mode))
+  :hook ((typescript-mode . tide-setup)
+	 (typescript-mode . tide-hl-identifier-mode)
+	 (before-save . tide-format-before-save)))
 
 (use-package typescript-mode
   :mode

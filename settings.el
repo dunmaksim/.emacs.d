@@ -10,6 +10,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-save-default nil)
+ '(centaur-tabs-set-icons 1)
  '(column-number-mode 1)
  '(company-dabbrev-code-ignore-case nil)
  '(company-dabbrev-downcase nil)
@@ -108,7 +109,7 @@
  '(package-menu--hide-packages 1 t)
  '(package-selected-packages
    (quote
-    (winum treemacs-magit treemacs-icons-dired treemacs-projectile treemacs rust-mode tabbar-mode tabbar dired-sidebar zones pydoc pyenv-mode darkokai-theme flycheck-clang-analyzer flycheck-pos-tip flycheck-pycheckers yasnippet night-owl-theme prettier-js ace-window lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+    (centaur-tabs winum treemacs-magit treemacs-icons-dired treemacs-projectile treemacs rust-mode tabbar-mode tabbar dired-sidebar zones pydoc pyenv-mode darkokai-theme flycheck-clang-analyzer flycheck-pos-tip flycheck-pycheckers yasnippet night-owl-theme prettier-js ace-window lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode python-mode py-isort py-autopep8 isearch web-mode web-beautify tide magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
  '(persp-auto-resume-time 0)
  '(persp-auto-save-opt 0)
  '(persp-autokill-buffer-on-remove (quote kill-weak))

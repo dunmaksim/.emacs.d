@@ -149,8 +149,10 @@
   ;;; Show icons in the dired mode
   :hook (dired-mode . all-the-icons-dired-mode))
 
-(use-package anaconda-mode
-  :hook (python-mode . anaconda-mode))
+(use-package all-the-icons-ibuffer
+  ;;; Show icons in the ibuffer mode
+  :requires all-the-icons
+  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 (use-package auto-virtualenvwrapper
   :hook (python-mode . auto-virtualenvwrapper-activate))
@@ -199,9 +201,6 @@
   ;; :init
   (global-company-mode t))
 
-(use-package company-anaconda
-  :config (add-to-list 'company-backends 'company-anaconda))
-
 (use-package company-c-headers
   :config (add-to-list 'company-backends 'company-c-headers))
 
@@ -227,7 +226,9 @@
 (use-package elpy
   :init
   (defalias 'workon 'pyvenv-workon)
-  (defalias 'deactivate 'pyvenv-deactivate))
+  (defalias 'deactivate 'pyvenv-deactivate)
+  :config (elpy-enable)
+  :hook (python-mode . elpy-mode))
 
 (use-package emmet-mode
   :mode  ("\\.html\\'" . emmet-mode)

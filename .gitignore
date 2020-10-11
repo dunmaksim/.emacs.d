@@ -6,5 +6,6 @@ elpa/
 fonts/
 server/
 snippets/
+transient/
 url/
 customize.el

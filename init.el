@@ -224,11 +224,8 @@
 (use-package elp)
 
 (use-package elpy
-  :init
-  (defalias 'workon 'pyvenv-workon)
-  (defalias 'deactivate 'pyvenv-deactivate)
-  :config (elpy-enable)
-  :hook (python-mode . elpy-mode))
+  :ensure t
+  :init (elpy-enable))
 
 (use-package emmet-mode
   :mode  ("\\.html\\'" . emmet-mode)
@@ -277,9 +274,6 @@
   :init
   (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
 
-(use-package isortify
-  :hook (python-mode . isortify-mode))
-
 (use-package js2-mode
   :mode "\\.js\\'")
 
@@ -290,6 +284,33 @@
 
 (use-package json-reformat
   :requires json-mode)
+
+
+;;;;; LSP MODE
+
+(use-package lsp-mode
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+           (python-mode . lsp)
+           (javascript-mode . lsp)
+            ;; if you want which-key integration
+            (lsp-mode . lsp-enable-which-key-integration))
+    :commands lsp)
+
+
+(use-package lsp-ui :commands lsp-ui-mode)
+
+(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+(use-package lsp-jedi
+  :ensure t
+  :config
+  (with-eval-after-load "lsp-mode"
+    (add-to-list 'lsp-disabled-clients 'pyls)
+    (add-to-list 'lsp-enabled-clients 'jedi)))
+
+;;;;; LSP MODE
 
 (use-package magit
   :bind([f5] . magit-status))
@@ -315,9 +336,9 @@
 
 (use-package powerline)
 
-(use-package prettier-js
-  :hook
-  (js2-mode . prettier-js-mode))
+;; (use-package prettier-js
+;;   :hook
+;;   (js2-mode . prettier-js-mode))
 
 (use-package pyenv-mode)
 
@@ -333,6 +354,25 @@
   (electric-pair-mode 1))
 
 (scroll-bar-mode -1)
+
+(use-package tide
+  :config
+  (
+  (tyde-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (eldoc-mode +1)
+  (tide-hl-identifier-mode +1)
+  ;; company is an optional dependency. You have to
+  ;; install it separately via package-install
+  ;; `M-x package-install [ret] company`
+  (company-mode +1))
+  :hook (
+         (before-save-hook . tide-format-before-save)
+         (typescript-mode-hook  . setup-tide-mode)
+         )
+  )
+
 
 (use-package typescript-mode
   :mode

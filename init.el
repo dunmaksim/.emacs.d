@@ -78,7 +78,7 @@
 
 (defun xah-new-empty-buffer()
   "Open a new empty buffer.
-  URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   Version 2015-06-12"
   (interactive)
   (let((ξbuf(generate-new-buffer "untitled")))
@@ -119,18 +119,16 @@
 (global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
 (global-unset-key (kbd "M-,")) ;; Disable M-, as markers
 
-(when(get-buffer "*scratch*")
+(when (get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
 
-(fset 'yes-or-no-p 'y-or-n-p); ; ; Shortcuts for yes and no
+(fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
-;;; Format file before save
-(defun format-current-buffer()
-  (indent-region (point-min) (point-max)))
-
+;; (defun format-current-buffer()
+;;   ;;; Format file before save
+;;   (indent-region (point-min) (point-max)))
 
 (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-
 
 ;;; Save user settings in dedicated file
 (setq custom-file "~/.emacs.d/settings.el")
@@ -138,7 +136,7 @@
 
 (use-package airline-themes
   :requires powerline
-  :config (load-theme 'airline-molokai))
+  :config (load-theme 'airline-serene))
 
 (use-package all-the-icons
   :config
@@ -161,6 +159,8 @@
   :hook (python-mode . py-autopep8-enable-on-save))
 
 (use-package beacon
+  ;;; Blink cursor after moving
+  :config (beacon-mode 1)
   :commands beacon-mode)
 
 (use-package centaur-tabs
@@ -289,12 +289,12 @@
 ;;;;; LSP MODE
 
 (use-package lsp-mode
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-           (python-mode . lsp)
-           (javascript-mode . lsp)
-            ;; if you want which-key integration
-            (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp)
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (python-mode . lsp)
+         (javascript-mode . lsp)
+         ;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
 
 
 (use-package lsp-ui :commands lsp-ui-mode)
@@ -335,10 +335,6 @@
   :init (persp-mode +1))
 
 (use-package powerline)
-
-;; (use-package prettier-js
-;;   :hook
-;;   (js2-mode . prettier-js-mode))
 
 (use-package pyenv-mode)
 

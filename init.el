@@ -369,7 +369,7 @@
   (company-mode +1))
   :hook (
          (before-save-hook . tide-format-before-save)
-         (typescript-mode-hook  . setup-tide-mode)
+;;         (typescript-mode-hook  . typescript-mode-hook-hook)
          )
   )
 
@@ -394,6 +394,9 @@
   :defer 10
   :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
   :config
+  ;; Create snippets directory, if does not exists
+  (if (not (file-directory-p "~/.emacs.d/snippets/"))
+      (make-directory "~/.emacs.d/snippets/"))
   (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
   (yas-global-mode 1))
 

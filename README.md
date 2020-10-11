@@ -4,7 +4,8 @@ This configuration created for working with Python 2/3, JavaScript and HTML file
 
 ## Icon fonts
 
-You must install required fonts with your package manager, for example, APT:
+You must install required fonts with your package manager.
+Debian-based distros:
 
 ```bash
 apt-get install fonts-font-awesome fonts-materialdesignicons-webfont fonts-octicons

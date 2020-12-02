@@ -1,4 +1,4 @@
-;;; Summary
+;;; init.el --- Summary
 ;;; Commentary:
 ;;; Main EMACS settings file, load settings from parts.
 
@@ -12,6 +12,7 @@
 
 ;; Show line numbers everywhere
 (global-linum-mode t)
+(overwrite-mode nil)
 
 ;; Resize windows
 (global-set-key(kbd "S-C-<left>") 'shrink-window-horizontally)
@@ -25,20 +26,21 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
-;; <install use-package>
-(eval-and-compile
-  (customize-set-variable
-   'package-archives '(("org" . "http://orgmode.org/elpa/")
-                       ("melpa-stable" . "http://stable.melpa.org/packages/")
-                       ("melpa" . "http://melpa.org/packages/")
-                       ("gnu" . "http://elpa.gnu.org/packages/")))
-  (package-initialize)
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-  )
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 
+;; STRAIGHT
 
 (defun cfg:reverse-input-method (input-method)
   "Build the reverse mapping of single letters from INPUT-METHOD."
@@ -127,264 +129,248 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (setq custom-file "~/.emacs.d/settings.el")
 (load-file "~/.emacs.d/settings.el")
 
-(leaf airline-themes
-  :ensure t
-  :config (load-theme 'airline-serene))
-
-(leaf all-the-icons
-  :ensure t
-  :config
-  (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
+(straight-use-package 'airline-themes)
 
 
-(leaf all-the-icons-dired
-  :ensure t
+;;(use-package airline-themes
+;;  :ensure t
+;;  :config (load-theme 'airline-serene))
+
+(straight-use-package 'all-the-icons)
+
+;;(use-package all-the-icons
+;;  :ensure t
+;;  :config
+;;  (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
+
+
+(straight-use-package 'all-the-icons-dired)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
+;;(use-package all-the-icons-dired
+;;  :ensure t
   ;;; Show icons in the dired mode
-  :hook (dired-mode . all-the-icons-dired-mode))
+;;  :hook (dired-mode . all-the-icons-dired-mode))
 
-(leaf all-the-icons-ibuffer
+(straight-use-package 'all-the-icons-ibuffer)
+(add-hook 'ibuffer-mode 'all-the-icons-ibuffer-mode)
+
+;;(use-package all-the-icons-ibuffer
   ;;; Show icons in the ibuffer mode
-  :ensure t
-  :pin melpa-stable
-  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
+;;  :ensure t
+;;  :pin melpa-stable
+;;  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
-(use-package auto-virtualenvwrapper
-  :hook (python-mode . auto-virtualenvwrapper-activate))
+;;(use-package auto-virtualenvwrapper
+;;  :hook (python-mode . auto-virtualenvwrapper-activate))
 
-(use-package py-autopep8
-  :hook (python-mode . py-autopep8-enable-on-save))
+;;(use-package py-autopep8
+;;  :hook (python-mode . py-autopep8-enable-on-save))
 
-(use-package beacon
-  ;;; Blink cursor after moving
-  :config (beacon-mode 1)
-  :commands beacon-mode)
+(straight-use-package 'beacon)
+(beacon-mode 1)
 
-(use-package centaur-tabs
-  :demand
-  :config
-  (centaur-tabs-mode t)
-  :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>" . centaur-tabs-forward))
-
-(use-package clang-format)
-
-(use-package company
-  :commands company-mode
-  :config
+(straight-use-package 'company)
+(global-company-mode t)
+;;(use-package company
+;;  :commands company-mode
+;;  :config
   ;; From https://github.com/company-mode/company-mode/issues/87
   ;; See also https://github.com/company-mode/company-mode/issues/123
-  (defadvice company-pseudo-tooltip-unless-just-one-frontend
-      (around only-show-tooltip-when-invoked activate)
-    (when (company-explicit-action-p)
-      ad-do-it))
+;;  (defadvice company-pseudo-tooltip-unless-just-one-frontend
+;;      (around only-show-tooltip-when-invoked activate)
+;;    (when (company-explicit-action-p)
+;;      ad-do-it))
 
-  (defun check-expansion ()
-    (save-excursion
-      (if (outline-on-heading-p t)
-          nil
-        (if (looking-at "\\_>") t
-          (backward-char 1)
-          (if (looking-at "\\.") t
-            (backward-char 1)
-            (if (looking-at "->") t nil))))))
+;;  (defun check-expansion ()
+;;    (save-excursion
+;;      (if (outline-on-heading-p t)
+;;          nil
+;;        (if (looking-at "\\_>") t
+;;          (backward-char 1)
+;;          (if (looking-at "\\.") t
+;;            (backward-char 1)
+;;            (if (looking-at "->") t nil))))))
 
-  (define-key company-mode-map [tab]
-    '(menu-item "maybe-company-expand" nil
-                :filter (lambda (&optional _)
-                          (when (check-expansion)
-                            #'company-complete-common))))
-  ;; :init
-  (global-company-mode t))
+;;  (define-key company-mode-map [tab]
+;;    '(menu-item "maybe-company-expand" nil
+;;                :filter (lambda (&optional _)
+;;                          (when (check-expansion)
+;;                            #'company-complete-common))))
+;;  ;; :init
+;;  (global-company-mode t))
 
-(use-package company-c-headers
-  :config (add-to-list 'company-backends 'company-c-headers))
+;;(use-package company-quickhelp
+;;  :bind
+;;  (:map company-active-map
+;;        ("C-c h" . company-quickhelp-manual-begin)))
 
-(use-package company-quickhelp
-  :bind
-  (:map company-active-map
-        ("C-c h" . company-quickhelp-manual-begin)))
+(straight-use-package 'css-mode)
 
-(use-package css-mode
-  :mode "\\.css\\'")
+;;(use-package css-mode
+;;  :mode "\\.css\\'")
 
-(use-package highlight-doxygen
-  :config(highlight-doxygen-global-mode 1))
+;;(use-package highlight-doxygen
+;;  :config(highlight-doxygen-global-mode 1))
 
-(use-package edit-server
-  :if window-system
-  :init
-  (add-hook 'after-init-hook 'server-start t)
-  (add-hook 'after-init-hook 'edit-server-start t))
+;;(use-package edit-server
+;;  :if window-system
+;;  :init
+;;  (add-hook 'after-init-hook 'server-start t)
+;;  (add-hook 'after-init-hook 'edit-server-start t))
 
-(use-package elp)
+(straight-use-package 'elpy)
+(elpy-enable)
 
-(use-package elpy
-  :ensure t
-  :init (elpy-enable))
+(straight-use-package 'emmet-mode)
+;;(use-package emmet-mode
+;;  :mode  ("\\.html\\'" . emmet-mode)
+;;  :bind
+;;  ("C-j" . emmet-expand-line))
 
-(use-package emmet-mode
-  :mode  ("\\.html\\'" . emmet-mode)
-  :bind
-  ("C-j" . emmet-expand-line))
+(straight-use-package `flycheck)
+(global-flycheck-mode 1)
+;;(use-package flycheck
+;;  :commands flycheck-mode
+;;  :init(add-hook 'after-init-hook #'global-flycheck-mode))
 
-(use-package flycheck
-  :commands flycheck-mode
-  :init(add-hook 'after-init-hook #'global-flycheck-mode))
+(straight-use-package 'flycheck-indicator)
+(add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)
 
-(use-package flycheck-clang-analyzer
-  :ensure t
-  :after flycheck
-  :config (flycheck-clang-analyzer-setup))
+(straight-use-package 'flycheck-pos-tip)
+(flycheck-pos-tip-mode 1)
 
-(use-package flycheck-indicator
-  :ensure t
-  :after flycheck
-  :hook ('flycheck-mode-hook 'flycheck-indicator-mode))
+(straight-use-package 'format-all)
 
-(use-package flycheck-pos-tip
-  :ensure t
-  :after flycheck
-  :config (flycheck-pos-tip-mode))
+(straight-use-package 'helm)
+;;(use-package helm
+;;  :bind ([f10] . helm-buffers-list))
 
-(use-package flycheck-rust
-  :ensure t
-  :after flycheck
-  :config (flycheck-rust-setup))
+;;(use-package helm-company
+;;  :bind
+;;  (:map company-mode-map ("C-:" . helm-company))
+;;  (:map company-active-map ("C-:" . helm-company)))
 
-(use-package format-all)
+;;(use-package highlight-numbers
+;;  :init(add-hook 'prog-mode-hook 'highlight-numbers-mode))
 
-(use-package helm
-  :bind ([f10] . helm-buffers-list))
+(straight-use-package 'ibuffer)
+(global-set-key(kbd "<f2>") 'ibuffer)
+(add-hook 'ibuffer-mode-hooj #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default")))
 
-(use-package helm-company
-  :bind
-  (:map company-mode-map ("C-:" . helm-company))
-  (:map company-active-map ("C-:" . helm-company)))
+;;(use-package js2-mode
+;;  :mode "\\.js\\'")
 
-(use-package highlight-numbers
-  :init(add-hook 'prog-mode-hook 'highlight-numbers-mode))
+;;(use-package json-mode
+;;  :mode (("\\.json\\'" . json-mode)
+;;         ("\\.bowerrc\\'" . json-mode)
+;;         ("\\.jshintrc\\'" . json-mode)))
 
-(use-package ibuffer
-  :bind([f2] . ibuffer)
-  :init
-  (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
-
-(use-package js2-mode
-  :mode "\\.js\\'")
-
-(use-package json-mode
-  :mode (("\\.json\\'" . json-mode)
-         ("\\.bowerrc\\'" . json-mode)
-         ("\\.jshintrc\\'" . json-mode)))
-
-(use-package json-reformat)
+;;(use-package json-reformat)
 
 ;;;;; LSP MODE
 
-(use-package lsp-mode
-  :pin melpa-stable
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (python-mode . lsp)
-         (javascript-mode . lsp)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
+(straight-use-package 'lsp-mode)
+(add-hook 'python-mode 'lsp)
+(add-hook 'javacript-mode 'lsp)
 
 
-(use-package lsp-ui :commands lsp-ui-mode)
+;;(use-package lsp-mode
+;;  :pin melpa-stable
+;;  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+;;         (python-mode . lsp)
+;;         (javascript-mode . lsp)
+;;         ;; if you want which-key integration
+;;         (lsp-mode . lsp-enable-which-key-integration))
+;;  :commands lsp)
 
-(use-package helm-lsp :commands helm-lsp-workspace-symbol)
 
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+;;(use-package lsp-ui :commands lsp-ui-mode)
 
-(use-package lsp-jedi
-  :ensure t
-  :pin melpa-stable
-  :config
-  (with-eval-after-load "lsp-mode"
-    (add-to-list 'lsp-disabled-clients 'pyls)
-    (add-to-list 'lsp-enabled-clients 'jedi)))
+;;(use-package helm-lsp :commands helm-lsp-workspace-symbol)
+
+;;(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;;(use-package lsp-jedi
+;;  :ensure t
+;;  :pin melpa-stable
+;;  :config
+;;  (with-eval-after-load "lsp-mode"
+;;    (add-to-list 'lsp-disabled-clients 'pyls)
+;;    (add-to-list 'lsp-enabled-clients 'jedi)))
 
 ;;;;; LSP MODE
 
-(use-package magit
-  :pin melpa-stable
-  :bind([f5] . magit-status))
+(straight-use-package 'magit)
+(global-set-key (kbd"<f5>") 'magit-status)
+;;(use-package magit
+;;  :pin melpa-stable
+;;  :bind([f5] . magit-status))
 
-(use-package markdown-mode
-  :mode "\\.md\\'")
+;;(use-package markdown-mode
+;;  :mode "\\.md\\'")
 
-(use-package mode-icons
-  :config (mode-icons-mode))
+(straight-use-package 'mode-icons)
+(mode-icons-mode t)
 
-(use-package monokai-theme
-  :config (load-theme 'monokai t))
+(straight-use-package 'monokai-theme)
+(load-theme 'monokai t)
 
-(use-package neotree
-  :bind
-  ([f8] . neotree-toggle))
 
-(overwrite-mode nil)
-
-(use-package persp-mode
-  :init (persp-mode +1))
-
-(use-package powerline)
-
-(use-package pyenv-mode)
-
-(use-package python-mode
-  :mode ("\\.py\\'" . python-mode))
-
-(use-package rainbow-delimiters
-  :commands rainbow-delimiters-mode
-  :hook
-  (prog-mode . rainbow-delimiters-mode)
-  :config
-  (show-paren-mode 1)
-  (electric-pair-mode 1))
+(straight-use-package 'neotree)
+(global-set-key (kbd "<f8>") 'neotree-toggle)
+;;(use-package neotree
+;;  :bind
+;;  ([f8] . neotree-toggle))
 
 
 
+(straight-use-package 'persp-mode)
+(persp-mode +1)
 
-(leaf tide
+(straight-use-package 'powerline)
+
+(straight-use-package 'pyenv-mode)
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+
+(straight-use-package 'rainbow-delimiters)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+(show-paren-mode 1)
+(electric-pair-mode 1)
+;;(use-package rainbow-delimiters
+;;  :commands rainbow-delimiters-mode
+;;  :hook
+;;  (prog-mode . rainbow-delimiters-mode)
+;;  :config
+;;  (show-paren-mode 1)
+;;  (electric-pair-mode 1))
+
+
+
+
+;;(leaf tide
   ;;; From https://github.com/ananthakumaran/tide
-  :ensure t
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)))
+;;  :ensure t
+;;  :after (typescript-mode company flycheck)
+;;  :hook ((typescript-mode . tide-setup)
+;;         (typescript-mode . tide-hl-identifier-mode)
+;;         (before-save . tide-format-before-save)))
 
 
-(use-package typescript-mode
-  :mode
-  ("\\.ts\\'" . typescript-mode)
-  ("\\.d.ts\\'" . typescript-mode))
+(straight-use-package 'typescript-mode)
+(add-to-list 'auto-mode-alist
+             '("\\.ts\\'" . typescript-mode)
+             '("\\.d.ts\\'" . typescript-mode))
 
-(leaf web-beautify)
+(straight-use-package 'web-beautify)
 
-(leaf web-mode
-  :commands web-mode
-  :mode(("\\.phtml\\'" . web-mode)
-        ("\\.html\\'" . web-mode))
-  :hook (add-hook 'before-save-hook 'web-beautify-html-buffer t t))
+;;(leaf web-mode
+;;  :commands web-mode
+;;  :mode(("\\.phtml\\'" . web-mode)
+;;        ("\\.html\\'" . web-mode))
+;;  :hook (add-hook 'before-save-hook 'web-beautify-html-buffer t t))
 
-(leaf winum)
+(straight-use-package 'winum)
 
-(leaf yasnippet
-  :defer 10
-  :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
-  :config
-  ;; Create snippets directory, if does not exists
-  (if (not (file-directory-p "~/.emacs.d/snippets/"))
-      (make-directory "~/.emacs.d/snippets/"))
-  (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
-  (yas-global-mode 1))
-
-(leaf yasnippet-snippets
-  :init
-  ;; Checking existing 'snippets' dir. Required for yasnippet.
-  (unless (file-directory-p "~/.emacs.d/snippets/") (mkdir "~/.emacs.d/snippets/")))
 
 ;;; init.el ends here

@@ -4,39 +4,41 @@
 
 ;;; Code:
 
+(cua-mode t)
+(scroll-bar-mode -1)
+(set-face-attribute 'default nil :height 110)
+(when (member "DejaVu Sans Mono" (font-family-list))
+  (set-face-attribute 'default nil :font "DejaVu Sans Mono"))
 
+;; Show line numbers everywhere
+(global-linum-mode t)
+
+;; Resize windows
+(global-set-key(kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key(kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key(kbd "S-C-<down>") 'shrink-window)
+(global-set-key(kbd "S-C-<up>") 'enlarge-window)
+
+;
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-(package-initialize)
 
-(eval-when-compile(require 'cl))
+;; <install use-package>
+(eval-and-compile
+  (customize-set-variable
+   'package-archives '(("org" . "http://orgmode.org/elpa/")
+                       ("melpa-stable" . "http://stable.melpa.org/packages/")
+                       ("melpa" . "http://melpa.org/packages/")
+                       ("gnu" . "http://elpa.gnu.org/packages/")))
+  (package-initialize)
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  )
 
-(require 'package)
-(cua-mode t)
 
-(setq package-archives nil)
-
-(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
-(add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/") t)
-
-(setq package-enable-at-startup nil)
-(package-initialize nil)
-
-;; ; Load and install use-package if required
-(unless(package-installed-p 'use-package)
-  (message "EMACS install use-package.el")
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(require 'use-package)
-
-(set-face-attribute 'default nil :height 110)
-(when (member "DejaVu Sans Mono" (font-family-list))
-  (set-face-attribute 'default nil :font "DejaVu Sans Mono"))
 
 (defun cfg:reverse-input-method (input-method)
   "Build the reverse mapping of single letters from INPUT-METHOD."
@@ -63,16 +65,7 @@
 
 (cfg:reverse-input-method 'russian-computer)
 
-;; Show line numbers everywhere
-(global-linum-mode t)
-
-;; Resize windows
-(global-set-key(kbd "S-C-<left>") 'shrink-window-horizontally)
-(global-set-key(kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key(kbd "S-C-<down>") 'shrink-window)
-(global-set-key(kbd "S-C-<up>") 'enlarge-window)
-
-;; Isearch
+; Isearch
 (global-set-key (kbd "C-M-r") 'isearch-backward-other-window)
 (global-set-key (kbd "C-M-s") 'isearch-forward-other-window)
 
@@ -134,22 +127,25 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (setq custom-file "~/.emacs.d/settings.el")
 (load-file "~/.emacs.d/settings.el")
 
-(use-package airline-themes
-  :requires powerline
+(leaf airline-themes
+  :ensure t
   :config (load-theme 'airline-serene))
 
-(use-package all-the-icons
+(leaf all-the-icons
+  :ensure t
   :config
   (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
 
 
-(use-package all-the-icons-dired
+(leaf all-the-icons-dired
+  :ensure t
   ;;; Show icons in the dired mode
   :hook (dired-mode . all-the-icons-dired-mode))
 
-(use-package all-the-icons-ibuffer
+(leaf all-the-icons-ibuffer
   ;;; Show icons in the ibuffer mode
-  :requires all-the-icons
+  :ensure t
+  :pin melpa-stable
   :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 (use-package auto-virtualenvwrapper
@@ -282,13 +278,12 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
          ("\\.bowerrc\\'" . json-mode)
          ("\\.jshintrc\\'" . json-mode)))
 
-(use-package json-reformat
-  :requires json-mode)
-
+(use-package json-reformat)
 
 ;;;;; LSP MODE
 
 (use-package lsp-mode
+  :pin melpa-stable
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (python-mode . lsp)
          (javascript-mode . lsp)
@@ -305,6 +300,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 (use-package lsp-jedi
   :ensure t
+  :pin melpa-stable
   :config
   (with-eval-after-load "lsp-mode"
     (add-to-list 'lsp-disabled-clients 'pyls)
@@ -313,6 +309,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;;;;; LSP MODE
 
 (use-package magit
+  :pin melpa-stable
   :bind([f5] . magit-status))
 
 (use-package markdown-mode
@@ -325,7 +322,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   :config (load-theme 'monokai t))
 
 (use-package neotree
-  :requires all-the-icons
   :bind
   ([f8] . neotree-toggle))
 
@@ -349,10 +345,10 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (show-paren-mode 1)
   (electric-pair-mode 1))
 
-(scroll-bar-mode -1)
 
 
-(use-package tide
+
+(leaf tide
   ;;; From https://github.com/ananthakumaran/tide
   :ensure t
   :after (typescript-mode company flycheck)
@@ -366,18 +362,17 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   ("\\.ts\\'" . typescript-mode)
   ("\\.d.ts\\'" . typescript-mode))
 
-(use-package web-beautify)
+(leaf web-beautify)
 
-(use-package web-mode
+(leaf web-mode
   :commands web-mode
   :mode(("\\.phtml\\'" . web-mode)
         ("\\.html\\'" . web-mode))
   :hook (add-hook 'before-save-hook 'web-beautify-html-buffer t t))
 
-(use-package winum)
+(leaf winum)
 
-(use-package yasnippet
-  :requires prog-mode
+(leaf yasnippet
   :defer 10
   :mode("/\\.emacs\\.d/snippets/" . snippet-mode)
   :config
@@ -387,10 +382,9 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (yas-load-directory (expand-file-name "snippets" user-emacs-directory))
   (yas-global-mode 1))
 
-(use-package yasnippet-snippets
+(leaf yasnippet-snippets
   :init
   ;; Checking existing 'snippets' dir. Required for yasnippet.
-  (unless (file-directory-p "~/.emacs.d/snippets/") (mkdir "~/.emacs.d/snippets/"))
-  :requires yasnippet)
+  (unless (file-directory-p "~/.emacs.d/snippets/") (mkdir "~/.emacs.d/snippets/")))
 
 ;;; init.el ends here

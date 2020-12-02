@@ -131,47 +131,28 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 (straight-use-package 'airline-themes)
 
-
-;;(use-package airline-themes
-;;  :ensure t
-;;  :config (load-theme 'airline-serene))
-
 (straight-use-package 'all-the-icons)
-
-;;(use-package all-the-icons
-;;  :ensure t
-;;  :config
-;;  (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
-
+(unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts))
 
 (straight-use-package 'all-the-icons-dired)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
-;;(use-package all-the-icons-dired
-;;  :ensure t
-  ;;; Show icons in the dired mode
-;;  :hook (dired-mode . all-the-icons-dired-mode))
-
 (straight-use-package 'all-the-icons-ibuffer)
 (add-hook 'ibuffer-mode 'all-the-icons-ibuffer-mode)
 
-;;(use-package all-the-icons-ibuffer
-  ;;; Show icons in the ibuffer mode
-;;  :ensure t
-;;  :pin melpa-stable
-;;  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
-
+(straight-use-package 'auto-virtualenvwrapper)
+(add-hook 'python-mode-hook 'auto-virtualenvwrapper-activate)
 ;;(use-package auto-virtualenvwrapper
 ;;  :hook (python-mode . auto-virtualenvwrapper-activate))
 
-;;(use-package py-autopep8
-;;  :hook (python-mode . py-autopep8-enable-on-save))
+
 
 (straight-use-package 'beacon)
 (beacon-mode 1)
 
 (straight-use-package 'company)
-(global-company-mode t)
+(add-hook 'after-init-hook 'global-company-mode)
+
 ;;(use-package company
 ;;  :commands company-mode
 ;;  :config
@@ -303,50 +284,50 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 (straight-use-package 'magit)
 (global-set-key (kbd"<f5>") 'magit-status)
-;;(use-package magit
-;;  :pin melpa-stable
-;;  :bind([f5] . magit-status))
 
-;;(use-package markdown-mode
-;;  :mode "\\.md\\'")
 
+;;;; MARKDOWN MODE
+(straight-use-package 'markdown-mode)
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+
+
+;;;; MODE ICONS
 (straight-use-package 'mode-icons)
 (mode-icons-mode t)
 
+
+
+;;;; MONOKAI THEME
 (straight-use-package 'monokai-theme)
 (load-theme 'monokai t)
 
 
+;;;; NEOTREE
 (straight-use-package 'neotree)
 (global-set-key (kbd "<f8>") 'neotree-toggle)
-;;(use-package neotree
-;;  :bind
-;;  ([f8] . neotree-toggle))
 
 
-
+;;;; PERSP-MODE
 (straight-use-package 'persp-mode)
 (persp-mode +1)
 
+;;;; POWERLINE
 (straight-use-package 'powerline)
 
+(straight-use-package 'py-autopep8)
+(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+
+
+;;;; PYENV-MODE
 (straight-use-package 'pyenv-mode)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
+
+;;;; RAINBOW DELIMITERS
 (straight-use-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
 (show-paren-mode 1)
 (electric-pair-mode 1)
-;;(use-package rainbow-delimiters
-;;  :commands rainbow-delimiters-mode
-;;  :hook
-;;  (prog-mode . rainbow-delimiters-mode)
-;;  :config
-;;  (show-paren-mode 1)
-;;  (electric-pair-mode 1))
-
-
-
 
 ;;(leaf tide
   ;;; From https://github.com/ananthakumaran/tide
@@ -369,8 +350,5 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;;  :mode(("\\.phtml\\'" . web-mode)
 ;;        ("\\.html\\'" . web-mode))
 ;;  :hook (add-hook 'before-save-hook 'web-beautify-html-buffer t t))
-
-(straight-use-package 'winum)
-
 
 ;;; init.el ends here

@@ -10,10 +10,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-save-default nil)
- '(centaur-tabs-height 32)
- '(centaur-tabs-set-bar (quote over))
- '(centaur-tabs-set-icons 1)
- '(centaur-tabs-style "rounded")
  '(column-number-mode 1)
  '(company-dabbrev-code-ignore-case nil)
  '(company-dabbrev-downcase nil)
@@ -33,7 +29,6 @@
  '(flycheck-checkers
    (quote
     (ada-gnat asciidoctor asciidoc c/c++-clang c/c++-gcc c/c++-cppcheck cfengine chef-foodcritic coffee coffee-coffeelint coq css-csslint css-stylelint cwl d-dmd dockerfile-hadolint emacs-lisp emacs-lisp-checkdoc erlang-rebar3 erlang eruby-erubis fortran-gfortran go-gofmt go-golint go-vet go-build go-test go-errcheck go-unconvert go-megacheck groovy haml handlebars haskell-stack-ghc haskell-ghc haskell-hlint html-tidy javascript-eslint javascript-jshint javascript-standard json-jsonlint json-python-json jsonnet less less-stylelint llvm-llc lua-luacheck lua perl perl-perlcritic php php-phpmd php-phpcs processing proselint protobuf-protoc pug puppet-parser puppet-lint python-pylint python-pycompile r-lintr racket rpm-rpmlint markdown-markdownlint-cli markdown-mdl nix rst-sphinx rst ruby-rubocop ruby-reek ruby-rubylint ruby ruby-jruby rust-cargo rust rust-clippy scala scala-scalastyle scheme-chicken scss-lint scss-stylelint sass/scss-sass-lint sass scss sh-bash sh-posix-dash sh-posix-bash sh-zsh sh-shellcheck slim slim-lint sql-sqlint systemd-analyze tcl-nagelfar tex-chktex tex-lacheck texinfo typescript-tslint verilog-verilator vhdl-ghdl xml-xmlstarlet xml-xmllint yaml-jsyaml yaml-ruby)))
- '(global-hl-line-mode t)
  '(ibuffer-default-display-maybe-show-predicates t)
  '(ibuffer-expert t)
  '(ibuffer-formats
@@ -87,18 +82,13 @@
         (name . "^\\*Messages\\*$")
         (name . "^\\*\\(Customize\\|Help\\)")
         (name . "\\*\\(Echo\\|Minibuf\\)")))))))
- '(ibuffer-show-empty-filter-groups nil)
  '(ibuffer-shrink-to-minimum-size t t)
  '(ibufffer-use-other-window t)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(initial-major-mode (quote text-mode))
  '(initial-scratch-message "")
- '(js2-highlight-undeclared-vars t)
- '(js2-highlight-unused-variables t)
- '(js2-strict-trailing-comma-warning t)
  '(line-number-mode t)
- '(linum-mode t t)
  '(make-backup-files nil)
  '(menu-bar-mode nil)
  '(minimap-width-fraction 0.1)
@@ -127,7 +117,6 @@
  '(query-replace-highlight t)
  '(ring-bell-function (quote ignore))
  '(save-place t)
- '(scroll-bar-mode -1)
  '(scroll-conservatively 1000000)
  '(scroll-margin 10)
  '(scroll-step 1)

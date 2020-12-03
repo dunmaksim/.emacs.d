@@ -4,14 +4,15 @@
 
 ;;; Code:
 
-(cua-mode t)
-(scroll-bar-mode -1)
+(fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
+(cua-mode t) ;;; Ctrl+C, Ctrl+V like Windows
 (set-face-attribute 'default nil :height 110)
 (when (member "DejaVu Sans Mono" (font-family-list))
   (set-face-attribute 'default nil :font "DejaVu Sans Mono"))
 
 ;; Show line numbers everywhere
 (global-linum-mode t)
+(global-hl-line-mode t)
 (overwrite-mode nil)
 
 ;; Resize windows
@@ -20,7 +21,15 @@
 (global-set-key(kbd "S-C-<down>") 'shrink-window)
 (global-set-key(kbd "S-C-<up>") 'enlarge-window)
 
-;
+(when window-system
+  (blink-cursor-mode 0)
+  (fringe-mode 2)
+  (scroll-bar-mode 0)
+  (tool-bar-mode 0)
+  (tooltip-mode 0)
+  (window-divider-mode 0))
+
+
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
@@ -67,9 +76,11 @@
 
 (cfg:reverse-input-method 'russian-computer)
 
+
 ; Isearch
 (global-set-key (kbd "C-M-r") 'isearch-backward-other-window)
 (global-set-key (kbd "C-M-s") 'isearch-forward-other-window)
+
 
 (defun xah-new-empty-buffer()
   "Open a new empty buffer.
@@ -117,8 +128,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (when (get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
 
-(fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
-
 ;; (defun format-current-buffer()
 ;;   ;;; Format file before save
 ;;   (indent-region (point-min) (point-max)))
@@ -129,27 +138,39 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (setq custom-file "~/.emacs.d/settings.el")
 (load-file "~/.emacs.d/settings.el")
 
+
+;;;; AIRLINE THEMES
 (straight-use-package 'airline-themes)
 
+
+;;;; ALL THE ICONS
 (straight-use-package 'all-the-icons)
 (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts))
 
+
+;;;; ALL THE ICONS DIRED
 (straight-use-package 'all-the-icons-dired)
-(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+;;;;(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+(with-eval-after-load 'all-the-icons (all-the-icons-dired-mode))
 
+;;;; ALL THE ICONS IBUFFER
+;;;; https://github.com/seagle0128/all-the-icons-ibuffer
 (straight-use-package 'all-the-icons-ibuffer)
-(add-hook 'ibuffer-mode 'all-the-icons-ibuffer-mode)
+(with-eval-after-load 'all-the-icons ibuffer (all-the-icons-ibuffer-mode))
+(all-the-icons-ibuffer-mode 1)
 
+
+;;;; AUTO VIRTUALENVWRAPPER
 (straight-use-package 'auto-virtualenvwrapper)
 (add-hook 'python-mode-hook 'auto-virtualenvwrapper-activate)
-;;(use-package auto-virtualenvwrapper
-;;  :hook (python-mode . auto-virtualenvwrapper-activate))
 
 
-
+;;;; BEACON
 (straight-use-package 'beacon)
 (beacon-mode 1)
 
+
+;;;; COMPANY
 (straight-use-package 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
@@ -181,15 +202,18 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;;  ;; :init
 ;;  (global-company-mode t))
 
+
+;;;; COMPANY QUICKHELP
+(straight-use-package 'company-quickhelp)
 ;;(use-package company-quickhelp
 ;;  :bind
 ;;  (:map company-active-map
 ;;        ("C-c h" . company-quickhelp-manual-begin)))
 
+;;;; CSS-MODE
 (straight-use-package 'css-mode)
+(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
 
-;;(use-package css-mode
-;;  :mode "\\.css\\'")
 
 ;;(use-package highlight-doxygen
 ;;  :config(highlight-doxygen-global-mode 1))
@@ -203,26 +227,32 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'elpy)
 (elpy-enable)
 
-(straight-use-package 'emmet-mode)
-;;(use-package emmet-mode
-;;  :mode  ("\\.html\\'" . emmet-mode)
-;;  :bind
-;;  ("C-j" . emmet-expand-line))
 
+;;;; EMMET
+(straight-use-package 'emmet-mode)
+(add-to-list 'auto-mode-alist '("\\.html\\'" . emmet-mode))
+
+
+;;;; FLYCHECK
 (straight-use-package `flycheck)
 (global-flycheck-mode 1)
-;;(use-package flycheck
-;;  :commands flycheck-mode
-;;  :init(add-hook 'after-init-hook #'global-flycheck-mode))
 
+
+;;;; FLYCHECK INDICATOR
 (straight-use-package 'flycheck-indicator)
 (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)
 
+;;;; FLYCHECK-POS-TIP
+;;;; https://github.com/flycheck/flycheck-pos-tip
 (straight-use-package 'flycheck-pos-tip)
-(flycheck-pos-tip-mode 1)
+(with-eval-after-load 'flycheck (flycheck-pos-tip-mode))
 
+
+;;;; FORMAT ALL
 (straight-use-package 'format-all)
 
+
+;;;; HELM
 (straight-use-package 'helm)
 ;;(use-package helm
 ;;  :bind ([f10] . helm-buffers-list))
@@ -232,25 +262,31 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;;  (:map company-mode-map ("C-:" . helm-company))
 ;;  (:map company-active-map ("C-:" . helm-company)))
 
-;;(use-package highlight-numbers
-;;  :init(add-hook 'prog-mode-hook 'highlight-numbers-mode))
 
+;;;; HIGHLIGHT NUMBERS
+(straight-use-package 'highlight-numbers)
+(add-hook 'prog-mode-hook 'highlight-numbers-mode)
+
+
+;;;; IBUFFER
 (straight-use-package 'ibuffer)
-(global-set-key(kbd "<f2>") 'ibuffer)
-(add-hook 'ibuffer-mode-hooj #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default")))
+(global-set-key (kbd "<f2>") 'ibuffer)
+(add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default")))
 
-;;(use-package js2-mode
-;;  :mode "\\.js\\'")
 
-;;(use-package json-mode
-;;  :mode (("\\.json\\'" . json-mode)
-;;         ("\\.bowerrc\\'" . json-mode)
-;;         ("\\.jshintrc\\'" . json-mode)))
+;;;; JSON-MODE
+(straight-use-package 'json-mode)
+(add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
+(add-to-list 'auto-mode-alist '("\\.bowerrc\\'" . json-mode))
+(add-to-list 'auto-mode-alist '("\\.jshintrc\\'" . json-mode))
 
 ;;(use-package json-reformat)
 
-;;;;; LSP MODE
 
+
+
+
+;;;;; LSP MODE
 (straight-use-package 'lsp-mode)
 (add-hook 'python-mode 'lsp)
 (add-hook 'javacript-mode 'lsp)
@@ -296,7 +332,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (mode-icons-mode t)
 
 
-
 ;;;; MONOKAI THEME
 (straight-use-package 'monokai-theme)
 (load-theme 'monokai t)
@@ -329,14 +364,14 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (show-paren-mode 1)
 (electric-pair-mode 1)
 
-;;(leaf tide
-  ;;; From https://github.com/ananthakumaran/tide
-;;  :ensure t
-;;  :after (typescript-mode company flycheck)
-;;  :hook ((typescript-mode . tide-setup)
-;;         (typescript-mode . tide-hl-identifier-mode)
-;;         (before-save . tide-format-before-save)))
 
+(straight-use-package 'tide)
+(defun setup-tide-mode()
+  (tide-setup)
+  (tide-hl-identifier-mode))
+(add-hook 'typescript-mode 'setup-tide-mode)
+(add-hook 'typescript-mode
+          (function (lambda ()(add-hook 'before-save-hook 'tide-format-before-save))))
 
 (straight-use-package 'typescript-mode)
 (add-to-list 'auto-mode-alist

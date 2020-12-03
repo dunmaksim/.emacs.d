@@ -4,6 +4,8 @@
 
 ;;; Code:
 
+(setq inhibit-startup-message t)
+
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 (cua-mode t) ;;; Ctrl+C, Ctrl+V like Windows
 (set-face-attribute 'default nil :height 110)
@@ -29,11 +31,10 @@
   (tooltip-mode 0)
   (window-divider-mode 0))
 
+;;; Save user settings in dedicated file
+(setq custom-file "~/.emacs.d/settings.el")
+(load-file "~/.emacs.d/settings.el")
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
 
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -134,10 +135,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
-;;; Save user settings in dedicated file
-(setq custom-file "~/.emacs.d/settings.el")
-(load-file "~/.emacs.d/settings.el")
-
 
 ;;;; AIRLINE THEMES
 (straight-use-package 'airline-themes)
@@ -156,7 +153,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;;;; ALL THE ICONS IBUFFER
 ;;;; https://github.com/seagle0128/all-the-icons-ibuffer
 (straight-use-package 'all-the-icons-ibuffer)
-(with-eval-after-load 'all-the-icons ibuffer (all-the-icons-ibuffer-mode))
+(with-eval-after-load 'all-the-icons (all-the-icons-ibuffer-mode))
 (all-the-icons-ibuffer-mode 1)
 
 
@@ -373,11 +370,13 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-hook 'typescript-mode
           (function (lambda ()(add-hook 'before-save-hook 'tide-format-before-save))))
 
+;;; TYPESCRIPT MODE
 (straight-use-package 'typescript-mode)
 (add-to-list 'auto-mode-alist
              '("\\.ts\\'" . typescript-mode)
              '("\\.d.ts\\'" . typescript-mode))
 
+;;;; WEB-BEAUTIFY
 (straight-use-package 'web-beautify)
 
 ;;(leaf web-mode

@@ -73,9 +73,6 @@
         (mode . eshell-mode)
         (mode . term-mode)
         (mode . compilation-mode)))
-      ("TypeScript"
-       (or
-        (mode . typescript-mode)))
       ("Emacs"
        (or
         (name . "^\\*scratch\\*$")
@@ -88,9 +85,7 @@
  '(inhibit-startup-screen t)
  '(initial-major-mode (quote text-mode))
  '(initial-scratch-message "")
- '(line-number-mode t)
  '(make-backup-files nil)
- '(menu-bar-mode nil)
  '(minimap-width-fraction 0.1)
  '(minimap-window-location "right")
  '(mode-icons-change-mode-name nil)
@@ -106,10 +101,6 @@
  '(package-selected-packages
    (quote
     (all-the-icons-dired tide tide-mode typescript-mode centaur-tabs winum treemacs-magit treemacs-icons-dired treemacs-projectile treemacs rust-mode tabbar-mode tabbar dired-sidebar zones pydoc pyenv-mode darkokai-theme flycheck-clang-analyzer flycheck-pos-tip flycheck-pycheckers yasnippet night-owl-theme prettier-js ace-window lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode python-mode py-isort py-autopep8 isearch web-mode web-beautify magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
- '(persp-auto-resume-time 0)
- '(persp-auto-save-opt 0)
- '(persp-autokill-buffer-on-remove (quote kill-weak))
- '(persp-keymap-prefix (kbd "C-x p"))
  '(prettier-js-args (quote ("--tab-width" "4")))
  '(py-isort-options (quote ("-sl")))
  '(python-indent-guess-indent-offset 4)
@@ -123,12 +114,8 @@
  '(search-highlight t)
  '(select-enable-clipboard t)
  '(tide-format-before-save t)
- '(tool-bar-mode nil)
  '(undo-limit 800000)
  '(undo-tree-mode-lighter "")
- '(use-package-always-ensure t)
- '(use-package-compute-statistics t)
- '(use-package-enable-imenu-support t)
  '(user-full-name "Maxim Dunaevsky")
  '(user-mail-address "dunaevsky@outlook.com")
  '(version-control t)
@@ -137,8 +124,7 @@
  '(web-mode-enable-css-colorization t)
  '(web-mode-markup-indent-offset 2)
  '(wg-morph-on nil)
- '(whitespace-auto-cleanup t t)
- '(workon-home "~/.virtualenvs"))
+ '(whitespace-auto-cleanup t t))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

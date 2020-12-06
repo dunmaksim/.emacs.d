@@ -11,13 +11,6 @@
  ;; If there is more than one, they won't work right.
  '(auto-save-default nil)
  '(column-number-mode 1)
- '(company-dabbrev-code-ignore-case nil)
- '(company-dabbrev-downcase nil)
- '(company-dabbrev-ignore-case nil)
- '(company-idle-delay 0)
- '(company-minimum-prefix-length 2)
- '(company-quickhelp-delay 1)
- '(company-tooltip-align-annotations t)
  '(cua-mode t nil (cua-base))
  '(custom-safe-themes t)
  '(delete-by-moving-to-trash t)

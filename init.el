@@ -167,16 +167,24 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;;;; COMPANY
 (straight-use-package 'company)
-(add-hook 'after-init-hook 'global-company-mode)
-
+(defun customize-company-mode-hook()
+  "Settings for company-mode."
+  (setq company-dabbrev-code-ignore-case nil)
+  (setq company-dabbrev-downcase nil)
+  (setq company-dabbrev-ignore-case nil)
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 2)
+  (setq company-quickhelp-delay 1)
+  (setq company-tooltip-align-annotations t)
+  (global-company-mode t))
+(add-hook 'after-init-hook 'customize-company-mode-hook)
 
 ;;;; COMPANY QUICKHELP
 (straight-use-package 'company-quickhelp)
 
 
-;;;; CSS-MODE
-(straight-use-package 'css-mode)
-(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
+;; ELECTRIC-PAIR-MODE
+(electric-pair-mode 1)
 
 
 ;; ELPY
@@ -292,80 +300,40 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-to-list 'auto-mode-alist '("\\.bowerrc\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.jshintrc\\'" . json-mode))
 
-;;(use-package json-reformat)
 
-
-
-
-
-;;;;; LSP MODE
+;; LSP MODE
 (straight-use-package 'lsp-mode)
 (add-hook 'python-mode 'lsp)
 (add-hook 'javacript-mode 'lsp)
 
 
-;;(use-package lsp-mode
-;;  :pin melpa-stable
-;;  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-;;         (python-mode . lsp)
-;;         (javascript-mode . lsp)
-;;         ;; if you want which-key integration
-;;         (lsp-mode . lsp-enable-which-key-integration))
-;;  :commands lsp)
-
-
-;;(use-package lsp-ui :commands lsp-ui-mode)
-
-;;(use-package helm-lsp :commands helm-lsp-workspace-symbol)
-
-;;(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-
-;;(use-package lsp-jedi
-;;  :ensure t
-;;  :pin melpa-stable
-;;  :config
-;;  (with-eval-after-load "lsp-mode"
-;;    (add-to-list 'lsp-disabled-clients 'pyls)
-;;    (add-to-list 'lsp-enabled-clients 'jedi)))
-
-;;;;; LSP MODE
-
+;; MAGIT
 (straight-use-package 'magit)
 (global-set-key (kbd"<f5>") 'magit-status)
 
 
-;;;; MARKDOWN MODE
+;; MARKDOWN MODE
 (straight-use-package 'markdown-mode)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 
-;;;; MODE ICONS
+;; MODE ICONS
 (straight-use-package 'mode-icons)
 (mode-icons-mode t)
 
 
-;;;; MONOKAI THEME
+;; MONOKAI THEME
 (straight-use-package 'monokai-theme)
 (load-theme 'monokai t)
 
 
-;;;; NEOTREE
-(straight-use-package 'neotree)
-(global-set-key (kbd "<f8>") 'neotree-toggle)
-
-
-;;;; PERSP-MODE
-(straight-use-package 'persp-mode)
-(persp-mode +1)
-
-;;;; POWERLINE
+;; POWERLINE
+;; https://github.com/milkypostman/powerline
 (straight-use-package 'powerline)
-
-(straight-use-package 'py-autopep8)
-(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+(powerline-default-theme)
 
 
-;;;; PYENV-MODE
+;; PYENV-MODE
 (straight-use-package 'pyenv-mode)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
@@ -373,17 +341,29 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;;;; RAINBOW DELIMITERS
 (straight-use-package 'rainbow-delimiters)
 (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
+;; PAREN-MODE
 (show-paren-mode 1)
-(electric-pair-mode 1)
 
 
+;; TIDE
 (straight-use-package 'tide)
 (defun setup-tide-mode()
+  "Settings for tide-mode.el."
   (tide-setup)
   (tide-hl-identifier-mode))
 (add-hook 'typescript-mode 'setup-tide-mode)
 (add-hook 'typescript-mode
           (function (lambda ()(add-hook 'before-save-hook 'tide-format-before-save))))
+
+;; TREEMACS
+(straight-use-package 'treemacs)
+
+;; TREEMACS-ALL-THE-ICONS
+(straight-use-package 'treemacs-all-the-icons)
+
+;; TREEMACS-DIRED
+(straight-use-package 'treemacs-icons-dired)
 
 ;;; TYPESCRIPT MODE
 (straight-use-package 'typescript-mode)
@@ -397,9 +377,17 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;; WEB-MODE
 ;; https://web-mode.org/
 (straight-use-package 'web-mode)
-(add-to-list 'auto-mode-alist
-             '("\\.html\\'" . web-mode))
-(add-hook 'web-mode-hook
-          (function (lambda ()(add-hook 'before-save-hook 'web-beautify-html-buffer t t))))
+(defun customize-web-mode-hook()
+  "Settings for web-mode."
+  (setq web-mode-attr-indent-offset 4)
+  (setq web-mode-css-indent-offset 2) ;; CSS
+  (setq web-mode-enable-block-face t)
+  (setq web-mode-enable-css-colorization t)
+  (setq web-mode-enable-current-element-highlight t)
+  (setq web-mode-markup-indent-offset 2) ;; HTML
+  (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode)))
+(add-hook 'web-mode-hook 'customize-web-mode-hook)
 
 ;;; init.el ends here

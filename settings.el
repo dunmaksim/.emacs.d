@@ -44,43 +44,6 @@
            (name 16 -1)
            " " filename))))
  '(ibuffer-maybe-show-regexps nil)
- '(ibuffer-saved-filter-groups
-   (quote
-    (("default"
-      ("Lisp"
-       (mode . emacs-lisp-mode))
-      ("Dired"
-       (mode . dired-mode))
-      ("Python"
-       (or
-        (mode . python-mode)
-        (mode . elpy-mode)))
-      ("Web"
-       (or
-        (mode . web-mode)
-        (mode . js2-mode)
-        (mode . typescript-mode)
-        (mode . javascript-mode)))
-      ("Magit"
-       (or
-        (mode . magit-status-mode)
-        (mode . magit-log-mode)
-        (name . "^\\*magit")
-        (name . "git-monitor")))
-      ("Commands"
-       (or
-        (mode . shell-mode)
-        (mode . eshell-mode)
-        (mode . term-mode)
-        (mode . compilation-mode)))
-      ("Emacs"
-       (or
-        (name . "^\\*scratch\\*$")
-        (name . "^\\*Messages\\*$")
-        (name . "^\\*\\(Customize\\|Help\\)")
-        (name . "\\*\\(Echo\\|Minibuf\\)")))))))
- '(ibuffer-shrink-to-minimum-size t t)
- '(ibufffer-use-other-window t)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(initial-major-mode (quote text-mode))
@@ -97,10 +60,7 @@
  '(package-hidden-regexps
    (quote
     ("\\`2048-game" "\\`0blayout" "\\flymake*" "\\ac-*" "\\aa-edit-mode" "\\abc-mode" "\\abgaben" "\\ada-*" "\\aes" "\\adoc-mode" "\\ahk-mode" "\\alchemist" "\\alda-mode" "\\anaphora" "\\android-mode" "\\angular-mode" "\\annotate*" "\\ansi" "\\ant" "\\anx-api")))
- '(package-menu--hide-packages 1 t)
- '(package-selected-packages
-   (quote
-    (all-the-icons-dired tide tide-mode typescript-mode centaur-tabs winum treemacs-magit treemacs-icons-dired treemacs-projectile treemacs rust-mode tabbar-mode tabbar dired-sidebar zones pydoc pyenv-mode darkokai-theme flycheck-clang-analyzer flycheck-pos-tip flycheck-pycheckers yasnippet night-owl-theme prettier-js ace-window lsp-javascript-typescript lsp-python lsp-rust lsp-ui srcery-theme tern racer flycheck-rust cargo zerodark-theme chyla-theme overcast-theme 2048-game panda-theme pipenv clang-format monokai-alt-theme company-anaconda anaconda-mode helm typescript persp-mode python-mode py-isort py-autopep8 isearch web-mode web-beautify magit yasnippet-snippets airline-themes powerline monokai-theme highlight-numbers rainbow-delimiters use-package neotree flycheck company all-the-icons)))
+ '(package-menu-hide-packages 1 t)
  '(prettier-js-args (quote ("--tab-width" "4")))
  '(py-isort-options (quote ("-sl")))
  '(python-indent-guess-indent-offset 4)

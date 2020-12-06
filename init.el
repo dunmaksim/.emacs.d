@@ -27,6 +27,7 @@
   (blink-cursor-mode 0)
   (fringe-mode 2)
   (scroll-bar-mode 0)
+  (menu-bar-mode 0)
   (tool-bar-mode 0)
   (tooltip-mode 0)
   (window-divider-mode 0))
@@ -129,10 +130,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (when (get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
 
-;; (defun format-current-buffer()
-;;   ;;; Format file before save
-;;   (indent-region (point-min) (point-max)))
-
 (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
 
@@ -145,24 +142,25 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts))
 
 
-;;;; ALL THE ICONS DIRED
+;; ALL THE ICONS DIRED
+;; https://github.com/jtbm37/all-the-icons-dired
 (straight-use-package 'all-the-icons-dired)
-;;;;(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
-(with-eval-after-load 'all-the-icons (all-the-icons-dired-mode))
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
-;;;; ALL THE ICONS IBUFFER
-;;;; https://github.com/seagle0128/all-the-icons-ibuffer
+;; ALL THE ICONS IBUFFER
+;; https://github.com/seagle0128/all-the-icons-ibuffer
 (straight-use-package 'all-the-icons-ibuffer)
-(with-eval-after-load 'all-the-icons (all-the-icons-ibuffer-mode))
+(add-hook 'ibuffer-mode 'all-the-icons-ibuffer-mode)
 (all-the-icons-ibuffer-mode 1)
 
 
-;;;; AUTO VIRTUALENVWRAPPER
+
+;; AUTO VIRTUALENVWRAPPER
 (straight-use-package 'auto-virtualenvwrapper)
 (add-hook 'python-mode-hook 'auto-virtualenvwrapper-activate)
 
 
-;;;; BEACON
+;; BEACON
 (straight-use-package 'beacon)
 (beacon-mode 1)
 
@@ -171,58 +169,36 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
-;;(use-package company
-;;  :commands company-mode
-;;  :config
-  ;; From https://github.com/company-mode/company-mode/issues/87
-  ;; See also https://github.com/company-mode/company-mode/issues/123
-;;  (defadvice company-pseudo-tooltip-unless-just-one-frontend
-;;      (around only-show-tooltip-when-invoked activate)
-;;    (when (company-explicit-action-p)
-;;      ad-do-it))
-
-;;  (defun check-expansion ()
-;;    (save-excursion
-;;      (if (outline-on-heading-p t)
-;;          nil
-;;        (if (looking-at "\\_>") t
-;;          (backward-char 1)
-;;          (if (looking-at "\\.") t
-;;            (backward-char 1)
-;;            (if (looking-at "->") t nil))))))
-
-;;  (define-key company-mode-map [tab]
-;;    '(menu-item "maybe-company-expand" nil
-;;                :filter (lambda (&optional _)
-;;                          (when (check-expansion)
-;;                            #'company-complete-common))))
-;;  ;; :init
-;;  (global-company-mode t))
-
 
 ;;;; COMPANY QUICKHELP
 (straight-use-package 'company-quickhelp)
-;;(use-package company-quickhelp
-;;  :bind
-;;  (:map company-active-map
-;;        ("C-c h" . company-quickhelp-manual-begin)))
+
 
 ;;;; CSS-MODE
 (straight-use-package 'css-mode)
 (add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
 
 
-;;(use-package highlight-doxygen
-;;  :config(highlight-doxygen-global-mode 1))
-
-;;(use-package edit-server
-;;  :if window-system
-;;  :init
-;;  (add-hook 'after-init-hook 'server-start t)
-;;  (add-hook 'after-init-hook 'edit-server-start t))
-
+;; ELPY
+;; https://elpy.readthedocs.io/
 (straight-use-package 'elpy)
 (elpy-enable)
+;; Автоформат кода при сохранении файла
+(add-hook 'elpy-mode-hook (lambda ()
+                           (add-hook 'before-save-hook
+                                     'elpy-format-code nil t)))
+;; Отключить старый flymake, включить flycheck
+(when (load "flycheck" t t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+;; Индикация в строке статуса:
+(setq elpy-remove-modeline-lighter t)
+(advice-add 'elpy-modules-remove-modeline-lighter
+            :around (lambda (fun &rest args)
+                      (unless (rq (car args) 'flymake-mode)
+                        (apply fun args))))
+;; Псевдоним для pyvenv-workon: workon
+(defalias 'workon 'pyvenv-workon)
 
 
 ;;;; EMMET
@@ -239,25 +215,26 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'flycheck-indicator)
 (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)
 
-;;;; FLYCHECK-POS-TIP
-;;;; https://github.com/flycheck/flycheck-pos-tip
+
+;; FLYCHECK-POS-TIP
+;; https://github.com/flycheck/flycheck-pos-tip
 (straight-use-package 'flycheck-pos-tip)
 (with-eval-after-load 'flycheck (flycheck-pos-tip-mode))
 
 
-;;;; FORMAT ALL
+;; FORMAT ALL
+;; https://github.com/lassik/emacs-format-all-the-code
 (straight-use-package 'format-all)
 
 
 ;;;; HELM
 (straight-use-package 'helm)
-;;(use-package helm
-;;  :bind ([f10] . helm-buffers-list))
+(global-set-key (kbd "<f10>") 'helm-buffers-list)
 
-;;(use-package helm-company
-;;  :bind
-;;  (:map company-mode-map ("C-:" . helm-company))
-;;  (:map company-active-map ("C-:" . helm-company)))
+
+;;;; HELM-COMPANT
+(straight-use-package 'helm-company)
+(define-key company-active-map (kbd "C-:") 'helm-company)
 
 
 ;;;; HIGHLIGHT NUMBERS
@@ -267,8 +244,46 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;;;; IBUFFER
 (straight-use-package 'ibuffer)
+(setq ibuffer-hidden-filter-groups (list "Helm" "*Internal*"))
+(setq ibuffer-saved-filter-groups
+   (quote
+    (("default"
+      ("Dired"
+       (mode . dired-mode))
+      ("Python"
+       (or
+        (mode . python-mode)
+        (mode . elpy-mode)))
+      ("Web"
+       (or
+        (mode . web-mode)))
+      ("Magit"
+       (or
+        (mode . magit-status-mode)
+        (mode . magit-log-mode)
+        (name . "^\\*magit")
+        (name . "git-monitor")))
+      ("Commands"
+       (or
+        (mode . shell-mode)
+        (mode . eshell-mode)
+        (mode . term-mode)
+        (mode . compilation-mode)))
+      ("Lisp"
+       (mode . emacs-lisp-mode))
+      ("Emacs"
+       (or
+        (name . "^\\*scratch\\*$")
+        (name . "^\\*Messages\\*$")
+        (name . "^\\*\\(Customize\\|Help\\)")
+        (name . "\\*\\(Echo\\|Minibuf\\)")))))))
+(setq ibuffer-shrink-to-minimum-size t)
+(setq ibufffer-use-other-window t)
 (global-set-key (kbd "<f2>") 'ibuffer)
-(add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default")))
+(add-hook 'ibuffer-mode-hook #'(lambda ()
+                                 (ibuffer-switch-to-saved-filter-groups "default")
+;;                                 (setq ibuffer-hidden-filter-groups (list "Helm" "*Internal*"))
+                                 (ibuffer-update nil t)))
 
 
 ;;;; JSON-MODE
@@ -379,10 +394,12 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;;;; WEB-BEAUTIFY
 (straight-use-package 'web-beautify)
 
-;;(leaf web-mode
-;;  :commands web-mode
-;;  :mode(("\\.phtml\\'" . web-mode)
-;;        ("\\.html\\'" . web-mode))
-;;  :hook (add-hook 'before-save-hook 'web-beautify-html-buffer t t))
+;; WEB-MODE
+;; https://web-mode.org/
+(straight-use-package 'web-mode)
+(add-to-list 'auto-mode-alist
+             '("\\.html\\'" . web-mode))
+(add-hook 'web-mode-hook
+          (function (lambda ()(add-hook 'before-save-hook 'web-beautify-html-buffer t t))))
 
 ;;; init.el ends here

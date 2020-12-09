@@ -4,7 +4,10 @@
 
 ;;; Code:
 
-(setq inhibit-startup-message t)
+(setq inhibit-startup-message t
+      initial-scratch-message ""
+      initial-major-mode 'fundamental-mode
+      inhibit-splash-screen t)
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 (cua-mode t) ;;; Ctrl+C, Ctrl+V like Windows
@@ -36,7 +39,15 @@
 (setq custom-file "~/.emacs.d/settings.el")
 (load-file "~/.emacs.d/settings.el")
 
+;; ENCODING
+(prefer-coding-system 'utf-8)
+(setq-default buffer-file-coding-system 'utf-8-auto-unix)
 
+;; AUTO TRUNCATE LINES
+(setq-default truncate-lines t)
+
+
+;; AUTO INSTALL STRAIGHT BOOTSTRAP
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -51,8 +62,8 @@
   (load bootstrap-file nil 'nomessage))
 
 
-;; STRAIGHT
 
+;; Settings for hotkeys on any layout
 (defun cfg:reverse-input-method (input-method)
   "Build the reverse mapping of single letters from INPUT-METHOD."
   (interactive
@@ -77,11 +88,6 @@
       (activate-input-method current))))
 
 (cfg:reverse-input-method 'russian-computer)
-
-
-; Isearch
-(global-set-key (kbd "C-M-r") 'isearch-backward-other-window)
-(global-set-key (kbd "C-M-s") 'isearch-forward-other-window)
 
 
 (defun xah-new-empty-buffer()
@@ -133,7 +139,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
 
-;;;; AIRLINE THEMES
+;; AIRLINE THEMES
 (straight-use-package 'airline-themes)
 
 
@@ -152,7 +158,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'all-the-icons-ibuffer)
 (add-hook 'ibuffer-mode 'all-the-icons-ibuffer-mode)
 (all-the-icons-ibuffer-mode 1)
-
 
 
 ;; AUTO VIRTUALENVWRAPPER
@@ -179,8 +184,10 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (global-company-mode t))
 (add-hook 'after-init-hook 'customize-company-mode-hook)
 
-;;;; COMPANY QUICKHELP
-(straight-use-package 'company-quickhelp)
+
+;; Будем читать разные файлы как INI / CONF
+(straight-use-package 'conf-mode)
+(add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
 
 
 ;; ELECTRIC-PAIR-MODE
@@ -195,16 +202,11 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-hook 'elpy-mode-hook (lambda ()
                            (add-hook 'before-save-hook
                                      'elpy-format-code nil t)))
+(remove-hook 'elpy-modules 'elpy-module-flymake)
 ;; Отключить старый flymake, включить flycheck
 (when (load "flycheck" t t)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
-;; Индикация в строке статуса:
-(setq elpy-remove-modeline-lighter t)
-(advice-add 'elpy-modules-remove-modeline-lighter
-            :around (lambda (fun &rest args)
-                      (unless (rq (car args) 'flymake-mode)
-                        (apply fun args))))
 ;; Псевдоним для pyvenv-workon: workon
 (defalias 'workon 'pyvenv-workon)
 
@@ -213,16 +215,13 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'emmet-mode)
 (add-to-list 'auto-mode-alist '("\\.html\\'" . emmet-mode))
 
-
 ;;;; FLYCHECK
 (straight-use-package `flycheck)
 (global-flycheck-mode 1)
 
-
 ;;;; FLYCHECK INDICATOR
 (straight-use-package 'flycheck-indicator)
 (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)
-
 
 ;; FLYCHECK-POS-TIP
 ;; https://github.com/flycheck/flycheck-pos-tip
@@ -358,6 +357,13 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;; TREEMACS
 (straight-use-package 'treemacs)
+(global-set-key (kbd "<f8>") 'treemacs)
+(with-eval-after-load 'treemacs
+  (defun treemacs-ignore-example (filename absolute-path)
+    (or (string-equal filename "*\\__pycache__\\/\\'")
+        (string-prefix-p "/x/y/z/" absolute-path)))
+  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-ignore-example))
+
 
 ;; TREEMACS-ALL-THE-ICONS
 (straight-use-package 'treemacs-all-the-icons)
@@ -367,9 +373,8 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;;; TYPESCRIPT MODE
 (straight-use-package 'typescript-mode)
-(add-to-list 'auto-mode-alist
-             '("\\.ts\\'" . typescript-mode)
-             '("\\.d.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
 
 ;;;; WEB-BEAUTIFY
 (straight-use-package 'web-beautify)
@@ -384,10 +389,10 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (setq web-mode-enable-block-face t)
   (setq web-mode-enable-css-colorization t)
   (setq web-mode-enable-current-element-highlight t)
-  (setq web-mode-markup-indent-offset 2) ;; HTML
-  (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode)))
+  (setq web-mode-markup-indent-offset 2)) ;; HTML
+(add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
 (add-hook 'web-mode-hook 'customize-web-mode-hook)
 
 ;;; init.el ends here

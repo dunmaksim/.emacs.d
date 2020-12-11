@@ -40,6 +40,8 @@
 (load-file "~/.emacs.d/settings.el")
 
 ;; ENCODING
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
 (setq-default buffer-file-coding-system 'utf-8-auto-unix)
 
@@ -130,8 +132,23 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (global-set-key(kbd "M-x") 'kill-whole-line)
 (global-set-key(kbd "<esc>") 'keyboard-quit)
 
+(global-set-key (kbd "M--")(lambda()(interactive)(insert "—")))
+
 (global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
 (global-unset-key (kbd "M-,")) ;; Disable M-, as markers
+(global-unset-key (kbd "M-."))
+(global-unset-key (kbd "M-S-,"))
+(global-unset-key (kbd "M-S-."))
+(global-unset-key (kbd "M-S-k"))
+(global-unset-key (kbd "M-S-l"))
+
+;; Клавиши по Бирману https://ilyabirman.ru/projects/typography-layout/
+(global-set-key (kbd "M-,") (lambda()(interactive)(insert "«")))
+(global-set-key (kbd "M-.") (lambda()(interactive)(insert "«")))
+(global-set-key (kbd "M-S-,") (lambda()(interactive)(insert "„")))
+(global-set-key (kbd "M-S-.") (lambda()(interactive)(insert "“")))
+(global-set-key (kbd "M-S-k") (lambda()(interactive)(insert "‘")))
+(global-set-key (kbd "M-S-l") (lambda()(interactive)(insert "’")))
 
 (when (get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
@@ -156,8 +173,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;; ALL THE ICONS IBUFFER
 ;; https://github.com/seagle0128/all-the-icons-ibuffer
 (straight-use-package 'all-the-icons-ibuffer)
-(add-hook 'ibuffer-mode 'all-the-icons-ibuffer-mode)
-(all-the-icons-ibuffer-mode 1)
 
 
 ;; AUTO VIRTUALENVWRAPPER
@@ -174,13 +189,14 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'company)
 (defun customize-company-mode-hook()
   "Settings for company-mode."
-  (setq company-dabbrev-code-ignore-case nil)
-  (setq company-dabbrev-downcase nil)
-  (setq company-dabbrev-ignore-case nil)
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 2)
-  (setq company-quickhelp-delay 1)
-  (setq company-tooltip-align-annotations t)
+  (setq
+   company-dabbrev-code-ignore-case nil
+   company-dabbrev-downcase nil
+   company-dabbrev-ignore-case nil
+   company-idle-delay 0
+   company-minimum-prefix-length 2
+   company-quickhelp-delay 1
+   company-tooltip-align-annotations t)
   (global-company-mode t))
 (add-hook 'after-init-hook 'customize-company-mode-hook)
 
@@ -215,13 +231,16 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'emmet-mode)
 (add-to-list 'auto-mode-alist '("\\.html\\'" . emmet-mode))
 
+
 ;;;; FLYCHECK
 (straight-use-package `flycheck)
 (global-flycheck-mode 1)
 
+
 ;;;; FLYCHECK INDICATOR
 (straight-use-package 'flycheck-indicator)
 (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)
+
 
 ;; FLYCHECK-POS-TIP
 ;; https://github.com/flycheck/flycheck-pos-tip
@@ -251,46 +270,49 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;;;; IBUFFER
 (straight-use-package 'ibuffer)
-(setq ibuffer-hidden-filter-groups (list "Helm" "*Internal*"))
-(setq ibuffer-saved-filter-groups
-   (quote
-    (("default"
-      ("Dired"
-       (mode . dired-mode))
-      ("Python"
-       (or
-        (mode . python-mode)
-        (mode . elpy-mode)))
-      ("Web"
-       (or
-        (mode . web-mode)))
-      ("Magit"
-       (or
-        (mode . magit-status-mode)
-        (mode . magit-log-mode)
-        (name . "^\\*magit")
-        (name . "git-monitor")))
-      ("Commands"
-       (or
-        (mode . shell-mode)
-        (mode . eshell-mode)
-        (mode . term-mode)
-        (mode . compilation-mode)))
-      ("Lisp"
-       (mode . emacs-lisp-mode))
-      ("Emacs"
-       (or
-        (name . "^\\*scratch\\*$")
-        (name . "^\\*Messages\\*$")
-        (name . "^\\*\\(Customize\\|Help\\)")
-        (name . "\\*\\(Echo\\|Minibuf\\)")))))))
-(setq ibuffer-shrink-to-minimum-size t)
-(setq ibufffer-use-other-window t)
+(defun ibuffer-setup ()
+    "Settings for ibuffer mode."
+  (interactive)
+  (setq
+   ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
+   ibuffer-saved-filter-groups (quote
+                                (("default"
+                                  ("Dired"
+                                   (mode . dired-mode))
+                                  ("Python"
+                                   (or
+                                    (mode . python-mode)
+                                    (mode . elpy-mode)))
+                                  ("Web"
+                                   (or
+                                    (mode . web-mode)))
+                                  ("Magit"
+                                   (or
+                                    (mode . magit-status-mode)
+                                    (mode . magit-log-mode)
+                                    (name . "^\\*magit")
+                                    (name . "git-monitor")))
+                                  ("Commands"
+                                   (or
+                                    (mode . shell-mode)
+                                    (mode . eshell-mode)
+                                    (mode . term-mode)
+                                    (mode . compilation-mode)))
+                                  ("Lisp"
+                                   (mode . emacs-lisp-mode))
+                                  ("Emacs"
+                                   (or
+                                    (name . "^\\*scratch\\*$")
+                                    (name . "^\\*Messages\\*$")
+                                    (name . "^\\*\\(Customize\\|Help\\)")
+                                    (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+   ibuffer-shrink-to-minimum-size t
+   ibuffer-use-other-window t)
+  (ibuffer-switch-to-saved-filter-groups "default")
+  (ibuffer-update nil)
+  (all-the-icons-ibuffer-mode 1))
 (global-set-key (kbd "<f2>") 'ibuffer)
-(add-hook 'ibuffer-mode-hook #'(lambda ()
-                                 (ibuffer-switch-to-saved-filter-groups "default")
-;;                                 (setq ibuffer-hidden-filter-groups (list "Helm" "*Internal*"))
-                                 (ibuffer-update nil t)))
+(add-hook 'ibuffer-mode-hook #'ibuffer-setup)
 
 
 ;;;; JSON-MODE
@@ -313,7 +335,22 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;; MARKDOWN MODE
 (straight-use-package 'markdown-mode)
+(defun markdown-setup()
+  "Settings for editing markdown documents."
+  (interactive)
+  ;; Настройки отступов и всякое такое
+  (setq
+   line-spacing 3
+   left-margin-width 8
+   right-margin-width 8
+   global-hl-line-mode nil
+   header-line-format " ")
+  ;; Additional modes
+  (flyspell-mode 1)
+  (visual-line-mode 1)
+  (buffer-face-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-hook 'markdown-mode-hook #'markdown-setup)
 
 
 ;; MODE ICONS
@@ -368,8 +405,10 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;; TREEMACS-ALL-THE-ICONS
 (straight-use-package 'treemacs-all-the-icons)
 
+
 ;; TREEMACS-DIRED
 (straight-use-package 'treemacs-icons-dired)
+
 
 ;;; TYPESCRIPT MODE
 (straight-use-package 'typescript-mode)
@@ -382,17 +421,18 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;; WEB-MODE
 ;; https://web-mode.org/
 (straight-use-package 'web-mode)
-(defun customize-web-mode-hook()
+(defun web-mode-setup()
   "Settings for web-mode."
-  (setq web-mode-attr-indent-offset 4)
-  (setq web-mode-css-indent-offset 2) ;; CSS
-  (setq web-mode-enable-block-face t)
-  (setq web-mode-enable-css-colorization t)
-  (setq web-mode-enable-current-element-highlight t)
-  (setq web-mode-markup-indent-offset 2)) ;; HTML
+  (setq
+   web-mode-attr-indent-offset 4
+   web-mode-css-indent-offset 2 ;; CSS
+   web-mode-enable-block-face t
+   web-mode-enable-css-colorization t
+   web-mode-enable-current-element-highlight t
+   web-mode-markup-indent-offset 2)) ;; HTML
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
-(add-hook 'web-mode-hook 'customize-web-mode-hook)
+(add-hook 'web-mode-hook #'web-mode-setup)
 
 ;;; init.el ends here

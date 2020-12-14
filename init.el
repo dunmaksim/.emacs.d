@@ -18,6 +18,9 @@
 ;; Show line numbers everywhere
 (global-linum-mode t)
 (global-hl-line-mode t)
+
+
+;; Disable overwrite mode
 (overwrite-mode nil)
 
 ;; Resize windows
@@ -136,19 +139,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 (global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
 (global-unset-key (kbd "M-,")) ;; Disable M-, as markers
-(global-unset-key (kbd "M-."))
-(global-unset-key (kbd "M-S-,"))
-(global-unset-key (kbd "M-S-."))
-(global-unset-key (kbd "M-S-k"))
-(global-unset-key (kbd "M-S-l"))
-
-;; Клавиши по Бирману https://ilyabirman.ru/projects/typography-layout/
-(global-set-key (kbd "M-,") (lambda()(interactive)(insert "«")))
-(global-set-key (kbd "M-.") (lambda()(interactive)(insert "«")))
-(global-set-key (kbd "M-S-,") (lambda()(interactive)(insert "„")))
-(global-set-key (kbd "M-S-.") (lambda()(interactive)(insert "“")))
-(global-set-key (kbd "M-S-k") (lambda()(interactive)(insert "‘")))
-(global-set-key (kbd "M-S-l") (lambda()(interactive)(insert "’")))
 
 (when (get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
@@ -208,6 +198,10 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;; ELECTRIC-PAIR-MODE
 (electric-pair-mode 1)
+(setq electric-pair-pairs
+      '(
+        (?\« . ?\»)
+        (?\„ . ?\“)))
 
 
 ;; ELPY
@@ -257,7 +251,6 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'helm)
 (global-set-key (kbd "<f10>") 'helm-buffers-list)
 
-
 ;;;; HELM-COMPANT
 (straight-use-package 'helm-company)
 (define-key company-active-map (kbd "C-:") 'helm-company)
@@ -270,11 +263,12 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;;;; IBUFFER
 (straight-use-package 'ibuffer)
-(defun ibuffer-setup ()
+(defun setup-ibuffer ()
     "Settings for ibuffer mode."
   (interactive)
   (setq
    ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
+   ibuffer-maybe-show-regexps nil
    ibuffer-saved-filter-groups (quote
                                 (("default"
                                   ("Dired"
@@ -286,6 +280,9 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
                                   ("Web"
                                    (or
                                     (mode . web-mode)))
+                                  ("Markdown"
+                                   (or
+                                    (mode . markdown-mode)))
                                   ("Magit"
                                    (or
                                     (mode . magit-status-mode)
@@ -312,15 +309,18 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (ibuffer-update nil)
   (all-the-icons-ibuffer-mode 1))
 (global-set-key (kbd "<f2>") 'ibuffer)
-(add-hook 'ibuffer-mode-hook #'ibuffer-setup)
+(add-hook 'ibuffer-mode-hook #'setup-ibuffer)
 
 
 ;;;; JSON-MODE
 (straight-use-package 'json-mode)
+(defun setup-json-mode()
+  "Settings for json-mode."
+  (rainbow-delimiters-mode +1))
 (add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.bowerrc\\'" . json-mode))
 (add-to-list 'auto-mode-alist '("\\.jshintrc\\'" . json-mode))
-
+(add-hook 'json-mode-hook #'setup-json-mode)
 
 ;; LSP MODE
 (straight-use-package 'lsp-mode)
@@ -335,7 +335,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;; MARKDOWN MODE
 (straight-use-package 'markdown-mode)
-(defun markdown-setup()
+(defun setup-markdown-mode()
   "Settings for editing markdown documents."
   (interactive)
   ;; Настройки отступов и всякое такое
@@ -346,14 +346,17 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
    global-hl-line-mode nil
    header-line-format " ")
   ;; Additional modes
+  (abbrev-mode 1)
   (flyspell-mode 1)
   (visual-line-mode 1)
-  (buffer-face-mode))
+  (buffer-face-mode)
+  (rainbow-delimiters-mode-enable))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-(add-hook 'markdown-mode-hook #'markdown-setup)
+(add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
 ;; MODE ICONS
+;; https://github.com/ryuslash/mode-icons
 (straight-use-package 'mode-icons)
 (mode-icons-mode t)
 
@@ -374,23 +377,30 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
 
-;;;; RAINBOW DELIMITERS
+;; RAINBOW DELIMITERS
 (straight-use-package 'rainbow-delimiters)
-(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
 
 ;; PAREN-MODE
 (show-paren-mode 1)
 
 
 ;; TIDE
+;; https://github.com/ananthakumaran/tide
 (straight-use-package 'tide)
 (defun setup-tide-mode()
   "Settings for tide-mode.el."
+  (interactive)
   (tide-setup)
-  (tide-hl-identifier-mode))
-(add-hook 'typescript-mode 'setup-tide-mode)
-(add-hook 'typescript-mode
-          (function (lambda ()(add-hook 'before-save-hook 'tide-format-before-save))))
+  (tide-hl-identifier-mode +1)
+  (rainbow-delimiters-mode +1)
+  (flycheck-mode +1)
+  (company-mode +1)
+  (setq
+   tide-format-before-save t
+   company-tooltip-align-annotations t))
+(add-hook 'typescript-mode #'setup-tide-mode)
+
 
 ;; TREEMACS
 (straight-use-package 'treemacs)
@@ -415,13 +425,14 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
 
-;;;; WEB-BEAUTIFY
+
+;; WEB-BEAUTIFY
 (straight-use-package 'web-beautify)
 
 ;; WEB-MODE
 ;; https://web-mode.org/
 (straight-use-package 'web-mode)
-(defun web-mode-setup()
+(defun setup-web-mode()
   "Settings for web-mode."
   (setq
    web-mode-attr-indent-offset 4
@@ -433,6 +444,18 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
-(add-hook 'web-mode-hook #'web-mode-setup)
+(add-hook 'web-mode-hook #'setup-web-mode)
+
+;; YAML-MODE
+;; https://github.com/yoshiki/yaml-mode
+(straight-use-package 'yaml-mode)
+(defun setup-yaml-mode ()
+ "Settings for yaml-mode."
+ (interactive)
+ (flycheck-mode +1)
+ (rainbow-delimiters-mode +1))
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+(add-hook 'yaml-mode #'setup-yaml-mode)
 
 ;;; init.el ends here

@@ -12,8 +12,18 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 (cua-mode t) ;;; Ctrl+C, Ctrl+V like Windows
 (set-face-attribute 'default nil :height 110)
-(when (member "DejaVu Sans Mono" (font-family-list))
-  (set-face-attribute 'default nil :font "DejaVu Sans Mono"))
+
+;; Font settings for Linux and Windows
+(cond
+ (
+  (string-equal system-type "windows-nt")
+  (when (member "Consolas" (font-family-list))
+    (set-face-attribute 'default nil :font "Consolas")))
+ (
+  (string-equal system-type "gnu/linux")
+  (when (member "DejaVu Sans Mono" (font-family-list))
+    (set-face-attribute 'default nil :font "DejaVu Sans Mono"))))
+
 
 ;; Show line numbers everywhere
 (global-linum-mode t)
@@ -150,9 +160,12 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'airline-themes)
 
 
-;;;; ALL THE ICONS
+;; ALL THE ICONS
 (straight-use-package 'all-the-icons)
-(unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts))
+(cond
+ ;; Install fonts in GNU / Linux
+ ((string-equal system-type "gnu/linux")(unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
+ ((string-equal system-type "windows-nt")(progn (message "Download and install fonts with all-the-icons-install-fonts command."))))
 
 
 ;; ALL THE ICONS DIRED

@@ -360,7 +360,8 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
    header-line-format " ")
   ;; Additional modes
   (abbrev-mode 1)
-  (flyspell-mode 1)
+  (cond
+   (string-equal system-type "gnu/linux")(flyspell-mode 1))
   (visual-line-mode 1)
   (buffer-face-mode)
   (rainbow-delimiters-mode-enable))

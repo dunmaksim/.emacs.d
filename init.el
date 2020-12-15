@@ -4,14 +4,15 @@
 
 ;;; Code:
 
-(setq inhibit-startup-message t
-      initial-scratch-message ""
-      initial-major-mode 'fundamental-mode
-      inhibit-splash-screen t)
+
+(setq inhibit-startup-message t ;; No startup message
+      initial-scratch-message "" ;; No scratch message
+      initial-major-mode 'fundamental-mode ;; fundamental-mode by default
+      inhibit-splash-screen t) ;; disable splash screen
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 (cua-mode t) ;;; Ctrl+C, Ctrl+V like Windows
-(set-face-attribute 'default nil :height 110)
+(set-face-attribute 'default nil :height 120)
 
 ;; Font settings for Linux and Windows
 (cond
@@ -25,13 +26,10 @@
     (set-face-attribute 'default nil :font "DejaVu Sans Mono"))))
 
 
-;; Show line numbers everywhere
-(global-linum-mode t)
-(global-hl-line-mode t)
 
-
-;; Disable overwrite mode
-(overwrite-mode nil)
+(global-linum-mode t) ;; Show line numbers everywhere
+(global-hl-line-mode t) ;; Highlight current line
+(overwrite-mode nil) ;; Disable overwrite mode
 
 ;; Resize windows
 (global-set-key(kbd "S-C-<left>") 'shrink-window-horizontally)
@@ -60,7 +58,6 @@
 
 ;; AUTO TRUNCATE LINES
 (setq-default truncate-lines t)
-
 
 ;; AUTO INSTALL STRAIGHT BOOTSTRAP
 (defvar bootstrap-version)
@@ -264,6 +261,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'helm)
 (global-set-key (kbd "<f10>") 'helm-buffers-list)
 
+
 ;;;; HELM-COMPANT
 (straight-use-package 'helm-company)
 (define-key company-active-map (kbd "C-:") 'helm-company)
@@ -330,9 +328,9 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (defun setup-json-mode()
   "Settings for json-mode."
   (rainbow-delimiters-mode +1))
-(add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
-(add-to-list 'auto-mode-alist '("\\.bowerrc\\'" . json-mode))
-(add-to-list 'auto-mode-alist '("\\.jshintrc\\'" . json-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(?:json\\|bowerrc\\|jshintrc\\)\\'" . json-mode))
+;(add-to-list 'auto-mode-alist '("\\.bowerrc\\'" . json-mode))
+;(add-to-list 'auto-mode-alist '("\\.jshintrc\\'" . json-mode))
 (add-hook 'json-mode-hook #'setup-json-mode)
 
 ;; LSP MODE
@@ -347,6 +345,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 
 ;; MARKDOWN MODE
+;; https://github.com/jrblevin/markdown-mode
 (straight-use-package 'markdown-mode)
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
@@ -354,17 +353,18 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   ;; Настройки отступов и всякое такое
   (setq
    line-spacing 3
-   left-margin-width 8
-   right-margin-width 8
+   left-margin-width 4
+   right-margin-width 4
+   word-wrap t
    global-hl-line-mode nil
    header-line-format " ")
   ;; Additional modes
   (abbrev-mode 1)
-  (cond
-   (string-equal system-type "gnu/linux")(flyspell-mode 1))
   (visual-line-mode 1)
-  (buffer-face-mode)
-  (rainbow-delimiters-mode-enable))
+  (buffer-face-mode 1)
+  (rainbow-delimiters-mode-enable)
+  (cond
+   (string-equal system-type "gnu/linux")(flyspell-mode 1)))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 

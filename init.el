@@ -364,7 +364,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (buffer-face-mode 1)
   (rainbow-delimiters-mode-enable)
   (cond
-   (string-equal system-type "gnu/linux")(flyspell-mode 1)))
+   ((string-equal system-type "gnu/linux")(flyspell-mode 1))))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 

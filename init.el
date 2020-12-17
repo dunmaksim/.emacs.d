@@ -291,9 +291,10 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
                                   ("Web"
                                    (or
                                     (mode . web-mode)))
-                                  ("Markdown"
+                                  ("DOCS"
                                    (or
-                                    (mode . markdown-mode)))
+                                    (mode . markdown-mode)
+                                    (mode . yaml-mode)))
                                   ("Magit"
                                    (or
                                     (mode . magit-status-mode)

@@ -381,6 +381,11 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (load-theme 'monokai t)
 
 
+;; ORG-MODE
+;; https://orgmode.org/
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+
+
 ;; POWERLINE
 ;; https://github.com/milkypostman/powerline
 (straight-use-package 'powerline)

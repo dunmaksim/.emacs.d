@@ -5,13 +5,15 @@
 ;;; Code:
 
 
-(setq inhibit-startup-message t ;; No startup message
-      initial-scratch-message "" ;; No scratch message
-      initial-major-mode 'fundamental-mode ;; fundamental-mode by default
-      inhibit-splash-screen t) ;; disable splash screen
+(setq
+ inhibit-startup-message t ;; No startup message
+ initial-scratch-message "" ;; No scratch message
+ initial-major-mode 'fundamental-mode ;; fundamental-mode by default
+ inhibit-splash-screen t
+ truncate-lines 1 ;; Wrap lines everywhere
+ ) ;; disable splash screen
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
-(cua-mode t) ;;; Ctrl+C, Ctrl+V like Windows
 (set-face-attribute 'default nil :height 120)
 
 ;; Font settings for Linux and Windows
@@ -24,7 +26,6 @@
   (string-equal system-type "gnu/linux")
   (when (member "DejaVu Sans Mono" (font-family-list))
     (set-face-attribute 'default nil :font "DejaVu Sans Mono"))))
-
 
 
 (global-linum-mode t) ;; Show line numbers everywhere
@@ -40,11 +41,12 @@
 (when window-system
   (blink-cursor-mode 0)
   (fringe-mode 2)
-  (scroll-bar-mode 0)
-  (menu-bar-mode 0)
-  (tool-bar-mode 0)
-  (tooltip-mode 0)
-  (window-divider-mode 0))
+  (scroll-bar-mode 0) ;; Off scrollbars
+  (menu-bar-mode 0) ;; Off menu
+  (tool-bar-mode 0) ;; Off toolbar
+  (tooltip-mode 0) ;; No windows for tooltip
+  (window-divider-mode 0)
+  )
 
 ;;; Save user settings in dedicated file
 (setq custom-file "~/.emacs.d/settings.el")
@@ -113,27 +115,28 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
     (setq buffer-offer-save t)))
 
 ;; Save/close/open
-(global-set-key(kbd "C-w") 'kill-this-buffer)
-(global-set-key(kbd "C-s") 'save-buffer)
-(global-set-key(kbd "C-S-s") 'write-file)
-(global-set-key(kbd "C-r") 'revert-buffer)
-(global-set-key(kbd "C-a") 'mark-whole-buffer)
-(global-set-key(kbd "M-'") 'comment-or-uncomment-region)
-(global-set-key(kbd "C-o") 'dired)
-(global-set-key(kbd "C-n") 'xah-new-empty-buffer)
-(global-set-key(kbd "C-+") 'text-scale-increase)
-(global-set-key(kbd "C--") 'text-scale-decrease)
+(global-set-key (kbd "C-w") 'kill-this-buffer)
+(global-set-key (kbd "C-s") 'save-buffer)
+(global-set-key (kbd "C-S-s") 'write-file)
+(global-set-key (kbd "C-r") 'revert-buffer)
+(global-set-key (kbd "C-a") 'mark-whole-buffer)
+(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-o") 'dired)
+(global-set-key (kbd "C-n") 'xah-new-empty-buffer)
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
 
 ;; Buffers and windows
-(global-set-key(kbd "C-<next>") 'next-buffer)
-(global-set-key(kbd "C-<prior>") 'previous-buffer)
-(global-set-key(kbd "C-<tab>") 'other-window)
+(global-set-key (kbd "C-<next>") 'next-buffer)
+(global-set-key (kbd "C-<prior>") 'previous-buffer)
+(global-set-key (kbd "<f7>") 'other-window)
 
 (global-set-key(kbd "M-3") 'delete-other-windows)
 (global-set-key(kbd "M-4") 'split-window-horizontally)
 (global-set-key(kbd "M-5") 'split-window-vertically)
 (global-set-key(kbd "M-6") 'balance-windows)
 
+;; Search and replace
 (global-set-key(kbd "C-f") 'isearch-forward)
 (global-set-key(kbd "C-h") 'query-replace)
 (global-set-key(kbd "C-S-h") 'query-replace-regexp)
@@ -206,6 +209,10 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
 
 
+;; CUA-MODE
+(cua-mode t) ;;; Ctrl+C, Ctrl+V like Windows
+
+
 ;; ELECTRIC-PAIR-MODE
 (electric-pair-mode 1)
 (setq electric-pair-pairs
@@ -220,8 +227,8 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (elpy-enable)
 ;; Автоформат кода при сохранении файла
 (add-hook 'elpy-mode-hook (lambda ()
-                           (add-hook 'before-save-hook
-                                     'elpy-format-code nil t)))
+                            (add-hook 'before-save-hook
+                                      'elpy-format-code nil t)))
 (remove-hook 'elpy-modules 'elpy-module-flymake)
 ;; Отключить старый flymake, включить flycheck
 (when (load "flycheck" t t)
@@ -275,7 +282,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;;;; IBUFFER
 (straight-use-package 'ibuffer)
 (defun setup-ibuffer ()
-    "Settings for ibuffer mode."
+  "Settings for ibuffer mode."
   (interactive)
   (setq
    ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
@@ -316,7 +323,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
                                     (name . "^\\*\\(Customize\\|Help\\)")
                                     (name . "\\*\\(Echo\\|Minibuf\\)"))))))
    ibuffer-shrink-to-minimum-size t
-   ibuffer-use-other-window t)
+   ibuffer-use-other-window nil)
   (ibuffer-switch-to-saved-filter-groups "default")
   (ibuffer-update nil)
   (all-the-icons-ibuffer-mode 1))
@@ -324,14 +331,15 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer)
 
 
-;;;; JSON-MODE
+;; JSON-MODE
+;; https://github.com/joshwnj/json-mode
 (straight-use-package 'json-mode)
 (defun setup-json-mode()
   "Settings for json-mode."
-  (rainbow-delimiters-mode +1))
+  (rainbow-delimiters-mode +1)
+  (flycheck-mode 1)
+  )
 (add-to-list 'auto-mode-alist '("\\.\\(?:json\\|bowerrc\\|jshintrc\\)\\'" . json-mode))
-;(add-to-list 'auto-mode-alist '("\\.bowerrc\\'" . json-mode))
-;(add-to-list 'auto-mode-alist '("\\.jshintrc\\'" . json-mode))
 (add-hook 'json-mode-hook #'setup-json-mode)
 
 ;; LSP MODE
@@ -341,6 +349,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 
 ;; MAGIT
+;; https://magit.vc/
 (straight-use-package 'magit)
 (global-set-key (kbd"<f5>") 'magit-status)
 
@@ -353,17 +362,19 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (interactive)
   ;; Настройки отступов и всякое такое
   (setq
-   line-spacing 3
+   global-hl-line-mode nil
+   header-line-format " "
    left-margin-width 4
+   line-spacing 3
    right-margin-width 4
    word-wrap t
-   global-hl-line-mode nil
-   header-line-format " ")
+   )
   ;; Additional modes
   (abbrev-mode 1)
-  (visual-line-mode 1)
   (buffer-face-mode 1)
+  (flycheck-mode 1)
   (rainbow-delimiters-mode-enable)
+  (visual-line-mode 1)
   (cond
    ((string-equal system-type "gnu/linux")(flyspell-mode 1))))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -414,12 +425,14 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (tide-setup)
   (tide-hl-identifier-mode +1)
   (rainbow-delimiters-mode +1)
+  (tide-restart-server)
   (flycheck-mode +1)
   (company-mode +1)
   (setq
    tide-format-before-save t
    company-tooltip-align-annotations t))
 (add-hook 'typescript-mode #'setup-tide-mode)
+(add-hook 'js2-mode #'setup-tide-mode)
 
 
 ;; TREEMACS
@@ -470,10 +483,10 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 ;; https://github.com/yoshiki/yaml-mode
 (straight-use-package 'yaml-mode)
 (defun setup-yaml-mode ()
- "Settings for yaml-mode."
- (interactive)
- (flycheck-mode +1)
- (rainbow-delimiters-mode +1))
+  "Settings for yaml-mode."
+  (interactive)
+  (flycheck-mode +1)
+  (rainbow-delimiters-mode +1))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
 (add-hook 'yaml-mode #'setup-yaml-mode)

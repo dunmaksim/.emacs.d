@@ -131,19 +131,19 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (global-set-key (kbd "C-<prior>") 'previous-buffer)
 (global-set-key (kbd "<f7>") 'other-window)
 
-(global-set-key(kbd "M-3") 'delete-other-windows)
-(global-set-key(kbd "M-4") 'split-window-horizontally)
-(global-set-key(kbd "M-5") 'split-window-vertically)
-(global-set-key(kbd "M-6") 'balance-windows)
+(global-set-key (kbd "M-3") 'delete-other-windows)
+(global-set-key (kbd "M-4") 'split-window-horizontally)
+(global-set-key (kbd "M-5") 'split-window-vertically)
+(global-set-key (kbd "M-6") 'balance-windows)
 
 ;; Search and replace
-(global-set-key(kbd "C-f") 'isearch-forward)
-(global-set-key(kbd "C-h") 'query-replace)
-(global-set-key(kbd "C-S-h") 'query-replace-regexp)
+(global-set-key (kbd "C-f") 'isearch-forward)
+(global-set-key (kbd "C-h") 'query-replace)
+(global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
-(global-set-key(kbd "M-a") 'execute-extended-command)
-(global-set-key(kbd "M-x") 'kill-whole-line)
-(global-set-key(kbd "<esc>") 'keyboard-quit)
+(global-set-key (kbd "M-a") 'execute-extended-command)
+(global-set-key (kbd "M-x") 'kill-whole-line)
+(global-set-key (kbd "<esc>") 'keyboard-quit)
 
 (global-set-key (kbd "M--")(lambda()(interactive)(insert "—")))
 
@@ -394,7 +394,16 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;; ORG-MODE
 ;; https://orgmode.org/
+(defun setup-org-mode ()
+  "Settings for org-mode."
+  (interactive)
+  (setq
+   left-margin-width 4
+   right-margin-width 4
+   word-wrap t)
+)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+(add-hook 'org-mode-hook #'setup-org-mode)
 
 
 ;; POWERLINE
@@ -410,6 +419,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 ;; RAINBOW DELIMITERS
 (straight-use-package 'rainbow-delimiters)
+(rainbow-delimiters-mode 1)
 
 
 ;; PAREN-MODE

@@ -221,6 +221,14 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
         (?\„ . ?\“)))
 
 
+;; ELISP MODE
+(defun setup-elisp-mode ()
+  "Settings for EMACS Lisp Mode."
+  (interactive)
+  (rainbow-delimiters-mode 1))
+(add-hook 'emacs-lisp-mode-hook #'setup-elisp-mode)
+(add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
+
 ;; ELPY
 ;; https://elpy.readthedocs.io/
 (straight-use-package 'elpy)

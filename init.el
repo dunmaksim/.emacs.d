@@ -426,6 +426,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 
 
 ;; RAINBOW DELIMITERS
+;; https://github.com/Fanael/rainbow-delimiters
 (straight-use-package 'rainbow-delimiters)
 (rainbow-delimiters-mode 1)
 

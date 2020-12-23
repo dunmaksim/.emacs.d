@@ -251,12 +251,12 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (add-to-list 'auto-mode-alist '("\\.html\\'" . emmet-mode))
 
 
-;;;; FLYCHECK
+;; FLYCHECK
 (straight-use-package `flycheck)
 (global-flycheck-mode 1)
 
 
-;;;; FLYCHECK INDICATOR
+;; FLYCHECK INDICATOR
 (straight-use-package 'flycheck-indicator)
 (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)
 
@@ -370,6 +370,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
   (interactive)
   ;; Настройки отступов и всякое такое
   (setq
+   flycheck-markdown-markdownlint-cli-config "~/.markdownlintrc"
    global-hl-line-mode nil
    header-line-format " "
    left-margin-width 4

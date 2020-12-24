@@ -6,12 +6,18 @@
 
 
 (setq
+ buffer-file-coding-system 'utf-8-auto-unix ;; UTF-8 everywhere
+ create-lockfiles nil ;; Don't create lock-files
  inhibit-startup-message t ;; No startup message
  initial-scratch-message "" ;; No scratch message
  initial-major-mode 'fundamental-mode ;; fundamental-mode by default
- inhibit-splash-screen t
+ inhibit-splash-screen t ;; disable splash screen
+ make-backup-files nil ;; Don't create backup files
  truncate-lines 1 ;; Wrap lines everywhere
- ) ;; disable splash screen
+ )
+
+
+(windmove-default-keybindings)
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 (set-face-attribute 'default nil :height 120)
@@ -52,14 +58,17 @@
 (setq custom-file "~/.emacs.d/settings.el")
 (load-file "~/.emacs.d/settings.el")
 
+
+;; Auto-revert mode
+(global-auto-revert-mode 1)
+
+
 ;; ENCODING
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
-(setq-default buffer-file-coding-system 'utf-8-auto-unix)
+;; (setq-default buffer-file-coding-system 'utf-8-auto-unix)
 
-;; AUTO TRUNCATE LINES
-(setq-default truncate-lines t)
 
 ;; AUTO INSTALL STRAIGHT BOOTSTRAP
 (defvar bootstrap-version)
@@ -104,15 +113,23 @@
 (cfg:reverse-input-method 'russian-computer)
 
 
-(defun xah-new-empty-buffer()
-  "Open a new empty buffer.
+(defun xah-new-empty-buffer ()
+  "Create a new empty buffer.
+New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
+
+It returns the buffer (for elisp programing).
+
 URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
-  Version 2015-06-12"
+Version 2017-11-01"
   (interactive)
-  (let((ξbuf(generate-new-buffer "untitled")))
-    (switch-to-buffer ξbuf)
-    (funcall(and initial-major-mode))
-    (setq buffer-offer-save t)))
+  (let (($buf (generate-new-buffer "untitled")))
+    (switch-to-buffer $buf)
+    (funcall initial-major-mode)
+    (setq buffer-offer-save t)
+    $buf
+    )
+  )
+
 
 ;; Save/close/open
 (global-set-key (kbd "C-w") 'kill-this-buffer)
@@ -122,14 +139,14 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "M-'") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-o") 'dired)
-(global-set-key (kbd "C-n") 'xah-new-empty-buffer)
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 
 ;; Buffers and windows
 (global-set-key (kbd "C-<next>") 'next-buffer)
 (global-set-key (kbd "C-<prior>") 'previous-buffer)
-(global-set-key (kbd "<f7>") 'other-window)
+(global-set-key (kbd "<f7>") 'xah-new-empty-buffer)
+
 
 (global-set-key (kbd "M-3") 'delete-other-windows)
 (global-set-key (kbd "M-4") 'split-window-horizontally)
@@ -487,7 +504,7 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 (straight-use-package 'web-mode)
 (defun setup-web-mode()
   "Settings for web-mode."
-  (setq
+  (setq-default
    web-mode-attr-indent-offset 4
    web-mode-css-indent-offset 2 ;; CSS
    web-mode-enable-block-face t

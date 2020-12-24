@@ -173,6 +173,11 @@ Version 2017-11-01"
 (add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
 
+;; ACE WINDOW
+(straight-use-package 'ace-window)
+(global-set-key (kbd "M-o") 'ace-window)
+
+
 ;; AIRLINE THEMES
 (straight-use-package 'airline-themes)
 
@@ -289,12 +294,12 @@ Version 2017-11-01"
 (straight-use-package 'format-all)
 
 
-;;;; HELM
+;; HELM
 (straight-use-package 'helm)
 (global-set-key (kbd "<f10>") 'helm-buffers-list)
 
 
-;;;; HELM-COMPANT
+;; HELM-COMPANY
 (straight-use-package 'helm-company)
 (define-key company-active-map (kbd "C-:") 'helm-company)
 

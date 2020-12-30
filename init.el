@@ -251,6 +251,7 @@ Version 2017-11-01"
 (add-hook 'emacs-lisp-mode-hook #'setup-elisp-mode)
 (add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
 
+
 ;; ELPY
 ;; https://elpy.readthedocs.io/
 (straight-use-package 'elpy)
@@ -268,9 +269,10 @@ Version 2017-11-01"
 (defalias 'workon 'pyvenv-workon)
 
 
-;;;; EMMET
+;; EMMET
 (straight-use-package 'emmet-mode)
 (add-to-list 'auto-mode-alist '("\\.html\\'" . emmet-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . emmet-mode))
 
 
 ;; FLYCHECK
@@ -304,12 +306,7 @@ Version 2017-11-01"
 (define-key company-active-map (kbd "C-:") 'helm-company)
 
 
-;;;; HIGHLIGHT NUMBERS
-(straight-use-package 'highlight-numbers)
-(add-hook 'prog-mode-hook 'highlight-numbers-mode)
-
-
-;;;; IBUFFER
+;; IBUFFER
 (straight-use-package 'ibuffer)
 (defun setup-ibuffer ()
   "Settings for ibuffer mode."
@@ -319,6 +316,8 @@ Version 2017-11-01"
    ibuffer-maybe-show-regexps nil
    ibuffer-saved-filter-groups (quote
                                 (("default"
+                                  ("Org"
+                                   (mode . org-mode))
                                   ("Dired"
                                    (mode . dired-mode))
                                   ("Python"
@@ -358,6 +357,8 @@ Version 2017-11-01"
   (ibuffer-update nil)
   (all-the-icons-ibuffer-mode 1))
 (global-set-key (kbd "<f2>") 'ibuffer)
+(require 'ibuf-ext)
+(add-to-list 'ibuffer-never-show-predicates "^\\*")
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer)
 
 
@@ -392,7 +393,7 @@ Version 2017-11-01"
   (interactive)
   ;; Настройки отступов и всякое такое
   (setq
-   flycheck-markdown-markdownlint-cli-config "~/.markdownlintrc"
+   flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
    global-hl-line-mode nil
    header-line-format " "
    left-margin-width 4
@@ -406,6 +407,7 @@ Version 2017-11-01"
   (flycheck-mode 1)
   (rainbow-delimiters-mode-enable)
   (visual-line-mode 1)
+  (whitespace-mode 1)
   (cond
    ((string-equal system-type "gnu/linux")(flyspell-mode 1))))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -456,6 +458,15 @@ Version 2017-11-01"
 
 ;; PAREN-MODE
 (show-paren-mode 1)
+
+
+;; SQL MODE
+(defun setup-sql-mode ()
+  "Settings for SQL-mode."
+  (interactive)
+  (company-mode 1))
+(add-to-list 'auto-mode-alist '("\\.sql\\'" . sql-mode))
+(add-hook 'sql-mode-hook #'setup-sql-mode)
 
 
 ;; TIDE
@@ -520,6 +531,21 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
 (add-hook 'web-mode-hook #'setup-web-mode)
+
+
+;; WHITESPACE MODE
+;; https://www.emacswiki.org/emacs/WhiteSpace
+(defun setup-whitespace-mode ()
+  "Settings for whitespace mode."
+  (interactive)
+  (setq whitespace-display-mappings
+        '(
+          (space-mark   ?\    [?\xB7]  [?.]) ; space
+          (space-mark   ?\xA0 [?\xA4]  [?_]) ; hard space
+          (newline-mark ?\n   [?¶ ?\n] [?$ ?\n]) ; end of line
+          )))
+(add-hook 'whitespace-mode-hook #'setup-whitespace-mode)
+
 
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode

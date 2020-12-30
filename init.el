@@ -373,6 +373,7 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.\\(?:json\\|bowerrc\\|jshintrc\\)\\'" . json-mode))
 (add-hook 'json-mode-hook #'setup-json-mode)
 
+
 ;; LSP MODE
 (straight-use-package 'lsp-mode)
 (add-hook 'python-mode 'lsp)
@@ -428,7 +429,7 @@ Version 2017-11-01"
 ;; ORG-MODE
 ;; https://orgmode.org/
 (defun setup-org-mode ()
-  "Settings for org-mode."
+  "Settings for 'org-mode'."
   (interactive)
   (setq
    left-margin-width 4

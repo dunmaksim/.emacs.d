@@ -52,7 +52,7 @@
   (tool-bar-mode 0) ;; Off toolbar
   (tooltip-mode 0) ;; No windows for tooltip
   (window-divider-mode 0)
-  )
+)
 
 ;;; Save user settings in dedicated file
 (setq custom-file "~/.emacs.d/settings.el")
@@ -275,6 +275,14 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . emmet-mode))
 
 
+;; EVIL
+;; https://github.com/emacs-evil/evil
+(straight-use-package 'evil)
+(defun setup-evil-mode ()
+  "Settings for 'evil-mode'."
+  (INTERACTIVE))
+(evil-mode 1)
+
 ;; FLYCHECK
 (straight-use-package `flycheck)
 (global-flycheck-mode 1)
@@ -299,6 +307,7 @@ Version 2017-11-01"
 ;; HELM
 (straight-use-package 'helm)
 (global-set-key (kbd "<f10>") 'helm-buffers-list)
+(helm-mode 1)
 
 
 ;; HELM-COMPANY

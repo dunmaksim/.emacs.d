@@ -231,10 +231,6 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
 
 
-;; CUA-MODE
-(cua-mode t) ;;; Ctrl+C, Ctrl+V like Windows
-
-
 ;; ELECTRIC-PAIR-MODE
 (electric-pair-mode 1)
 (setq electric-pair-pairs

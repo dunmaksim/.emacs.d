@@ -462,6 +462,11 @@ Version 2017-11-01"
 (rainbow-delimiters-mode 1)
 
 
+;; RAINBOW MODE
+;; http://elpa.gnu.org/packages/rainbow-mode.html
+(straight-use-package 'rainbow-mode)
+
+
 ;; PAREN-MODE
 (show-paren-mode 1)
 
@@ -481,12 +486,13 @@ Version 2017-11-01"
 (defun setup-tide-mode()
   "Settings for tide-mode.el."
   (interactive)
-  (tide-setup)
-  (tide-hl-identifier-mode +1)
-  (rainbow-delimiters-mode +1)
-  (tide-restart-server)
-  (flycheck-mode +1)
   (company-mode +1)
+  (flycheck-mode +1)
+  (rainbow-delimiters-mode +1)
+  (rainbow-mode +1)
+  (tide-hl-identifier-mode +1)
+  (tide-restart-server)
+  (tide-setup)
   (setq
    tide-format-before-save t
    company-tooltip-align-annotations t))
@@ -542,7 +548,7 @@ Version 2017-11-01"
 ;; WHITESPACE MODE
 ;; https://www.emacswiki.org/emacs/WhiteSpace
 (defun setup-whitespace-mode ()
-  "Settings for whitespace mode."
+  "Settings for 'whitespace-mode'."
   (interactive)
   (setq whitespace-display-mappings
         '(

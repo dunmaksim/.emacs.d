@@ -17,6 +17,7 @@
  )
 
 
+;; Shift+arrow for moving to another window
 (windmove-default-keybindings)
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
@@ -39,11 +40,16 @@
 (overwrite-mode nil) ;; Disable overwrite mode
 
 ;; Resize windows
-(global-set-key(kbd "S-C-<left>") 'shrink-window-horizontally)
-(global-set-key(kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key(kbd "S-C-<down>") 'shrink-window)
-(global-set-key(kbd "S-C-<up>") 'enlarge-window)
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>") 'shrink-window)
+(global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
+;; Exit on Ctrl+Q
+(global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
+
+
+;; Settings for window (not only a Windows!) system.
 (when window-system
   (blink-cursor-mode 0)
   (fringe-mode 2)
@@ -51,8 +57,7 @@
   (menu-bar-mode 0) ;; Off menu
   (tool-bar-mode 0) ;; Off toolbar
   (tooltip-mode 0) ;; No windows for tooltip
-  (window-divider-mode 0)
-)
+  (window-divider-mode 0))
 
 ;;; Save user settings in dedicated file
 (setq custom-file "~/.emacs.d/settings.el")
@@ -158,10 +163,12 @@ Version 2017-11-01"
 (global-set-key (kbd "C-h") 'query-replace)
 (global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
+;; Execute commands
 (global-set-key (kbd "M-a") 'execute-extended-command)
 (global-set-key (kbd "M-x") 'kill-whole-line)
 (global-set-key (kbd "<esc>") 'keyboard-quit)
 
+;; Long dash by Alt+-
 (global-set-key (kbd "M--")(lambda()(interactive)(insert "—")))
 
 (global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
@@ -171,11 +178,6 @@ Version 2017-11-01"
   (kill-buffer "*scratch*"))
 
 (add-to-list 'write-file-functions 'delete-trailing-whitespace)
-
-
-;; ACE WINDOW
-(straight-use-package 'ace-window)
-(global-set-key (kbd "M-o") 'ace-window)
 
 
 ;; AIRLINE THEMES
@@ -194,6 +196,7 @@ Version 2017-11-01"
 ;; https://github.com/jtbm37/all-the-icons-dired
 (straight-use-package 'all-the-icons-dired)
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
 
 ;; ALL THE ICONS IBUFFER
 ;; https://github.com/seagle0128/all-the-icons-ibuffer
@@ -229,6 +232,11 @@ Version 2017-11-01"
 ;; Будем читать разные файлы как INI / CONF
 (straight-use-package 'conf-mode)
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
+
+
+;; CUA-MODE
+;; Ctrl+X, Ctrl+V, Ctrl+Z and other Windows-like shortcuts.
+(cua-mode 1)
 
 
 ;; ELECTRIC-PAIR-MODE
@@ -270,14 +278,6 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.html\\'" . emmet-mode))
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . emmet-mode))
 
-
-;; EVIL
-;; https://github.com/emacs-evil/evil
-(straight-use-package 'evil)
-(defun setup-evil-mode ()
-  "Settings for 'evil-mode'."
-  (INTERACTIVE))
-(evil-mode 1)
 
 ;; FLYCHECK
 (straight-use-package `flycheck)
@@ -404,6 +404,7 @@ Version 2017-11-01"
    header-line-format " "
    left-margin-width 4
    line-spacing 3
+   rainbow-mode 1
    right-margin-width 4
    word-wrap t
    )
@@ -440,7 +441,7 @@ Version 2017-11-01"
    left-margin-width 4
    right-margin-width 4
    word-wrap t)
-)
+  )
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-hook 'org-mode-hook #'setup-org-mode)
 
@@ -449,6 +450,11 @@ Version 2017-11-01"
 ;; https://github.com/milkypostman/powerline
 (straight-use-package 'powerline)
 (powerline-default-theme)
+
+
+;; PROTOBUF-MODE
+(straight-use-package 'protobuf-mode)
+(add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
 
 
 ;; PYENV-MODE

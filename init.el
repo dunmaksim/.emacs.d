@@ -314,7 +314,7 @@ Version 2017-11-01"
 ;; IBUFFER
 (straight-use-package 'ibuffer)
 (defun setup-ibuffer ()
-  "Settings for ibuffer mode."
+  "Settings for ibuffer."
   (interactive)
   (setq
    ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
@@ -323,6 +323,12 @@ Version 2017-11-01"
                                 (("default"
                                   ("Org"
                                    (mode . org-mode))
+                                  ("Markdown"
+                                   (mode . markdown-mode))
+                                  ("YAML"
+                                   (mode . yaml-mode))
+                                  ("Protobuf"
+                                   (mode . protobuf-mode))
                                   ("Dired"
                                    (mode . dired-mode))
                                   ("Python"
@@ -332,10 +338,6 @@ Version 2017-11-01"
                                   ("Web"
                                    (or
                                     (mode . web-mode)))
-                                  ("DOCS"
-                                   (or
-                                    (mode . markdown-mode)
-                                    (mode . yaml-mode)))
                                   ("Magit"
                                    (or
                                     (mode . magit-status-mode)
@@ -404,7 +406,6 @@ Version 2017-11-01"
    header-line-format " "
    left-margin-width 4
    line-spacing 3
-   rainbow-mode 1
    right-margin-width 4
    word-wrap t
    )
@@ -413,10 +414,14 @@ Version 2017-11-01"
   (buffer-face-mode 1)
   (flycheck-mode 1)
   (rainbow-delimiters-mode-enable)
+  (rainbow-mode 1)
   (visual-line-mode 1)
   (whitespace-mode 1)
-  (cond
-   ((string-equal system-type "gnu/linux")(flyspell-mode 1))))
+  (cond ;; Turn on spell-checking only in Linux
+   ((string-equal system-type "gnu/linux")(flyspell-mode 1)))
+  ;; Keys
+  (define-key markdown-mode-map (kbd "M-,") 'markdown-mode-follow-thing-at-point)
+ )
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 

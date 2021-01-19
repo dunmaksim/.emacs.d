@@ -566,7 +566,11 @@ Version 2017-11-01"
           (space-mark   ?\    [?\xB7]  [?.]) ; space
           (space-mark   ?\xA0 [?\xA4]  [?_]) ; hard space
           (newline-mark ?\n   [?¶ ?\n] [?$ ?\n]) ; end of line
-          )))
+          )
+        ;; Highlight lines with length bigger than 1000 chars
+        whitespace-line-column 1000
+        whitespace-fill-column 1000
+        ))
 (add-hook 'whitespace-mode-hook #'setup-whitespace-mode)
 
 

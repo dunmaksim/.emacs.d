@@ -39,7 +39,6 @@
  '(indent-tabs-mode nil)
  '(initial-major-mode (quote text-mode))
  '(initial-scratch-message "")
- '(make-backup-files nil)
  '(minimap-width-fraction 0.1)
  '(minimap-window-location "right")
  '(mode-icons-change-mode-name nil)

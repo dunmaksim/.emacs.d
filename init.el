@@ -383,9 +383,15 @@ Version 2017-11-01"
 
 ;; LSP MODE
 (straight-use-package 'lsp-mode)
-(add-hook 'python-mode 'lsp)
-(add-hook 'javacript-mode 'lsp)
+(add-hook 'python-mode-hook 'lsp)
+(add-hook 'javacript-mode-hook 'lsp)
 
+
+;; LSP-JEDI
+(straight-use-package 'lsp-jedi)
+(with-eval-after-load "lsp-mode"
+  (add-to-list 'lsp-disabled-clients 'pyls)
+  (add-to-list 'lsp-enabled-clients 'jedi))
 
 ;; MAGIT
 ;; https://magit.vc/

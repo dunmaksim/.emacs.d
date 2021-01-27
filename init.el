@@ -488,6 +488,15 @@ Version 2017-11-01"
 (show-paren-mode 1)
 
 
+;; SHELL-SCRIPT-MODE
+(defun setup-shell-script-mode ()
+  "Settings for 'shell-script-mode'."
+  (interactive)
+  (company-mode 1)
+  (rainbow-mode 1)
+  (whitespace-mode 1))
+(add-hook 'shell-script-mode #'setup-shell-script-mode)
+
 ;; SQL MODE
 (defun setup-sql-mode ()
   "Settings for SQL-mode."
@@ -501,7 +510,7 @@ Version 2017-11-01"
 ;; https://github.com/ananthakumaran/tide
 (straight-use-package 'tide)
 (defun setup-tide-mode()
-  "Settings for tide-mode.el."
+  "Settings for tide-mode."
   (interactive)
   (company-mode +1)
   (flycheck-mode +1)

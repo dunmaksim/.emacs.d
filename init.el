@@ -131,9 +131,7 @@ Version 2017-11-01"
     (switch-to-buffer $buf)
     (funcall initial-major-mode)
     (setq buffer-offer-save t)
-    $buf
-    )
-  )
+    $buf))
 
 
 ;; Save/close/open
@@ -176,8 +174,6 @@ Version 2017-11-01"
 
 (when (get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
-
-(add-to-list 'write-file-functions 'delete-trailing-whitespace)
 
 
 ;; AIRLINE THEMES
@@ -418,11 +414,12 @@ Version 2017-11-01"
   ;; Additional modes
   (abbrev-mode 1)
   (buffer-face-mode 1)
-  (flycheck-mode 1)
-  (rainbow-delimiters-mode-enable)
-  (rainbow-mode 1)
-  (visual-line-mode 1)
-  (whitespace-mode 1)
+  (flycheck-mode 1) ;; Turn on linters
+  (rainbow-delimiters-mode-enable) 
+  (rainbow-mode 1) ;; Highlight brackets
+  (visual-line-mode 1) ;; Highlight current line
+  (whitespace-mode 1) ;; Show spaces, tabs and other
+  (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
   (cond ;; Turn on spell-checking only in Linux
    ((string-equal system-type "gnu/linux")(flyspell-mode 1)))
   ;; Keys
@@ -588,6 +585,11 @@ Version 2017-11-01"
         ))
 (add-hook 'whitespace-mode-hook #'setup-whitespace-mode)
 
+
+;; WS-BUTLER-MODE (instead (add-to-list 'write-file-functions 'delete-trailing-whitespace))
+;; https://github.com/lewang/ws-butler
+(straight-use-package 'ws-butler)
+(global-set-key (kbd "<f12>") 'ws-butler-mode)
 
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode

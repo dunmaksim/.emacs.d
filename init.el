@@ -597,7 +597,9 @@ Version 2017-11-01"
 (defun setup-yaml-mode ()
   "Settings for yaml-mode."
   (interactive)
-  (flycheck-mode +1)
+  (flycheck-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1)
   (rainbow-delimiters-mode +1))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))

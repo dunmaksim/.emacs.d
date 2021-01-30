@@ -166,8 +166,8 @@ Version 2017-11-01"
 (global-set-key (kbd "M-x") 'kill-whole-line)
 (global-set-key (kbd "<esc>") 'keyboard-quit)
 
-;; Long dash by Alt+-
-(global-set-key (kbd "M--")(lambda()(interactive)(insert "—")))
+
+(global-set-key (kbd "M--")(lambda()(interactive)(insert "—"))) ;; Long dash by Alt+-
 
 (global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
 (global-unset-key (kbd "M-,")) ;; Disable M-, as markers
@@ -225,9 +225,10 @@ Version 2017-11-01"
 (add-hook 'after-init-hook 'customize-company-mode-hook)
 
 
-;; Будем читать разные файлы как INI / CONF
+;; CONF MODE FOR INI / CONF / LIST
 (straight-use-package 'conf-mode)
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.list\\'" . conf-mode))
 
 
 ;; CUA-MODE
@@ -247,7 +248,9 @@ Version 2017-11-01"
 (defun setup-elisp-mode ()
   "Settings for EMACS Lisp Mode."
   (interactive)
-  (rainbow-delimiters-mode 1))
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-hook 'emacs-lisp-mode-hook #'setup-elisp-mode)
 (add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
 
@@ -409,13 +412,15 @@ Version 2017-11-01"
    left-margin-width 4
    line-spacing 3
    right-margin-width 4
-   word-wrap t
-   )
+   word-wrap t)
+
+
   ;; Additional modes
   (abbrev-mode 1)
   (buffer-face-mode 1)
+  (company-mode 1)
   (flycheck-mode 1) ;; Turn on linters
-  (rainbow-delimiters-mode-enable) 
+  (rainbow-delimiters-mode 1)
   (rainbow-mode 1) ;; Highlight brackets
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
@@ -448,8 +453,7 @@ Version 2017-11-01"
   (setq
    left-margin-width 4
    right-margin-width 4
-   word-wrap t)
-  )
+   word-wrap t))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-hook 'org-mode-hook #'setup-org-mode)
 
@@ -491,14 +495,17 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (rainbow-mode 1)
-  (whitespace-mode 1))
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-hook 'shell-script-mode #'setup-shell-script-mode)
 
 ;; SQL MODE
 (defun setup-sql-mode ()
   "Settings for SQL-mode."
   (interactive)
-  (company-mode 1))
+  (company-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . sql-mode))
 (add-hook 'sql-mode-hook #'setup-sql-mode)
 
@@ -550,6 +557,7 @@ Version 2017-11-01"
 ;; WEB-BEAUTIFY
 (straight-use-package 'web-beautify)
 
+
 ;; WEB-MODE
 ;; https://web-mode.org/
 (straight-use-package 'web-mode)
@@ -591,6 +599,7 @@ Version 2017-11-01"
 (straight-use-package 'ws-butler)
 (global-set-key (kbd "<f12>") 'ws-butler-mode)
 
+
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 (straight-use-package 'yaml-mode)
@@ -598,11 +607,11 @@ Version 2017-11-01"
   "Settings for yaml-mode."
   (interactive)
   (flycheck-mode 1)
+  (rainbow-delimiters-mode +1)
   (whitespace-mode 1)
-  (ws-butler-mode 1)
-  (rainbow-delimiters-mode +1))
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
-(add-hook 'yaml-mode #'setup-yaml-mode)
+(add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 ;;; init.el ends here

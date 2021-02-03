@@ -21,7 +21,7 @@
 (windmove-default-keybindings)
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
-(set-face-attribute 'default nil :height 120)
+(set-face-attribute 'default nil :height 110)
 
 ;; Font settings for Linux and Windows
 (cond
@@ -312,6 +312,8 @@ Version 2017-11-01"
 
 ;; IBUFFER
 (straight-use-package 'ibuffer)
+(defalias 'list-buffers 'ibuffer)
+(require 'ibuf-ext)
 (defun setup-ibuffer ()
   "Settings for ibuffer."
   (interactive)
@@ -320,6 +322,8 @@ Version 2017-11-01"
    ibuffer-maybe-show-regexps nil
    ibuffer-saved-filter-groups (quote
                                 (("default"
+                                  ("Dired"
+                                   (mode . dired-mode))
                                   ("Org"
                                    (mode . org-mode))
                                   ("Markdown"
@@ -328,12 +332,18 @@ Version 2017-11-01"
                                    (mode . yaml-mode))
                                   ("Protobuf"
                                    (mode . protobuf-mode))
-                                  ("Dired"
-                                   (mode . dired-mode))
+                                  ("Lisp"
+                                   (mode . emacs-lisp-mode))
                                   ("Python"
                                    (or
                                     (mode . python-mode)
                                     (mode . elpy-mode)))
+                                  ("Shell-script"
+                                   (or
+                                    (mode . shell-script-mode)))
+                                  ("Terraform"
+                                   (or
+                                    (mode . terraform-mode)))
                                   ("Web"
                                    (or
                                     (mode . web-mode)))
@@ -349,21 +359,27 @@ Version 2017-11-01"
                                     (mode . eshell-mode)
                                     (mode . term-mode)
                                     (mode . compilation-mode)))
-                                  ("Lisp"
-                                   (mode . emacs-lisp-mode))
                                   ("Emacs"
                                    (or
                                     (name . "^\\*scratch\\*$")
                                     (name . "^\\*Messages\\*$")
                                     (name . "^\\*\\(Customize\\|Help\\)")
                                     (name . "\\*\\(Echo\\|Minibuf\\)"))))))
-   ibuffer-shrink-to-minimum-size t
+   ;;   ibuffer-shrink-to-minimum-size t
+   ibuffer-formats
+   '((mark modified read-only " "
+           (name 60 60 :left :elide)
+           (size 10 10 :right)
+           (mode 16 16 :left :elide)
+           " " filename-and-process)
+     (mark " "
+           (name 60 60)
+           " " filename))
    ibuffer-use-other-window nil)
   (ibuffer-switch-to-saved-filter-groups "default")
   (ibuffer-update nil)
   (all-the-icons-ibuffer-mode 1))
 (global-set-key (kbd "<f2>") 'ibuffer)
-(require 'ibuf-ext)
 (add-to-list 'ibuffer-never-show-predicates "^\\*")
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer)
 
@@ -395,7 +411,8 @@ Version 2017-11-01"
 ;; MAGIT
 ;; https://magit.vc/
 (straight-use-package 'magit)
-(global-set-key (kbd"<f5>") 'magit-status)
+(global-set-key (kbd "<f5>") 'magit-status)
+(global-set-key (kbd "<f6>") 'magit-checkout)
 
 
 ;; MARKDOWN MODE
@@ -414,7 +431,6 @@ Version 2017-11-01"
    right-margin-width 4
    word-wrap t)
 
-
   ;; Additional modes
   (abbrev-mode 1)
   (buffer-face-mode 1)
@@ -427,8 +443,6 @@ Version 2017-11-01"
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
   (cond ;; Turn on spell-checking only in Linux
    ((string-equal system-type "gnu/linux")(flyspell-mode 1)))
-  ;; Keys
-  (define-key markdown-mode-map (kbd "M-,") 'markdown-mode-follow-thing-at-point)
  )
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
@@ -443,6 +457,11 @@ Version 2017-11-01"
 ;; MONOKAI THEME
 (straight-use-package 'monokai-theme)
 (load-theme 'monokai t)
+
+
+;; MULTIPLE CURSORS
+;; https://github.com/magnars/multiple-cursors.el
+(straight-use-package 'multiple-cursors)
 
 
 ;; ORG-MODE
@@ -508,6 +527,20 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . sql-mode))
 (add-hook 'sql-mode-hook #'setup-sql-mode)
+
+
+;; TERRAFORM-MODE
+(straight-use-package 'terraform-mode)
+(defun setup-terraform-mode ()
+  "Settings for terraform-mode."
+  (interactive)
+  (company-mode 1)
+  (flycheck-mode 1)
+  (rainbow-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
+(add-hook 'terraform-mode-hook #'setup-terraform-mode)
 
 
 ;; TIDE

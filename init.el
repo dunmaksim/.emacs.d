@@ -35,7 +35,6 @@
     (set-face-attribute 'default nil :font "DejaVu Sans Mono"))))
 
 
-(global-linum-mode t) ;; Show line numbers everywhere
 (global-hl-line-mode t) ;; Highlight current line
 (overwrite-mode nil) ;; Disable overwrite mode
 
@@ -213,7 +212,7 @@ Version 2017-11-01"
 (straight-use-package 'company)
 (defun customize-company-mode-hook()
   "Settings for company-mode."
-  (setq
+  (setq-default
    company-dabbrev-code-ignore-case nil
    company-dabbrev-downcase nil
    company-dabbrev-ignore-case nil
@@ -222,7 +221,6 @@ Version 2017-11-01"
    company-quickhelp-delay 1
    company-tooltip-align-annotations t)
   (global-company-mode t))
-(add-hook 'after-init-hook 'customize-company-mode-hook)
 
 
 ;; CONF MODE FOR INI / CONF / LIST
@@ -238,7 +236,7 @@ Version 2017-11-01"
 
 ;; ELECTRIC-PAIR-MODE
 (electric-pair-mode 1)
-(setq electric-pair-pairs
+(setq-default electric-pair-pairs
       '(
         (?\« . ?\»)
         (?\„ . ?\“)))
@@ -248,6 +246,9 @@ Version 2017-11-01"
 (defun setup-elisp-mode ()
   "Settings for EMACS Lisp Mode."
   (interactive)
+  (company-mode 1)
+  (flycheck-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -258,40 +259,42 @@ Version 2017-11-01"
 ;; ELPY
 ;; https://elpy.readthedocs.io/
 (straight-use-package 'elpy)
-(elpy-enable)
-;; Автоформат кода при сохранении файла
+(setq-default elpy-rpc-python-command "python3")
 (add-hook 'elpy-mode-hook (lambda ()
                             (add-hook 'before-save-hook
                                       'elpy-format-code nil t)))
+(elpy-enable)
 (remove-hook 'elpy-modules 'elpy-module-flymake)
 ;; Отключить старый flymake, включить flycheck
 (when (load "flycheck" t t)
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode))
-;; Псевдоним для pyvenv-workon: workon
 (defalias 'workon 'pyvenv-workon)
 
 
 ;; EMMET
 (straight-use-package 'emmet-mode)
-(add-to-list 'auto-mode-alist '("\\.html\\'" . emmet-mode))
-(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . emmet-mode))
 
 
 ;; FLYCHECK
 (straight-use-package `flycheck)
-(global-flycheck-mode 1)
-
+(defun setup-flycheck-mode ()
+  "Settings for 'flycheck-mode'."
+  (interactive)
+  (setq-default
+   flycheck-indication-mode 'left-margin
+   flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"))
+(add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
 
 ;; FLYCHECK INDICATOR
 (straight-use-package 'flycheck-indicator)
-(add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)
+(add-hook 'flycheck-mode-hook #'flycheck-indicator-mode)
 
 
 ;; FLYCHECK-POS-TIP
 ;; https://github.com/flycheck/flycheck-pos-tip
 (straight-use-package 'flycheck-pos-tip)
-(with-eval-after-load 'flycheck (flycheck-pos-tip-mode))
+(with-eval-after-load 'flycheck (flycheck-pos-tip-mode 1))
 
 
 ;; FORMAT ALL
@@ -315,7 +318,7 @@ Version 2017-11-01"
 (defalias 'list-buffers 'ibuffer)
 (require 'ibuf-ext)
 (defun setup-ibuffer ()
-  "Settings for ibuffer."
+  "Settings for 'ibuffer-mode'."
   (interactive)
   (setq
    ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
@@ -389,9 +392,9 @@ Version 2017-11-01"
 (straight-use-package 'json-mode)
 (defun setup-json-mode()
   "Settings for json-mode."
-  (rainbow-delimiters-mode +1)
+  (company-mode 1)
   (flycheck-mode 1)
-  )
+  (rainbow-delimiters-mode 1))
 (add-to-list 'auto-mode-alist '("\\.\\(?:json\\|bowerrc\\|jshintrc\\)\\'" . json-mode))
 (add-hook 'json-mode-hook #'setup-json-mode)
 
@@ -408,6 +411,7 @@ Version 2017-11-01"
   (add-to-list 'lsp-disabled-clients 'pyls)
   (add-to-list 'lsp-enabled-clients 'jedi))
 
+
 ;; MAGIT
 ;; https://magit.vc/
 (straight-use-package 'magit)
@@ -422,8 +426,7 @@ Version 2017-11-01"
   "Settings for editing markdown documents."
   (interactive)
   ;; Настройки отступов и всякое такое
-  (setq
-   flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
+  (setq-default
    global-hl-line-mode nil
    header-line-format " "
    left-margin-width 4
@@ -436,6 +439,7 @@ Version 2017-11-01"
   (buffer-face-mode 1)
   (company-mode 1)
   (flycheck-mode 1) ;; Turn on linters
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1) ;; Highlight brackets
   (visual-line-mode 1) ;; Highlight current line
@@ -483,6 +487,15 @@ Version 2017-11-01"
 (powerline-default-theme)
 
 
+;; PROJECTILE-MODE
+;; https://docs.projectile.mx/projectile/index.html
+(straight-use-package 'projectile)
+(setq projectile-project-search-path '("~/repo/"))
+(projectile-mode 1)
+(define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
+
 ;; PROTOBUF-MODE
 (straight-use-package 'protobuf-mode)
 (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
@@ -490,6 +503,24 @@ Version 2017-11-01"
 
 ;; PYENV-MODE
 (straight-use-package 'pyenv-mode)
+
+
+
+;; PYTHON-MODE
+(straight-use-package 'python-mode)
+(defun setup-python-mode ()
+  "Settings for 'python-mode'."
+  (interactive)
+  (company-mode 1)
+  (elpy-mode 1)
+  (flycheck-mode 1)
+  (linum-mode 1)
+  (pyenv-mode 1)
+  (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'python-mode-hook #'setup-python-mode)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
 
@@ -513,6 +544,7 @@ Version 2017-11-01"
   "Settings for 'shell-script-mode'."
   (interactive)
   (company-mode 1)
+  (linum-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -523,6 +555,8 @@ Version 2017-11-01"
   "Settings for SQL-mode."
   (interactive)
   (company-mode 1)
+  (flycheck-mode 1)
+  (linum-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . sql-mode))
@@ -536,6 +570,7 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (flycheck-mode 1)
+  (linum-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -549,16 +584,19 @@ Version 2017-11-01"
 (defun setup-tide-mode()
   "Settings for tide-mode."
   (interactive)
+  (setq-default
+   company-tooltip-align-annotations t
+   tide-format-before-save t)
+
   (company-mode +1)
   (flycheck-mode +1)
+  (linum-mode 1)
   (rainbow-delimiters-mode +1)
   (rainbow-mode +1)
   (tide-hl-identifier-mode +1)
   (tide-restart-server)
   (tide-setup)
-  (setq
-   tide-format-before-save t
-   company-tooltip-align-annotations t))
+)
 (add-hook 'typescript-mode #'setup-tide-mode)
 (add-hook 'js2-mode #'setup-tide-mode)
 
@@ -583,8 +621,14 @@ Version 2017-11-01"
 
 ;;; TYPESCRIPT MODE
 (straight-use-package 'typescript-mode)
+(defun setup-typescript-mode ()
+  "Settings for 'typescript-mode'."
+  (interactive)
+  (flycheck-mode 1)
+  (linum-mode 1))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
+(add-hook 'typescript-mode-hook #'setup-typescript-mode)
 
 
 ;; WEB-BEAUTIFY
@@ -602,7 +646,11 @@ Version 2017-11-01"
    web-mode-enable-block-face t
    web-mode-enable-css-colorization t
    web-mode-enable-current-element-highlight t
-   web-mode-markup-indent-offset 2)) ;; HTML
+   web-mode-markup-indent-offset 2)
+
+  (company-mode)
+  (emmet-mode 1)
+  (flycheck-mode 1)) ;; HTML
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
@@ -611,10 +659,11 @@ Version 2017-11-01"
 
 ;; WHITESPACE MODE
 ;; https://www.emacswiki.org/emacs/WhiteSpace
+(straight-use-package 'whitespace-mode)
 (defun setup-whitespace-mode ()
   "Settings for 'whitespace-mode'."
   (interactive)
-  (setq whitespace-display-mappings
+  (setq-default whitespace-display-mappings
         '(
           (space-mark   ?\    [?\xB7]  [?.]) ; space
           (space-mark   ?\xA0 [?\xA4]  [?_]) ; hard space
@@ -639,6 +688,8 @@ Version 2017-11-01"
 (defun setup-yaml-mode ()
   "Settings for yaml-mode."
   (interactive)
+  (setq-default flycheck-indication-mode left-margin)
+
   (flycheck-mode 1)
   (rainbow-delimiters-mode +1)
   (whitespace-mode 1)

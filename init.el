@@ -313,13 +313,13 @@ Version 2017-11-01"
 ;; FLYCHECK-COLOR-MODE-LINE: highlight line by flycheck state
 ;; https://github.com/flycheck/flycheck-color-mode-line
 (straight-use-package 'flycheck-color-mode-line)
-(with-eval-after-load "flycheck"
+(with-eval-after-load 'flycheck
   (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
 
 
 ;; FLYCHECK INDICATOR
 (straight-use-package 'flycheck-indicator)
-(with-eval-after-load "flycheck"
+(with-eval-after-load 'flycheck
   (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode))
 
 
@@ -450,8 +450,9 @@ Version 2017-11-01"
 (defvar lsp-disabled-clients)
 (defvar lsp-enabled-clients)
 (with-eval-after-load 'lsp-mode
-  (add-to-list 'lsp-disabled-clients 'pyls)
-  (add-to-list 'lsp-enabled-clients 'jedi))
+  (progn
+    (add-to-list 'lsp-disabled-clients 'pyls)
+    (add-to-list 'lsp-enabled-clients 'jedi)))
 
 
 ;; MAGIT
@@ -652,15 +653,17 @@ Version 2017-11-01"
 (add-hook 'js2-mode #'setup-tide-mode)
 
 
-;; TREEMACS
+;; TREEMACS - awesome file manager (instead NeoTree)
+;; https://github.com/Alexander-Miller/treemacs
 (straight-use-package 'treemacs)
 (global-set-key (kbd "<f8>") 'treemacs)
 (with-eval-after-load 'treemacs
+  (defun treemacs-get-ignore-files (filename absolute-path)
+    (or
+     (string-equal filename ".emacs.desktop.lock")
+     (string-equal filename "__pycache__")))
   (defvar treemacs-ignored-file-predicates)
-  (defun treemacs-ignore-example (filename absolute-path)
-    (or (string-equal filename "*\\__pycache__\\/\\'")
-        (string-prefix-p "/x/y/z/" absolute-path)))
-  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-ignore-example))
+  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files))
 
 
 ;; TREEMACS-ALL-THE-ICONS
@@ -708,11 +711,11 @@ Version 2017-11-01"
    web-mode-enable-current-element-highlight t
    web-mode-markup-indent-offset 2)
 
-  (company-mode)
+  (company-mode 1)
   (emmet-mode 1)
   (flycheck-mode 1)
   (whitespace-mode 1)
-  (ws-butler-mode 1)) ;; HTML
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))

@@ -36,7 +36,7 @@
 
 
 ;; Settings for window (not only a Windows!) system.
-(when window-system
+(when (display-graphic-p)
   (blink-cursor-mode 0)
   (fringe-mode 2)
   (scroll-bar-mode 0) ;; Off scrollbars
@@ -179,26 +179,29 @@ Version 2017-11-01"
 
 
 ;; ALL THE ICONS
-(when window-system
+(when (display-graphic-p)
+  (progn
   (straight-use-package 'all-the-icons)
   (cond
    ;; Install fonts in GNU / Linux
    ((string-equal system-type "gnu/linux")(unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
-   ((string-equal system-type "windows-nt")(progn (message "Download and install fonts with all-the-icons-install-fonts command.")))))
+   ((string-equal system-type "windows-nt")(progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
 
 
 ;; ALL THE ICONS DIRED
 ;; https://github.com/jtbm37/all-the-icons-dired
-(when window-system
-  (straight-use-package 'all-the-icons-dired)
-  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+(when (display-graphic-p)
+  (progn
+    (straight-use-package 'all-the-icons-dired)
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
 
 
 ;; ALL THE ICONS IBUFFER
 ;; https://github.com/seagle0128/all-the-icons-ibuffer
-(when window-system
-  (straight-use-package 'all-the-icons-ibuffer)
-  (all-the-icons-ibuffer-mode 1))
+(when (display-graphic-p)
+  (progn
+    (straight-use-package 'all-the-icons-ibuffer)
+    (add-hook 'ibuffer-mode-hook #'all-the-icons-ibuffer-mode)))
 
 
 ;; AUTO VIRTUALENVWRAPPER
@@ -282,8 +285,9 @@ Version 2017-11-01"
 (remove-hook 'elpy-modules 'elpy-module-flymake)
 ;; Отключить старый flymake, включить flycheck
 (when (load "flycheck" t t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
+  (progn
+    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    (add-hook 'elpy-mode-hook 'flycheck-mode)))
 (defalias 'workon 'pyvenv-workon)
 
 
@@ -321,10 +325,10 @@ Version 2017-11-01"
 
 ;; FLYCHECK-POS-TIP
 ;; https://github.com/flycheck/flycheck-pos-tip
-(when window-system
-  (straight-use-package 'flycheck-pos-tip)
-  (with-eval-after-load "flycheck"
-    (flycheck-pos-tip-mode 1)))
+(when (display-graphic-p)
+  (progn
+    (straight-use-package 'flycheck-pos-tip)
+    (add-hook 'flycheck-mode-hook 'flycheck-pos-tip-mode)))
 
 
 ;; FORMAT ALL
@@ -492,9 +496,10 @@ Version 2017-11-01"
 
 ;; MODE ICONS
 ;; https://github.com/ryuslash/mode-icons
-(when window-system
-  (straight-use-package 'mode-icons)
-  (mode-icons-mode 1))
+(when (display-graphic-p)
+  (progn
+    (straight-use-package 'mode-icons)
+    (mode-icons-mode 1)))
 
 
 ;; MONOKAI THEME
@@ -659,12 +664,12 @@ Version 2017-11-01"
 
 
 ;; TREEMACS-ALL-THE-ICONS
-(when window-system
+(when (display-graphic-p)
   (straight-use-package 'treemacs-all-the-icons))
 
 
 ;; TREEMACS-DIRED
-(when window-system
+(when (display-graphic-p)
   (straight-use-package 'treemacs-icons-dired))
 
 
@@ -693,6 +698,8 @@ Version 2017-11-01"
   (defvar web-mode-css-indent-offset)
   (defvar web-mode-enable-block-face)
   (defvar web-mode-enable-css-colorization)
+  (defvar web-mode-enable-current-element-highlight)
+  (defvar web-mode-markup-indent-offset)
   (setq
    web-mode-attr-indent-offset 4
    web-mode-css-indent-offset 2 ;; CSS

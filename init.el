@@ -197,7 +197,8 @@ Version 2017-11-01"
 ;; ALL THE ICONS IBUFFER
 ;; https://github.com/seagle0128/all-the-icons-ibuffer
 (when window-system
-  (straight-use-package 'all-the-icons-ibuffer))
+  (straight-use-package 'all-the-icons-ibuffer)
+  (all-the-icons-ibuffer-mode 1))
 
 
 ;; AUTO VIRTUALENVWRAPPER
@@ -242,6 +243,12 @@ Version 2017-11-01"
 (cua-mode 1)
 
 
+;; DIFF HL: highlight changes
+;; https://github.com/dgutov/diff-hl
+(straight-use-package 'diff-hl)
+(global-diff-hl-mode 1)
+
+
 ;; ELECTRIC-PAIR-MODE
 (electric-pair-mode 1)
 (setq-default electric-pair-pairs
@@ -267,7 +274,7 @@ Version 2017-11-01"
 ;; ELPY
 ;; https://elpy.readthedocs.io/
 (straight-use-package 'elpy)
-(setq elpy-rpc-python-command "python3")
+(defvar elpy-rpc-python-command "python3")
 (add-hook 'elpy-mode-hook (lambda ()
                             (add-hook 'before-save-hook
                                       'elpy-format-code nil t)))
@@ -289,7 +296,10 @@ Version 2017-11-01"
 (defun setup-flycheck-mode ()
   "Settings for 'flycheck-mode'."
   (interactive)
-  (setq-default
+  (defvar flycheck-check-syntax-automatically '(mode-enabled save))
+  (defvar flycheck-indication-mode 'left-margin)
+  (defvar flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
+  (setq
    flycheck-check-syntax-automatically '(mode-enabled save)
    flycheck-indication-mode 'left-margin
    flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"))
@@ -343,6 +353,7 @@ Version 2017-11-01"
   "Settings for 'ibuffer-mode'."
   (interactive)
   (defvar ibuffer-maybe-show-regexps)
+  (defvar ibuffer-show-empty-filter-groups nil)
   (setq
    ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
    ibuffer-maybe-show-regexps nil
@@ -391,6 +402,7 @@ Version 2017-11-01"
                                     (name . "^\\*Messages\\*$")
                                     (name . "^\\*\\(Customize\\|Help\\)")
                                     (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+   ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
    ;;   ibuffer-shrink-to-minimum-size t
    ibuffer-formats
    '((mark modified read-only " "
@@ -403,10 +415,7 @@ Version 2017-11-01"
            " " filename))
    ibuffer-use-other-window nil)
   (ibuffer-switch-to-saved-filter-groups "default")
-  (ibuffer-update nil)
-  (when window-system
-    (all-the-icons-ibuffer-mode 1)
-    ))
+  (ibuffer-update nil))
 (global-set-key (kbd "<f2>") 'ibuffer)
 (add-to-list 'ibuffer-never-show-predicates "^\\*")
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer)
@@ -436,7 +445,7 @@ Version 2017-11-01"
 (straight-use-package 'lsp-jedi)
 (defvar lsp-disabled-clients)
 (defvar lsp-enabled-clients)
-(with-eval-after-load "lsp-mode"
+(with-eval-after-load 'lsp-mode
   (add-to-list 'lsp-disabled-clients 'pyls)
   (add-to-list 'lsp-enabled-clients 'jedi))
 

@@ -14,7 +14,8 @@
  inhibit-splash-screen t ;; disable splash screen
  make-backup-files nil ;; Don't create backup files
  truncate-lines 1 ;; Wrap lines everywhere
- )
+ user-mail-address "dunmaksim@yandex.ru"
+ user-full-name "Dunaevsky Maxim")
 
 
 ;; Shift+arrow for moving to another window
@@ -36,6 +37,7 @@
 
 
 ;; Settings for window (not only a Windows!) system.
+(defvar default-font-family "Default font family.")
 (when (display-graphic-p)
   (blink-cursor-mode 0)
   (fringe-mode 2)
@@ -51,11 +53,14 @@
    (
     (string-equal system-type "windows-nt")
     (when (member "Consolas" (font-family-list))
-      (set-face-attribute 'default nil :font "Consolas")))
+      (setq default-font-family "Consolas")))
    (
     (string-equal system-type "gnu/linux")
     (when (member "DejaVu Sans Mono" (font-family-list))
-      (set-face-attribute 'default nil :font "DejaVu Sans Mono")))))
+      (setq default-font-family "DejaVuSans Mono"))))
+
+  (set-face-attribute 'default nil :family default-font-family))
+
 
 ;;; Save user settings in dedicated file
 (setq custom-file "~/.emacs.d/settings.el")
@@ -490,7 +495,9 @@ Version 2017-11-01"
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
   (cond ;; Turn on spell-checking only in Linux
    ((string-equal system-type "gnu/linux")(flyspell-mode 1)))
-  )
+
+  (set-face-attribute 'markdown-code-face        nil :family default-font-family)
+  (set-face-attribute 'markdown-inline-code-face nil :family default-font-family))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
@@ -737,11 +744,20 @@ Version 2017-11-01"
                 ;; Highlight lines with length bigger than 1000 chars
                 whitespace-line-column 1000
                 whitespace-fill-column 1000
-                ))
+                )
+
+  ;; Markdown-mode hack
+  (set-face-attribute 'whitespace-space nil
+                      :family default-font-family
+                      :foreground "#75715E")
+  (set-face-attribute 'whitespace-indentation nil
+                      :family default-font-family
+                      :foreground "#E6DB74"))
 (add-hook 'whitespace-mode-hook #'setup-whitespace-mode)
 
 
-;; WS-BUTLER-MODE (instead (add-to-list 'write-file-functions 'delete-trailing-whitespace))
+;; WS-BUTLER-MODE
+;; DO NOT USE: (add-to-list 'write-file-functions 'delete-trailing-whitespace))!
 ;; https://github.com/lewang/ws-butler
 (straight-use-package 'ws-butler)
 

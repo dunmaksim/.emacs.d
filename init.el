@@ -36,13 +36,13 @@
 (global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
 
 
+(menu-bar-mode 0)
+
 ;; Settings for window (not only a Windows!) system.
-(defvar default-font-family "Default font family.")
+(defvar default-font-family nil "Default font family.")
 (when (display-graphic-p)
-  (blink-cursor-mode 0)
   (fringe-mode 2)
   (scroll-bar-mode 0) ;; Off scrollbars
-  (menu-bar-mode 0) ;; Off menu
   (tool-bar-mode 0) ;; Off toolbar
   (tooltip-mode 0) ;; No windows for tooltip
   (window-divider-mode 0)
@@ -57,7 +57,7 @@
    (
     (string-equal system-type "gnu/linux")
     (when (member "DejaVu Sans Mono" (font-family-list))
-      (setq default-font-family "DejaVuSans Mono"))))
+      (setq default-font-family "DejaVu Sans Mono"))))
 
   (set-face-attribute 'default nil :family default-font-family))
 
@@ -72,7 +72,7 @@
 
 
 ;; ENCODING
-(set-language-environment "UTF-8")
+(set-language-environment 'Russian)
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
 ;; (setq-default buffer-file-coding-system 'utf-8-auto-unix)
@@ -91,7 +91,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
 
 
 ;; Settings for hotkeys on any layout
@@ -160,7 +159,7 @@ Version 2017-11-01"
 (global-set-key (kbd "M-6") 'balance-windows)
 
 ;; Search and replace
-(global-set-key (kbd "C-f") 'isearch-forward)
+(global-set-key (kbd "<f3>") 'isearch-forward)
 (global-set-key (kbd "C-h") 'query-replace)
 (global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
@@ -170,7 +169,10 @@ Version 2017-11-01"
 (global-set-key (kbd "<esc>") 'keyboard-quit)
 
 
-(global-set-key (kbd "M--")(lambda()(interactive)(insert "—"))) ;; Long dash by Alt+-
+(global-set-key (kbd "M--")
+                (lambda ()
+                  (interactive)
+                  (insert "—"))) ;; Long dash by Alt+-
 
 (global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
 (global-unset-key (kbd "M-,")) ;; Disable M-, as markers
@@ -189,8 +191,15 @@ Version 2017-11-01"
   (straight-use-package 'all-the-icons)
   (cond
    ;; Install fonts in GNU / Linux
-   ((string-equal system-type "gnu/linux")(unless (file-directory-p "~/.local/share/fonts/") (all-the-icons-install-fonts)))
-   ((string-equal system-type "windows-nt")(progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
+   (
+    (string-equal system-type "gnu/linux")
+    (unless
+        (file-directory-p "~/.local/share/fonts/")
+      (all-the-icons-install-fonts)))
+   (
+    ;; Not install fonts in Windows, but print message
+    (string-equal system-type "windows-nt")
+    (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
 
 
 ;; ALL THE ICONS DIRED
@@ -219,10 +228,12 @@ Version 2017-11-01"
 (beacon-mode 1)
 
 
-;;;; COMPANY
+;; COMPANY-MODE
+;;https://company-mode.github.io/
 (straight-use-package 'company)
-(defun customize-company-mode-hook()
+(defun setup-company-mode ()
   "Settings for company-mode."
+  (interactive)
   (defvar company-dabbrev-code-ignore-case nil)
   (defvar company-dabbrev-downcase nil)
   (defvar company-dabbrev-ignore-case nil)
@@ -238,6 +249,7 @@ Version 2017-11-01"
    company-minimum-prefix-length 2
    company-quickhelp-delay 1
    company-tooltip-align-annotations t))
+(add-hook 'company-mode-hook #'setup-company-mode)
 
 
 ;; CONF MODE FOR INI / CONF / LIST
@@ -265,14 +277,15 @@ Version 2017-11-01"
                 (?\„ . ?\“)))
 
 
-;; ELISP MODE
+;; EMACS LISP MODE
 (defun setup-elisp-mode ()
   "Settings for EMACS Lisp Mode."
   (interactive)
   (company-mode 1)
   (flycheck-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'emacs-lisp-mode-hook #'setup-elisp-mode)
@@ -315,7 +328,7 @@ Version 2017-11-01"
 (add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
 
 
-;; FLYCHECK-COLOR-MODE-LINE: highlight line by flycheck state
+;; FLYCHECK-COLOR-MODE-LINE: highlight status line by flycheck state
 ;; https://github.com/flycheck/flycheck-color-mode-line
 (straight-use-package 'flycheck-color-mode-line)
 (with-eval-after-load 'flycheck
@@ -438,26 +451,11 @@ Version 2017-11-01"
   (company-mode 1)
   (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.\\(?:json\\|bowerrc\\|jshintrc\\)\\'" . json-mode))
 (add-hook 'json-mode-hook #'setup-json-mode)
-
-
-;; LSP MODE
-(straight-use-package 'lsp-mode)
-(add-hook 'python-mode-hook 'lsp)
-(add-hook 'javacript-mode-hook 'lsp)
-
-
-;; LSP-JEDI
-(straight-use-package 'lsp-jedi)
-(defvar lsp-disabled-clients)
-(defvar lsp-enabled-clients)
-(with-eval-after-load 'lsp-mode
-  (progn
-    (add-to-list 'lsp-disabled-clients 'pyls)
-    (add-to-list 'lsp-enabled-clients 'jedi)))
 
 
 ;; MAGIT
@@ -487,9 +485,9 @@ Version 2017-11-01"
   (buffer-face-mode 1)
   (company-mode 1)
   (flycheck-mode 1) ;; Turn on linters
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1) ;; Highlight brackets
+  (rainbow-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
@@ -518,6 +516,17 @@ Version 2017-11-01"
 ;; MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 (straight-use-package 'multiple-cursors)
+
+
+;; NLINUM-MODE
+;; Extended linum mode
+(straight-use-package 'nlinum)
+(defun setup-nlinum-mode ()
+  "Settings for 'linum-mode'."
+  (interactive)
+  (defvar nlinum-format "%d \u2502")
+  (setq nlinum-format "%d\u2502"))
+(add-hook 'nlinum-mode-hook #'setup-nlinum-mode)
 
 
 ;; ORG-MODE
@@ -551,7 +560,20 @@ Version 2017-11-01"
 
 
 ;; PROTOBUF-MODE
+;; https://github.com/emacsmirror/protobuf-mode
 (straight-use-package 'protobuf-mode)
+(defun setup-protobuf-mode ()
+  "Settings for 'protobuf-mode'."
+  (interactive)
+
+  (company-mode 1)
+  (flycheck-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'ptotobuf-mode-hook #'setup-protobuf-mode)
 (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
 
 
@@ -567,7 +589,7 @@ Version 2017-11-01"
   (company-mode 1)
   (elpy-mode 1)
   (flycheck-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (pyenv-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
@@ -580,7 +602,6 @@ Version 2017-11-01"
 ;; RAINBOW DELIMITERS
 ;; https://github.com/Fanael/rainbow-delimiters
 (straight-use-package 'rainbow-delimiters)
-(rainbow-delimiters-mode 1)
 
 
 ;; RAINBOW MODE
@@ -598,7 +619,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (flycheck-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -611,8 +633,9 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (flycheck-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-mode 1)
+  (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . sql-mode))
@@ -630,34 +653,13 @@ Version 2017-11-01"
   (setq flycheck-checker 'terraform)
   (company-mode 1)
   (flycheck-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
-
-
-;; TIDE
-;; https://github.com/ananthakumaran/tide
-(straight-use-package 'tide)
-(defun setup-tide-mode()
-  "Settings for tide-mode."
-  (interactive)
-  (defvar tide-format-before-save)
-  (setq
-   tide-format-before-save t)
-
-  (company-mode +1)
-  (flycheck-mode +1)
-  (linum-mode 1)
-  (rainbow-delimiters-mode +1)
-  (rainbow-mode +1)
-  (tide-hl-identifier-mode +1)
-  (tide-restart-server)
-  (tide-setup))
-(add-hook 'typescript-mode #'setup-tide-mode)
-(add-hook 'js2-mode #'setup-tide-mode)
 
 
 ;; TREEMACS - awesome file manager (instead NeoTree)
@@ -689,7 +691,7 @@ Version 2017-11-01"
   "Settings for 'typescript-mode'."
   (interactive)
   (flycheck-mode 1)
-  (linum-mode 1))
+  (nlinum-mode 1))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
 (add-hook 'typescript-mode-hook #'setup-typescript-mode)
@@ -771,7 +773,9 @@ Version 2017-11-01"
 
   (company-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))

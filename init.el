@@ -4,18 +4,17 @@
 
 ;;; Code:
 
+(defvar buffer-file-coding-system 'utf-8-auto-unix "UTF-8 everywhere.")
+(defvar create-lockfiles nil "Don't create lockfiles.")
+(defvar inhibit-startup-message t "No startup message.")
+(defvar initial-scratch-message "" "No scratch message.")
+(defvar initial-major-mode 'fundamental-mode "'fundamental-mode' by default.")
+(defvar inhibit-splash-screen t "Don't show splash screen.")
+(defvar make-backup-files nil "Don't create backup files.")
+(defvar truncate-lines 1 "Wrap lines everywhere.")
+(defvar user-mail-address 'dunmaksim@yandex.ru)
+(defvar user-full-name 'Dunaevsky Maxim)
 
-(setq-default
- buffer-file-coding-system 'utf-8-auto-unix ;; UTF-8 everywhere
- create-lockfiles nil ;; Don't create lock-files
- inhibit-startup-message t ;; No startup message
- initial-scratch-message "" ;; No scratch message
- initial-major-mode 'fundamental-mode ;; fundamental-mode by default
- inhibit-splash-screen t ;; disable splash screen
- make-backup-files nil ;; Don't create backup files
- truncate-lines 1 ;; Wrap lines everywhere
- user-mail-address "dunmaksim@yandex.ru"
- user-full-name "Dunaevsky Maxim")
 
 
 ;; Shift+arrow for moving to another window
@@ -24,7 +23,7 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
 (global-hl-line-mode t) ;; Highlight current line
-(overwrite-mode nil) ;; Disable overwrite mode
+
 
 ;; Resize windows
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
@@ -267,6 +266,24 @@ Version 2017-11-01"
 ;; https://github.com/dgutov/diff-hl
 (straight-use-package 'diff-hl)
 (global-diff-hl-mode 1)
+
+
+;; DOCKERFILE-MODE
+(straight-use-package 'dockerfile-mode)
+(defun setup-dockerfile-mode ()
+  "Settings for 'dockerfile-mode'."
+  (company-mode 1)
+  (flycheck-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-to-list 'auto-mode-alist '("Dockerfile'" . dockerfile-mode))
+(add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
+
+
+;; EDITORCONFIG EMACS
+;; https://github.com/editorconfig/editorconfig-emacs
+(straight-use-package 'editorconfig)
+(editorconfig-mode 1)
 
 
 ;; ELECTRIC-PAIR-MODE
@@ -524,8 +541,7 @@ Version 2017-11-01"
 (defun setup-nlinum-mode ()
   "Settings for 'linum-mode'."
   (interactive)
-  (defvar nlinum-format "%d \u2502")
-  (setq nlinum-format "%d\u2502"))
+  (defvar nlinum-format "%d \u2502"))
 (add-hook 'nlinum-mode-hook #'setup-nlinum-mode)
 
 
@@ -540,6 +556,10 @@ Version 2017-11-01"
    word-wrap t))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-hook 'org-mode-hook #'setup-org-mode)
+
+
+;; OVERWRITE-MODE
+(overwrite-mode nil) ;; Disable overwrite mode
 
 
 ;; POWERLINE

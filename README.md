@@ -1,14 +1,32 @@
-# Emacs config for back- and frontend-development
+# Конфигурация EMACS для технических писателей
 
-This configuration created for working with Python 2/3, JavaScript and HTML files.
+В качестве пакетного менеджера используется [straight.el](https://github.com/raxod502/straight.el) — форк [use-package](https://github.com/jwiegley/use-package), избавленный от его проблем.
 
-## Icon fonts
+В этой конфигурации используются (в алфавитном порядке):
 
-You must install required fonts with your package manager.
-Debian-based distros:
+* [flycheck](#flycheck)
+* [markdown-mode](#markdown-mode)
+* [whitespace-mode](#whitespace-mode)
+* [ws-butler](#ws-butler)
 
-```bash
-apt-get install fonts-font-awesome fonts-materialdesignicons-webfont fonts-octicons
+## Flycheck {#flycheck}
+
+Flymake давно устарел, [flycheck](https://www.flycheck.org/) обходит его по всем параметрам. Используйте его для статического анализа кода и текстов.
+
+## markdown-mode {#markdown-mode}
+
+Пакет [markdown-mode](https://github.com/jrblevin/markdown-mode) используется как основной способ редактирования файлов `markdown`. Этот `README.md` тоже набран с использованием режима `markdown`. Предоставляет множество возможностей, например, подсветку синтаксиса для примеров кода, переход по ссылкам, проверку ссылок и многое другое.
+
+## whitespace-mode {#whitespace-mode}
+
+Пакет [whitespace-mode](https://www.emacswiki.org/emacs/WhiteSpace) используется для отображения пробелов, переходов на новую строку, TAB'ов и так далее.
+
+## ws-butler {#ws-butler}
+
+Для удаления висящих пробелов некоторые рекомендуют использовать конструкцию:
+
+```lisp
+(add-to-list 'write-file-functions 'delete-trailing-whitespace)
 ```
 
-Also every start `init.el` checks existing firectory `~/.local/share/fonts`. If this directory does not exists, called command `all-the-icons-install-fonts`.
+Делать этого ни в коем случае не стоит, потому что удаляются висящие пробелы во всём файле. Это плохо, если вы работаете совместно с другими людьми над одним проектом, в котором много унаследованного кода. Всякая строка, из которой будут удалены лишние пробелы в конце или начале, попадёт в историю изменений, и коммиты будут слишком «шумными». Используйте пакет [ws-butler](https://github.com/lewang/ws-butler) — он удаляет висящие пробелы только в тех строках, которые вы меняли.

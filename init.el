@@ -6,21 +6,30 @@
 
 (defvar buffer-file-coding-system 'utf-8-auto-unix "UTF-8 everywhere.")
 (defvar create-lockfiles nil "Don't create lockfiles.")
-(defvar inhibit-startup-message t "No startup message.")
-(defvar initial-scratch-message "" "No scratch message.")
-(defvar initial-major-mode 'fundamental-mode "'fundamental-mode' by default.")
 (defvar inhibit-splash-screen t "Don't show splash screen.")
+(defvar inhibit-startup-message t "No startup message.")
+(defvar initial-major-mode 'fundamental-mode "'fundamental-mode' by default.")
+(defvar initial-scratch-message "" "No scratch message.")
 (defvar make-backup-files nil "Don't create backup files.")
 (defvar truncate-lines 1 "Wrap lines everywhere.")
-(defvar user-mail-address 'dunmaksim@yandex.ru)
 (defvar user-full-name 'Dunaevsky Maxim)
 
+(setq buffer-file-coding-system 'utf8-auto-unix
+      create-lockfiles nil
+      inhibit-splash-screen t
+      inhibit-startup-message t
+      initial-major-mode 'fundamental-mode
+      initial-scratch-message ""
+      make-backup-files nil
+      truncate-lines 1
+      user-full-name "Dunaevsky Maxim")
 
 
 ;; Shift+arrow for moving to another window
 (windmove-default-keybindings)
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
+
 
 (global-hl-line-mode t) ;; Highlight current line
 
@@ -62,6 +71,7 @@
 
 
 ;;; Save user settings in dedicated file
+(defvar custom-file)
 (setq custom-file "~/.emacs.d/settings.el")
 (load-file "~/.emacs.d/settings.el")
 
@@ -71,10 +81,10 @@
 
 
 ;; ENCODING
-(set-language-environment 'Russian)
+(set-language-environment 'utf-8)
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
-;; (setq-default buffer-file-coding-system 'utf-8-auto-unix)
+(setq buffer-file-coding-system 'utf-8-auto-unix)
 
 
 ;; AUTO INSTALL STRAIGHT BOOTSTRAP
@@ -158,7 +168,7 @@ Version 2017-11-01"
 (global-set-key (kbd "M-6") 'balance-windows)
 
 ;; Search and replace
-(global-set-key (kbd "<f3>") 'isearch-forward)
+(global-set-key (kbd "C-f") 'isearch-forward)
 (global-set-key (kbd "C-h") 'query-replace)
 (global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
@@ -240,14 +250,14 @@ Version 2017-11-01"
   (defvar company-minimum-prefix-length 2)
   (defvar company-quickhelp-delay 1)
   (defvar company-tooltip-align-annotations t)
-  (setq
-   company-dabbrev-code-ignore-case nil
-   company-dabbrev-downcase nil
-   company-dabbrev-ignore-case nil
-   company-idle-delay 0
-   company-minimum-prefix-length 2
-   company-quickhelp-delay 1
-   company-tooltip-align-annotations t))
+
+  (setq company-dabbrev-code-ignore-case nil
+        company-dabbrev-downcase nil
+        company-dabbrev-ignore-case nil
+        company-idle-delay 0
+        company-minimum-prefix-length 2
+        company-quickhelp-delay 1
+        company-tooltip-align-annotations t))
 (add-hook 'company-mode-hook #'setup-company-mode)
 
 
@@ -260,6 +270,12 @@ Version 2017-11-01"
 ;; CUA-MODE
 ;; Ctrl+X, Ctrl+V, Ctrl+Z and other Windows-like shortcuts.
 (cua-mode 1)
+
+
+;; DESKTOP-SAVE-MODE
+(defvar desktop-save)
+(setq desktop-save t)
+(desktop-save-mode 1)
 
 
 ;; DIFF HL: highlight changes
@@ -283,19 +299,28 @@ Version 2017-11-01"
 ;; EDITORCONFIG EMACS
 ;; https://github.com/editorconfig/editorconfig-emacs
 (straight-use-package 'editorconfig)
+(defun setup-editorconfig-mode ()
+  "Settings for 'editor-config-mode'."
+  (interactive)
+  (defvar editorconfig-trim-whitespaces-mode)
+  (setq editorconfig-trim-whitespaces-mode 'ws-butler-mode))
+(add-hook 'editorconfig-mode-hook #'setup-editorconfig-mode)
 (editorconfig-mode 1)
 
 
 ;; ELECTRIC-PAIR-MODE
+;; EMBEDDED
 (electric-pair-mode 1)
-(setq-default electric-pair-pairs
-              '(
-                (?\« . ?\»)
-                (?\„ . ?\“)))
+(defvar electric-pair-pairs)
+(setq electric-pair-pairs
+      '(
+        (?\« . ?\»)
+        (?\„ . ?\“)))
 
 
 ;; EMACS LISP MODE
-(defun setup-elisp-mode ()
+;; IT IS NOT A ELISP-MODE!
+(defun setup-emacs-lisp-mode ()
   "Settings for EMACS Lisp Mode."
   (interactive)
   (company-mode 1)
@@ -305,14 +330,15 @@ Version 2017-11-01"
   (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-hook 'emacs-lisp-mode-hook #'setup-elisp-mode)
+(add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
 (add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
 
 
 ;; ELPY
 ;; https://elpy.readthedocs.io/
 (straight-use-package 'elpy)
-(defvar elpy-rpc-python-command "python3")
+(defvar elpy-rpc-python-command)
+(setq elpy-rpc-python-command "python3")
 (add-hook 'elpy-mode-hook (lambda ()
                             (add-hook 'before-save-hook
                                       'elpy-format-code nil t)))
@@ -321,6 +347,7 @@ Version 2017-11-01"
 ;; Отключить старый flymake, включить flycheck
 (when (load "flycheck" t t)
   (progn
+    (defvar elpy-modules)
     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
     (add-hook 'elpy-mode-hook 'flycheck-mode)))
 (defalias 'workon 'pyvenv-workon)
@@ -338,10 +365,9 @@ Version 2017-11-01"
   (defvar flycheck-check-syntax-automatically '(mode-enabled save))
   (defvar flycheck-indication-mode 'left-margin)
   (defvar flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
-  (setq
-   flycheck-check-syntax-automatically '(mode-enabled save)
-   flycheck-indication-mode 'left-margin
-   flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"))
+  (setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
+        flycheck-indication-mode 'left-margin
+        flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"))
 (add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
 
 
@@ -392,7 +418,8 @@ Version 2017-11-01"
   "Settings for 'ibuffer-mode'."
   (interactive)
   (defvar ibuffer-maybe-show-regexps)
-  (defvar ibuffer-show-empty-filter-groups nil)
+  (defvar ibuffer-show-empty-filter-groups)
+  (defvar ibuffer-saved-filter-groups)
   (setq
    ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
    ibuffer-maybe-show-regexps nil
@@ -489,13 +516,19 @@ Version 2017-11-01"
   "Settings for editing markdown documents."
   (interactive)
   ;; Настройки отступов и всякое такое
-  (setq
-   global-hl-line-mode nil
-   header-line-format " "
-   left-margin-width 4
-   line-spacing 3
-   right-margin-width 4
-   word-wrap t)
+  (defvar global-hl-line-mode)
+  (defvar header-line-format)
+  (defvar left-margin-width)
+  (defvar line-spacing)
+  (defvar right-margin-width)
+  (defvar word-wrap)
+
+  (setq global-hl-line-mode nil
+        header-line-format " "
+        left-margin-width 4
+        line-spacing 3
+        right-margin-width 4
+        word-wrap t)
 
   ;; Additional modes
   (abbrev-mode 1)
@@ -541,7 +574,8 @@ Version 2017-11-01"
 (defun setup-nlinum-mode ()
   "Settings for 'linum-mode'."
   (interactive)
-  (defvar nlinum-format "%d \u2502"))
+  (defvar nlinum-format "%d \u2502")
+  (setq nlinum-format "%d \u2502"))
 (add-hook 'nlinum-mode-hook #'setup-nlinum-mode)
 
 
@@ -637,6 +671,7 @@ Version 2017-11-01"
 (defun setup-shell-script-mode ()
   "Settings for 'shell-script-mode'."
   (interactive)
+
   (company-mode 1)
   (flycheck-mode 1)
   (nlinum-mode 1)
@@ -645,6 +680,7 @@ Version 2017-11-01"
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'shell-script-mode #'setup-shell-script-mode)
+(add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
 
 
 ;; SQL MODE
@@ -660,6 +696,23 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . sql-mode))
 (add-hook 'sql-mode-hook #'setup-sql-mode)
+
+
+;; TIDE-MODE
+;; https://github.com/ananthakumaran/tide/
+(straight-use-package 'tide)
+(defun setup-tide-mode ()
+  "Settings for 'tide-mode'."
+  (interactive)
+  (company-mode 1)
+  (eldoc-mode 1)
+  (flycheck-mode 1)
+  (tide-hl-identifier-mode 1)
+  (tide-setup)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'tide-mode-hook #'setup-tide-mode)
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . tide-mode))
 
 
 ;; TERRAFORM-MODE
@@ -705,15 +758,17 @@ Version 2017-11-01"
   (straight-use-package 'treemacs-icons-dired))
 
 
-;;; TYPESCRIPT MODE
+;; TYPESCRIPT MODE
+;; https://github.com/emacs-typescript/typescript.el
 (straight-use-package 'typescript-mode)
 (defun setup-typescript-mode ()
   "Settings for 'typescript-mode'."
   (interactive)
   (flycheck-mode 1)
   (nlinum-mode 1))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (add-hook 'typescript-mode-hook #'setup-typescript-mode)
 
 
@@ -732,13 +787,13 @@ Version 2017-11-01"
   (defvar web-mode-enable-css-colorization)
   (defvar web-mode-enable-current-element-highlight)
   (defvar web-mode-markup-indent-offset)
-  (setq
-   web-mode-attr-indent-offset 4
-   web-mode-css-indent-offset 2 ;; CSS
-   web-mode-enable-block-face t
-   web-mode-enable-css-colorization t
-   web-mode-enable-current-element-highlight t
-   web-mode-markup-indent-offset 2)
+
+  (setq web-mode-attr-indent-offset 4
+        web-mode-css-indent-offset 2 ;; CSS
+        web-mode-enable-block-face t
+        web-mode-enable-css-colorization t
+        web-mode-enable-current-element-highlight t
+        web-mode-markup-indent-offset 2)
 
   (company-mode 1)
   (emmet-mode 1)

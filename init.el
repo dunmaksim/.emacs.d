@@ -25,13 +25,10 @@
       user-full-name "Dunaevsky Maxim")
 
 
-;; Shift+arrow for moving to another window
-(windmove-default-keybindings)
-
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
 
-(global-hl-line-mode t) ;; Highlight current line
+(global-hl-line-mode 1) ;; Highlight current line
 
 
 ;; Resize windows
@@ -44,7 +41,11 @@
 (global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
 
 
-(menu-bar-mode 0)
+(global-set-key (kbd "C-x o") 'next-multiframe-window)
+(global-set-key (kbd "C-x O") 'previous-multiframe-window)
+
+
+
 
 ;; Settings for window (not only a Windows!) system.
 (defvar default-font-family nil "Default font family.")
@@ -173,8 +174,6 @@ Version 2017-11-01"
 (global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
 ;; Execute commands
-(global-set-key (kbd "M-a") 'execute-extended-command)
-(global-set-key (kbd "M-x") 'kill-whole-line)
 (global-set-key (kbd "<esc>") 'keyboard-quit)
 
 
@@ -197,18 +196,18 @@ Version 2017-11-01"
 ;; ALL THE ICONS
 (when (display-graphic-p)
   (progn
-  (straight-use-package 'all-the-icons)
-  (cond
-   ;; Install fonts in GNU / Linux
-   (
-    (string-equal system-type "gnu/linux")
-    (unless
-        (file-directory-p "~/.local/share/fonts/")
-      (all-the-icons-install-fonts)))
-   (
-    ;; Not install fonts in Windows, but print message
-    (string-equal system-type "windows-nt")
-    (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
+    (straight-use-package 'all-the-icons)
+    (cond
+     ;; Install fonts in GNU / Linux
+     (
+      (string-equal system-type "gnu/linux")
+      (unless
+          (file-directory-p "~/.local/share/fonts/")
+        (all-the-icons-install-fonts)))
+     (
+      ;; Not install fonts in Windows, but print message
+      (string-equal system-type "windows-nt")
+      (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
 
 
 ;; ALL THE ICONS DIRED
@@ -273,7 +272,10 @@ Version 2017-11-01"
 
 
 ;; DESKTOP-SAVE-MODE
-(defvar desktop-save)
+(require 'desktop)
+(setq desktop-modes-not-to-save '(dired-mode
+                                  Info-mode
+                                  info-lookup-mode))
 (setq desktop-save t)
 (desktop-save-mode 1)
 
@@ -339,9 +341,6 @@ Version 2017-11-01"
 (straight-use-package 'elpy)
 (defvar elpy-rpc-python-command)
 (setq elpy-rpc-python-command "python3")
-(add-hook 'elpy-mode-hook (lambda ()
-                            (add-hook 'before-save-hook
-                                      'elpy-format-code nil t)))
 (elpy-enable)
 (remove-hook 'elpy-modules 'elpy-module-flymake)
 ;; Отключить старый flymake, включить flycheck
@@ -353,17 +352,13 @@ Version 2017-11-01"
 (defalias 'workon 'pyvenv-workon)
 
 
-;; EMMET
-(straight-use-package 'emmet-mode)
-
-
 ;; FLYCHECK
 (straight-use-package `flycheck)
 (defun setup-flycheck-mode ()
   "Settings for 'flycheck-mode'."
   (interactive)
-  (defvar flycheck-check-syntax-automatically '(mode-enabled save))
-  (defvar flycheck-indication-mode 'left-margin)
+  (defvar flycheck-check-syntax-automatically)
+  (defvar flycheck-indication-mode)
   (defvar flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
   (setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
         flycheck-indication-mode 'left-margin
@@ -389,7 +384,8 @@ Version 2017-11-01"
 (when (display-graphic-p)
   (progn
     (straight-use-package 'flycheck-pos-tip)
-    (add-hook 'flycheck-mode-hook 'flycheck-pos-tip-mode)))
+    (with-eval-after-load 'flycheck
+      (add-hook 'flycheck-mode-hook 'flycheck-pos-tip-mode))))
 
 
 ;; FORMAT ALL
@@ -417,71 +413,74 @@ Version 2017-11-01"
 (defun setup-ibuffer ()
   "Settings for 'ibuffer-mode'."
   (interactive)
+  (defvar ibuffer-expert)
   (defvar ibuffer-maybe-show-regexps)
   (defvar ibuffer-show-empty-filter-groups)
   (defvar ibuffer-saved-filter-groups)
-  (setq
-   ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
-   ibuffer-maybe-show-regexps nil
-   ibuffer-saved-filter-groups (quote
-                                (("default"
-                                  ("Dired"
-                                   (mode . dired-mode))
-                                  ("Org"
-                                   (mode . org-mode))
-                                  ("Markdown"
-                                   (mode . markdown-mode))
-                                  ("YAML"
-                                   (mode . yaml-mode))
-                                  ("Protobuf"
-                                   (mode . protobuf-mode))
-                                  ("Lisp"
-                                   (mode . emacs-lisp-mode))
-                                  ("Python"
-                                   (or
-                                    (mode . python-mode)
-                                    (mode . elpy-mode)))
-                                  ("Shell-script"
-                                   (or
-                                    (mode . shell-script-mode)))
-                                  ("Terraform"
-                                   (or
-                                    (mode . terraform-mode)))
-                                  ("Web"
-                                   (or
-                                    (mode . web-mode)))
-                                  ("Magit"
-                                   (or
-                                    (mode . magit-status-mode)
-                                    (mode . magit-log-mode)
-                                    (name . "^\\*magit")
-                                    (name . "git-monitor")))
-                                  ("Commands"
-                                   (or
-                                    (mode . shell-mode)
-                                    (mode . eshell-mode)
-                                    (mode . term-mode)
-                                    (mode . compilation-mode)))
-                                  ("Emacs"
-                                   (or
-                                    (name . "^\\*scratch\\*$")
-                                    (name . "^\\*Messages\\*$")
-                                    (name . "^\\*\\(Customize\\|Help\\)")
-                                    (name . "\\*\\(Echo\\|Minibuf\\)"))))))
-   ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
-   ;;   ibuffer-shrink-to-minimum-size t
-   ibuffer-formats
-   '((mark modified read-only " "
-           (name 60 60 :left :elide)
-           (size 10 10 :right)
-           (mode 16 16 :left :elide)
-           " " filename-and-process)
-     (mark " "
-           (name 60 60)
-           " " filename))
-   ibuffer-use-other-window nil)
-  (ibuffer-switch-to-saved-filter-groups "default")
-  (ibuffer-update nil))
+  (setq ibuffer-expert 1
+        ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
+        ibuffer-maybe-show-regexps nil
+        ibuffer-saved-filter-groups (quote
+                                     (("default"
+                                       ("Dired"
+                                        (mode . dired-mode))
+                                       ("Org"
+                                        (mode . org-mode))
+                                       ("Markdown"
+                                        (mode . markdown-mode))
+                                       ("YAML"
+                                        (mode . yaml-mode))
+                                       ("Protobuf"
+                                        (mode . protobuf-mode))
+                                       ("Lisp"
+                                        (mode . emacs-lisp-mode))
+                                       ("Python"
+                                        (or
+                                         (mode . python-mode)
+                                         (mode . elpy-mode)))
+                                       ("Shell-script"
+                                        (or
+                                         (mode . shell-script-mode)))
+                                       ("Terraform"
+                                        (or
+                                         (mode . terraform-mode)))
+                                       ("Web"
+                                        (or
+                                         (mode . web-mode)))
+                                       ("Magit"
+                                        (or
+                                         (mode . magit-status-mode)
+                                         (mode . magit-log-mode)
+                                         (name . "^\\*magit")
+                                         (name . "git-monitor")))
+                                       ("Commands"
+                                        (or
+                                         (mode . shell-mode)
+                                         (mode . eshell-mode)
+                                         (mode . term-mode)
+                                         (mode . compilation-mode)))
+                                       ("Emacs"
+                                        (or
+                                         (name . "^\\*scratch\\*$")
+                                         (name . "^\\*Messages\\*$")
+                                         (name . "^\\*\\(Customize\\|Help\\)")
+                                         (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+        ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
+        ;;   ibuffer-shrink-to-minimum-size t
+        ibuffer-formats
+        '((mark modified read-only " "
+                (name 60 60 :left :elide)
+                (size 10 10 :right)
+                (mode 16 16 :left :elide)
+                " " filename-and-process)
+          (mark " "
+                (name 60 60)
+                " " filename))
+        ibuffer-use-other-window nil)
+
+  (hl-line-mode 1)
+  (ibuffer-auto-mode 1)
+  (ibuffer-switch-to-saved-filter-groups "default"))
 (global-set-key (kbd "<f2>") 'ibuffer)
 (add-to-list 'ibuffer-never-show-predicates "^\\*")
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer)
@@ -533,7 +532,6 @@ Version 2017-11-01"
   ;; Additional modes
   (abbrev-mode 1)
   (buffer-face-mode 1)
-  (company-mode 1)
   (flycheck-mode 1) ;; Turn on linters
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
@@ -548,6 +546,10 @@ Version 2017-11-01"
   (set-face-attribute 'markdown-inline-code-face nil :family default-font-family))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
+
+
+;; Turn off menu bar
+(menu-bar-mode 0)
 
 
 ;; MODE ICONS
@@ -643,6 +645,7 @@ Version 2017-11-01"
   (company-mode 1)
   (elpy-mode 1)
   (flycheck-mode 1)
+  (hl-line-mode 1)
   (nlinum-mode 1)
   (pyenv-mode 1)
   (rainbow-delimiters-mode 1)
@@ -739,6 +742,8 @@ Version 2017-11-01"
 ;; https://github.com/Alexander-Miller/treemacs
 (straight-use-package 'treemacs)
 (global-set-key (kbd "<f8>") 'treemacs)
+(global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace)
+
 (with-eval-after-load 'treemacs
   (defun treemacs-get-ignore-files (filename absolute-path)
     (or
@@ -796,7 +801,6 @@ Version 2017-11-01"
         web-mode-markup-indent-offset 2)
 
   (company-mode 1)
-  (emmet-mode 1)
   (flycheck-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))

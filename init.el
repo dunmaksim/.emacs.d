@@ -213,9 +213,13 @@ Version 2017-11-01"
 ;; ALL THE ICONS DIRED
 ;; https://github.com/jtbm37/all-the-icons-dired
 (when (display-graphic-p)
+  (defun setup-all-the-icons-dired-mode()
+    "Settings for 'all-the-icons-dired-mode'."
+    (interactive)
+    (all-the-icons-dired-mode 1))
   (progn
     (straight-use-package 'all-the-icons-dired)
-    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
+    (add-hook 'dired-mode-hook #'setup-all-the-icons-dired-mode)))
 
 
 ;; ALL THE ICONS IBUFFER
@@ -666,6 +670,20 @@ Version 2017-11-01"
 (straight-use-package 'rainbow-mode)
 
 
+;; RST-MODE
+(defun setup-rst-mode ()
+  "Settings for 'rst-mode'."
+  (interactive)
+  (flycheck-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'rst-mode-hook #'setup-rst-mode)
+(add-to-list 'auto-mode-alist '("\\.rst\\'" . rst-mode))
+
+
 ;; PAREN-MODE
 (show-paren-mode 1)
 
@@ -743,6 +761,7 @@ Version 2017-11-01"
 (straight-use-package 'treemacs)
 (global-set-key (kbd "<f8>") 'treemacs)
 (global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace)
+
 
 (with-eval-after-load 'treemacs
   (defun treemacs-get-ignore-files (filename absolute-path)

@@ -302,6 +302,12 @@ Version 2017-11-01"
 (add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
 
 
+;; EDIT-INDIRECT-MODE
+;; https://github.com/Fanael/edit-indirect/
+;; Use C-c ' for editing source code examples in markdown
+(straight-use-package 'edit-indirect)
+
+
 ;; EDITORCONFIG EMACS
 ;; https://github.com/editorconfig/editorconfig-emacs
 (straight-use-package 'editorconfig)

@@ -6,13 +6,18 @@
 
 (defvar buffer-file-coding-system 'utf-8-auto-unix "UTF-8 everywhere.")
 (defvar create-lockfiles nil "Don't create lockfiles.")
+(defvar emacs-config-dir (file-name-directory load-file-name) "Root directory with settings.")
 (defvar inhibit-splash-screen t "Don't show splash screen.")
 (defvar inhibit-startup-message t "No startup message.")
 (defvar initial-major-mode 'fundamental-mode "'fundamental-mode' by default.")
 (defvar initial-scratch-message "" "No scratch message.")
 (defvar make-backup-files nil "Don't create backup files.")
+(defvar savehist-file)
+(defvar savehist-save-minibuffer-history)
+(defvar savehistory-delete-duplicates)
+(defvar savehistory-length)
 (defvar truncate-lines 1 "Wrap lines everywhere.")
-(defvar user-full-name 'Dunaevsky Maxim)
+(defvar user-full-name)
 
 (setq buffer-file-coding-system 'utf8-auto-unix
       create-lockfiles nil
@@ -21,6 +26,9 @@
       initial-major-mode 'fundamental-mode
       initial-scratch-message ""
       make-backup-files nil
+      savehist-save-minibuffer-history 1
+      savehistory-delete-duplicates t
+      savehistory-length t
       truncate-lines 1
       user-full-name "Dunaevsky Maxim")
 
@@ -169,12 +177,19 @@ Version 2017-11-01"
 (global-set-key (kbd "M-6") 'balance-windows)
 
 ;; Search and replace
-(global-set-key (kbd "C-f") 'isearch-forward)
+;;(global-set-key (kbd "C-f") 'isearch-forward) → replaced with swiper
 (global-set-key (kbd "C-h") 'query-replace)
 (global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
 ;; Execute commands
 (global-set-key (kbd "<esc>") 'keyboard-quit)
+
+
+;; Switch windows with C-x and arrow keys
+(global-set-key (kbd "C-x <up>") 'windmove-up)
+(global-set-key (kbd "C-x <down>") 'windmove-down)
+(global-set-key (kbd "C-x <right>") 'windmove-right)
+(global-set-key (kbd "C-x <left>") 'windmove-left)
 
 
 (global-set-key (kbd "M--")
@@ -268,6 +283,15 @@ Version 2017-11-01"
 (straight-use-package 'conf-mode)
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.list\\'" . conf-mode))
+
+
+;; COUNSEL
+;; USE TOGETHER WITH IVY-MODE
+(straight-use-package 'counsel)
+(counsel-mode 1)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "M-y") 'counsel-yank-pop)
 
 
 ;; CUA-MODE
@@ -496,6 +520,14 @@ Version 2017-11-01"
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer)
 
 
+;; IVY-MODE
+;; https://github.com/abo-abo/swiper#ivy
+(straight-use-package 'ivy)
+(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+(global-set-key (kbd "C-c v") 'ivy-push-view)
+(global-set-key (kbd "C-c V") 'ivy-pop-view)
+
+
 ;; JSON-MODE
 ;; https://github.com/joshwnj/json-mode
 (straight-use-package 'json-mode)
@@ -690,6 +722,14 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.rst\\'" . rst-mode))
 
 
+;; SAVE MINIBUFFER HISTORY
+(defvar savehist-dir (expand-file-name "history.d" emacs-config-dir))
+(defvar savehist-file (expand-file-name "minibuffer-history" savehist-dir))
+(unless (file-exists-p savehist-dir)
+  (make-directory savehist-dir))
+(savehist-mode 1)
+
+
 ;; PAREN-MODE
 (show-paren-mode 1)
 
@@ -725,6 +765,12 @@ Version 2017-11-01"
 (add-hook 'sql-mode-hook #'setup-sql-mode)
 
 
+;; SWIPER
+;; https://github.com/abo-abo/swiper}
+(straight-use-package 'swiper)
+(global-set-key (kbd "C-f") 'swiper-isearch)
+
+
 ;; TIDE-MODE
 ;; https://github.com/ananthakumaran/tide/
 (straight-use-package 'tide)
@@ -740,6 +786,7 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-hook 'tide-mode-hook #'setup-tide-mode)
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . tide-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tide-mode))
 
 
 ;; TERRAFORM-MODE
@@ -835,22 +882,33 @@ Version 2017-11-01"
 (add-hook 'web-mode-hook #'setup-web-mode)
 
 
+;; WHICH-KEY MODE
+;; https://github.com/justbur/emacs-which-key
+(straight-use-package 'which-key)
+(which-key-mode 1)
+
+
 ;; WHITESPACE MODE
 ;; https://www.emacswiki.org/emacs/WhiteSpace
 (straight-use-package 'whitespace-mode)
 (defun setup-whitespace-mode ()
   "Settings for 'whitespace-mode'."
   (interactive)
-  (setq-default whitespace-display-mappings
-                '(
-                  (space-mark   ?\    [?\xB7]  [?.]) ; space
-                  (space-mark   ?\xA0 [?\xA4]  [?_]) ; hard space
-                  (newline-mark ?\n   [?¶ ?\n] [?$ ?\n]) ; end of line
-                  )
-                ;; Highlight lines with length bigger than 1000 chars
-                whitespace-line-column 1000
-                whitespace-fill-column 1000
-                )
+  (defvar whitespace-display-mappings)
+  (defvar whitespace-line-column)
+  (defvar whitespace-fill-column)
+  (setq whitespace-display-mappings
+        '(
+          (space-mark   ?\    [?\xB7]  [?.]) ; space
+          (space-mark   ?\xA0 [?\xA4]  [?_]) ; hard space
+          (newline-mark ?\n   [?¶ ?\n] [?$ ?\n]) ; end of line
+          )
+        ;; Highlight lines with length bigger than 1000 chars
+        whitespace-line-column 1000
+        whitespace-fill-column 1000
+        )
+
+ 
 
   ;; Markdown-mode hack
   (set-face-attribute 'whitespace-space nil

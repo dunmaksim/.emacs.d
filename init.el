@@ -33,6 +33,13 @@
       user-full-name "Dunaevsky Maxim")
 
 
+(require 'package)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
+(package-initialize)
+
+
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
 
@@ -51,8 +58,6 @@
 
 (global-set-key (kbd "C-x o") 'next-multiframe-window)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
-
-
 
 
 ;; Settings for window (not only a Windows!) system.
@@ -181,6 +186,9 @@ Version 2017-11-01"
 (global-set-key (kbd "C-h") 'query-replace)
 (global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
+;; Sort lines
+(global-set-key (kbd "<f9>") 'sort-lines)
+
 ;; Execute commands
 (global-set-key (kbd "<esc>") 'keyboard-quit)
 
@@ -206,6 +214,8 @@ Version 2017-11-01"
 
 ;; AIRLINE THEMES
 (straight-use-package 'airline-themes)
+(require 'airline-themes)
+(load-theme 'airline-doom-molokai t)
 
 
 ;; ALL THE ICONS
@@ -243,6 +253,18 @@ Version 2017-11-01"
   (progn
     (straight-use-package 'all-the-icons-ibuffer)
     (add-hook 'ibuffer-mode-hook #'all-the-icons-ibuffer-mode)))
+
+
+;; ALL THE ICONS IVY
+;; https://github.com/asok/all-the-icons-ivy
+(straight-use-package 'all-the-icons-ivy)
+(all-the-icons-ivy-setup)
+
+
+;; ALL THE ICONS IVY RICH
+;; https://github.com/seagle0128/all-the-icons-ivy-rich
+(straight-use-package 'all-the-icons-ivy-rich)
+(all-the-icons-ivy-rich-mode 1)
 
 
 ;; AUTO VIRTUALENVWRAPPER
@@ -528,6 +550,12 @@ Version 2017-11-01"
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 
 
+;; IVY RICH
+;; https://github.com/Yevgnen/ivy-rich
+(straight-use-package 'ivy-rich)
+(ivy-rich-mode 1)
+
+
 ;; JSON-MODE
 ;; https://github.com/joshwnj/json-mode
 (straight-use-package 'json-mode)
@@ -605,6 +633,8 @@ Version 2017-11-01"
 ;; MONOKAI THEME
 (straight-use-package 'monokai-theme)
 (load-theme 'monokai t)
+;;(straight-use-package 'solarized-theme)
+;;(load-theme 'solarized-dark)
 
 
 ;; MULTIPLE CURSORS
@@ -643,7 +673,6 @@ Version 2017-11-01"
 ;; POWERLINE
 ;; https://github.com/milkypostman/powerline
 (straight-use-package 'powerline)
-(powerline-default-theme)
 
 
 ;; PROJECTILE-MODE

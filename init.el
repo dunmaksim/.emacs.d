@@ -4,19 +4,19 @@
 
 ;;; Code:
 
-(defvar buffer-file-coding-system 'utf-8-auto-unix "UTF-8 everywhere.")
-(defvar create-lockfiles nil "Don't create lockfiles.")
+(defvar buffer-file-coding-system)
+(defvar create-lockfiles)
 (defvar emacs-config-dir (file-name-directory load-file-name) "Root directory with settings.")
-(defvar inhibit-splash-screen t "Don't show splash screen.")
-(defvar inhibit-startup-message t "No startup message.")
-(defvar initial-major-mode 'fundamental-mode "'fundamental-mode' by default.")
-(defvar initial-scratch-message "" "No scratch message.")
-(defvar make-backup-files nil "Don't create backup files.")
+(defvar inhibit-splash-screen)
+(defvar inhibit-startup-message)
+(defvar initial-major-mode)
+(defvar initial-scratch-message)
+(defvar make-backup-files)
 (defvar savehist-file)
 (defvar savehist-save-minibuffer-history)
 (defvar savehistory-delete-duplicates)
 (defvar savehistory-length)
-(defvar truncate-lines 1 "Wrap lines everywhere.")
+(defvar truncate-lines)
 (defvar user-full-name)
 
 (setq buffer-file-coding-system 'utf8-auto-unix
@@ -167,8 +167,7 @@ Version 2017-11-01"
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "M-'") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-o") 'dired)
-(global-set-key (kbd "C-+") 'text-scale-increase)
-(global-set-key (kbd "C--") 'text-scale-decrease)
+
 
 ;; Buffers and windows
 (global-set-key (kbd "C-<next>") 'next-buffer)
@@ -214,8 +213,6 @@ Version 2017-11-01"
 
 ;; AIRLINE THEMES
 (straight-use-package 'airline-themes)
-(require 'airline-themes)
-(load-theme 'airline-doom-molokai t)
 
 
 ;; ALL THE ICONS
@@ -280,6 +277,7 @@ Version 2017-11-01"
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
 (straight-use-package 'company)
+(require 'company)
 (defun setup-company-mode ()
   "Settings for company-mode."
   (interactive)
@@ -299,6 +297,12 @@ Version 2017-11-01"
         company-quickhelp-delay 1
         company-tooltip-align-annotations t))
 (add-hook 'company-mode-hook #'setup-company-mode)
+
+
+;; COMPANY-JEDI
+;; https://github.com/company-mode/company-mode
+(straight-use-package 'company-jedi)
+(add-to-list 'company-backends 'company-jedi)
 
 
 ;; CONF MODE FOR INI / CONF / LIST
@@ -394,18 +398,18 @@ Version 2017-11-01"
 
 ;; ELPY
 ;; https://elpy.readthedocs.io/
-(straight-use-package 'elpy)
-(defvar elpy-rpc-python-command)
-(setq elpy-rpc-python-command "python3")
-(elpy-enable)
-(remove-hook 'elpy-modules 'elpy-module-flymake)
-;; Отключить старый flymake, включить flycheck
-(when (load "flycheck" t t)
-  (progn
-    (defvar elpy-modules)
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode)))
-(defalias 'workon 'pyvenv-workon)
+;; (straight-use-package 'elpy)
+;; (defvar elpy-rpc-python-command)
+;; (setq elpy-rpc-python-command "python3")
+;; (elpy-enable)
+;; (remove-hook 'elpy-modules 'elpy-module-flymake)
+;; ;; Отключить старый flymake, включить flycheck
+;; (when (load "flycheck" t t)
+;;   (progn
+;;     (defvar elpy-modules)
+;;     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+;;     (add-hook 'elpy-mode-hook 'flycheck-mode)))
+;; (defalias 'workon 'pyvenv-workon)
 
 
 ;; FLYCHECK
@@ -571,6 +575,20 @@ Version 2017-11-01"
 (add-hook 'json-mode-hook #'setup-json-mode)
 
 
+;; LSP-MODE
+;; https://github.com/emacs-lsp/lsp-mode
+(straight-use-package 'lsp-mode)
+(add-hook 'python-mode-hook 'lsp)
+
+
+;; LSP-JEDI
+(straight-use-package 'lsp-jedi)
+
+
+;; LSP UI
+(straight-use-package 'lsp-ui)
+
+
 ;; MAGIT
 ;; https://magit.vc/
 (straight-use-package 'magit)
@@ -633,8 +651,8 @@ Version 2017-11-01"
 ;; MONOKAI THEME
 (straight-use-package 'monokai-theme)
 (load-theme 'monokai t)
-;;(straight-use-package 'solarized-theme)
-;;(load-theme 'solarized-dark)
+(require 'airline-themes)
+(load-theme 'airline-doom-molokai t)
 
 
 ;; MULTIPLE CURSORS
@@ -705,7 +723,7 @@ Version 2017-11-01"
 
 
 ;; PYENV-MODE
-(straight-use-package 'pyenv-mode)
+;;(straight-use-package 'pyenv-mode)
 
 
 ;; PYTHON-MODE
@@ -714,7 +732,7 @@ Version 2017-11-01"
   "Settings for 'python-mode'."
   (interactive)
   (company-mode 1)
-  (elpy-mode 1)
+  ;; (elpy-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
   (nlinum-mode 1)
@@ -761,6 +779,19 @@ Version 2017-11-01"
 
 ;; PAREN-MODE
 (show-paren-mode 1)
+
+
+;; SCALA MODE
+(straight-use-package 'scala-mode)
+(defun setup-scala-mode ()
+  "Settings for 'scala-mode'."
+  (interactive)
+  (company-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'scala-mode-hook #'setup-scala-mode)
+(add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-mode))
+(add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode))
 
 
 ;; SHELL-SCRIPT-MODE
@@ -838,11 +869,14 @@ Version 2017-11-01"
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
 
 
-;; TREEMACS - awesome file manager (instead NeoTree)
+;; TREEMACS - awesome file manager
 ;; https://github.com/Alexander-Miller/treemacs
 (straight-use-package 'treemacs)
 (global-set-key (kbd "<f8>") 'treemacs)
-(global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace)
+(eval-after-load 'treemacs '
+  (progn
+    (define-key treemacs-mode-map (kbd "C-<f8>") 'treemacs-switch-workspace)
+    (define-key treemacs-mode-map (kbd "f") 'find-grep)))
 
 
 (with-eval-after-load 'treemacs
@@ -876,6 +910,11 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (add-hook 'typescript-mode-hook #'setup-typescript-mode)
+
+
+;; UNDO-TREE
+(straight-use-package 'undo-tree)
+(global-undo-tree-mode 1)
 
 
 ;; WEB-BEAUTIFY
@@ -937,7 +976,7 @@ Version 2017-11-01"
         whitespace-fill-column 1000
         )
 
- 
+   
 
   ;; Markdown-mode hack
   (set-face-attribute 'whitespace-space nil

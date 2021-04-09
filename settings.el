@@ -17,8 +17,6 @@
  '(desktop-load-locked-desktop t)
  '(desktop-save-mode t)
  '(electric-pair-mode t)
- '(elpy-rpc-backend "jedi")
- '(elpy-rpc-virtualenv-path (quote current))
  '(flycheck-checkers
    (quote
     (ada-gnat asciidoctor asciidoc c/c++-clang c/c++-gcc c/c++-cppcheck cfengine chef-foodcritic coffee coffee-coffeelint coq css-csslint css-stylelint cwl d-dmd dockerfile-hadolint emacs-lisp emacs-lisp-checkdoc erlang-rebar3 erlang eruby-erubis fortran-gfortran go-gofmt go-golint go-vet go-build go-test go-errcheck go-unconvert go-megacheck groovy haml handlebars haskell-stack-ghc haskell-ghc haskell-hlint html-tidy javascript-eslint javascript-jshint javascript-standard json-jsonlint json-python-json jsonnet less less-stylelint llvm-llc lua-luacheck lua perl perl-perlcritic php php-phpmd php-phpcs processing proselint protobuf-protoc pug puppet-parser puppet-lint python-pylint python-pycompile r-lintr racket rpm-rpmlint markdown-markdownlint-cli markdown-mdl nix rst-sphinx rst ruby-rubocop ruby-reek ruby-rubylint ruby ruby-jruby rust-cargo rust rust-clippy scala scala-scalastyle scheme-chicken scss-lint scss-stylelint sass/scss-sass-lint sass scss sh-bash sh-posix-dash sh-posix-bash sh-zsh sh-shellcheck slim slim-lint sql-sqlint systemd-analyze tcl-nagelfar tex-chktex tex-lacheck texinfo typescript-tslint verilog-verilator vhdl-ghdl xml-xmlstarlet xml-xmllint yaml-jsyaml yaml-ruby)))
@@ -26,9 +24,6 @@
  '(ibuffer-expert t)
  '(indent-tabs-mode nil)
  '(initial-major-mode (quote text-mode))
- '(initial-scratch-message "")
- '(minimap-width-fraction 0.1)
- '(minimap-window-location "right")
  '(mode-icons-change-mode-name nil)
  '(next-line-add-newlines nil)
  '(package-hidden-regexps

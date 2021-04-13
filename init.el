@@ -7,7 +7,7 @@
 (defvar buffer-file-coding-system)
 (defvar create-lockfiles)
 (defvar emacs-config-dir
-  (file-name-directory load-file-name) "Root directory with settings.")
+  (file-name-directory user-init-file) "Root directory with settings.")
 (defvar inhibit-splash-screen)
 (defvar inhibit-startup-message)
 (defvar initial-major-mode)
@@ -39,6 +39,33 @@
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
 (package-initialize)
+
+(defvar required-packages '(
+			    airline-themes
+			    all-the-icons
+			    all-the-icons-dired
+			    all-the-icons-ibuffer
+			    all-the-icons-ivy
+			    company
+			    counsel
+			    dockerfile-mode
+			    flycheck
+			    ibuffer
+			    markdown-mode
+			    powerline
+			    python-mode
+			    whitespace-mode
+			    ws-butler
+			    projectile
+			    org-mode
+			    editor-config
+			    ))
+
+(unless (file-exists-p package-user-dir)
+  (progn (package-refresh-contents)
+	 (dolist (package required-packages)
+	   (unless (package-installed-p package)
+	     (package-install package t)))))
 
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
@@ -89,7 +116,6 @@
 (setq custom-file (expand-file-name "settings.el" emacs-config-dir))
 (when (file-exists-p custom-file)
   (load-file custom-file))
-
 
 
 ;; Auto-revert mode
@@ -216,7 +242,9 @@ Version 2017-11-01"
 
 
 ;; AIRLINE THEMES
-(straight-use-package 'airline-themes)
+(unless (package-installed-p 'airline-themes)
+  (package-refresh-contents)
+  (package-install 'airline-themes))
 
 
 ;; ALL THE ICONS
@@ -392,7 +420,8 @@ Version 2017-11-01"
 (setq electric-pair-pairs
       '(
         (?\« . ?\»)
-        (?\„ . ?\“)))
+        (?\„ . ?\“)
+	(?\( . ?\))))
 
 
 ;; EMACS LISP MODE
@@ -520,6 +549,8 @@ Version 2017-11-01"
                                          (mode . terraform-mode)))
                                        ("Web"
                                         (or
+					 (mode . js-mode)
+					 (mode . js2-mode)
                                          (mode . web-mode)))
                                        ("Magit"
                                         (or
@@ -793,15 +824,6 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.rb\\'" .ruby-mode))
 
 
-;; SAVE MINIBUFFER HISTORY
-(require 'savehist)
-(setq savehist-dir (expand-file-name "history.d" emacs-config-dir))
-(unless (file-exists-p savehist-dir)
-  (make-directory savehist-dir))
-(setq savehist-file (expand-file-name "minibuffer-history" savehist-dir))
-(savehist-mode 1)
-
-
 ;; PAREN-MODE
 (show-paren-mode 1)
 
@@ -993,28 +1015,26 @@ Version 2017-11-01"
 ;; WHITESPACE MODE
 ;; https://www.emacswiki.org/emacs/WhiteSpace
 (straight-use-package 'whitespace-mode)
+(require 'whitespace)
 (defun setup-whitespace-mode ()
   "Settings for 'whitespace-mode'."
   (interactive)
-  (defvar whitespace-display-mappings)
-  (defvar whitespace-fill-column 1000)
   (setq whitespace-display-mappings
         '(
           (space-mark   ?\    [?\xB7]     [?.]) ; space
           (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
           (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
           (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
-          ))
-  ;; Highlight lines with length bigger than 1000 chars)
-  (setq  whitespace-fill-column 1000)
-
+          )
+	;; Highlight lines with length bigger than 1000 chars)
+	whitespace-line-column 1000)
   ;; Markdown-mode hack
   (set-face-attribute 'whitespace-space nil
-                      :family default-font-family
-                      :foreground "#75715E")
+		      :family default-font-family
+		      :foreground "#75715E")
   (set-face-attribute 'whitespace-indentation nil
-                      :family default-font-family
-                      :foreground "#E6DB74"))
+		      :family default-font-family
+		      :foreground "#E6DB74"))
 (add-hook 'whitespace-mode-hook #'setup-whitespace-mode)
 
 
@@ -1027,6 +1047,9 @@ Version 2017-11-01"
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 (straight-use-package 'yaml-mode)
+(unless (package-installed-p 'yaml-mode)
+  (package-refresh-contents)
+  (package-install 'yaml-mode))
 (defun setup-yaml-mode ()
   "Settings for yaml-mode."
   (interactive)

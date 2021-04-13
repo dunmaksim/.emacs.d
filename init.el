@@ -6,7 +6,8 @@
 
 (defvar buffer-file-coding-system)
 (defvar create-lockfiles)
-(defvar emacs-config-dir (file-name-directory load-file-name) "Root directory with settings.")
+(defvar emacs-config-dir
+  (file-name-directory load-file-name) "Root directory with settings.")
 (defvar inhibit-splash-screen)
 (defvar inhibit-startup-message)
 (defvar initial-major-mode)
@@ -85,8 +86,7 @@
 
 
 ;;; Save user settings in dedicated file
-(defvar custom-file)
-(setq custom-file "~/.emacs.d/settings.el")
+(setq custom-file (expand-file-name "settings.el" emacs-config-dir))
 (load-file "~/.emacs.d/settings.el")
 
 
@@ -104,7 +104,9 @@
 ;; AUTO INSTALL STRAIGHT BOOTSTRAP
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        user-emacs-directory))
       (bootstrap-version 5))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
@@ -277,7 +279,6 @@ Version 2017-11-01"
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
 (straight-use-package 'company)
-(require 'company)
 (defun setup-company-mode ()
   "Settings for company-mode."
   (interactive)
@@ -294,7 +295,7 @@ Version 2017-11-01"
         company-dabbrev-ignore-case nil
         company-idle-delay 0
         company-minimum-prefix-length 2
-        company-quickhelp-delay 1
+        company-quickhelp-delay 3
         company-tooltip-align-annotations t))
 (add-hook 'company-mode-hook #'setup-company-mode)
 
@@ -302,13 +303,25 @@ Version 2017-11-01"
 ;; COMPANY-JEDI
 ;; https://github.com/company-mode/company-mode
 (straight-use-package 'company-jedi)
+(require 'company)
 (add-to-list 'company-backends 'company-jedi)
+
+
+;; COMPANY-TERRAFORM
+(straight-use-package 'company-terraform)
+
+
+;; COMPANY-QUICKHELP-MODE
+;; https://github.com/company-mode/company-quickhelp
+(straight-use-package 'company-quickhelp)
+(company-quickhelp-mode 1)
 
 
 ;; CONF MODE FOR INI / CONF / LIST
 (straight-use-package 'conf-mode)
-(add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode ))
 (add-to-list 'auto-mode-alist '("\\.list\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
 
 
 ;; COUNSEL
@@ -330,7 +343,7 @@ Version 2017-11-01"
 (setq desktop-modes-not-to-save '(dired-mode
                                   Info-mode
                                   info-lookup-mode))
-(setq desktop-save t)
+(setq desktop-save 1)
 (desktop-save-mode 1)
 
 
@@ -387,7 +400,7 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -396,29 +409,11 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
 
 
-;; ELPY
-;; https://elpy.readthedocs.io/
-;; (straight-use-package 'elpy)
-;; (defvar elpy-rpc-python-command)
-;; (setq elpy-rpc-python-command "python3")
-;; (elpy-enable)
-;; (remove-hook 'elpy-modules 'elpy-module-flymake)
-;; ;; Отключить старый flymake, включить flycheck
-;; (when (load "flycheck" t t)
-;;   (progn
-;;     (defvar elpy-modules)
-;;     (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-;;     (add-hook 'elpy-mode-hook 'flycheck-mode)))
-;; (defalias 'workon 'pyvenv-workon)
-
-
 ;; FLYCHECK
 (straight-use-package `flycheck)
 (defun setup-flycheck-mode ()
   "Settings for 'flycheck-mode'."
   (interactive)
-  (defvar flycheck-check-syntax-automatically)
-  (defvar flycheck-indication-mode)
   (defvar flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
   (setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
         flycheck-indication-mode 'left-margin
@@ -454,6 +449,26 @@ Version 2017-11-01"
 (global-set-key (kbd "<f12>") 'format-all-buffer)
 
 
+;; GO-MODE
+;; https://github.com/dominikh/go-mode.el
+(straight-use-package 'go-mode)
+(defun setup-go-mode()
+  "Settings for 'go-mode'."
+  (interactive)
+  (abbrev-mode 1)
+  (buffer-face-mode 1)
+  (flycheck-mode 1) ;; Turn on linters
+  (linum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
+  (smart-tabs-mode 1)
+  (visual-line-mode 1) ;; Highlight current line
+  (whitespace-mode 1) ;; Show spaces, tabs and other
+  (ws-butler-mode 1)) ;; Delete trailing spaces on changed lines)
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+(add-hook 'go-mode-hook #'setup-go-mode)
+
+
 ;; HELM
 (straight-use-package 'helm)
 (global-set-key (kbd "<f10>") 'helm-buffers-list)
@@ -462,21 +477,17 @@ Version 2017-11-01"
 
 ;; HELM-COMPANY
 (straight-use-package 'helm-company)
-(defvar company-active-map)
 (define-key company-active-map (kbd "C-:") 'helm-company)
 
 
 ;; IBUFFER
 (straight-use-package 'ibuffer)
 (defalias 'list-buffers 'ibuffer)
+(require 'ibuffer)
 (require 'ibuf-ext)
 (defun setup-ibuffer ()
   "Settings for 'ibuffer-mode'."
   (interactive)
-  (defvar ibuffer-expert)
-  (defvar ibuffer-maybe-show-regexps)
-  (defvar ibuffer-show-empty-filter-groups)
-  (defvar ibuffer-saved-filter-groups)
   (setq ibuffer-expert 1
         ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
         ibuffer-maybe-show-regexps nil
@@ -575,6 +586,11 @@ Version 2017-11-01"
 (add-hook 'json-mode-hook #'setup-json-mode)
 
 
+;; LINUM MODE
+(require 'linum)
+(setq linum-format 'dynamic)
+
+
 ;; LSP-MODE
 ;; https://github.com/emacs-lsp/lsp-mode
 (straight-use-package 'lsp-mode)
@@ -602,16 +618,7 @@ Version 2017-11-01"
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
   (interactive)
-  ;; Настройки отступов и всякое такое
-  (defvar global-hl-line-mode)
-  (defvar header-line-format)
-  (defvar left-margin-width)
-  (defvar line-spacing)
-  (defvar right-margin-width)
-  (defvar word-wrap)
-
-  (setq global-hl-line-mode nil
-        header-line-format " "
+  (setq header-line-format " "
         left-margin-width 4
         line-spacing 3
         right-margin-width 4
@@ -621,7 +628,8 @@ Version 2017-11-01"
   (abbrev-mode 1)
   (buffer-face-mode 1)
   (flycheck-mode 1) ;; Turn on linters
-  (nlinum-mode 1)
+  (hl-line-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (visual-line-mode 1) ;; Highlight current line
@@ -660,17 +668,6 @@ Version 2017-11-01"
 (straight-use-package 'multiple-cursors)
 
 
-;; NLINUM-MODE
-;; Extended linum mode
-(straight-use-package 'nlinum)
-(defun setup-nlinum-mode ()
-  "Settings for 'linum-mode'."
-  (interactive)
-  (defvar nlinum-format "%d \u2502")
-  (setq nlinum-format "%d \u2502"))
-(add-hook 'nlinum-mode-hook #'setup-nlinum-mode)
-
-
 ;; ORG-MODE
 ;; https://orgmode.org/
 (defun setup-org-mode ()
@@ -688,6 +685,11 @@ Version 2017-11-01"
 (overwrite-mode nil) ;; Disable overwrite mode
 
 
+;; PHP-MODE
+(straight-use-package 'php-mode)
+(add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+
+
 ;; POWERLINE
 ;; https://github.com/milkypostman/powerline
 (straight-use-package 'powerline)
@@ -696,12 +698,11 @@ Version 2017-11-01"
 ;; PROJECTILE-MODE
 ;; https://docs.projectile.mx/projectile/index.html
 (straight-use-package 'projectile)
-(defvar projectile-project-search-path)
-(defvar projectile-mode-map)
+(require 'projectile)
 (setq projectile-project-search-path '("~/repo/"))
-(projectile-mode 1)
 (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(projectile-mode 1)
 
 
 ;; PROTOBUF-MODE
@@ -713,7 +714,8 @@ Version 2017-11-01"
 
   (company-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
+  (hl-line-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -722,21 +724,15 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
 
 
-;; PYENV-MODE
-;;(straight-use-package 'pyenv-mode)
-
-
 ;; PYTHON-MODE
 (straight-use-package 'python-mode)
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
   (company-mode 1)
-  ;; (elpy-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
-  (pyenv-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -759,8 +755,10 @@ Version 2017-11-01"
 (defun setup-rst-mode ()
   "Settings for 'rst-mode'."
   (interactive)
+
   (flycheck-mode 1)
-  (nlinum-mode 1)
+  (hl-line-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -769,9 +767,28 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.rst\\'" . rst-mode))
 
 
+;; RUBY-MODE
+(straight-use-package 'ruby-mode)
+(defun setup-ruby-mode ()
+  "Settings for 'ruby-mode'."
+  (interactive)
+
+  (company-mode 1)
+  (flycheck-mode 1)
+  (hl-line-mode 1)
+  (linum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'ruby-mode-hook #'setup-ruby-mode)
+(add-to-list 'auto-mode-alist '("\\.rb\\'" .ruby-mode))
+
+
 ;; SAVE MINIBUFFER HISTORY
-(defvar savehist-dir (expand-file-name "history.d" emacs-config-dir))
-(defvar savehist-file (expand-file-name "minibuffer-history" savehist-dir))
+(require 'savehist)
+(setq savehist-dir (expand-file-name "history.d" emacs-config-dir)
+      savehist-file (expand-file-name "minibuffer-history" savehist-dir))
 (unless (file-exists-p savehist-dir)
   (make-directory savehist-dir))
 (savehist-mode 1)
@@ -779,6 +796,18 @@ Version 2017-11-01"
 
 ;; PAREN-MODE
 (show-paren-mode 1)
+
+
+;; SAVE-PLACE-MODE
+;; https://www.emacswiki.org/emacs/SavePlace
+;; When you visit a file, point goes to the last place where it was when you
+;; previously visited the same file.
+(defvar save-place-dir (expand-file-name "places" emacs-config-dir))
+(unless (file-exists-p save-place-dir)
+  (make-directory save-place-dir))
+(setq save-place-file (expand-file-name ".emacs-places" save-place-dir)
+      save-place-forget-unreadable-files 1)
+(save-place-mode 1)
 
 
 ;; SCALA MODE
@@ -801,13 +830,19 @@ Version 2017-11-01"
 
   (company-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
+  (smart-tabs-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'shell-script-mode #'setup-shell-script-mode)
 (add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
+
+
+;; SMART-TABS-MODE
+;; https://www.emacswiki.org/emacs/SmartTabs
+(straight-use-package 'smart-tabs-mode)
 
 
 ;; SQL MODE
@@ -816,7 +851,7 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
+  (linum-mode 1)
   (rainbow-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -853,14 +888,15 @@ Version 2017-11-01"
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; !!! DO NOT USE ABANDONED HCL-MODE: https://github.com/syohex/emacs-hcl-mode !!!
 (straight-use-package 'terraform-mode)
+(require 'terraform-mode)
 (defun setup-terraform-mode ()
   "Settings for terraform-mode."
   (interactive)
-  (defvar flycheck-checker 'terraform)
   (setq flycheck-checker 'terraform)
   (company-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
+  (hl-line-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -869,7 +905,7 @@ Version 2017-11-01"
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
 
 
-;; TREEMACS - awesome file manager
+;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 (straight-use-package 'treemacs)
 (global-set-key (kbd "<f8>") 'treemacs)
@@ -877,7 +913,6 @@ Version 2017-11-01"
   (progn
     (define-key treemacs-mode-map (kbd "C-<f8>") 'treemacs-switch-workspace)
     (define-key treemacs-mode-map (kbd "f") 'find-grep)))
-
 
 (with-eval-after-load 'treemacs
   (defun treemacs-get-ignore-files (filename absolute-path)
@@ -905,7 +940,7 @@ Version 2017-11-01"
   "Settings for 'typescript-mode'."
   (interactive)
   (flycheck-mode 1)
-  (nlinum-mode 1))
+  (linum-mode 1))
 (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
@@ -926,13 +961,6 @@ Version 2017-11-01"
 (straight-use-package 'web-mode)
 (defun setup-web-mode()
   "Settings for web-mode."
-  (defvar web-mode-attr-indent-offset)
-  (defvar web-mode-css-indent-offset)
-  (defvar web-mode-enable-block-face)
-  (defvar web-mode-enable-css-colorization)
-  (defvar web-mode-enable-current-element-highlight)
-  (defvar web-mode-markup-indent-offset)
-
   (setq web-mode-attr-indent-offset 4
         web-mode-css-indent-offset 2 ;; CSS
         web-mode-enable-block-face t
@@ -962,21 +990,16 @@ Version 2017-11-01"
 (defun setup-whitespace-mode ()
   "Settings for 'whitespace-mode'."
   (interactive)
-  (defvar whitespace-display-mappings)
-  (defvar whitespace-line-column)
-  (defvar whitespace-fill-column)
+
   (setq whitespace-display-mappings
         '(
-          (space-mark   ?\    [?\xB7]  [?.]) ; space
-          (space-mark   ?\xA0 [?\xA4]  [?_]) ; hard space
-          (newline-mark ?\n   [?¶ ?\n] [?$ ?\n]) ; end of line
+          (space-mark   ?\    [?\xB7]     [?.]) ; space
+          (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
+          (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
+          (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
           )
         ;; Highlight lines with length bigger than 1000 chars
-        whitespace-line-column 1000
-        whitespace-fill-column 1000
-        )
-
-   
+        whitespace-fill-column 1000)
 
   ;; Markdown-mode hack
   (set-face-attribute 'whitespace-space nil
@@ -1003,7 +1026,8 @@ Version 2017-11-01"
 
   (company-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
+  (hl-line-mode 1)
+  (linum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)

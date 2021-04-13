@@ -87,7 +87,9 @@
 
 ;;; Save user settings in dedicated file
 (setq custom-file (expand-file-name "settings.el" emacs-config-dir))
-(load-file "~/.emacs.d/settings.el")
+(when (file-exists-p custom-file)
+  (load-file custom-file))
+
 
 
 ;; Auto-revert mode
@@ -490,6 +492,7 @@ Version 2017-11-01"
   (interactive)
   (setq ibuffer-expert 1
         ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
+        ibuffer-hidden-filter-groups (list "Helm")
         ibuffer-maybe-show-regexps nil
         ibuffer-saved-filter-groups (quote
                                      (("default"
@@ -537,7 +540,6 @@ Version 2017-11-01"
                                          (name . "^\\*\\(Customize\\|Help\\)")
                                          (name . "\\*\\(Echo\\|Minibuf\\)"))))))
         ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
-        ;;   ibuffer-shrink-to-minimum-size t
         ibuffer-formats
         '((mark modified read-only " "
                 (name 60 60 :left :elide)
@@ -551,7 +553,8 @@ Version 2017-11-01"
 
   (hl-line-mode 1)
   (ibuffer-auto-mode 1)
-  (ibuffer-switch-to-saved-filter-groups "default"))
+  (ibuffer-switch-to-saved-filter-groups "default")
+  )
 (global-set-key (kbd "<f2>") 'ibuffer)
 (add-to-list 'ibuffer-never-show-predicates "^\\*")
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer)
@@ -618,6 +621,11 @@ Version 2017-11-01"
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
   (interactive)
+  (defvar header-line-format)
+  (defvar left-margin-width)
+  (defvar line-spacing)
+  (defvar right-margin-width)
+  (defvar word-wrap)
   (setq header-line-format " "
         left-margin-width 4
         line-spacing 3
@@ -787,10 +795,10 @@ Version 2017-11-01"
 
 ;; SAVE MINIBUFFER HISTORY
 (require 'savehist)
-(setq savehist-dir (expand-file-name "history.d" emacs-config-dir)
-      savehist-file (expand-file-name "minibuffer-history" savehist-dir))
+(setq savehist-dir (expand-file-name "history.d" emacs-config-dir))
 (unless (file-exists-p savehist-dir)
   (make-directory savehist-dir))
+(setq savehist-file (expand-file-name "minibuffer-history" savehist-dir))
 (savehist-mode 1)
 
 
@@ -802,10 +810,8 @@ Version 2017-11-01"
 ;; https://www.emacswiki.org/emacs/SavePlace
 ;; When you visit a file, point goes to the last place where it was when you
 ;; previously visited the same file.
-(defvar save-place-dir (expand-file-name "places" emacs-config-dir))
-(unless (file-exists-p save-place-dir)
-  (make-directory save-place-dir))
-(setq save-place-file (expand-file-name ".emacs-places" save-place-dir)
+(require 'saveplace)
+(setq save-place-file (expand-file-name ".emacs-places" emacs-config-dir)
       save-place-forget-unreadable-files 1)
 (save-place-mode 1)
 
@@ -990,16 +996,17 @@ Version 2017-11-01"
 (defun setup-whitespace-mode ()
   "Settings for 'whitespace-mode'."
   (interactive)
-
+  (defvar whitespace-display-mappings)
+  (defvar whitespace-fill-column 1000)
   (setq whitespace-display-mappings
         '(
           (space-mark   ?\    [?\xB7]     [?.]) ; space
           (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
           (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
           (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
-          )
-        ;; Highlight lines with length bigger than 1000 chars
-        whitespace-fill-column 1000)
+          ))
+  ;; Highlight lines with length bigger than 1000 chars)
+  (setq  whitespace-fill-column 1000)
 
   ;; Markdown-mode hack
   (set-face-attribute 'whitespace-space nil

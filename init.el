@@ -26,6 +26,7 @@
       inhibit-startup-message t
       initial-major-mode 'fundamental-mode
       initial-scratch-message ""
+      ispell-program-name "aspell"
       make-backup-files nil
       savehist-save-minibuffer-history 1
       savehistory-delete-duplicates t
@@ -40,38 +41,96 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
 (package-initialize)
 
-(defvar required-packages '(
-			    airline-themes
-			    all-the-icons
-			    all-the-icons-dired
-			    all-the-icons-ibuffer
-			    all-the-icons-ivy
-			    company
-			    counsel
-			    dockerfile-mode
-			    flycheck
-			    ibuffer
-			    markdown-mode
-			    powerline
-			    python-mode
-			    whitespace-mode
-			    ws-butler
-			    projectile
-			    org-mode
-			    editor-config
-			    ))
+(defvar generic-packages '(
+			   airline-themes
+			   beacon
+			   company
+			   company-jedi
+			   company-quickhelp ; https://github.com/company-mode/company-quickhelp
+			   company-terraform
+			   counsel
+			   diff-hl ;; https://github.com/dgutov/diff-hl
+			   dockerfile-mode
+			   edit-indirect ;; https://github.com/Fanael/edit-indirect/
+			   editorconfig
+			   flycheck
+			   flycheck-color-mode-line
+			   flycheck-color-mode-line
+			   flycheck-indicator
+			   flycheck-pos-tip
+			   format-all
+			   go-mode
+			   helm
+			   helm-company
+			   ibuffer
+			   ivy
+			   ivy-rich ; https://github.com/Yevgnen/ivy-rich
+			   json-mode ; https://github.com/joshwnj/json-mode
+			   magit
+			   markdown-mode ; https://github.com/jrblevin/markdown-mode
+			   monokai-theme
+			   multiple-cursors
+			   nlinum
+			   org
+			   powerline ; https://github.com/milkypostman/powerline
+			   projectile
+			   protobuf-mode ; https://github.com/emacsmirror/protobuf-mode
+			   python-mode
+			   rainbow-delimiters ;; https://github.com/Fanael/rainbow-delimiters
+			   rainbow-mode ; http://elpa.gnu.org/packages/rainbow-mode.html
+			   scala-mode ; https://github.com/hvesalai/emacs-scala-mode
+			   smart-tabs-mode ; https://www.emacswiki.org/emacs/SmartTabs
+			   terraform-mode ; https://github.com/emacsorphanage/terraform-mode
+			   tide ; https://github.com/ananthakumaran/tide/
+			   treemacs
+			   treemacs-magit
+			   virtualenvwrapper
+			   ws-butler ;; https://github.com/lewang/ws-butler
+			   yaml-mode
+			   ) "Packages for any EMACS version: console and UI.")
 
+(defvar graphic-packages '(
+			   all-the-icons
+			   all-the-icons-ibuffer
+			   all-the-icons-ivy ;; https://github.com/asok/all-the-icons-ivy
+			   all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
+			   dired-icon
+			   mode-icons
+			   ) "Packages only for graphical mode.")
+
+(defvar required-packages)
+(if (display-graphic-p)
+    (setq required-packages (append generic-packages graphic-packages generic-packages))
+  (setq required-packages generic-packages))
+
+;; AUTO INSTALL STRAIGHT BOOTSTRAP
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; Install all required packages
 (unless (file-exists-p package-user-dir)
-  (progn (package-refresh-contents)
-	 (dolist (package required-packages)
-	   (unless (package-installed-p package)
-	     (package-install package t)))))
+  (progn
+    (dolist (package required-packages)
+      (straight-use-package package))))
+
+
+;; Now EMACS "see" packages in "straight" directory
+(add-to-list 'load-path (expand-file-name "straight" emacs-config-dir))
 
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
-
-
-(global-hl-line-mode 1) ;; Highlight current line
 
 
 ;; Resize windows
@@ -127,23 +186,6 @@
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
 (setq buffer-file-coding-system 'utf-8-auto-unix)
-
-
-;; AUTO INSTALL STRAIGHT BOOTSTRAP
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
 
 
 ;; Settings for hotkeys on any layout
@@ -241,16 +283,9 @@ Version 2017-11-01"
   (kill-buffer "*scratch*"))
 
 
-;; AIRLINE THEMES
-(unless (package-installed-p 'airline-themes)
-  (package-refresh-contents)
-  (package-install 'airline-themes))
-
-
 ;; ALL THE ICONS
 (when (display-graphic-p)
   (progn
-    (straight-use-package 'all-the-icons)
     (cond
      ;; Install fonts in GNU / Linux
      (
@@ -264,62 +299,27 @@ Version 2017-11-01"
       (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
 
 
-;; ALL THE ICONS DIRED
-;; https://github.com/jtbm37/all-the-icons-dired
-(when (display-graphic-p)
-  (defun setup-all-the-icons-dired-mode()
-    "Settings for 'all-the-icons-dired-mode'."
-    (interactive)
-    (all-the-icons-dired-mode 1))
-  (progn
-    (straight-use-package 'all-the-icons-dired)
-    (add-hook 'dired-mode-hook #'setup-all-the-icons-dired-mode)))
-
-
 ;; ALL THE ICONS IBUFFER
 ;; https://github.com/seagle0128/all-the-icons-ibuffer
 (when (display-graphic-p)
-  (progn
-    (straight-use-package 'all-the-icons-ibuffer)
-    (add-hook 'ibuffer-mode-hook #'all-the-icons-ibuffer-mode)))
-
-
-;; ALL THE ICONS IVY
-;; https://github.com/asok/all-the-icons-ivy
-(straight-use-package 'all-the-icons-ivy)
-(all-the-icons-ivy-setup)
+  (add-hook 'ibuffer-mode-hook #'all-the-icons-ibuffer-mode))
 
 
 ;; ALL THE ICONS IVY RICH
-;; https://github.com/seagle0128/all-the-icons-ivy-rich
-(straight-use-package 'all-the-icons-ivy-rich)
-(all-the-icons-ivy-rich-mode 1)
-
-
-;; AUTO VIRTUALENVWRAPPER
-(straight-use-package 'auto-virtualenvwrapper)
-(add-hook 'python-mode-hook 'auto-virtualenvwrapper-activate)
+(when (display-graphic-p)
+  (all-the-icons-ivy-rich-mode 1))
 
 
 ;; BEACON
-(straight-use-package 'beacon)
 (beacon-mode 1)
 
 
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
-(straight-use-package 'company)
+(require 'company)
 (defun setup-company-mode ()
   "Settings for company-mode."
   (interactive)
-  (defvar company-dabbrev-code-ignore-case nil)
-  (defvar company-dabbrev-downcase nil)
-  (defvar company-dabbrev-ignore-case nil)
-  (defvar company-idle-delay 0)
-  (defvar company-minimum-prefix-length 2)
-  (defvar company-quickhelp-delay 1)
-  (defvar company-tooltip-align-annotations t)
-
   (setq company-dabbrev-code-ignore-case nil
         company-dabbrev-downcase nil
         company-dabbrev-ignore-case nil
@@ -332,23 +332,15 @@ Version 2017-11-01"
 
 ;; COMPANY-JEDI
 ;; https://github.com/company-mode/company-mode
-(straight-use-package 'company-jedi)
 (require 'company)
 (add-to-list 'company-backends 'company-jedi)
 
 
-;; COMPANY-TERRAFORM
-(straight-use-package 'company-terraform)
-
-
 ;; COMPANY-QUICKHELP-MODE
-;; https://github.com/company-mode/company-quickhelp
-(straight-use-package 'company-quickhelp)
 (company-quickhelp-mode 1)
 
 
 ;; CONF MODE FOR INI / CONF / LIST
-(straight-use-package 'conf-mode)
 (add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode ))
 (add-to-list 'auto-mode-alist '("\\.list\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
@@ -356,7 +348,6 @@ Version 2017-11-01"
 
 ;; COUNSEL
 ;; USE TOGETHER WITH IVY-MODE
-(straight-use-package 'counsel)
 (counsel-mode 1)
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
@@ -369,22 +360,13 @@ Version 2017-11-01"
 
 
 ;; DESKTOP-SAVE-MODE
-(require 'desktop)
 (setq desktop-modes-not-to-save '(dired-mode
                                   Info-mode
                                   info-lookup-mode))
-(setq desktop-save 1)
 (desktop-save-mode 1)
 
 
-;; DIFF HL: highlight changes
-;; https://github.com/dgutov/diff-hl
-(straight-use-package 'diff-hl)
-(global-diff-hl-mode 1)
-
-
 ;; DOCKERFILE-MODE
-(straight-use-package 'dockerfile-mode)
 (defun setup-dockerfile-mode ()
   "Settings for 'dockerfile-mode'."
   (company-mode 1)
@@ -395,19 +377,11 @@ Version 2017-11-01"
 (add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
 
 
-;; EDIT-INDIRECT-MODE
-;; https://github.com/Fanael/edit-indirect/
-;; Use C-c ' for editing source code examples in markdown
-(straight-use-package 'edit-indirect)
-
-
 ;; EDITORCONFIG EMACS
 ;; https://github.com/editorconfig/editorconfig-emacs
-(straight-use-package 'editorconfig)
 (defun setup-editorconfig-mode ()
   "Settings for 'editor-config-mode'."
   (interactive)
-  (defvar editorconfig-trim-whitespaces-mode)
   (setq editorconfig-trim-whitespaces-mode 'ws-butler-mode))
 (add-hook 'editorconfig-mode-hook #'setup-editorconfig-mode)
 (editorconfig-mode 1)
@@ -430,8 +404,9 @@ Version 2017-11-01"
   "Settings for EMACS Lisp Mode."
   (interactive)
   (company-mode 1)
+  (diff-hl-mode)
   (flycheck-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -441,15 +416,9 @@ Version 2017-11-01"
 
 
 ;; FLYCHECK
-(straight-use-package `flycheck)
-(defun setup-flycheck-mode ()
-  "Settings for 'flycheck-mode'."
-  (interactive)
-  (defvar flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
-  (setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
-        flycheck-indication-mode 'left-margin
-        flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"))
-(add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
+(setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
+      flycheck-indication-mode 'left-margin
+      flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 
 
 ;; FLYCHECK-COLOR-MODE-LINE: highlight status line by flycheck state
@@ -460,7 +429,6 @@ Version 2017-11-01"
 
 
 ;; FLYCHECK INDICATOR
-(straight-use-package 'flycheck-indicator)
 (with-eval-after-load 'flycheck
   (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode))
 
@@ -469,27 +437,25 @@ Version 2017-11-01"
 ;; https://github.com/flycheck/flycheck-pos-tip
 (when (display-graphic-p)
   (progn
-    (straight-use-package 'flycheck-pos-tip)
     (with-eval-after-load 'flycheck
       (add-hook 'flycheck-mode-hook 'flycheck-pos-tip-mode))))
 
 
 ;; FORMAT ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
-(straight-use-package 'format-all)
 (global-set-key (kbd "<f12>") 'format-all-buffer)
 
 
 ;; GO-MODE
 ;; https://github.com/dominikh/go-mode.el
-(straight-use-package 'go-mode)
 (defun setup-go-mode()
   "Settings for 'go-mode'."
   (interactive)
   (abbrev-mode 1)
   (buffer-face-mode 1)
+  (diff-hl-mode 1)
   (flycheck-mode 1) ;; Turn on linters
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (smart-tabs-mode 1)
@@ -501,21 +467,18 @@ Version 2017-11-01"
 
 
 ;; HELM
-(straight-use-package 'helm)
 (global-set-key (kbd "<f10>") 'helm-buffers-list)
 (helm-mode 1)
 
 
 ;; HELM-COMPANY
-(straight-use-package 'helm-company)
 (define-key company-active-map (kbd "C-:") 'helm-company)
 
 
 ;; IBUFFER
-(straight-use-package 'ibuffer)
-(defalias 'list-buffers 'ibuffer)
 (require 'ibuffer)
 (require 'ibuf-ext)
+(defalias 'list-buffers 'ibuffer)
 (defun setup-ibuffer ()
   "Settings for 'ibuffer-mode'."
   (interactive)
@@ -573,7 +536,7 @@ Version 2017-11-01"
         ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
         ibuffer-formats
         '((mark modified read-only " "
-                (name 60 60 :left :elide)
+                (name 60 120 :left :elide)
                 (size 10 10 :right)
                 (mode 16 16 :left :elide)
                 " " filename-and-process)
@@ -593,36 +556,29 @@ Version 2017-11-01"
 
 ;; IVY-MODE
 ;; https://github.com/abo-abo/swiper#ivy
-(straight-use-package 'ivy)
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 
 
 ;; IVY RICH
-;; https://github.com/Yevgnen/ivy-rich
-(straight-use-package 'ivy-rich)
 (ivy-rich-mode 1)
 
 
 ;; JSON-MODE
-;; https://github.com/joshwnj/json-mode
-(straight-use-package 'json-mode)
+(require 'json)
 (defun setup-json-mode()
   "Settings for json-mode."
+  (interactive)
   (company-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.\\(?:json\\|bowerrc\\|jshintrc\\)\\'" . json-mode))
 (add-hook 'json-mode-hook #'setup-json-mode)
-
-
-;; LINUM MODE
-(require 'linum)
-(setq linum-format 'dynamic)
 
 
 ;; LSP-MODE
@@ -641,34 +597,29 @@ Version 2017-11-01"
 
 ;; MAGIT
 ;; https://magit.vc/
-(straight-use-package 'magit)
 (global-set-key (kbd "<f5>") 'magit-status)
 (global-set-key (kbd "<f6>") 'magit-checkout)
 
 
 ;; MARKDOWN MODE
-;; https://github.com/jrblevin/markdown-mode
-(straight-use-package 'markdown-mode)
+(require 'markdown-mode)
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
   (interactive)
-  (defvar header-line-format)
-  (defvar left-margin-width)
-  (defvar line-spacing)
-  (defvar right-margin-width)
-  (defvar word-wrap)
   (setq header-line-format " "
-        left-margin-width 4
-        line-spacing 3
-        right-margin-width 4
-        word-wrap t)
+	left-margin-width 4
+	line-spacing 3
+	markdown-fontify-code-blocks-natively t
+	right-margin-width 4
+	word-wrap t)
 
   ;; Additional modes
   (abbrev-mode 1)
   (buffer-face-mode 1)
+  (diff-hl-mode 1)
   (flycheck-mode 1) ;; Turn on linters
   (hl-line-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (visual-line-mode 1) ;; Highlight current line
@@ -690,21 +641,18 @@ Version 2017-11-01"
 ;; MODE ICONS
 ;; https://github.com/ryuslash/mode-icons
 (when (display-graphic-p)
-  (progn
-    (straight-use-package 'mode-icons)
-    (mode-icons-mode 1)))
+  (mode-icons-mode 1))
 
 
 ;; MONOKAI THEME
-(straight-use-package 'monokai-theme)
 (load-theme 'monokai t)
 (require 'airline-themes)
 (load-theme 'airline-doom-molokai t)
 
 
-;; MULTIPLE CURSORS
-;; https://github.com/magnars/multiple-cursors.el
-(straight-use-package 'multiple-cursors)
+;; NLINUM MODE
+;; https://elpa.gnu.org/packages/nlinum.html
+(setq nlinum-format "%d\u0020\u2502") ;; │)
 
 
 ;; ORG-MODE
@@ -712,10 +660,9 @@ Version 2017-11-01"
 (defun setup-org-mode ()
   "Settings for 'org-mode'."
   (interactive)
-  (setq
-   left-margin-width 4
-   right-margin-width 4
-   word-wrap t))
+  (setq left-margin-width 4
+	right-margin-width 4
+	word-wrap t))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-hook 'org-mode-hook #'setup-org-mode)
 
@@ -729,14 +676,8 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 
 
-;; POWERLINE
-;; https://github.com/milkypostman/powerline
-(straight-use-package 'powerline)
-
-
 ;; PROJECTILE-MODE
 ;; https://docs.projectile.mx/projectile/index.html
-(straight-use-package 'projectile)
 (require 'projectile)
 (setq projectile-project-search-path '("~/repo/"))
 (define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
@@ -745,8 +686,7 @@ Version 2017-11-01"
 
 
 ;; PROTOBUF-MODE
-;; https://github.com/emacsmirror/protobuf-mode
-(straight-use-package 'protobuf-mode)
+(require 'protobuf-mode)
 (defun setup-protobuf-mode ()
   "Settings for 'protobuf-mode'."
   (interactive)
@@ -754,7 +694,7 @@ Version 2017-11-01"
   (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -771,23 +711,13 @@ Version 2017-11-01"
   (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'python-mode-hook #'setup-python-mode)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-
-
-;; RAINBOW DELIMITERS
-;; https://github.com/Fanael/rainbow-delimiters
-(straight-use-package 'rainbow-delimiters)
-
-
-;; RAINBOW MODE
-;; http://elpa.gnu.org/packages/rainbow-mode.html
-(straight-use-package 'rainbow-mode)
 
 
 ;; RST-MODE
@@ -797,7 +727,7 @@ Version 2017-11-01"
 
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -815,7 +745,7 @@ Version 2017-11-01"
   (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -839,7 +769,6 @@ Version 2017-11-01"
 
 
 ;; SCALA MODE
-(straight-use-package 'scala-mode)
 (defun setup-scala-mode ()
   "Settings for 'scala-mode'."
   (interactive)
@@ -855,10 +784,9 @@ Version 2017-11-01"
 (defun setup-shell-script-mode ()
   "Settings for 'shell-script-mode'."
   (interactive)
-
   (company-mode 1)
   (flycheck-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (smart-tabs-mode 1)
@@ -868,18 +796,13 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
 
 
-;; SMART-TABS-MODE
-;; https://www.emacswiki.org/emacs/SmartTabs
-(straight-use-package 'smart-tabs-mode)
-
-
 ;; SQL MODE
 (defun setup-sql-mode ()
   "Settings for SQL-mode."
   (interactive)
   (company-mode 1)
   (flycheck-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -895,8 +818,6 @@ Version 2017-11-01"
 
 
 ;; TIDE-MODE
-;; https://github.com/ananthakumaran/tide/
-(straight-use-package 'tide)
 (defun setup-tide-mode ()
   "Settings for 'tide-mode'."
   (interactive)
@@ -915,8 +836,6 @@ Version 2017-11-01"
 ;; TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; !!! DO NOT USE ABANDONED HCL-MODE: https://github.com/syohex/emacs-hcl-mode !!!
-(straight-use-package 'terraform-mode)
-(require 'terraform-mode)
 (defun setup-terraform-mode ()
   "Settings for terraform-mode."
   (interactive)
@@ -924,7 +843,7 @@ Version 2017-11-01"
   (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)
@@ -935,7 +854,6 @@ Version 2017-11-01"
 
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
-(straight-use-package 'treemacs)
 (global-set-key (kbd "<f8>") 'treemacs)
 (eval-after-load 'treemacs '
   (progn
@@ -968,7 +886,7 @@ Version 2017-11-01"
   "Settings for 'typescript-mode'."
   (interactive)
   (flycheck-mode 1)
-  (linum-mode 1))
+  (nlinum-mode 1))
 (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
@@ -1014,8 +932,6 @@ Version 2017-11-01"
 
 ;; WHITESPACE MODE
 ;; https://www.emacswiki.org/emacs/WhiteSpace
-(straight-use-package 'whitespace-mode)
-(require 'whitespace)
 (defun setup-whitespace-mode ()
   "Settings for 'whitespace-mode'."
   (interactive)
@@ -1038,18 +954,8 @@ Version 2017-11-01"
 (add-hook 'whitespace-mode-hook #'setup-whitespace-mode)
 
 
-;; WS-BUTLER-MODE
-;; DO NOT USE: (add-to-list 'write-file-functions 'delete-trailing-whitespace))!
-;; https://github.com/lewang/ws-butler
-(straight-use-package 'ws-butler)
-
-
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
-(straight-use-package 'yaml-mode)
-(unless (package-installed-p 'yaml-mode)
-  (package-refresh-contents)
-  (package-install 'yaml-mode))
 (defun setup-yaml-mode ()
   "Settings for yaml-mode."
   (interactive)
@@ -1057,7 +963,7 @@ Version 2017-11-01"
   (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (linum-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (rainbow-mode 1)
   (whitespace-mode 1)

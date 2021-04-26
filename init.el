@@ -42,19 +42,22 @@
 (package-initialize)
 
 (defvar generic-packages '(
-			   airline-themes
+					; CORE
+			   anaconda-mode
 			   beacon
 			   company
+			   company-box
 			   company-jedi
-			   company-quickhelp ; https://github.com/company-mode/company-quickhelp
+			   company-quickhelp
 			   company-terraform
 			   counsel
-			   diff-hl ;; https://github.com/dgutov/diff-hl
+			   dash
+			   diff-hl
+			   direnv
 			   dockerfile-mode
-			   edit-indirect ;; https://github.com/Fanael/edit-indirect/
+			   edit-indirect
 			   editorconfig
 			   flycheck
-			   flycheck-color-mode-line
 			   flycheck-color-mode-line
 			   flycheck-indicator
 			   flycheck-pos-tip
@@ -64,35 +67,49 @@
 			   helm-company
 			   ibuffer
 			   ivy
-			   ivy-rich ; https://github.com/Yevgnen/ivy-rich
-			   json-mode ; https://github.com/joshwnj/json-mode
+			   ivy-rich
+			   json-mode
+			   lsp-mode ; https://github.com/emacs-lsp/lsp-mode
+			   lsp-python
+			   lsp-treemacs
 			   magit
-			   markdown-mode ; https://github.com/jrblevin/markdown-mode
-			   monokai-theme
+			   markdown-mode
 			   multiple-cursors
 			   nlinum
 			   org
 			   powerline ; https://github.com/milkypostman/powerline
 			   projectile
-			   protobuf-mode ; https://github.com/emacsmirror/protobuf-mode
+			   protobuf-mode
 			   python-mode
-			   rainbow-delimiters ;; https://github.com/Fanael/rainbow-delimiters
-			   rainbow-mode ; http://elpa.gnu.org/packages/rainbow-mode.html
-			   scala-mode ; https://github.com/hvesalai/emacs-scala-mode
-			   smart-tabs-mode ; https://www.emacswiki.org/emacs/SmartTabs
-			   terraform-mode ; https://github.com/emacsorphanage/terraform-mode
-			   tide ; https://github.com/ananthakumaran/tide/
+			   ;;pyvenv ; https://github.com/jorgenschaefer/pyvenv
+			   pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
+			   rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
+			   scala-mode
+			   smart-tabs-mode
+			   terraform-mode
+			   tide
 			   treemacs
 			   treemacs-magit
-			   virtualenvwrapper
-			   ws-butler ;; https://github.com/lewang/ws-butler
+			   web-beautify
+			   ws-butler
 			   yaml-mode
+
+					; THEMES
+			   airline-themes
+			   base16-theme
+			   doom-themes
+			   melancholy-theme
+			   molokai-theme
+			   monokai-theme
+			   solarized-theme
+			   spacemacs-theme
+			   zenburn-theme
 			   ) "Packages for any EMACS version: console and UI.")
 
 (defvar graphic-packages '(
 			   all-the-icons
-			   all-the-icons-ibuffer
-			   all-the-icons-ivy ;; https://github.com/asok/all-the-icons-ivy
+			   all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
+			   all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
 			   all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
 			   dired-icon
 			   mode-icons
@@ -120,10 +137,8 @@
   (load bootstrap-file nil 'nomessage))
 
 ;; Install all required packages
-(unless (file-exists-p package-user-dir)
-  (progn
-    (dolist (package required-packages)
-      (straight-use-package package))))
+(dolist (package required-packages)
+  (straight-use-package package))
 
 
 ;; Now EMACS "see" packages in "straight" directory
@@ -300,7 +315,6 @@ Version 2017-11-01"
 
 
 ;; ALL THE ICONS IBUFFER
-;; https://github.com/seagle0128/all-the-icons-ibuffer
 (when (display-graphic-p)
   (add-hook 'ibuffer-mode-hook #'all-the-icons-ibuffer-mode))
 
@@ -321,26 +335,34 @@ Version 2017-11-01"
   "Settings for company-mode."
   (interactive)
   (setq company-dabbrev-code-ignore-case nil
-        company-dabbrev-downcase nil
-        company-dabbrev-ignore-case nil
-        company-idle-delay 0
-        company-minimum-prefix-length 2
-        company-quickhelp-delay 3
-        company-tooltip-align-annotations t))
+	company-dabbrev-downcase nil
+	company-dabbrev-ignore-case nil
+	company-idle-delay 0
+	company-minimum-prefix-length 2
+	company-quickhelp-delay 3
+	company-tooltip-align-annotations t))
 (add-hook 'company-mode-hook #'setup-company-mode)
 
 
 ;; COMPANY-JEDI
 ;; https://github.com/company-mode/company-mode
-(require 'company)
-(add-to-list 'company-backends 'company-jedi)
+(with-eval-after-load "company"
+  (add-to-list 'company-backends 'company-jedi))
+
+
+;; COMPANY-BOX
+;; https://github.com/sebastiencs/company-box/
+(add-hook 'company-mode-hook 'company-box-mode)
 
 
 ;; COMPANY-QUICKHELP-MODE
-(company-quickhelp-mode 1)
+;; https://github.com/company-mode/company-quickhelp
+(add-hook 'company-mode-hook 'company-quickhelp-mode)
 
 
 ;; CONF MODE FOR INI / CONF / LIST
+(add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode ))
 (add-to-list 'auto-mode-alist '("\\.list\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
@@ -364,6 +386,12 @@ Version 2017-11-01"
                                   Info-mode
                                   info-lookup-mode))
 (desktop-save-mode 1)
+
+
+;; DIRENV-MODE
+;; https://github.com/wbolster/emacs-direnv
+(direnv-mode 1)
+(setq direnv-use-faces-in-summary nil)
 
 
 ;; DOCKERFILE-MODE
@@ -408,7 +436,6 @@ Version 2017-11-01"
   (flycheck-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
@@ -417,19 +444,23 @@ Version 2017-11-01"
 
 ;; FLYCHECK
 (setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
+      flycheck-locate-config-file-functions '(
+					      flycheck-locate-config-file-by-path
+					      flycheck-locate-config-file-ancestor-directories
+					      flycheck-locate-config-file-home)
+      flycheck-highlighting-mode 'lines
       flycheck-indication-mode 'left-margin
       flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 
 
 ;; FLYCHECK-COLOR-MODE-LINE: highlight status line by flycheck state
 ;; https://github.com/flycheck/flycheck-color-mode-line
-(straight-use-package 'flycheck-color-mode-line)
-(with-eval-after-load 'flycheck
+(with-eval-after-load "flycheck"
   (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
 
 
 ;; FLYCHECK INDICATOR
-(with-eval-after-load 'flycheck
+(with-eval-after-load "flycheck"
   (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode))
 
 
@@ -437,7 +468,7 @@ Version 2017-11-01"
 ;; https://github.com/flycheck/flycheck-pos-tip
 (when (display-graphic-p)
   (progn
-    (with-eval-after-load 'flycheck
+    (with-eval-after-load "flycheck"
       (add-hook 'flycheck-mode-hook 'flycheck-pos-tip-mode))))
 
 
@@ -457,7 +488,6 @@ Version 2017-11-01"
   (flycheck-mode 1) ;; Turn on linters
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (smart-tabs-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
@@ -566,6 +596,7 @@ Version 2017-11-01"
 
 
 ;; JSON-MODE
+;; https://github.com/joshwnj/json-mode
 (require 'json)
 (defun setup-json-mode()
   "Settings for json-mode."
@@ -574,26 +605,16 @@ Version 2017-11-01"
   (flycheck-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.\\(?:json\\|bowerrc\\|jshintrc\\)\\'" . json-mode))
 (add-hook 'json-mode-hook #'setup-json-mode)
 
 
-;; LSP-MODE
-;; https://github.com/emacs-lsp/lsp-mode
-(straight-use-package 'lsp-mode)
-(add-hook 'python-mode-hook 'lsp)
-
-
-;; LSP-JEDI
-(straight-use-package 'lsp-jedi)
-
-
-;; LSP UI
-(straight-use-package 'lsp-ui)
-
+;; LSP JEDI
+(with-eval-after-load "lsp-mode"
+  (add-to-list 'lsp-disabled-clients 'pyls)
+  (add-to-list 'lsp-enabled-clients 'jedi))
 
 ;; MAGIT
 ;; https://magit.vc/
@@ -602,6 +623,7 @@ Version 2017-11-01"
 
 
 ;; MARKDOWN MODE
+;; https://github.com/jrblevin/markdown-mode
 (require 'markdown-mode)
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
@@ -621,7 +643,6 @@ Version 2017-11-01"
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
@@ -631,6 +652,7 @@ Version 2017-11-01"
   (set-face-attribute 'markdown-code-face        nil :family default-font-family)
   (set-face-attribute 'markdown-inline-code-face nil :family default-font-family))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\README\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
@@ -686,6 +708,7 @@ Version 2017-11-01"
 
 
 ;; PROTOBUF-MODE
+;; https://github.com/emacsmirror/protobuf-mode
 (require 'protobuf-mode)
 (defun setup-protobuf-mode ()
   "Settings for 'protobuf-mode'."
@@ -696,7 +719,6 @@ Version 2017-11-01"
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'ptotobuf-mode-hook #'setup-protobuf-mode)
@@ -704,18 +726,39 @@ Version 2017-11-01"
 
 
 ;; PYTHON-MODE
-(straight-use-package 'python-mode)
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
+  (setq
+   tab-width 4
+   py-virtualenv-workon-home "~/.virtualenvs"
+   python-indent "    "
+   python-shell-interpreter "python3"
+   py-electric-comment-p t
+   py-company-pycomplete-p t
+   py-pylint-command-args "--max-line-length 120"
+   )
+
+  (anaconda-mode 1)
   (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (ws-butler-mode 1)
+
+  (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
+  (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
+  (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
+  (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names)
+
+
+  (with-eval-after-load "company"
+    (unless (member 'company-jedi (car company-backends))
+      (setq comp-back (car company-backends))
+      (push 'company-jedi comp-back)
+      (setq company-backends (list comp-back)))))
 (add-hook 'python-mode-hook #'setup-python-mode)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
@@ -729,7 +772,6 @@ Version 2017-11-01"
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'rst-mode-hook #'setup-rst-mode)
@@ -747,7 +789,6 @@ Version 2017-11-01"
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'ruby-mode-hook #'setup-ruby-mode)
@@ -769,6 +810,7 @@ Version 2017-11-01"
 
 
 ;; SCALA MODE
+;; https://github.com/hvesalai/emacs-scala-mode
 (defun setup-scala-mode ()
   "Settings for 'scala-mode'."
   (interactive)
@@ -788,7 +830,6 @@ Version 2017-11-01"
   (flycheck-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (smart-tabs-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -803,7 +844,6 @@ Version 2017-11-01"
   (company-mode 1)
   (flycheck-mode 1)
   (nlinum-mode 1)
-  (rainbow-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -818,6 +858,7 @@ Version 2017-11-01"
 
 
 ;; TIDE-MODE
+;; https://github.com/ananthakumaran/tide/
 (defun setup-tide-mode ()
   "Settings for 'tide-mode'."
   (interactive)
@@ -835,7 +876,6 @@ Version 2017-11-01"
 
 ;; TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
-;; !!! DO NOT USE ABANDONED HCL-MODE: https://github.com/syohex/emacs-hcl-mode !!!
 (defun setup-terraform-mode ()
   "Settings for terraform-mode."
   (interactive)
@@ -845,7 +885,6 @@ Version 2017-11-01"
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
@@ -855,28 +894,15 @@ Version 2017-11-01"
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 (global-set-key (kbd "<f8>") 'treemacs)
-(eval-after-load 'treemacs '
-  (progn
-    (define-key treemacs-mode-map (kbd "C-<f8>") 'treemacs-switch-workspace)
-    (define-key treemacs-mode-map (kbd "f") 'find-grep)))
-
-(with-eval-after-load 'treemacs
+(global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace)
+(with-eval-after-load "treemacs"
   (defun treemacs-get-ignore-files (filename absolute-path)
     (or
      (string-equal filename ".emacs.desktop.lock")
      (string-equal filename "__pycache__")))
-  (defvar treemacs-ignored-file-predicates)
-  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files))
-
-
-;; TREEMACS-ALL-THE-ICONS
-(when (display-graphic-p)
-  (straight-use-package 'treemacs-all-the-icons))
-
-
-;; TREEMACS-DIRED
-(when (display-graphic-p)
-  (straight-use-package 'treemacs-icons-dired))
+  (setq treemacs-width 25)
+  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
+  (define-key treemacs-mode-map (kbd "f") 'find-grep))
 
 
 ;; TYPESCRIPT MODE
@@ -896,10 +922,6 @@ Version 2017-11-01"
 ;; UNDO-TREE
 (straight-use-package 'undo-tree)
 (global-undo-tree-mode 1)
-
-
-;; WEB-BEAUTIFY
-(straight-use-package 'web-beautify)
 
 
 ;; WEB-MODE
@@ -965,7 +987,6 @@ Version 2017-11-01"
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))

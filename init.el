@@ -42,9 +42,11 @@
 (package-initialize)
 
 (defvar generic-packages '(
+
 					; CORE
 			   anaconda-mode
 			   beacon
+			   centaur-tabs
 			   company
 			   company-box
 			   company-jedi
@@ -85,9 +87,9 @@
 			   pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
 			   rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
 			   scala-mode
-			   smart-tabs-mode
 			   terraform-mode
 			   tide
+			   tramp
 			   treemacs
 			   treemacs-magit
 			   web-beautify
@@ -328,6 +330,18 @@ Version 2017-11-01"
 (beacon-mode 1)
 
 
+;; CENTAUR-TABS
+;; https://github.com/ema2159/centaur-tabs
+(require 'centaur-tabs)
+(setq centaur-tabs-style "slant"
+      centaur-tabs-set-icons t
+      centaur-tabs-set-modified-marker t
+      centaur-tabs-gray-out-icons 'buffer)
+(centaur-tabs-mode 1)
+(global-set-key (kbd "C-<tab>") 'centaur-tabs-forward)
+(global-set-key (kbd "C-S-<tab>") 'centaur-tabs-backward)
+
+
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
 (require 'company)
@@ -488,7 +502,6 @@ Version 2017-11-01"
   (flycheck-mode 1) ;; Turn on linters
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (smart-tabs-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
   (ws-butler-mode 1)) ;; Delete trailing spaces on changed lines)
@@ -830,7 +843,6 @@ Version 2017-11-01"
   (flycheck-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
-  (smart-tabs-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'shell-script-mode #'setup-shell-script-mode)

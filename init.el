@@ -24,7 +24,7 @@
       create-lockfiles nil
       inhibit-splash-screen t
       inhibit-startup-message t
-      initial-major-mode 'fundamental-mode
+      initial-major-mode (quote text-mode)
       initial-scratch-message ""
       ispell-program-name "aspell"
       make-backup-files nil
@@ -89,10 +89,11 @@
 			   scala-mode
 			   terraform-mode
 			   tide
-			   tramp
 			   treemacs
 			   treemacs-magit
+			   typescript-mode
 			   web-beautify
+			   which-key
 			   ws-butler
 			   yaml-mode
 
@@ -160,6 +161,8 @@
 (global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
 
 
+					;(global-set-key (kbd "C-<next>") 'next-buffer)
+					;(global-set-key (kbd "C-<prior>") 'previous-buffer)
 (global-set-key (kbd "C-x o") 'next-multiframe-window)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
@@ -241,7 +244,9 @@ It returns the buffer (for elisp programing).
 URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 Version 2017-11-01"
   (interactive)
-  (let (($buf (generate-new-buffer "untitled")))
+  (let (
+	($buf
+	 (generate-new-buffer "untitled")))
     (switch-to-buffer $buf)
     (funcall initial-major-mode)
     (setq buffer-offer-save t)
@@ -259,8 +264,6 @@ Version 2017-11-01"
 
 
 ;; Buffers and windows
-(global-set-key (kbd "C-<next>") 'next-buffer)
-(global-set-key (kbd "C-<prior>") 'previous-buffer)
 (global-set-key (kbd "<f7>") 'xah-new-empty-buffer)
 
 
@@ -333,13 +336,18 @@ Version 2017-11-01"
 ;; CENTAUR-TABS
 ;; https://github.com/ema2159/centaur-tabs
 (require 'centaur-tabs)
-(setq centaur-tabs-style "slant"
-      centaur-tabs-set-icons t
-      centaur-tabs-set-modified-marker t
-      centaur-tabs-gray-out-icons 'buffer)
-(centaur-tabs-mode 1)
-(global-set-key (kbd "C-<tab>") 'centaur-tabs-forward)
-(global-set-key (kbd "C-S-<tab>") 'centaur-tabs-backward)
+(with-eval-after-load "centaur-tabs"
+  (setq centaur-tabs-style "slant"
+	centaur-tabs-set-icons t
+	centaur-tabs-show-navigation-buttons t
+	centaur-tabs-set-modified-marker t
+	centaur-tabs-gray-out-icons 'buffer
+	centaur-tabs-set-bar 'under
+	uniquify-separator "/"
+	)
+  (centaur-tabs-mode 1)
+  (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
+  (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward))
 
 
 ;; COMPANY-MODE
@@ -396,9 +404,10 @@ Version 2017-11-01"
 
 
 ;; DESKTOP-SAVE-MODE
-(setq desktop-modes-not-to-save '(dired-mode
-                                  Info-mode
-                                  info-lookup-mode))
+(require 'desktop)
+;;(setq desktop-modes-not-to-save '(dired-mode
+;;                                  Info-mode
+;;                                  info-lookup-mode))
 (desktop-save-mode 1)
 
 
@@ -631,8 +640,10 @@ Version 2017-11-01"
 
 ;; MAGIT
 ;; https://magit.vc/
-(global-set-key (kbd "<f5>") 'magit-status)
-(global-set-key (kbd "<f6>") 'magit-checkout)
+(require 'magit)
+(with-eval-after-load "magit"
+  (global-set-key (kbd "<f5>") 'magit-status)
+  (global-set-key (kbd "<f6>") 'magit-checkout))
 
 
 ;; MARKDOWN MODE
@@ -670,6 +681,7 @@ Version 2017-11-01"
 
 
 ;; Turn off menu bar
+(require 'menu-bar)
 (menu-bar-mode 0)
 
 
@@ -687,6 +699,7 @@ Version 2017-11-01"
 
 ;; NLINUM MODE
 ;; https://elpa.gnu.org/packages/nlinum.html
+(require 'nlinum)
 (setq nlinum-format "%d\u0020\u2502") ;; │)
 
 
@@ -695,7 +708,8 @@ Version 2017-11-01"
 (defun setup-org-mode ()
   "Settings for 'org-mode'."
   (interactive)
-  (setq left-margin-width 4
+  (setq truncate-lines nil
+	left-margin-width 4
 	right-margin-width 4
 	word-wrap t))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
@@ -745,7 +759,6 @@ Version 2017-11-01"
   (setq
    tab-width 4
    py-virtualenv-workon-home "~/.virtualenvs"
-   python-indent "    "
    python-shell-interpreter "python3"
    py-electric-comment-p t
    py-company-pycomplete-p t
@@ -905,8 +918,7 @@ Version 2017-11-01"
 
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
-(global-set-key (kbd "<f8>") 'treemacs)
-(global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace)
+(require 'treemacs)
 (with-eval-after-load "treemacs"
   (defun treemacs-get-ignore-files (filename absolute-path)
     (or
@@ -914,21 +926,24 @@ Version 2017-11-01"
      (string-equal filename "__pycache__")))
   (setq treemacs-width 25)
   (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
-  (define-key treemacs-mode-map (kbd "f") 'find-grep))
+  (define-key treemacs-mode-map (kbd "f") 'find-grep)
+  (global-set-key (kbd "<f8>") 'treemacs)
+  (global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace))
 
 
 ;; TYPESCRIPT MODE
 ;; https://github.com/emacs-typescript/typescript.el
-(straight-use-package 'typescript-mode)
-(defun setup-typescript-mode ()
-  "Settings for 'typescript-mode'."
-  (interactive)
-  (flycheck-mode 1)
-  (nlinum-mode 1))
-(add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
-(add-hook 'typescript-mode-hook #'setup-typescript-mode)
+(require 'typescript-mode)
+(with-eval-after-load "typescript-mode"
+  (defun setup-typescript-mode ()
+    "Settings for 'typescript-mode'."
+    (interactive)
+    (flycheck-mode 1)
+    (nlinum-mode 1))
+  (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+  (add-hook 'typescript-mode-hook #'setup-typescript-mode))
 
 
 ;; UNDO-TREE
@@ -960,7 +975,6 @@ Version 2017-11-01"
 
 ;; WHICH-KEY MODE
 ;; https://github.com/justbur/emacs-which-key
-(straight-use-package 'which-key)
 (which-key-mode 1)
 
 
@@ -1006,3 +1020,4 @@ Version 2017-11-01"
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 ;;; init.el ends here
+(put 'upcase-region 'disabled nil)

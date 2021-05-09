@@ -4,6 +4,7 @@
 
 ;;; Code:
 
+(put 'upcase-region 'disabled nil)
 (defvar buffer-file-coding-system)
 (defvar create-lockfiles)
 (defvar emacs-config-dir
@@ -76,6 +77,7 @@
 			   lsp-treemacs
 			   magit
 			   markdown-mode
+			   meghanada
 			   multiple-cursors
 			   nlinum
 			   org
@@ -109,12 +111,10 @@
 			   zenburn-theme
 			   ) "Packages for any EMACS version: console and UI.")
 
-(defvar graphic-packages '(
-			   all-the-icons
+(defvar graphic-packages '(all-the-icons
 			   all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
 			   all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
 			   all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
-			   dired-icon
 			   mode-icons
 			   ) "Packages only for graphical mode.")
 
@@ -159,10 +159,10 @@
 
 ;; Exit on Ctrl+Q
 (global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
+(global-set-key (kbd "C-z") 'undo)
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+;;(setq kill-this-buffer-enabled-p 1)
 
-
-					;(global-set-key (kbd "C-<next>") 'next-buffer)
-					;(global-set-key (kbd "C-<prior>") 'previous-buffer)
 (global-set-key (kbd "C-x o") 'next-multiframe-window)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
@@ -254,7 +254,6 @@ Version 2017-11-01"
 
 
 ;; Save/close/open
-(global-set-key (kbd "C-w") 'kill-this-buffer)
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-S-s") 'write-file)
 (global-set-key (kbd "C-r") 'revert-buffer)
@@ -274,8 +273,8 @@ Version 2017-11-01"
 
 ;; Search and replace
 ;;(global-set-key (kbd "C-f") 'isearch-forward) → replaced with swiper
-(global-set-key (kbd "C-h") 'query-replace)
-(global-set-key (kbd "C-S-h") 'query-replace-regexp)
+;(global-set-key (kbd "C-h") 'query-replace)
+;(global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
 ;; Sort lines
 (global-set-key (kbd "<f9>") 'sort-lines)
@@ -336,18 +335,17 @@ Version 2017-11-01"
 ;; CENTAUR-TABS
 ;; https://github.com/ema2159/centaur-tabs
 (require 'centaur-tabs)
-(with-eval-after-load "centaur-tabs"
-  (setq centaur-tabs-style "slant"
+(setq centaur-tabs-style "slant"
 	centaur-tabs-set-icons t
-	centaur-tabs-show-navigation-buttons t
+;	centaur-tabs-show-navigation-buttons t
 	centaur-tabs-set-modified-marker t
 	centaur-tabs-gray-out-icons 'buffer
 	centaur-tabs-set-bar 'under
 	uniquify-separator "/"
 	)
-  (centaur-tabs-mode 1)
-  (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
-  (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward))
+(centaur-tabs-mode 1)
+(global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
+(global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
 
 
 ;; COMPANY-MODE
@@ -400,14 +398,14 @@ Version 2017-11-01"
 
 ;; CUA-MODE
 ;; Ctrl+X, Ctrl+V, Ctrl+Z and other Windows-like shortcuts.
-(cua-mode 1)
+;; (cua-mode 1)
 
 
 ;; DESKTOP-SAVE-MODE
 (require 'desktop)
-;;(setq desktop-modes-not-to-save '(dired-mode
-;;                                  Info-mode
-;;                                  info-lookup-mode))
+(setq desktop-modes-not-to-save '(dired-mode
+                                 Info-mode
+                                 info-lookup-mode))
 (desktop-save-mode 1)
 
 
@@ -490,9 +488,8 @@ Version 2017-11-01"
 ;; FLYCHECK-POS-TIP
 ;; https://github.com/flycheck/flycheck-pos-tip
 (when (display-graphic-p)
-  (progn
-    (with-eval-after-load "flycheck"
-      (add-hook 'flycheck-mode-hook 'flycheck-pos-tip-mode))))
+  (with-eval-after-load "flycheck"
+    (add-hook 'flycheck-mode-hook 'flycheck-pos-tip-mode)))
 
 
 ;; FORMAT ALL
@@ -540,12 +537,12 @@ Version 2017-11-01"
         ibuffer-maybe-show-regexps nil
         ibuffer-saved-filter-groups (quote
                                      (("default"
+                                       ("Markdown"
+                                        (mode . markdown-mode))
                                        ("Dired"
                                         (mode . dired-mode))
                                        ("Org"
                                         (mode . org-mode))
-                                       ("Markdown"
-                                        (mode . markdown-mode))
                                        ("YAML"
                                         (mode . yaml-mode))
                                        ("Protobuf"
@@ -555,13 +552,17 @@ Version 2017-11-01"
                                        ("Python"
                                         (or
                                          (mode . python-mode)
-                                         (mode . elpy-mode)))
+                                         (mode . elpy-mode)
+					 (mode . anaconda-mode)))
                                        ("Shell-script"
                                         (or
                                          (mode . shell-script-mode)))
                                        ("Terraform"
                                         (or
                                          (mode . terraform-mode)))
+				       ("SQL"
+					(or
+					 (mode . sql-mode)))
                                        ("Web"
                                         (or
 					 (mode . js-mode)
@@ -680,6 +681,25 @@ Version 2017-11-01"
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
+;; MEGHANADA
+;; https://github.com/mopemope/meghanada-emacs
+(require 'meghanada)
+(defun setup-meghanada-mode ()
+  "Settings for 'meghanada-mode'."
+  (interactive)
+  (diff-hl-mode 1)
+  (flycheck-mode 1)
+  (hl-line-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (visual-line-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-to-list 'auto-mode-alist '("\\.jar\\'" . meghanada-mode))
+(add-hook 'java-mode-hook #'setup-meghanada-mode)
+
+
+
 ;; Turn off menu bar
 (require 'menu-bar)
 (menu-bar-mode 0)
@@ -695,6 +715,11 @@ Version 2017-11-01"
 (load-theme 'monokai t)
 (require 'airline-themes)
 (load-theme 'airline-doom-molokai t)
+
+
+;; MULTIPLE CURSORS
+(require 'multiple-cursors)
+(global-set-key (kbd "C-c C-c") 'mc/edit-lines)
 
 
 ;; NLINUM MODE
@@ -1020,4 +1045,3 @@ Version 2017-11-01"
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 ;;; init.el ends here
-(put 'upcase-region 'disabled nil)

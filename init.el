@@ -5,33 +5,18 @@
 ;;; Code:
 
 (put 'upcase-region 'disabled nil)
-(defvar buffer-file-coding-system)
-(defvar create-lockfiles)
 (defvar emacs-config-dir
   (file-name-directory user-init-file) "Root directory with settings.")
-(defvar inhibit-splash-screen)
-(defvar inhibit-startup-message)
-(defvar initial-major-mode)
-(defvar initial-scratch-message)
-(defvar make-backup-files)
-(defvar savehist-file)
-(defvar savehist-save-minibuffer-history)
-(defvar savehistory-delete-duplicates)
-(defvar savehistory-length)
-(defvar truncate-lines)
-(defvar user-full-name)
 
-(setq buffer-file-coding-system 'utf8-auto-unix
+(require 'ispell)
+(setq buffer-file-coding-system "utf8-auto-unix"
       create-lockfiles nil
       inhibit-splash-screen t
       inhibit-startup-message t
       initial-major-mode (quote text-mode)
-      initial-scratch-message ""
-      ispell-program-name "aspell"
+      initial-scratch-message nil
+      ispell-program-name "/usr/bin/aspell"
       make-backup-files nil
-      savehist-save-minibuffer-history 1
-      savehistory-delete-duplicates t
-      savehistory-length t
       truncate-lines 1
       user-full-name "Dunaevsky Maxim")
 
@@ -42,81 +27,83 @@
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
 (package-initialize)
 
-(defvar generic-packages '(
+(defvar generic-packages
+  '(
+    ; CORE
+    ace-window
+    anaconda-mode
+    beacon
+    centaur-tabs
+    company
+    company-box
+    company-jedi
+    company-quickhelp
+    company-terraform
+    counsel
+    dash
+    diff-hl
+    direnv
+    dockerfile-mode
+    edit-indirect
+    editorconfig
+    flycheck
+    flycheck-color-mode-line
+    flycheck-indicator
+    flycheck-pos-tip
+    format-all
+    go-mode
+    helm
+    helm-company
+    ibuffer
+    ivy
+    ivy-rich
+    json-mode
+    lsp-mode ; https://github.com/emacs-lsp/lsp-mode
+    lsp-python
+    lsp-treemacs
+    magit
+    markdown-mode
+    meghanada
+    multiple-cursors
+    nlinum
+    org
+    powerline ; https://github.com/milkypostman/powerline
+    projectile
+    protobuf-mode
+    python-mode
+    ;;pyvenv ; https://github.com/jorgenschaefer/pyvenv
+    pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
+    rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
+    scala-mode
+    terraform-mode
+    tide
+    treemacs
+    treemacs-magit
+    typescript-mode
+    web-beautify
+    which-key
+    ws-butler
+    yaml-mode
 
-					; CORE
-			   anaconda-mode
-			   beacon
-			   centaur-tabs
-			   company
-			   company-box
-			   company-jedi
-			   company-quickhelp
-			   company-terraform
-			   counsel
-			   dash
-			   diff-hl
-			   direnv
-			   dockerfile-mode
-			   edit-indirect
-			   editorconfig
-			   flycheck
-			   flycheck-color-mode-line
-			   flycheck-indicator
-			   flycheck-pos-tip
-			   format-all
-			   go-mode
-			   helm
-			   helm-company
-			   ibuffer
-			   ivy
-			   ivy-rich
-			   json-mode
-			   lsp-mode ; https://github.com/emacs-lsp/lsp-mode
-			   lsp-python
-			   lsp-treemacs
-			   magit
-			   markdown-mode
-			   meghanada
-			   multiple-cursors
-			   nlinum
-			   org
-			   powerline ; https://github.com/milkypostman/powerline
-			   projectile
-			   protobuf-mode
-			   python-mode
-			   ;;pyvenv ; https://github.com/jorgenschaefer/pyvenv
-			   pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
-			   rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
-			   scala-mode
-			   terraform-mode
-			   tide
-			   treemacs
-			   treemacs-magit
-			   typescript-mode
-			   web-beautify
-			   which-key
-			   ws-butler
-			   yaml-mode
+	      ; THEMES
+    airline-themes
+    base16-theme
+    doom-themes
+    melancholy-theme
+    molokai-theme
+    monokai-theme
+    solarized-theme
+    spacemacs-theme
+    zenburn-theme
+    ) "Packages for any EMACS version: console and UI.")
 
-					; THEMES
-			   airline-themes
-			   base16-theme
-			   doom-themes
-			   melancholy-theme
-			   molokai-theme
-			   monokai-theme
-			   solarized-theme
-			   spacemacs-theme
-			   zenburn-theme
-			   ) "Packages for any EMACS version: console and UI.")
-
-(defvar graphic-packages '(all-the-icons
-			   all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
-			   all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
-			   all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
-			   mode-icons
-			   ) "Packages only for graphical mode.")
+(defvar graphic-packages
+  '(all-the-icons
+    all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
+    all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
+    all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
+    mode-icons
+    ) "Packages only for graphical mode.")
 
 (defvar required-packages)
 (if (display-graphic-p)
@@ -146,8 +133,6 @@
 
 ;; Now EMACS "see" packages in "straight" directory
 (add-to-list 'load-path (expand-file-name "straight" emacs-config-dir))
-
-
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
 
@@ -202,10 +187,9 @@
 
 
 ;; ENCODING
-(set-language-environment 'utf-8)
+(set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
-(setq buffer-file-coding-system 'utf-8-auto-unix)
 
 
 ;; Settings for hotkeys on any layout
@@ -271,10 +255,6 @@ Version 2017-11-01"
 (global-set-key (kbd "M-5") 'split-window-vertically)
 (global-set-key (kbd "M-6") 'balance-windows)
 
-;; Search and replace
-;;(global-set-key (kbd "C-f") 'isearch-forward) → replaced with swiper
-;(global-set-key (kbd "C-h") 'query-replace)
-;(global-set-key (kbd "C-S-h") 'query-replace-regexp)
 
 ;; Sort lines
 (global-set-key (kbd "<f9>") 'sort-lines)
@@ -300,6 +280,11 @@ Version 2017-11-01"
 
 (when (get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
+
+
+;; ACE-WINDOW
+;; https://github.com/abo-abo/ace-window
+(global-set-key (kbd "M-o") 'ace-window)
 
 
 ;; ALL THE ICONS
@@ -336,13 +321,11 @@ Version 2017-11-01"
 ;; https://github.com/ema2159/centaur-tabs
 (require 'centaur-tabs)
 (setq centaur-tabs-style "slant"
-	centaur-tabs-set-icons t
-;	centaur-tabs-show-navigation-buttons t
-	centaur-tabs-set-modified-marker t
-	centaur-tabs-gray-out-icons 'buffer
-	centaur-tabs-set-bar 'under
-	uniquify-separator "/"
-	)
+      centaur-tabs-set-icons t
+      centaur-tabs-set-modified-marker t
+      centaur-tabs-gray-out-icons 'buffer
+      centaur-tabs-set-bar 'under
+      uniquify-separator "/")
 (centaur-tabs-mode 1)
 (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
 (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
@@ -355,12 +338,12 @@ Version 2017-11-01"
   "Settings for company-mode."
   (interactive)
   (setq company-dabbrev-code-ignore-case nil
-	company-dabbrev-downcase nil
-	company-dabbrev-ignore-case nil
-	company-idle-delay 0
-	company-minimum-prefix-length 2
-	company-quickhelp-delay 3
-	company-tooltip-align-annotations t))
+        company-dabbrev-downcase nil
+        company-dabbrev-ignore-case nil
+        company-idle-delay 0
+        company-minimum-prefix-length 2
+        company-quickhelp-delay 3
+        company-tooltip-align-annotations t))
 (add-hook 'company-mode-hook #'setup-company-mode)
 
 
@@ -396,16 +379,11 @@ Version 2017-11-01"
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
 
 
-;; CUA-MODE
-;; Ctrl+X, Ctrl+V, Ctrl+Z and other Windows-like shortcuts.
-;; (cua-mode 1)
-
-
 ;; DESKTOP-SAVE-MODE
 (require 'desktop)
 (setq desktop-modes-not-to-save '(dired-mode
-                                 Info-mode
-                                 info-lookup-mode))
+				  Info-mode
+				  info-lookup-mode))
 (desktop-save-mode 1)
 
 
@@ -438,14 +416,12 @@ Version 2017-11-01"
 
 ;; ELECTRIC-PAIR-MODE
 ;; EMBEDDED
-(electric-pair-mode 1)
-(defvar electric-pair-pairs)
+(require 'electric)
 (setq electric-pair-pairs
-      '(
-        (?\« . ?\»)
+      '((?\« . ?\»)
         (?\„ . ?\“)
-	(?\( . ?\))))
-
+        (?\( . ?\))))
+(electric-pair-mode 1)
 
 ;; EMACS LISP MODE
 ;; IT IS NOT A ELISP-MODE!
@@ -494,6 +470,7 @@ Version 2017-11-01"
 
 ;; FORMAT ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
+(require 'format-all)
 (global-set-key (kbd "<f12>") 'format-all-buffer)
 
 
@@ -556,7 +533,8 @@ Version 2017-11-01"
 					 (mode . anaconda-mode)))
                                        ("Shell-script"
                                         (or
-                                         (mode . shell-script-mode)))
+                                         (mode . shell-script-mode)
+					 (mode . sh-mode)))
                                        ("Terraform"
                                         (or
                                          (mode . terraform-mode)))
@@ -719,7 +697,7 @@ Version 2017-11-01"
 
 ;; MULTIPLE CURSORS
 (require 'multiple-cursors)
-(global-set-key (kbd "C-c C-c") 'mc/edit-lines)
+(global-set-key (kbd "C-C C-C") 'mc/edit-lines)
 
 
 ;; NLINUM MODE
@@ -883,8 +861,9 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-hook 'shell-script-mode #'setup-shell-script-mode)
 (add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
+(add-hook 'shell-script-mode #'setup-shell-script-mode)
+(add-hook 'sh-mode-hook #'setup-shell-script-mode)
 
 
 ;; SQL MODE
@@ -1018,12 +997,14 @@ Version 2017-11-01"
 	;; Highlight lines with length bigger than 1000 chars)
 	whitespace-line-column 1000)
   ;; Markdown-mode hack
-  (set-face-attribute 'whitespace-space nil
-		      :family default-font-family
-		      :foreground "#75715E")
-  (set-face-attribute 'whitespace-indentation nil
-		      :family default-font-family
-		      :foreground "#E6DB74"))
+  (set-face-attribute
+   'whitespace-space nil
+   :family default-font-family
+   :foreground "#75715E")
+  (set-face-attribute
+   'whitespace-indentation nil
+   :family default-font-family
+   :foreground "#E6DB74"))
 (add-hook 'whitespace-mode-hook #'setup-whitespace-mode)
 
 
@@ -1034,6 +1015,7 @@ Version 2017-11-01"
   (interactive)
 
   (company-mode 1)
+  (diff-hl-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
   (nlinum-mode 1)

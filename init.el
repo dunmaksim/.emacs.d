@@ -54,6 +54,7 @@
     go-mode
     helm
     helm-company
+    highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
     ibuffer
     ivy
     ivy-rich
@@ -239,7 +240,6 @@ Version 2017-11-01"
 
 ;; Save/close/open
 (global-set-key (kbd "C-s") 'save-buffer)
-(global-set-key (kbd "C-S-s") 'write-file)
 (global-set-key (kbd "C-r") 'revert-buffer)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "M-'") 'comment-or-uncomment-region)
@@ -248,13 +248,6 @@ Version 2017-11-01"
 
 ;; Buffers and windows
 (global-set-key (kbd "<f7>") 'xah-new-empty-buffer)
-
-
-(global-set-key (kbd "M-3") 'delete-other-windows)
-(global-set-key (kbd "M-4") 'split-window-horizontally)
-(global-set-key (kbd "M-5") 'split-window-vertically)
-(global-set-key (kbd "M-6") 'balance-windows)
-
 
 ;; Sort lines
 (global-set-key (kbd "<f9>") 'sort-lines)
@@ -643,6 +636,7 @@ Version 2017-11-01"
   (buffer-face-mode 1)
   (diff-hl-mode 1)
   (flycheck-mode 1) ;; Turn on linters
+  (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)

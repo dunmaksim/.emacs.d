@@ -33,7 +33,7 @@
     ace-window
     anaconda-mode
     beacon
-    centaur-tabs
+;    centaur-tabs
     company
     company-box
     company-jedi
@@ -86,7 +86,7 @@
     ws-butler
     yaml-mode
 
-	      ; THEMES
+    ; THEMES
     airline-themes
     base16-theme
     doom-themes
@@ -312,16 +312,16 @@ Version 2017-11-01"
 
 ;; CENTAUR-TABS
 ;; https://github.com/ema2159/centaur-tabs
-(require 'centaur-tabs)
-(setq centaur-tabs-style "slant"
-      centaur-tabs-set-icons t
-      centaur-tabs-set-modified-marker t
-      centaur-tabs-gray-out-icons 'buffer
-      centaur-tabs-set-bar 'under
-      uniquify-separator "/")
-(centaur-tabs-mode 1)
-(global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
-(global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
+;; (require 'centaur-tabs)
+;; (setq centaur-tabs-style "slant"
+;;       centaur-tabs-set-icons t
+;;       centaur-tabs-set-modified-marker t
+;;       centaur-tabs-gray-out-icons 'buffer
+;;       centaur-tabs-set-bar 'under
+;;       uniquify-separator "/")
+;; (centaur-tabs-mode 1)
+;; (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
+;; (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
 
 
 ;; COMPANY-MODE

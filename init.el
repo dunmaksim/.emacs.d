@@ -9,15 +9,21 @@
   (file-name-directory user-init-file) "Root directory with settings.")
 
 (require 'ispell)
+(require 'calendar)
 (setq buffer-file-coding-system "utf8-auto-unix"
+      calendar-week-start-day 1
       create-lockfiles nil
+      cursor-type 'bar
       inhibit-splash-screen t
       inhibit-startup-message t
       initial-major-mode (quote text-mode)
       initial-scratch-message nil
       ispell-program-name "/usr/bin/aspell"
       make-backup-files nil
+      ring-bell-function #'ignore
       truncate-lines 1
+      use-dialog-box nil
+      visible-bell nil
       user-full-name "Dunaevsky Maxim")
 
 
@@ -29,11 +35,8 @@
 
 (defvar generic-packages
   '(
-    ; CORE
-    ace-window
     anaconda-mode
     beacon
-;    centaur-tabs
     company
     company-box
     company-jedi
@@ -50,6 +53,7 @@
     flycheck-color-mode-line
     flycheck-indicator
     flycheck-pos-tip
+    flycheck-clang-tidy
     format-all
     go-mode
     helm
@@ -65,9 +69,11 @@
     magit
     markdown-mode
     meghanada
+    miniedit
     multiple-cursors
     nlinum
     org
+    php-mode
     powerline ; https://github.com/milkypostman/powerline
     projectile
     protobuf-mode
@@ -81,12 +87,15 @@
     treemacs
     treemacs-magit
     typescript-mode
+    undo-tree
     web-beautify
+    web-mode
     which-key
     ws-butler
     yaml-mode
+    yasnippet
 
-    ; THEMES
+					; THEMES
     airline-themes
     base16-theme
     doom-themes
@@ -147,11 +156,12 @@
 (global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
-;;(setq kill-this-buffer-enabled-p 1)
+
 
 (global-set-key (kbd "C-x o") 'next-multiframe-window)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
+(global-set-key (kbd "C-f") 'isearch-forward)
 
 ;; Settings for window (not only a Windows!) system.
 (defvar default-font-family nil "Default font family.")
@@ -296,64 +306,36 @@ Version 2017-11-01"
       (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
 
 
-;; ALL THE ICONS IBUFFER
-(when (display-graphic-p)
-  (add-hook 'ibuffer-mode-hook #'all-the-icons-ibuffer-mode))
-
-
-;; ALL THE ICONS IVY RICH
-(when (display-graphic-p)
-  (all-the-icons-ivy-rich-mode 1))
-
-
 ;; BEACON
 (beacon-mode 1)
 
 
-;; CENTAUR-TABS
-;; https://github.com/ema2159/centaur-tabs
-;; (require 'centaur-tabs)
-;; (setq centaur-tabs-style "slant"
-;;       centaur-tabs-set-icons t
-;;       centaur-tabs-set-modified-marker t
-;;       centaur-tabs-gray-out-icons 'buffer
-;;       centaur-tabs-set-bar 'under
-;;       uniquify-separator "/")
-;; (centaur-tabs-mode 1)
-;; (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
-;; (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
+;; COLUMN NUMBER MODE
+;; BUILTIN
+;; Show column number in modeline
+(column-number-mode 1)
+
 
 
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
 (require 'company)
+(require 'company-box)
+(require 'company-quickhelp)
+(setq company-dabbrev-code-ignore-case nil
+      company-dabbrev-downcase nil
+      company-dabbrev-ignore-case nil
+      company-idle-delay 0
+      company-minimum-prefix-length 2
+      company-quickhelp-delay 3
+      company-tooltip-align-annotations t)
 (defun setup-company-mode ()
-  "Settings for company-mode."
+  "Settings for 'company-mode'."
   (interactive)
-  (setq company-dabbrev-code-ignore-case nil
-        company-dabbrev-downcase nil
-        company-dabbrev-ignore-case nil
-        company-idle-delay 0
-        company-minimum-prefix-length 2
-        company-quickhelp-delay 3
-        company-tooltip-align-annotations t))
+  (add-to-list 'company-backends 'company-jedi)
+  (company-box-mode 1)  ;; https://github.com/sebastiencs/company-box/
+  (company-quickhelp-mode 1)) ;; https://github.com/company-mode/company-quickhelp
 (add-hook 'company-mode-hook #'setup-company-mode)
-
-
-;; COMPANY-JEDI
-;; https://github.com/company-mode/company-mode
-(with-eval-after-load "company"
-  (add-to-list 'company-backends 'company-jedi))
-
-
-;; COMPANY-BOX
-;; https://github.com/sebastiencs/company-box/
-(add-hook 'company-mode-hook 'company-box-mode)
-
-
-;; COMPANY-QUICKHELP-MODE
-;; https://github.com/company-mode/company-quickhelp
-(add-hook 'company-mode-hook 'company-quickhelp-mode)
 
 
 ;; CONF MODE FOR INI / CONF / LIST
@@ -372,6 +354,12 @@ Version 2017-11-01"
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
 
 
+;; DELETE SELECTION MODE
+;; BUILTIN
+;; Delete selected region
+(delete-selection-mode 1)
+
+
 ;; DESKTOP-SAVE-MODE
 (require 'desktop)
 (setq desktop-modes-not-to-save '(dired-mode
@@ -380,10 +368,20 @@ Version 2017-11-01"
 (desktop-save-mode 1)
 
 
+;; DIRED
+(require 'dired)
+(defun setup-dired-mode ()
+  "Settings for 'dired-mode'."
+  (auto-revert-mode 1)
+  (hl-line-mode 1))
+(add-hook 'dired-mode-hook #'setup-dired-mode)
+
+
 ;; DIRENV-MODE
 ;; https://github.com/wbolster/emacs-direnv
-(direnv-mode 1)
+(require 'direnv)
 (setq direnv-use-faces-in-summary nil)
+(direnv-mode 1)
 
 
 ;; DOCKERFILE-MODE
@@ -399,11 +397,8 @@ Version 2017-11-01"
 
 ;; EDITORCONFIG EMACS
 ;; https://github.com/editorconfig/editorconfig-emacs
-(defun setup-editorconfig-mode ()
-  "Settings for 'editor-config-mode'."
-  (interactive)
-  (setq editorconfig-trim-whitespaces-mode 'ws-butler-mode))
-(add-hook 'editorconfig-mode-hook #'setup-editorconfig-mode)
+(require 'editorconfig)
+(setq editorconfig-trim-whitespaces-mode 'ws-butler-mode)
 (editorconfig-mode 1)
 
 
@@ -412,9 +407,10 @@ Version 2017-11-01"
 (require 'electric)
 (setq electric-pair-pairs
       '((?\« . ?\»)
-        (?\„ . ?\“)
-        (?\( . ?\))))
+	(?\„ . ?\“)
+	(?\( . ?\))))
 (electric-pair-mode 1)
+
 
 ;; EMACS LISP MODE
 ;; IT IS NOT A ELISP-MODE!
@@ -433,6 +429,10 @@ Version 2017-11-01"
 
 
 ;; FLYCHECK
+(require 'flycheck)
+(require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
+(require 'flycheck-indicator)
+(require 'flycheck-pos-tip) ;; https://github.com/flycheck/flycheck-pos-tip
 (setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
       flycheck-locate-config-file-functions '(
 					      flycheck-locate-config-file-by-path
@@ -441,25 +441,14 @@ Version 2017-11-01"
       flycheck-highlighting-mode 'lines
       flycheck-indication-mode 'left-margin
       flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
-
-
-;; FLYCHECK-COLOR-MODE-LINE: highlight status line by flycheck state
-;; https://github.com/flycheck/flycheck-color-mode-line
-(with-eval-after-load "flycheck"
-  (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
-
-
-;; FLYCHECK INDICATOR
-(with-eval-after-load "flycheck"
-  (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode))
-
-
-;; FLYCHECK-POS-TIP
-;; https://github.com/flycheck/flycheck-pos-tip
-(when (display-graphic-p)
-  (with-eval-after-load "flycheck"
-    (add-hook 'flycheck-mode-hook 'flycheck-pos-tip-mode)))
-
+(defun setup-flycheck-mode ()
+  "Minor modes for 'flycheck-mode'."
+  (interactive)
+  (flycheck-color-mode-line-mode 1)
+  (flycheck-indicator-mode 1)
+  (when (display-graphic-p)
+    (flycheck-pos-tip-mode 1)))
+(add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
 
 ;; FORMAT ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
@@ -498,95 +487,101 @@ Version 2017-11-01"
 (require 'ibuffer)
 (require 'ibuf-ext)
 (defalias 'list-buffers 'ibuffer)
-(defun setup-ibuffer ()
+(define-ibuffer-column size-h
+  (:name "Size" :inline t)
+  (cond
+   ((> (buffer-size) 1000000) (format "%7.1fM" (/ (buffer-size) 1000000.0)))
+   ((> (buffer-size) 100000) (format "%7.0fk" (/ (buffer-size) 1000.0)))
+   ((> (buffer-size) 1000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
+   (t (format "%8d" (buffer-size)))))
+(setq ibuffer-expert 1
+      ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
+      ibuffer-hidden-filter-groups (list "Helm")
+      ibuffer-maybe-show-regexps nil
+      ibuffer-saved-filter-groups (quote
+				   (("default"
+				     ("Markdown"
+				      (mode . markdown-mode))
+				     ("Dired"
+				      (mode . dired-mode))
+				     ("Org"
+				      (mode . org-mode))
+				     ("YAML"
+				      (mode . yaml-mode))
+				     ("Protobuf"
+				      (mode . protobuf-mode))
+				     ("Lisp"
+				      (mode . emacs-lisp-mode))
+				     ("Python"
+				      (or
+				       (mode . python-mode)
+				       (mode . elpy-mode)
+				       (mode . anaconda-mode)))
+				     ("Shell-script"
+				      (or
+				       (mode . shell-script-mode)
+				       (mode . sh-mode)))
+				     ("Terraform"
+				      (or
+				       (mode . terraform-mode)))
+				     ("SQL"
+				      (or
+				       (mode . sql-mode)))
+				     ("Web"
+				      (or
+				       (mode . js-mode)
+				       (mode . js2-mode)
+				       (mode . web-mode)))
+				     ("Magit"
+				      (or
+				       (mode . magit-status-mode)
+				       (mode . magit-log-mode)
+				       (name . "^\\*magit")
+				       (name . "git-monitor")))
+				     ("Commands"
+				      (or
+				       (mode . shell-mode)
+				       (mode . eshell-mode)
+				       (mode . term-mode)
+				       (mode . compilation-mode)))
+				     ("Emacs"
+				      (or
+				       (name . "^\\*scratch\\*$")
+				       (name . "^\\*Messages\\*$")
+				       (name . "^\\*\\(Customize\\|Help\\)")
+				       (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+      ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
+      ibuffer-formats
+      '((mark modified read-only " "
+	      (name 30 30 :left :elide)
+	      " "
+	      (size-h 10 -1 :right)
+	      " "
+	      (mode 8 8 :left :elide)
+	      " "
+	      filename-and-process))
+      ibuffer-use-other-window nil)
+(defun setup-ibuffer-mode ()
   "Settings for 'ibuffer-mode'."
   (interactive)
-  (setq ibuffer-expert 1
-        ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
-        ibuffer-hidden-filter-groups (list "Helm")
-        ibuffer-maybe-show-regexps nil
-        ibuffer-saved-filter-groups (quote
-                                     (("default"
-                                       ("Markdown"
-                                        (mode . markdown-mode))
-                                       ("Dired"
-                                        (mode . dired-mode))
-                                       ("Org"
-                                        (mode . org-mode))
-                                       ("YAML"
-                                        (mode . yaml-mode))
-                                       ("Protobuf"
-                                        (mode . protobuf-mode))
-                                       ("Lisp"
-                                        (mode . emacs-lisp-mode))
-                                       ("Python"
-                                        (or
-                                         (mode . python-mode)
-                                         (mode . elpy-mode)
-					 (mode . anaconda-mode)))
-                                       ("Shell-script"
-                                        (or
-                                         (mode . shell-script-mode)
-					 (mode . sh-mode)))
-                                       ("Terraform"
-                                        (or
-                                         (mode . terraform-mode)))
-				       ("SQL"
-					(or
-					 (mode . sql-mode)))
-                                       ("Web"
-                                        (or
-					 (mode . js-mode)
-					 (mode . js2-mode)
-                                         (mode . web-mode)))
-                                       ("Magit"
-                                        (or
-                                         (mode . magit-status-mode)
-                                         (mode . magit-log-mode)
-                                         (name . "^\\*magit")
-                                         (name . "git-monitor")))
-                                       ("Commands"
-                                        (or
-                                         (mode . shell-mode)
-                                         (mode . eshell-mode)
-                                         (mode . term-mode)
-                                         (mode . compilation-mode)))
-                                       ("Emacs"
-                                        (or
-                                         (name . "^\\*scratch\\*$")
-                                         (name . "^\\*Messages\\*$")
-                                         (name . "^\\*\\(Customize\\|Help\\)")
-                                         (name . "\\*\\(Echo\\|Minibuf\\)"))))))
-        ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
-        ibuffer-formats
-        '((mark modified read-only " "
-                (name 60 120 :left :elide)
-                (size 10 10 :right)
-                (mode 16 16 :left :elide)
-                " " filename-and-process)
-          (mark " "
-                (name 60 60)
-                " " filename))
-        ibuffer-use-other-window nil)
-
+  (when (display-graphic-p)
+    (all-the-icons-ibuffer-mode 1))
   (hl-line-mode 1)
   (ibuffer-auto-mode 1)
-  (ibuffer-switch-to-saved-filter-groups "default")
-  )
+  (ibuffer-switch-to-saved-filter-groups "default"))
 (global-set-key (kbd "<f2>") 'ibuffer)
 (add-to-list 'ibuffer-never-show-predicates "^\\*")
-(add-hook 'ibuffer-mode-hook #'setup-ibuffer)
+(add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
 
 
 ;; IVY-MODE
 ;; https://github.com/abo-abo/swiper#ivy
+(require 'ivy)
+(setq ivy-use-virtual-buffers t
+      enable-recursive-minibuffers t)
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
-
-
-;; IVY RICH
-(ivy-rich-mode 1)
 
 
 ;; JSON-MODE
@@ -610,27 +605,28 @@ Version 2017-11-01"
   (add-to-list 'lsp-disabled-clients 'pyls)
   (add-to-list 'lsp-enabled-clients 'jedi))
 
+
 ;; MAGIT
 ;; https://magit.vc/
 (require 'magit)
-(with-eval-after-load "magit"
-  (global-set-key (kbd "<f5>") 'magit-status)
-  (global-set-key (kbd "<f6>") 'magit-checkout))
+(global-set-key (kbd "<f5>") 'magit-status)
+(global-set-key (kbd "<f6>") 'magit-checkout)
 
 
 ;; MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 (require 'markdown-mode)
+(setq header-line-format " "
+      left-margin-width 4
+      line-spacing 3
+      markdown-fontify-code-blocks-natively t
+      right-margin-width 4
+      word-wrap t)
+(set-face-attribute 'markdown-code-face        nil :family default-font-family)
+(set-face-attribute 'markdown-inline-code-face nil :family default-font-family)
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
   (interactive)
-  (setq header-line-format " "
-	left-margin-width 4
-	line-spacing 3
-	markdown-fontify-code-blocks-natively t
-	right-margin-width 4
-	word-wrap t)
-
   ;; Additional modes
   (abbrev-mode 1)
   (buffer-face-mode 1)
@@ -644,10 +640,7 @@ Version 2017-11-01"
   (whitespace-mode 1) ;; Show spaces, tabs and other
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
   (cond ;; Turn on spell-checking only in Linux
-   ((string-equal system-type "gnu/linux")(flyspell-mode 1)))
-
-  (set-face-attribute 'markdown-code-face        nil :family default-font-family)
-  (set-face-attribute 'markdown-inline-code-face nil :family default-font-family))
+   ((string-equal system-type "gnu/linux")(flyspell-mode 1))))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\README\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
@@ -669,7 +662,6 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.jar\\'" . meghanada-mode))
 (add-hook 'java-mode-hook #'setup-meghanada-mode)
-
 
 
 ;; Turn off menu bar
@@ -702,13 +694,20 @@ Version 2017-11-01"
 
 ;; ORG-MODE
 ;; https://orgmode.org/
+(require 'org)
+(setq truncate-lines nil
+      left-margin-width 4
+      org-todo-keywords '((sequence "НОВАЯ" "В РАБОТЕ" "РЕВЬЮ" "ЗАБЛОКИРОВАНА" "ПРИОСТАНОВЛЕНА" "|" "ВЫПОЛНЕНА" "ЗАКРЫТА")
+			  (sequence "НОВАЯ" "НА РАСПАКОВКЕ" "|" "РАСПАКОВАНА"))
+      right-margin-width 4
+      word-wrap t)
 (defun setup-org-mode ()
-  "Settings for 'org-mode'."
+  "Minor modes for 'org-mode'."
   (interactive)
-  (setq truncate-lines nil
-	left-margin-width 4
-	right-margin-width 4
-	word-wrap t))
+  (company-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-hook 'org-mode-hook #'setup-org-mode)
 
@@ -718,7 +717,18 @@ Version 2017-11-01"
 
 
 ;; PHP-MODE
-(straight-use-package 'php-mode)
+(require 'php)
+(defun setup-php-mode ()
+  "Minor modes for 'php-mode'."
+  (interactive)
+  (company-mode 1)
+  (flycheck-mode 1)
+  (hl-line-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'php-mode-hook #'setup-php-mode)
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 
 
@@ -750,18 +760,16 @@ Version 2017-11-01"
 
 
 ;; PYTHON-MODE
+(require 'python)
+(setq py-company-pycomplete-p t
+      py-electric-comment-p t
+      py-pylint-command-args "--max-line-length 120"
+      py-virtualenv-workon-home "~/.virtualenvs"
+      python-shell-interpreter "python3"
+      tab-width 4)
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
-  (setq
-   tab-width 4
-   py-virtualenv-workon-home "~/.virtualenvs"
-   python-shell-interpreter "python3"
-   py-electric-comment-p t
-   py-company-pycomplete-p t
-   py-pylint-command-args "--max-line-length 120"
-   )
-
   (anaconda-mode 1)
   (company-mode 1)
   (flycheck-mode 1)
@@ -770,13 +778,10 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
-
   (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
   (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
   (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
   (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names)
-
-
   (with-eval-after-load "company"
     (unless (member 'company-jedi (car company-backends))
       (setq comp-back (car company-backends))
@@ -838,6 +843,8 @@ Version 2017-11-01"
   "Settings for 'scala-mode'."
   (interactive)
   (company-mode 1)
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'scala-mode-hook #'setup-scala-mode)
@@ -874,12 +881,6 @@ Version 2017-11-01"
 (add-hook 'sql-mode-hook #'setup-sql-mode)
 
 
-;; SWIPER
-;; https://github.com/abo-abo/swiper}
-(straight-use-package 'swiper)
-(global-set-key (kbd "C-f") 'swiper-isearch)
-
-
 ;; TIDE-MODE
 ;; https://github.com/ananthakumaran/tide/
 (defun setup-tide-mode ()
@@ -888,6 +889,7 @@ Version 2017-11-01"
   (company-mode 1)
   (eldoc-mode 1)
   (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
   (tide-hl-identifier-mode 1)
   (tide-setup)
   (whitespace-mode 1)
@@ -899,10 +901,11 @@ Version 2017-11-01"
 
 ;; TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
+(with-eval-after-load "terraform-mode"
+  (setq flycheck-checker 'terraform))
 (defun setup-terraform-mode ()
   "Settings for terraform-mode."
   (interactive)
-  (setq flycheck-checker 'terraform)
   (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
@@ -917,52 +920,54 @@ Version 2017-11-01"
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 (require 'treemacs)
-(with-eval-after-load "treemacs"
-  (defun treemacs-get-ignore-files (filename absolute-path)
-    (or
-     (string-equal filename ".emacs.desktop.lock")
-     (string-equal filename "__pycache__")))
-  (setq treemacs-width 25)
-  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
-  (define-key treemacs-mode-map (kbd "f") 'find-grep)
-  (global-set-key (kbd "<f8>") 'treemacs)
-  (global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace))
+(setq treemacs-width 25)
+(defun treemacs-get-ignore-files (filename absolute-path)
+  (or
+   (string-equal filename ".emacs.desktop.lock")
+   (string-equal filename "__pycache__")))
+(add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
+(define-key treemacs-mode-map (kbd "f") 'find-grep)
+(global-set-key (kbd "<f8>") 'treemacs)
+(global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace)
 
 
 ;; TYPESCRIPT MODE
 ;; https://github.com/emacs-typescript/typescript.el
 (require 'typescript-mode)
-(with-eval-after-load "typescript-mode"
-  (defun setup-typescript-mode ()
+(defun setup-typescript-mode ()
     "Settings for 'typescript-mode'."
     (interactive)
+    (company-mode 1)
     (flycheck-mode 1)
-    (nlinum-mode 1))
-  (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
-  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-  (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
-  (add-hook 'typescript-mode-hook #'setup-typescript-mode))
+    (nlinum-mode 1)
+    (rainbow-delimiters-mode 1)
+    (whitespace-mode 1)
+    (ws-butler-mode 1))
+(add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+(add-hook 'typescript-mode-hook #'setup-typescript-mode)
 
 
 ;; UNDO-TREE
-(straight-use-package 'undo-tree)
+(require 'undo-tree)
 (global-undo-tree-mode 1)
 
 
 ;; WEB-MODE
 ;; https://web-mode.org/
-(straight-use-package 'web-mode)
+(require 'web-mode)
+(setq web-mode-attr-indent-offset 4
+      web-mode-css-indent-offset 2 ;; CSS
+      web-mode-enable-block-face t
+      web-mode-enable-css-colorization t
+      web-mode-enable-current-element-highlight t
+      web-mode-markup-indent-offset 2)
 (defun setup-web-mode()
   "Settings for web-mode."
-  (setq web-mode-attr-indent-offset 4
-        web-mode-css-indent-offset 2 ;; CSS
-        web-mode-enable-block-face t
-        web-mode-enable-css-colorization t
-        web-mode-enable-current-element-highlight t
-        web-mode-markup-indent-offset 2)
-
   (company-mode 1)
   (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
@@ -978,28 +983,21 @@ Version 2017-11-01"
 
 ;; WHITESPACE MODE
 ;; https://www.emacswiki.org/emacs/WhiteSpace
-(defun setup-whitespace-mode ()
-  "Settings for 'whitespace-mode'."
-  (interactive)
-  (setq whitespace-display-mappings
+(require 'whitespace)
+(setq whitespace-display-mappings
         '(
           (space-mark   ?\    [?\xB7]     [?.]) ; space
           (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
           (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
           (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
           )
-	;; Highlight lines with length bigger than 1000 chars)
-	whitespace-line-column 1000)
-  ;; Markdown-mode hack
-  (set-face-attribute
-   'whitespace-space nil
-   :family default-font-family
-   :foreground "#75715E")
-  (set-face-attribute
-   'whitespace-indentation nil
-   :family default-font-family
-   :foreground "#E6DB74"))
-(add-hook 'whitespace-mode-hook #'setup-whitespace-mode)
+	whitespace-line-column 1000) ;; Highlight lines with length bigger than 1000 chars)
+(set-face-attribute 'whitespace-space nil
+		    :family default-font-family
+		    :foreground "#75715E")
+(set-face-attribute 'whitespace-indentation nil
+		    :family default-font-family
+		    :foreground "#E6DB74")
 
 
 ;; YAML-MODE
@@ -1007,7 +1005,6 @@ Version 2017-11-01"
 (defun setup-yaml-mode ()
   "Settings for yaml-mode."
   (interactive)
-
   (company-mode 1)
   (diff-hl-mode 1)
   (flycheck-mode 1)

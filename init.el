@@ -62,6 +62,7 @@
     ibuffer
     ivy
     ivy-rich
+    js2-mode
     json-mode
     lsp-mode ; https://github.com/emacs-lsp/lsp-mode
     lsp-python
@@ -583,6 +584,21 @@ Version 2017-11-01"
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
 
+
+;; JS2-MODE
+;; https://github.com/mooz/js2-mode
+(require 'js2-mode)
+(defun setup-js2-mode ()
+  "Settings for 'js2-mode'."
+  (interactive)
+  (company-mode 1)
+  (flycheck-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'js2-mode-hook #'setup-js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
 ;; JSON-MODE
 ;; https://github.com/joshwnj/json-mode

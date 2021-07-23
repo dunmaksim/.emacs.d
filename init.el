@@ -789,6 +789,7 @@ Version 2017-11-01"
   (anaconda-mode 1)
   (company-mode 1)
   (flycheck-mode 1)
+  (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
@@ -830,6 +831,7 @@ Version 2017-11-01"
 
   (company-mode 1)
   (flycheck-mode 1)
+  (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
@@ -955,6 +957,7 @@ Version 2017-11-01"
     (interactive)
     (company-mode 1)
     (flycheck-mode 1)
+    (highlight-indentation-mode 1)
     (nlinum-mode 1)
     (rainbow-delimiters-mode 1)
     (whitespace-mode 1)
@@ -994,6 +997,7 @@ Version 2017-11-01"
 
 ;; WHICH-KEY MODE
 ;; https://github.com/justbur/emacs-which-key
+(require 'which-key)
 (which-key-mode 1)
 
 
@@ -1018,12 +1022,14 @@ Version 2017-11-01"
 
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
+(require 'yaml-mode)
 (defun setup-yaml-mode ()
   "Settings for yaml-mode."
   (interactive)
   (company-mode 1)
   (diff-hl-mode 1)
   (flycheck-mode 1)
+  (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)

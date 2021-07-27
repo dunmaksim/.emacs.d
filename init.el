@@ -110,6 +110,7 @@
 
 (defvar graphic-packages
   '(all-the-icons
+    all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
     all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
     all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
     all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
@@ -374,6 +375,8 @@ Version 2017-11-01"
 (defun setup-dired-mode ()
   "Settings for 'dired-mode'."
   (auto-revert-mode 1)
+  (when (display-graphic-p)
+    (all-the-icons-dired-mode 1))
   (hl-line-mode 1))
 (add-hook 'dired-mode-hook #'setup-dired-mode)
 
@@ -692,7 +695,11 @@ Version 2017-11-01"
 
 
 ;; MONOKAI THEME
-(load-theme 'monokai t)
+(if
+    (display-graphic-p)
+    (load-theme 'monokai t)
+    (load-theme 'doom-material t))
+
 (require 'airline-themes)
 (load-theme 'airline-doom-molokai t)
 

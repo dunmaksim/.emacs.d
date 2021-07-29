@@ -706,7 +706,7 @@ Version 2017-11-01"
 
 ;; MULTIPLE CURSORS
 (require 'multiple-cursors)
-(global-set-key (kbd "C-C C-C") 'mc/edit-lines)
+(global-set-key (kbd "<f1>") 'mc/edit-lines)
 
 
 ;; NLINUM MODE

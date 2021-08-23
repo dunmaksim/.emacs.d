@@ -372,6 +372,9 @@ Version 2017-11-01"
 
 ;; DIRED
 (require 'dired)
+(when (string-equal system-type "gnu/linux")
+  ;; Это может не работать в Windows, надо проверить
+  (setq dired-listing-switches "-lahX --group-directories-first"))
 (defun setup-dired-mode ()
   "Settings for 'dired-mode'."
   (auto-revert-mode 1)
@@ -495,7 +498,7 @@ Version 2017-11-01"
   (:name "Size" :inline t)
   (cond
    ((> (buffer-size) 1000000) (format "%7.1fM" (/ (buffer-size) 1000000.0)))
-   ((> (buffer-size) 100000) (format "%7.0fk" (/ (buffer-size) 1000.0)))
+   ((> (buffer-size) 100000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
    ((> (buffer-size) 1000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
    (t (format "%8d" (buffer-size)))))
 (setq ibuffer-expert 1
@@ -504,14 +507,14 @@ Version 2017-11-01"
       ibuffer-maybe-show-regexps nil
       ibuffer-saved-filter-groups (quote
 				   (("default"
-				     ("Markdown"
-				      (mode . markdown-mode))
 				     ("Dired"
 				      (mode . dired-mode))
-				     ("Org"
-				      (mode . org-mode))
+				     ("Markdown"
+				      (mode . markdown-mode))
 				     ("YAML"
 				      (mode . yaml-mode))
+				     ("Org"
+				      (mode . org-mode))
 				     ("Protobuf"
 				      (mode . protobuf-mode))
 				     ("Lisp"
@@ -555,15 +558,14 @@ Version 2017-11-01"
 				       (name . "^\\*\\(Customize\\|Help\\)")
 				       (name . "\\*\\(Echo\\|Minibuf\\)"))))))
       ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
-      ibuffer-formats
-      '((mark modified read-only " "
-	      (name 30 30 :left :elide)
-	      " "
-	      (size-h 10 -1 :right)
-	      " "
-	      (mode 8 8 :left :elide)
-	      " "
-	      filename-and-process))
+      ibuffer-formats '((mark modified read-only
+			      " " (name 20 -1 :left)
+			      " " (size-h 9 -1 :right)
+			      " " (mode 8 8 :left :elide)
+			      " " filename-and-process)
+			(mark
+			 " " (name 16 -1)
+			 " " filename))
       ibuffer-use-other-window nil)
 (defun setup-ibuffer-mode ()
   "Settings for 'ibuffer-mode'."
@@ -658,6 +660,7 @@ Version 2017-11-01"
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
+  (yas-minor-mode 1) ;; Snippets
   (cond ;; Turn on spell-checking only in Linux
    ((string-equal system-type "gnu/linux")(flyspell-mode 1))))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
@@ -720,8 +723,7 @@ Version 2017-11-01"
 (require 'org)
 (setq truncate-lines nil
       left-margin-width 4
-      org-todo-keywords '((sequence "НОВАЯ" "В РАБОТЕ" "РЕВЬЮ" "ЗАБЛОКИРОВАНА" "ПРИОСТАНОВЛЕНА" "|" "ВЫПОЛНЕНА" "ЗАКРЫТА")
-			  (sequence "НОВАЯ" "НА РАСПАКОВКЕ" "|" "РАСПАКОВАНА"))
+      org-todo-keywords '((sequence "НОВАЯ" "НА РАСПАКОВКЕ" "РАСПАКОВАНА" "ОТМЕНЕНА" "В РАБОТЕ" "ТРЕБУЕТСЯ ИНФОРМАЦИЯ" "РЕВЬЮ" "ЗАКРЫТА БЕЗ СЛИЯНИЯ" "|" "ВЫПОЛНЕНА"))
       right-margin-width 4
       word-wrap t)
 (defun setup-org-mode ()
@@ -945,7 +947,7 @@ Version 2017-11-01"
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 (require 'treemacs)
-(setq treemacs-width 25)
+(setq treemacs-width 30)
 (defun treemacs-get-ignore-files (filename absolute-path)
   (or
    (string-equal filename ".emacs.desktop.lock")
@@ -1046,4 +1048,13 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
+
+;; YASNIPPET
+;; http://github.com/joaotavora/yasnippet
+(require 'yasnippet)
+(defvar snippets-dir
+  (expand-file-name "snippets" emacs-config-dir))
+(unless (file-exists-p snippets-dir)
+  (make-directory snippets-dir))
+(yas-global-mode 1)
 ;;; init.el ends here

@@ -42,6 +42,7 @@
     company-jedi
     company-quickhelp
     company-terraform
+    company-web
     counsel
     dash
     diff-hl
@@ -159,7 +160,7 @@
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
-
+(global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "C-x o") 'next-multiframe-window)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
@@ -757,6 +758,10 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 
 
+;; POWER-LINE
+;; https://github.com/milkypostman/powerline/
+
+
 ;; PROJECTILE-MODE
 ;; https://docs.projectile.mx/projectile/index.html
 (require 'projectile)
@@ -994,6 +999,7 @@ Version 2017-11-01"
 (defun setup-web-mode()
   "Settings for web-mode."
   (company-mode 1)
+  (company-web-mode 1)
   (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -1057,4 +1063,7 @@ Version 2017-11-01"
 (unless (file-exists-p snippets-dir)
   (make-directory snippets-dir))
 (yas-global-mode 1)
+
+(server-start)
 ;;; init.el ends here
+(put 'downcase-region 'disabled nil)

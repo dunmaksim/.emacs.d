@@ -28,17 +28,15 @@
 
 
 (require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (package-initialize)
 
 (defvar generic-packages
   '(
-    anaconda-mode
     beacon
     company
-    company-box
     company-jedi
     company-quickhelp
     company-terraform
@@ -65,9 +63,6 @@
     ivy-rich
     js2-mode
     json-mode
-    lsp-mode ; https://github.com/emacs-lsp/lsp-mode
-    lsp-python
-    lsp-treemacs
     magit
     markdown-mode
     meghanada
@@ -79,8 +74,8 @@
     powerline ; https://github.com/milkypostman/powerline
     projectile
     protobuf-mode
+    python
     python-mode
-    ;;pyvenv ; https://github.com/jorgenschaefer/pyvenv
     pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
     rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
     scala-mode
@@ -97,15 +92,11 @@
     yaml-mode
     yasnippet
 
-					; THEMES
-    airline-themes
+    airline-themes ; THEMES
     base16-theme
     doom-themes
-    melancholy-theme
-    molokai-theme
     monokai-theme
     solarized-theme
-    spacemacs-theme
     zenburn-theme
     ) "Packages for any EMACS version: console and UI.")
 
@@ -123,29 +114,14 @@
     (setq required-packages (append generic-packages graphic-packages generic-packages))
   (setq required-packages generic-packages))
 
-;; AUTO INSTALL STRAIGHT BOOTSTRAP
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
 ;; Install all required packages
-(dolist (package required-packages)
-  (straight-use-package package))
+(dolist (pkg required-packages)
+  (unless (package-installed-p pkg)
+    (package-install pkg t)))
 
 
 ;; Now EMACS "see" packages in "straight" directory
-(add-to-list 'load-path (expand-file-name "straight" emacs-config-dir))
+;; (add-to-list 'load-path (expand-file-name "straight" emacs-config-dir))
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
 
@@ -174,7 +150,7 @@
   (tool-bar-mode 0) ;; Off toolbar
   (tooltip-mode 0) ;; No windows for tooltip
   (window-divider-mode 0)
-  (set-face-attribute 'default nil :height 110)
+  (set-face-attribute 'default nil :height 100)
 
   ;; Font settings for Linux and Windows
   (cond
@@ -242,9 +218,10 @@ It returns the buffer (for elisp programing).
 URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 Version 2017-11-01"
   (interactive)
-  (let (
-	($buf
-	 (generate-new-buffer "untitled")))
+  (let
+      (
+       ($buf
+	(generate-new-buffer "untitled")))
     (switch-to-buffer $buf)
     (funcall initial-major-mode)
     (setq buffer-offer-save t)
@@ -259,15 +236,10 @@ Version 2017-11-01"
 (global-set-key (kbd "C-o") 'dired)
 
 
-;; Buffers and windows
-(global-set-key (kbd "<f7>") 'xah-new-empty-buffer)
-
-;; Sort lines
-(global-set-key (kbd "<f9>") 'sort-lines)
-
-;; Execute commands
-(global-set-key (kbd "<esc>") 'keyboard-quit)
-
+(global-set-key (kbd "<f7>") 'xah-new-empty-buffer) ;; Buffers and windows
+(global-set-key (kbd "<f9>") 'sort-lines) ;; Sort lines
+(global-set-key (kbd "<esc>") 'keyboard-quit) ;; Execute commands — like [g]
+(global-set-key (kbd "<f3>") 'replace-string)
 
 ;; Switch windows with C-x and arrow keys
 (global-set-key (kbd "C-x <up>") 'windmove-up)
@@ -276,10 +248,7 @@ Version 2017-11-01"
 (global-set-key (kbd "C-x <left>") 'windmove-left)
 
 
-(global-set-key (kbd "M--")
-                (lambda ()
-                  (interactive)
-                  (insert "—"))) ;; Long dash by Alt+-
+(global-set-key (kbd "M--") (lambda () (interactive) (insert "—"))) ;; Long dash by Alt+-
 
 (global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
 (global-unset-key (kbd "M-,")) ;; Disable M-, as markers
@@ -319,11 +288,10 @@ Version 2017-11-01"
 (column-number-mode 1)
 
 
-
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
 (require 'company)
-(require 'company-box)
+;;(require 'company-box)
 (require 'company-quickhelp)
 (setq company-dabbrev-code-ignore-case nil
       company-dabbrev-downcase nil
@@ -336,7 +304,6 @@ Version 2017-11-01"
   "Settings for 'company-mode'."
   (interactive)
   (add-to-list 'company-backends 'company-jedi)
-  (company-box-mode 1)  ;; https://github.com/sebastiencs/company-box/
   (company-quickhelp-mode 1)) ;; https://github.com/company-mode/company-quickhelp
 (add-hook 'company-mode-hook #'setup-company-mode)
 
@@ -352,7 +319,7 @@ Version 2017-11-01"
 ;; COUNSEL
 ;; USE TOGETHER WITH IVY-MODE
 (counsel-mode 1)
-(global-set-key (kbd "M-x") 'counsel-M-x)
+;; (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
 (global-set-key (kbd "M-y") 'counsel-yank-pop)
 
@@ -379,11 +346,10 @@ Version 2017-11-01"
 (defun setup-dired-mode ()
   "Settings for 'dired-mode'."
   (auto-revert-mode 1)
+  (hl-line-mode 1)
   (when (display-graphic-p)
-    (all-the-icons-dired-mode 1))
-  (hl-line-mode 1))
+    (all-the-icons-dired-mode 1)))
 (add-hook 'dired-mode-hook #'setup-dired-mode)
-
 
 ;; DIRENV-MODE
 ;; https://github.com/wbolster/emacs-direnv
@@ -603,6 +569,7 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
+(add-hook 'javascript-mode-hook #'setup-js2-mode)
 (add-hook 'js2-mode-hook #'setup-js2-mode)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
@@ -702,7 +669,7 @@ Version 2017-11-01"
 (if
     (display-graphic-p)
     (load-theme 'monokai t)
-    (load-theme 'doom-material t))
+  (load-theme 'doom-material t))
 
 (require 'airline-themes)
 (load-theme 'airline-doom-molokai t)
@@ -711,6 +678,12 @@ Version 2017-11-01"
 ;; MULTIPLE CURSORS
 (require 'multiple-cursors)
 (global-set-key (kbd "<f1>") 'mc/edit-lines)
+(when (display-graphic-p)
+  (progn
+    (global-unset-key (kbd "M-<down-mouse-1>"))
+    (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
+(global-unset-key (kbd "M-<down-mouse-1>"))
+(global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 
 
 ;; NLINUM MODE
@@ -838,7 +811,8 @@ Version 2017-11-01"
 
 
 ;; RUBY-MODE
-(straight-use-package 'ruby-mode)
+;;(straight-use-package 'ruby-mode)
+(require 'ruby-mode)
 (defun setup-ruby-mode ()
   "Settings for 'ruby-mode'."
   (interactive)
@@ -967,15 +941,15 @@ Version 2017-11-01"
 ;; https://github.com/emacs-typescript/typescript.el
 (require 'typescript-mode)
 (defun setup-typescript-mode ()
-    "Settings for 'typescript-mode'."
-    (interactive)
-    (company-mode 1)
-    (flycheck-mode 1)
-    (highlight-indentation-mode 1)
-    (nlinum-mode 1)
-    (rainbow-delimiters-mode 1)
-    (whitespace-mode 1)
-    (ws-butler-mode 1))
+  "Settings for 'typescript-mode'."
+  (interactive)
+  (company-mode 1)
+  (flycheck-mode 1)
+  (highlight-indentation-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
@@ -990,6 +964,7 @@ Version 2017-11-01"
 ;; WEB-MODE
 ;; https://web-mode.org/
 (require 'web-mode)
+(require 'company-web)
 (setq web-mode-attr-indent-offset 4
       web-mode-css-indent-offset 2 ;; CSS
       web-mode-enable-block-face t
@@ -999,7 +974,7 @@ Version 2017-11-01"
 (defun setup-web-mode()
   "Settings for web-mode."
   (company-mode 1)
-  (company-web-mode 1)
+  (company-web 1)
   (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -1020,19 +995,19 @@ Version 2017-11-01"
 ;; https://www.emacswiki.org/emacs/WhiteSpace
 (require 'whitespace)
 (setq whitespace-display-mappings
-        '(
-          (space-mark   ?\    [?\xB7]     [?.]) ; space
-          (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
-          (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
-          (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
-          )
-	whitespace-line-column 1000) ;; Highlight lines with length bigger than 1000 chars)
+      '(
+	(space-mark   ?\    [?\xB7]     [?.]) ; space
+	(space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
+	(newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
+	(tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
+	)
+      whitespace-line-column 1000) ;; Highlight lines with length bigger than 1000 chars)
 (set-face-attribute 'whitespace-space nil
 		    :family default-font-family
 		    :foreground "#75715E")
 (set-face-attribute 'whitespace-indentation nil
-		    :family default-font-family
-		    :foreground "#E6DB74")
+                    :family default-font-family
+                    :foreground "#E6DB74")
 
 
 ;; YAML-MODE

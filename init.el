@@ -26,7 +26,6 @@
       visible-bell nil
       user-full-name "Dunaevsky Maxim")
 
-
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
@@ -65,14 +64,13 @@
     json-mode
     magit
     markdown-mode
-    meghanada
     miniedit
     multiple-cursors
     nlinum
     org
+    org-roam
     php-mode
     powerline ; https://github.com/milkypostman/powerline
-    projectile
     protobuf-mode
     python
     python-mode
@@ -82,6 +80,7 @@
     terraform-mode
     tide
     treemacs
+    treemacs-icons-dired
     treemacs-magit
     typescript-mode
     undo-tree
@@ -115,8 +114,13 @@
   (setq required-packages generic-packages))
 
 ;; Install all required packages
+(defvar packages-refreshed 0 "Список пакетов обновлён")
 (dolist (pkg required-packages)
   (unless (package-installed-p pkg)
+    (when (equal packages-refreshed 0)
+      (progn
+        (package-refresh-contents t)
+        (setq packages-refreshed 1)))
     (package-install pkg t)))
 
 
@@ -219,9 +223,9 @@ URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 Version 2017-11-01"
   (interactive)
   (let
-      (
-       ($buf
-	(generate-new-buffer "untitled")))
+    (
+      ($buf
+        (generate-new-buffer "untitled")))
     (switch-to-buffer $buf)
     (funcall initial-major-mode)
     (setq buffer-offer-save t)
@@ -602,6 +606,21 @@ Version 2017-11-01"
 (global-set-key (kbd "<f6>") 'magit-checkout)
 
 
+;; Makefile
+(defun setup-makefile-mode ()
+  "Settings for Makefile-mode."
+  (interactive)
+  (company-mode 1)
+  (flycheck-mode 1)
+  (highlight-indentation-mode 1)
+  (hl-line-mode 1)
+  (hl-line-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1))
+(add-hook 'makefile-mode-hook #'setup-makefile-mode)
+
+
 ;; MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 (require 'markdown-mode)
@@ -636,24 +655,6 @@ Version 2017-11-01"
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
-;; MEGHANADA
-;; https://github.com/mopemope/meghanada-emacs
-(require 'meghanada)
-(defun setup-meghanada-mode ()
-  "Settings for 'meghanada-mode'."
-  (interactive)
-  (diff-hl-mode 1)
-  (flycheck-mode 1)
-  (hl-line-mode 1)
-  (nlinum-mode 1)
-  (rainbow-delimiters-mode 1)
-  (visual-line-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist '("\\.jar\\'" . meghanada-mode))
-(add-hook 'java-mode-hook #'setup-meghanada-mode)
-
-
 ;; Turn off menu bar
 (require 'menu-bar)
 (menu-bar-mode 0)
@@ -666,8 +667,7 @@ Version 2017-11-01"
 
 
 ;; MONOKAI THEME
-(if
-    (display-graphic-p)
+(if (display-graphic-p)
     (load-theme 'monokai t)
   (load-theme 'doom-material t))
 
@@ -677,13 +677,11 @@ Version 2017-11-01"
 
 ;; MULTIPLE CURSORS
 (require 'multiple-cursors)
-(global-set-key (kbd "<f1>") 'mc/edit-lines)
+(global-set-key (kbd "C-c C-e") 'mc/edit-lines)
 (when (display-graphic-p)
   (progn
     (global-unset-key (kbd "M-<down-mouse-1>"))
     (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
-(global-unset-key (kbd "M-<down-mouse-1>"))
-(global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
 
 
 ;; NLINUM MODE
@@ -733,15 +731,6 @@ Version 2017-11-01"
 
 ;; POWER-LINE
 ;; https://github.com/milkypostman/powerline/
-
-
-;; PROJECTILE-MODE
-;; https://docs.projectile.mx/projectile/index.html
-(require 'projectile)
-(setq projectile-project-search-path '("~/repo/"))
-(define-key projectile-mode-map (kbd "S-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(projectile-mode 1)
 
 
 ;; PROTOBUF-MODE
@@ -934,7 +923,12 @@ Version 2017-11-01"
 (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
 (define-key treemacs-mode-map (kbd "f") 'find-grep)
 (global-set-key (kbd "<f8>") 'treemacs)
-(global-set-key (kbd "C-<f8>") 'treemacs-switch-workspace)
+(treemacs-follow-mode 1)
+(treemacs-git-mode 'simple)
+(treemacs-filewatch-mode 1)
+
+;; TREEMACS-ICONS-DIRED-MODE
+(treemacs-icons-dired-mode 1)
 
 
 ;; TYPESCRIPT MODE
@@ -971,6 +965,7 @@ Version 2017-11-01"
       web-mode-enable-css-colorization t
       web-mode-enable-current-element-highlight t
       web-mode-markup-indent-offset 2)
+
 (defun setup-web-mode()
   "Settings for web-mode."
   (company-mode 1)
@@ -1003,8 +998,8 @@ Version 2017-11-01"
 	)
       whitespace-line-column 1000) ;; Highlight lines with length bigger than 1000 chars)
 (set-face-attribute 'whitespace-space nil
-		    :family default-font-family
-		    :foreground "#75715E")
+                    :family default-font-family
+                    :foreground "#75715E")
 (set-face-attribute 'whitespace-indentation nil
                     :family default-font-family
                     :foreground "#E6DB74")

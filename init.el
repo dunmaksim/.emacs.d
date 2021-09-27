@@ -11,20 +11,21 @@
 (require 'ispell)
 (require 'calendar)
 (setq buffer-file-coding-system "utf8-auto-unix"
-      calendar-week-start-day 1
-      create-lockfiles nil
-      cursor-type 'bar
-      inhibit-splash-screen t
-      inhibit-startup-message t
-      initial-major-mode (quote text-mode)
-      initial-scratch-message nil
-      ispell-program-name "/usr/bin/aspell"
-      make-backup-files nil
-      ring-bell-function #'ignore
-      truncate-lines 1
-      use-dialog-box nil
-      visible-bell nil
-      user-full-name "Dunaevsky Maxim")
+  calendar-week-start-day 1
+  custom-file (expand-file-name "custom.el" emacs-config-dir)
+  create-lockfiles nil
+  cursor-type 'bar
+  inhibit-splash-screen t
+  inhibit-startup-message t
+  initial-major-mode (quote text-mode)
+  initial-scratch-message nil
+  ispell-program-name "/usr/bin/aspell"
+  make-backup-files nil
+  ring-bell-function #'ignore
+  truncate-lines 1
+  use-dialog-box nil
+  visible-bell nil
+  user-full-name "Dunaevsky Maxim")
 
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
@@ -56,7 +57,8 @@
     go-mode
     helm
     helm-company
-    highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
+     highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
+     hl-line
     ibuffer
     ivy
     ivy-rich
@@ -336,9 +338,13 @@ Version 2017-11-01"
 
 ;; DESKTOP-SAVE-MODE
 (require 'desktop)
-(setq desktop-modes-not-to-save '(dired-mode
-				  Info-mode
-				  info-lookup-mode))
+(setq
+  desktop-save t
+  desktop-modes-not-to-save
+  '(
+     dired-mode
+     Info-mode
+     info-lookup-mode))
 (desktop-save-mode 1)
 
 
@@ -1035,5 +1041,8 @@ Version 2017-11-01"
 (yas-global-mode 1)
 
 (server-start)
-;;; init.el ends here
 (put 'downcase-region 'disabled nil)
+
+(load custom-file)
+
+;;; init.el ends here

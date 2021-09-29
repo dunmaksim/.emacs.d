@@ -159,16 +159,21 @@
   (set-face-attribute 'default nil :height 100)
 
   ;; Font settings for Linux and Windows
+  (defvar available-fonts (font-family-list))
   (cond
-   (
+   ( ;; Windows
     (string-equal system-type "windows-nt")
-    (when (member "Consolas" (font-family-list))
+    (when (member "Consolas" available-fonts)
       (setq default-font-family "Consolas")))
-   (
-    (string-equal system-type "gnu/linux")
-    (when (member "DejaVu Sans Mono" (font-family-list))
-      (setq default-font-family "DejaVu Sans Mono"))))
-
+    ( ;; Linux
+      (string-equal system-type "gnu/linux")
+      (cond
+        (
+          (member "Source Code Pro" available-fonts)
+          (setq default-font-family "Source Code Pro"))
+        (
+          (member "DejaVu Sans Mono" available-fonts)
+          (setq default-font-family "DejaVu Sans Mono")))))
   (set-face-attribute 'default nil :family default-font-family))
 
 
@@ -418,13 +423,13 @@ Version 2017-11-01"
 (require 'flycheck-indicator)
 (require 'flycheck-pos-tip) ;; https://github.com/flycheck/flycheck-pos-tip
 (setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
-      flycheck-locate-config-file-functions '(
-					      flycheck-locate-config-file-by-path
-					      flycheck-locate-config-file-ancestor-directories
-					      flycheck-locate-config-file-home)
-      flycheck-highlighting-mode 'lines
-      flycheck-indication-mode 'left-margin
-      flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
+  flycheck-locate-config-file-functions '(
+                                           flycheck-locate-config-file-by-path
+                                           flycheck-locate-config-file-ancestor-directories
+                                           flycheck-locate-config-file-home)
+  flycheck-highlighting-mode 'lines
+  flycheck-indication-mode 'left-margin
+  flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 (defun setup-flycheck-mode ()
   "Minor modes for 'flycheck-mode'."
   (interactive)
@@ -478,72 +483,73 @@ Version 2017-11-01"
    ((> (buffer-size) 100000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
    ((> (buffer-size) 1000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
    (t (format "%8d" (buffer-size)))))
-(setq ibuffer-expert 1
-      ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
-      ibuffer-hidden-filter-groups (list "Helm")
-      ibuffer-maybe-show-regexps nil
-      ibuffer-saved-filter-groups (quote
-				   (("default"
-				     ("Dired"
-				      (mode . dired-mode))
-				     ("Markdown"
-				      (mode . markdown-mode))
-				     ("YAML"
-				      (mode . yaml-mode))
-				     ("Org"
-				      (mode . org-mode))
-				     ("Protobuf"
-				      (mode . protobuf-mode))
-				     ("Lisp"
-				      (mode . emacs-lisp-mode))
-				     ("Python"
-				      (or
-				       (mode . python-mode)
-				       (mode . elpy-mode)
-				       (mode . anaconda-mode)))
-				     ("Shell-script"
-				      (or
-				       (mode . shell-script-mode)
-				       (mode . sh-mode)))
-				     ("Terraform"
-				      (or
-				       (mode . terraform-mode)))
-				     ("SQL"
-				      (or
-				       (mode . sql-mode)))
-				     ("Web"
-				      (or
-				       (mode . js-mode)
-				       (mode . js2-mode)
-				       (mode . web-mode)))
-				     ("Magit"
-				      (or
-				       (mode . magit-status-mode)
-				       (mode . magit-log-mode)
-				       (name . "^\\*magit")
-				       (name . "git-monitor")))
-				     ("Commands"
-				      (or
-				       (mode . shell-mode)
-				       (mode . eshell-mode)
-				       (mode . term-mode)
-				       (mode . compilation-mode)))
-				     ("Emacs"
-				      (or
-				       (name . "^\\*scratch\\*$")
-				       (name . "^\\*Messages\\*$")
-				       (name . "^\\*\\(Customize\\|Help\\)")
-				       (name . "\\*\\(Echo\\|Minibuf\\)"))))))
-      ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
-      ibuffer-formats '((mark modified read-only
-			      " " (name 20 -1 :left)
-			      " " (size-h 9 -1 :right)
-			      " " (mode 8 8 :left :elide)
-			      " " filename-and-process)
-			(mark
-			 " " (name 16 -1)
-			 " " filename))
-      ibuffer-use-other-window nil)
+(setq
+  ibuffer-expert 1
+  ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
+  ibuffer-hidden-filter-groups (list "Helm")
+  ibuffer-maybe-show-regexps nil
+  ibuffer-saved-filter-groups (quote
+                                (("default"
+                                   ("Dired"
+                                     (mode . dired-mode))
+                                   ("Markdown"
+                                     (mode . markdown-mode))
+                                   ("YAML"
+                                     (mode . yaml-mode))
+                                   ("Org"
+                                     (mode . org-mode))
+                                   ("Protobuf"
+                                     (mode . protobuf-mode))
+                                   ("Lisp"
+                                     (mode . emacs-lisp-mode))
+                                   ("Python"
+                                     (or
+                                       (mode . python-mode)
+                                       (mode . elpy-mode)
+                                       (mode . anaconda-mode)))
+                                   ("Shell-script"
+                                     (or
+                                       (mode . shell-script-mode)
+                                       (mode . sh-mode)))
+                                   ("Terraform"
+                                     (or
+                                       (mode . terraform-mode)))
+                                   ("SQL"
+                                     (or
+                                       (mode . sql-mode)))
+                                   ("Web"
+                                     (or
+                                       (mode . js-mode)
+                                       (mode . js2-mode)
+                                       (mode . web-mode)))
+                                   ("Magit"
+                                     (or
+                                       (mode . magit-status-mode)
+                                       (mode . magit-log-mode)
+                                       (name . "^\\*magit")
+                                       (name . "git-monitor")))
+                                   ("Commands"
+                                     (or
+                                       (mode . shell-mode)
+                                       (mode . eshell-mode)
+                                       (mode . term-mode)
+                                       (mode . compilation-mode)))
+                                   ("Emacs"
+                                     (or
+                                       (name . "^\\*scratch\\*$")
+                                       (name . "^\\*Messages\\*$")
+                                       (name . "^\\*\\(Customize\\|Help\\)")
+                                       (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+  ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
+  ibuffer-formats '((mark modified read-only
+                      " " (name 20 -1 :left)
+                      " " (size-h 9 -1 :right)
+                      " " (mode 8 8 :left :elide)
+                      " " filename-and-process)
+                     (mark
+                       " " (name 16 -1)
+                       " " filename))
+  ibuffer-use-other-window nil)
 (defun setup-ibuffer-mode ()
   "Settings for 'ibuffer-mode'."
   (interactive)
@@ -560,8 +566,9 @@ Version 2017-11-01"
 ;; IVY-MODE
 ;; https://github.com/abo-abo/swiper#ivy
 (require 'ivy)
-(setq ivy-use-virtual-buffers t
-      enable-recursive-minibuffers t)
+(setq
+  ivy-use-virtual-buffers t
+  enable-recursive-minibuffers t)
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
@@ -630,12 +637,13 @@ Version 2017-11-01"
 ;; MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 (require 'markdown-mode)
-(setq header-line-format " "
-      left-margin-width 4
-      line-spacing 3
-      markdown-fontify-code-blocks-natively t
-      right-margin-width 4
-      word-wrap t)
+(setq
+  header-line-format " "
+  left-margin-width 4
+  line-spacing 3
+  markdown-fontify-code-blocks-natively t
+  right-margin-width 4
+  word-wrap t)
 (set-face-attribute 'markdown-code-face        nil :family default-font-family)
 (set-face-attribute 'markdown-inline-code-face nil :family default-font-family)
 (defun setup-markdown-mode()
@@ -655,7 +663,10 @@ Version 2017-11-01"
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
   (yas-minor-mode 1) ;; Snippets
   (cond ;; Turn on spell-checking only in Linux
-   ((string-equal system-type "gnu/linux")(flyspell-mode 1))))
+    (
+      (string-equal system-type "gnu/linux")
+      (flyspell-mode 1))))
+(define-key markdown-mode-map (kbd "M-.") 'markdown-follow-thing-at-point)
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\README\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
@@ -693,7 +704,8 @@ Version 2017-11-01"
 ;; NLINUM MODE
 ;; https://elpa.gnu.org/packages/nlinum.html
 (require 'nlinum)
-(setq nlinum-format "%d\u0020\u2502") ;; │)
+(setq nlinum-format "%d \u2502")
+;;(setq nlinum-format "%d\u0020\u2502") ;; │)
 
 
 ;; ORG-MODE

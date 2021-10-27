@@ -35,7 +35,6 @@
 
 (defvar generic-packages
   '(
-    beacon
     company
     company-jedi
     company-quickhelp
@@ -116,7 +115,7 @@
   (setq required-packages generic-packages))
 
 ;; Install all required packages
-(defvar packages-refreshed 0 "Список пакетов обновлён")
+(defvar packages-refreshed 0 "Список пакетов обновлён.")
 (dolist (pkg required-packages)
   (unless (package-installed-p pkg)
     (when (equal packages-refreshed 0)
@@ -137,8 +136,6 @@
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
-;; Exit on Ctrl+Q
-(global-set-key (kbd "C-q") 'save-buffers-kill-terminal)
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
@@ -147,6 +144,9 @@
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
 (global-set-key (kbd "C-f") 'isearch-forward)
+;; Размер шрифта
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "M-=") 'text-scale-decrease)
 
 ;; Settings for window (not only a Windows!) system.
 (defvar default-font-family nil "Default font family.")
@@ -289,10 +289,6 @@ Version 2017-11-01"
       (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
 
 
-;; BEACON
-(beacon-mode 1)
-
-
 ;; COLUMN NUMBER MODE
 ;; BUILTIN
 ;; Show column number in modeline
@@ -302,7 +298,6 @@ Version 2017-11-01"
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
 (require 'company)
-;;(require 'company-box)
 (require 'company-quickhelp)
 (setq company-dabbrev-code-ignore-case nil
       company-dabbrev-downcase nil

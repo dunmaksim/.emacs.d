@@ -8,8 +8,9 @@
 (defvar emacs-config-dir
   (file-name-directory user-init-file) "Root directory with settings.")
 
-(require 'ispell)
 (require 'calendar)
+(require 'face-remap)
+(require 'ispell)
 (setq buffer-file-coding-system "utf8-auto-unix"
   calendar-week-start-day 1
   custom-file (expand-file-name "custom.el" emacs-config-dir)
@@ -22,6 +23,7 @@
   ispell-program-name "/usr/bin/aspell"
   make-backup-files nil
   ring-bell-function #'ignore
+  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
   truncate-lines 1
   use-dialog-box nil
   visible-bell nil
@@ -35,83 +37,84 @@
 
 (defvar generic-packages
   '(
-    company
-    company-jedi
-    company-quickhelp
-    company-terraform
-    company-web
-    counsel
-    dash
-    diff-hl
-    direnv
-    dockerfile-mode
-    edit-indirect
-    editorconfig
-    flycheck
-    flycheck-color-mode-line
-    flycheck-indicator
-    flycheck-pos-tip
-    flycheck-clang-tidy
-    format-all
-    go-mode
-    helm
-    helm-company
+     company
+     company-jedi
+     company-quickhelp
+     company-terraform
+     company-web
+     counsel
+     dash
+     diff-hl
+     direnv
+     dockerfile-mode
+     easy-hugo
+     edit-indirect
+     editorconfig
+     flycheck
+     flycheck-color-mode-line
+     flycheck-indicator
+     flycheck-pos-tip
+     flycheck-clang-tidy
+     format-all
+     go-mode
+     helm
+     helm-company
      highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
      hl-line
-    ibuffer
-    ivy
-    ivy-rich
-    js2-mode
-    json-mode
-    magit
-    markdown-mode
-    miniedit
-    multiple-cursors
-    nlinum
-    org
-    org-roam
-    php-mode
-    powerline ; https://github.com/milkypostman/powerline
-    protobuf-mode
-    python
-    python-mode
-    pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
-    rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
-    scala-mode
-    terraform-mode
-    tide
-    treemacs
-    treemacs-icons-dired
-    treemacs-magit
-    typescript-mode
-    undo-tree
-    web-beautify
-    web-mode
-    which-key
-    ws-butler
-    yaml-mode
-    yasnippet
+     ibuffer
+     ivy
+     ivy-rich
+     js2-mode
+     json-mode
+     magit
+     markdown-mode
+     miniedit
+     multiple-cursors
+     nlinum
+     org
+     org-roam
+     php-mode
+     powerline ; https://github.com/milkypostman/powerline
+     protobuf-mode
+     python
+     python-mode
+     pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
+     rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
+     scala-mode
+     terraform-mode
+     tide
+     treemacs
+     treemacs-icons-dired
+     treemacs-magit
+     typescript-mode
+     undo-tree
+     web-beautify
+     web-mode
+     which-key
+     ws-butler
+     yaml-mode
+     yasnippet
 
-    airline-themes ; THEMES
-    base16-theme
-    doom-themes
-    monokai-theme
-    solarized-theme
-    zenburn-theme
-    ) "Packages for any EMACS version: console and UI.")
+     airline-themes ; THEMES
+     base16-theme
+     doom-themes
+     monokai-theme
+     solarized-theme
+     zenburn-theme
+     ) "Packages for any EMACS version: console and UI.")
 
 (defvar graphic-packages
   '(all-the-icons
-    all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
-    all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
-    all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
-    all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
-    mode-icons
-    ) "Packages only for graphical mode.")
+     all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
+     all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
+     all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
+     all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
+     mode-icons
+     ) "Packages only for graphical mode.")
 
 (defvar required-packages)
 (if (display-graphic-p)
-    (setq required-packages (append generic-packages graphic-packages generic-packages))
+  (setq required-packages (append generic-packages graphic-packages generic-packages))
   (setq required-packages generic-packages))
 
 ;; Install all required packages
@@ -151,12 +154,13 @@
 ;; Settings for window (not only a Windows!) system.
 (defvar default-font-family nil "Default font family.")
 (when (display-graphic-p)
-  (fringe-mode 2)
-  (scroll-bar-mode 0) ;; Off scrollbars
-  (tool-bar-mode 0) ;; Off toolbar
-  (tooltip-mode 0) ;; No windows for tooltip
-  (window-divider-mode 0)
-  (set-face-attribute 'default nil :height 100)
+  (progn
+    (fringe-mode 2)
+    (scroll-bar-mode 0) ;; Off scrollbars
+    (tool-bar-mode 0) ;; Off toolbar
+    (tooltip-mode 0) ;; No windows for tooltip
+    (window-divider-mode 0)
+    (set-face-attribute 'default nil :height 100))
 
   ;; Font settings for Linux and Windows
   (defvar available-fonts (font-family-list))
@@ -690,6 +694,7 @@ Version 2017-11-01"
 ;; MULTIPLE CURSORS
 (require 'multiple-cursors)
 (global-set-key (kbd "C-c C-e") 'mc/edit-lines)
+(setq mc/edit-lines-empty-lines 'ignore) ; Игнорировать пустые строки
 (when (display-graphic-p)
   (progn
     (global-unset-key (kbd "M-<down-mouse-1>"))

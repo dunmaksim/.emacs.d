@@ -11,35 +11,39 @@
 (require 'calendar)
 (require 'face-remap)
 (require 'ispell)
-(setq buffer-file-coding-system "utf8-auto-unix"
+(setq
+  buffer-file-coding-system "utf8-auto-unix"
   calendar-week-start-day 1
-  custom-file (expand-file-name "custom.el" emacs-config-dir)
   create-lockfiles nil
   cursor-type 'bar
+  custom-file (expand-file-name "custom.el" emacs-config-dir)
   inhibit-splash-screen t
   inhibit-startup-message t
-  initial-major-mode (quote text-mode)
+  initial-major-mode (quote markdown-mode)
   initial-scratch-message nil
-  ispell-program-name "/usr/bin/aspell"
   make-backup-files nil
   ring-bell-function #'ignore
   text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
   truncate-lines 1
   use-dialog-box nil
-  visible-bell nil
-  user-full-name "Dunaevsky Maxim")
+  user-full-name "Dunaevsky Maxim"
+  visible-bell nil)
+
+;; Aspell для Linux, в Windows без проверки орфографии
+(when (string-equal system-type "gnu/linux")
+  (setq  ispell-program-name "/usr/bin/aspell"))
 
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(if (display-graphic-p) ;; Не нужен на серверах
+  (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t))
 (package-initialize)
 
 (defvar generic-packages
   '(
+     adoc-mode
      company
-     company-jedi
-     company-quickhelp
      company-terraform
      company-web
      counsel
@@ -71,8 +75,6 @@
      miniedit
      multiple-cursors
      nlinum
-     org
-     org-roam
      php-mode
      powerline ; https://github.com/milkypostman/powerline
      protobuf-mode
@@ -110,6 +112,8 @@
      all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
      all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
      mode-icons
+     org
+     org-roam
      ) "Packages only for graphical mode.")
 
 (defvar required-packages)
@@ -140,6 +144,7 @@
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
 (global-set-key (kbd "C-z") 'undo)
+(global-set-key (kbd "C-y") 'undo-tree-redo)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
 (global-set-key (kbd "C-v") 'yank)
@@ -274,6 +279,7 @@ Version 2017-11-01"
 
 ;; ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
+(require 'ace-window)
 (global-set-key (kbd "M-o") 'ace-window)
 
 
@@ -293,6 +299,24 @@ Version 2017-11-01"
       (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
 
 
+;; ADOC MODE
+(require 'adoc-mode)
+(defun setup-adoc-mode ()
+  "Settings for 'adoc-mode'."
+  (interactive)
+  (diff-hl-mode 1)
+  (flycheck-mode 1)
+  (highlight-indentation-mode 1)
+  (nlinum-mode)
+  (rainbow-delimiters-mode 1)
+  (visual-line-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
+(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
+(add-hook 'adoc-mode-hook #'setup-adoc-mode)
+
+
 ;; COLUMN NUMBER MODE
 ;; BUILTIN
 ;; Show column number in modeline
@@ -302,7 +326,6 @@ Version 2017-11-01"
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
 (require 'company)
-(require 'company-quickhelp)
 (setq company-dabbrev-code-ignore-case nil
       company-dabbrev-downcase nil
       company-dabbrev-ignore-case nil
@@ -310,13 +333,6 @@ Version 2017-11-01"
       company-minimum-prefix-length 2
       company-quickhelp-delay 3
       company-tooltip-align-annotations t)
-(defun setup-company-mode ()
-  "Settings for 'company-mode'."
-  (interactive)
-  (add-to-list 'company-backends 'company-jedi)
-  (company-quickhelp-mode 1)) ;; https://github.com/company-mode/company-quickhelp
-(add-hook 'company-mode-hook #'setup-company-mode)
-
 
 ;; CONF MODE FOR INI / CONF / LIST
 (add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
@@ -639,7 +655,7 @@ Version 2017-11-01"
 (setq
   header-line-format " "
   left-margin-width 4
-  line-spacing 3
+  line-spacing 4
   markdown-fontify-code-blocks-natively t
   right-margin-width 4
   word-wrap t)
@@ -682,10 +698,8 @@ Version 2017-11-01"
   (mode-icons-mode 1))
 
 
-;; MONOKAI THEME
-(if (display-graphic-p)
-    (load-theme 'monokai t)
-  (load-theme 'doom-material t))
+;; LOAD THEME
+(load-theme 'monokai t)
 
 (require 'airline-themes)
 (load-theme 'airline-doom-molokai t)
@@ -694,7 +708,6 @@ Version 2017-11-01"
 ;; MULTIPLE CURSORS
 (require 'multiple-cursors)
 (global-set-key (kbd "C-c C-e") 'mc/edit-lines)
-(setq mc/edit-lines-empty-lines 'ignore) ; Игнорировать пустые строки
 (when (display-graphic-p)
   (progn
     (global-unset-key (kbd "M-<down-mouse-1>"))
@@ -986,9 +999,11 @@ Version 2017-11-01"
 
 (defun setup-web-mode()
   "Settings for web-mode."
+  (interactive)
   (company-mode 1)
   (company-web 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))

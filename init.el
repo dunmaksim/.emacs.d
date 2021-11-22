@@ -43,7 +43,9 @@
 (defvar generic-packages
   '(
      adoc-mode
+     anaconda-mode
      company
+     company-anaconda
      company-terraform
      company-web
      counsel
@@ -55,10 +57,10 @@
      edit-indirect
      editorconfig
      flycheck
+     flycheck-clang-tidy
      flycheck-color-mode-line
      flycheck-indicator
      flycheck-pos-tip
-     flycheck-clang-tidy
      format-all
      go-mode
      helm
@@ -78,9 +80,9 @@
      php-mode
      powerline ; https://github.com/milkypostman/powerline
      protobuf-mode
+     pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
      python
      python-mode
-     pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
      rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
      scala-mode
      terraform-mode
@@ -99,10 +101,7 @@
 
      airline-themes ; THEMES
      base16-theme
-     doom-themes
      monokai-theme
-     solarized-theme
-     zenburn-theme
      ) "Packages for any EMACS version: console and UI.")
 
 (defvar graphic-packages
@@ -698,7 +697,7 @@ Version 2017-11-01"
   (mode-icons-mode 1))
 
 
-;; LOAD THEME
+;; LOAD THEMES
 (load-theme 'monokai t)
 
 (require 'airline-themes)

@@ -22,6 +22,7 @@
   initial-major-mode (quote markdown-mode)
   initial-scratch-message nil
   make-backup-files nil
+  org-roam-directory "~/org/"
   ring-bell-function #'ignore
   text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
   truncate-lines 1
@@ -36,13 +37,11 @@
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(if (display-graphic-p) ;; Не нужен на серверах
-  (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t))
 (package-initialize)
 
 (defvar generic-packages
   '(
-     adoc-mode
+;;     adoc-mode
      anaconda-mode
      company
      company-anaconda
@@ -164,7 +163,7 @@
     (tool-bar-mode 0) ;; Off toolbar
     (tooltip-mode 0) ;; No windows for tooltip
     (window-divider-mode 0)
-    (set-face-attribute 'default nil :height 100))
+    (set-face-attribute 'default nil :height 130))
 
   ;; Font settings for Linux and Windows
   (defvar available-fonts (font-family-list))
@@ -299,7 +298,7 @@ Version 2017-11-01"
 
 
 ;; ADOC MODE
-(require 'adoc-mode)
+;;(require 'adoc-mode)
 (defun setup-adoc-mode ()
   "Settings for 'adoc-mode'."
   (interactive)
@@ -311,9 +310,9 @@ Version 2017-11-01"
   (visual-line-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
-(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
-(add-hook 'adoc-mode-hook #'setup-adoc-mode)
+;;(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
+;;(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
+;;(add-hook 'adoc-mode-hook #'setup-adoc-mode)
 
 
 ;; COLUMN NUMBER MODE

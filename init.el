@@ -35,7 +35,8 @@
 
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 (defvar generic-packages
@@ -582,6 +583,20 @@ Version 2017-11-01"
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
+
+
+
+;; JAVA-MODE
+(defun setup-java-mode ()
+  "Settings for 'java-mode'."
+  (interactive)
+  (company-mode 1)
+  (flycheck-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'java-mode-hook #'setup-java-mode)
 
 
 ;; JS2-MODE

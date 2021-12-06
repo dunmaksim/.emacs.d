@@ -444,8 +444,8 @@ Version 2017-11-01"
                                               flycheck-locate-config-file-home)
       flycheck-highlighting-mode 'lines
       flycheck-indication-mode 'left-fringe
-  ;; flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
-  )
+      ;; flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
+      )
 (defun setup-flycheck-mode ()
   "Minor modes for 'flycheck-mode'."
   (interactive)
@@ -734,11 +734,11 @@ Version 2017-11-01"
 ;; https://orgmode.org/
 (require 'org)
 (setq
-  truncate-lines nil
-  left-margin-width 4
-  org-todo-keywords '((sequence "НОВАЯ" "НА РАСПАКОВКЕ" "РАСПАКОВАНА" "ОТМЕНЕНА" "В РАБОТЕ" "ТРЕБУЕТСЯ ИНФОРМАЦИЯ" "РЕВЬЮ" "ЗАКРЫТА БЕЗ СЛИЯНИЯ" "|" "ВЫПОЛНЕНА"))
-  right-margin-width 4
-  word-wrap t)
+ truncate-lines nil
+ left-margin-width 4
+ org-todo-keywords '((sequence "НОВАЯ" "НА РАСПАКОВКЕ" "РАСПАКОВАНА" "ОТМЕНЕНА" "В РАБОТЕ" "ТРЕБУЕТСЯ ИНФОРМАЦИЯ" "РЕВЬЮ" "ЗАКРЫТА БЕЗ СЛИЯНИЯ" "|" "ВЫПОЛНЕНА"))
+ right-margin-width 4
+ word-wrap t)
 (defun setup-org-mode ()
   "Minor modes for 'org-mode'."
   (interactive)

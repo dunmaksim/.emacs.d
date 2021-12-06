@@ -122,15 +122,18 @@
 ;; Установка необходимых пакетов
 (defun install-required-packages ()
   "Install all required packages."
+  (message "Установка отсутствующих пакетов...")
   (defvar packages-refreshed 0 "Список пакетов обновлён.")
   (dolist (pkg required-packages)
     (unless (package-installed-p pkg)
       (when (equal packages-refreshed 0)
         (progn
-          (package-refresh-contents t)
+          (package-refresh-contents)
+          (message "Список доступных пакетов обновлён...")
           (setq packages-refreshed 1)))
       (package-install pkg t))))
 (install-required-packages)
+
 
 ;; Now EMACS "see" packages in "straight" directory
 ;; (add-to-list 'load-path (expand-file-name "straight" emacs-config-dir))
@@ -188,8 +191,9 @@
 ;;; Save user settings in dedicated file
 (setq custom-file (expand-file-name "settings.el" emacs-config-dir))
 (when (file-exists-p custom-file)
-  (load-file custom-file)
-  (install-required-packages))
+  (progn
+    (install-required-packages)
+    (load-file custom-file)))
 
 
 ;; Auto-revert mode

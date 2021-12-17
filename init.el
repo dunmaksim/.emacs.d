@@ -41,8 +41,10 @@
 
 (defvar generic-packages
   '(
-    ;;     adoc-mode
+    adoc-mode
     anaconda-mode
+    ansible
+    apache-mode
     company
     company-anaconda
     company-terraform
@@ -83,6 +85,7 @@
     python
     python-mode
     rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
+    restclient ; https://github.com/pashky/restclient.el
     scala-mode
     terraform-mode
     tide
@@ -444,7 +447,7 @@ Version 2017-11-01"
                                               flycheck-locate-config-file-home)
       flycheck-highlighting-mode 'lines
       flycheck-indication-mode 'left-fringe
-      ;; flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
+      flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
       )
 (defun setup-flycheck-mode ()
   "Minor modes for 'flycheck-mode'."
@@ -468,6 +471,7 @@ Version 2017-11-01"
   (interactive)
   (abbrev-mode 1)
   (buffer-face-mode 1)
+  (company-mode 1)
   (diff-hl-mode 1)
   (flycheck-mode 1) ;; Turn on linters
   (nlinum-mode 1)

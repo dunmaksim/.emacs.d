@@ -41,11 +41,12 @@
 
 (defvar generic-packages
   '(
-    adoc-mode
-    anaconda-mode
-    ansible
-    apache-mode
-    company
+     adoc-mode
+     anaconda-mode
+     ansible
+     apache-mode
+     apt-sources-list
+     company
     company-anaconda
     company-terraform
     company-web
@@ -53,7 +54,8 @@
     dash
     diff-hl
     direnv
-    dockerfile-mode
+     dockerfile-mode
+     doom-modeline ;; https://github.com/seagle0128/doom-modeline
     easy-hugo
     edit-indirect
     editorconfig
@@ -79,7 +81,7 @@
     multiple-cursors
     nlinum
     php-mode
-    powerline ; https://github.com/milkypostman/powerline
+    ;; powerline ; https://github.com/milkypostman/powerline
     protobuf-mode
     pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
     python
@@ -319,9 +321,26 @@ Version 2017-11-01"
   (visual-line-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-;;(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
-;;(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
-;;(add-hook 'adoc-mode-hook #'setup-adoc-mode)
+(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
+(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
+(add-hook 'adoc-mode-hook #'setup-adoc-mode)
+
+
+;; APT SOURCES LIST MODE
+;; https://git.korewanetadesu.com/apt-sources-list.git
+(defun setup-apt-sources-list-mode ()
+  "Settings for 'apt-sources-list-mode'."
+  (interactive)
+  (diff-hl-mode 1)
+  (flycheck-mode 1)
+  (nlinum-mode 1)
+  (company-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1)
+  (visual-line-mode 1)
+  (rainbow-delimiters-mode 1))
+(add-to-list 'auto-mode-alist (cons "\\.list\\'" 'apt-sources-list-mode))
+(add-hook 'apt-sources-list-mode #'setup-apt-sources-list-mode)
 
 
 ;; COLUMN NUMBER MODE
@@ -405,6 +424,9 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("Dockerfile'" . dockerfile-mode))
 (add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
 
+;; DOOM-MODELINE
+(require 'doom-modeline)
+(doom-modeline-mode 1)
 
 ;; EDITORCONFIG EMACS
 ;; https://github.com/editorconfig/editorconfig-emacs
@@ -714,8 +736,8 @@ Version 2017-11-01"
 ;; LOAD THEMES
 (load-theme 'monokai t)
 
-(require 'airline-themes)
-(load-theme 'airline-doom-molokai t)
+;; (require 'airline-themes)
+;; (load-theme 'airline-doom-molokai t)
 
 
 ;; MULTIPLE CURSORS
@@ -772,10 +794,6 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-hook 'php-mode-hook #'setup-php-mode)
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
-
-
-;; POWER-LINE
-;; https://github.com/milkypostman/powerline/
 
 
 ;; PROTOBUF-MODE

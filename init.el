@@ -74,7 +74,9 @@
     ivy
     ivy-rich
     js2-mode
-    json-mode
+     json-mode
+     lsp-mode ; https://github.com/emacs-lsp
+     lsp-ui ; https://github.com/emacs-lsp/lsp-ui
     magit
     markdown-mode
     miniedit
@@ -419,9 +421,11 @@ Version 2017-11-01"
   "Settings for 'dockerfile-mode'."
   (company-mode 1)
   (flycheck-mode 1)
+  (lsp-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("Dockerfile'" . dockerfile-mode))
+(add-hook 'dockerfile-mode-hook #'lsp)
 (add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
 
 ;; DOOM-MODELINE
@@ -966,8 +970,9 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist '("\\.tf\\'" . terraform-mode))
+(add-to-list 'auto-mode-alist (cons "\\.tf\\'" 'terraform-mode))
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
+(add-hook 'hcl-mode-hook #'setup-terraform-mode)
 
 
 ;; TREEMACS — awesome file manager (instead NeoTree)

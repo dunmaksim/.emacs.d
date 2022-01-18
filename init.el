@@ -5,8 +5,8 @@
 ;;; Code:
 
 (put 'upcase-region 'disabled nil)
-(defvar emacs-config-dir
-  (file-name-directory user-init-file) "Root directory with settings.")
+(defvar emacs-config-dir (file-name-directory user-init-file) "Root directory with settings.")
+(defvar is-gui-mode (display-graphic-p) "EMACS runned in GUI mode.")
 
 (require 'calendar)
 (require 'face-remap)
@@ -35,7 +35,6 @@
 
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
@@ -81,7 +80,8 @@
     markdown-mode
     miniedit
     multiple-cursors
-    nlinum
+     nlinum
+     nlinum-hl ;; https://github.com/hlissner/emacs-nlinum-hl
     php-mode
     ;; powerline ; https://github.com/milkypostman/powerline
     protobuf-mode
@@ -122,7 +122,7 @@
     ) "Packages only for graphical mode.")
 
 (defvar required-packages)
-(if (display-graphic-p)
+(if is-gui-mode
     (setq required-packages (append generic-packages graphic-packages generic-packages))
   (setq required-packages generic-packages))
 
@@ -167,7 +167,7 @@
 
 ;; Settings for window (not only a Windows!) system.
 (defvar default-font-family nil "Default font family.")
-(when (display-graphic-p)
+(when is-gui-mode
   (progn
     (fringe-mode 2)
     (scroll-bar-mode 0) ;; Off scrollbars
@@ -214,6 +214,7 @@
 
 
 ;; Settings for hotkeys on any layout
+(require 'quail)
 (defun cfg:reverse-input-method (input-method)
   "Build the reverse mapping of single letters from INPUT-METHOD."
   (interactive
@@ -295,7 +296,7 @@ Version 2017-11-01"
 
 
 ;; ALL THE ICONS
-(when (display-graphic-p)
+(when is-gui-mode
   (progn
     (cond
      ;; Install fonts in GNU / Linux
@@ -328,6 +329,14 @@ Version 2017-11-01"
 (add-hook 'adoc-mode-hook #'setup-adoc-mode)
 
 
+;; ANSIBLE MODE
+(require 'ansible)
+(defun setup-ansible-mode ()
+  "Settings for 'ansible-mode'."
+  (interactive)
+  (company-mode 1))
+(add-hook 'ansible-mode-hook #'setup-ansible-mode)
+
 ;; APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
 (defun setup-apt-sources-list-mode ()
@@ -354,15 +363,23 @@ Version 2017-11-01"
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
 (require 'company)
-(setq company-dabbrev-code-ignore-case nil
-      company-dabbrev-downcase nil
-      company-dabbrev-ignore-case nil
-      company-idle-delay 0
-      company-minimum-prefix-length 2
-      company-quickhelp-delay 3
-      company-tooltip-align-annotations t)
+(require 'company-dabbrev)
+(setq
+  company-dabbrev-code-ignore-case nil
+  company-dabbrev-downcase nil
+  company-dabbrev-ignore-case nil
+  company-idle-delay 0
+  company-minimum-prefix-length 2
+  company-quickhelp-delay 3
+  company-tooltip-align-annotations t)
 
-;; CONF MODE FOR INI / CONF / LIST
+
+;; COMPANY-WEB
+(require 'company-web)
+
+
+;; CONF MODE
+(require 'conf-mode)
 (add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode ))
@@ -405,8 +422,7 @@ Version 2017-11-01"
   "Settings for 'dired-mode'."
   (auto-revert-mode 1)
   (hl-line-mode 1)
-  (when (display-graphic-p)
-    (all-the-icons-dired-mode 1)))
+  (all-the-icons-dired-mode is-gui-mode))
 (add-hook 'dired-mode-hook #'setup-dired-mode)
 
 ;; DIRENV-MODE
@@ -428,9 +444,19 @@ Version 2017-11-01"
 (add-hook 'dockerfile-mode-hook #'lsp)
 (add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
 
+
 ;; DOOM-MODELINE
+;; https://github.com/seagle0128/doom-modeline
 (require 'doom-modeline)
+(setq
+  doom-modeline-hud is-gui-mode
+  doom-modeline-icon is-gui-mode
+  doom-modeline-lsp t
+  doom-modeline-major-mode-icon is-gui-mode
+  doom-modeline-minor-modes t
+  doom-modeline-project-detection 'auto)
 (doom-modeline-mode 1)
+
 
 ;; EDITORCONFIG EMACS
 ;; https://github.com/editorconfig/editorconfig-emacs
@@ -665,6 +691,10 @@ Version 2017-11-01"
 (add-hook 'json-mode-hook #'setup-json-mode)
 
 
+;; LSP MODE
+(require 'lsp-mode)
+
+
 ;; MAGIT
 ;; https://magit.vc/
 (require 'magit)
@@ -756,8 +786,22 @@ Version 2017-11-01"
 ;; NLINUM MODE
 ;; https://elpa.gnu.org/packages/nlinum.html
 (require 'nlinum)
+(require 'nlinum-hl)
 (setq nlinum-format "%d \u2502")
-;;(setq nlinum-format "%d\u0020\u2502") ;; │)
+(add-hook 'post-gc-hook #'nlinum-hl-flush-all-windows)
+
+;; whenever Emacs loses/gains focus
+(add-hook 'focus-in-hook  #'nlinum-hl-flush-all-windows)
+(add-hook 'focus-out-hook #'nlinum-hl-flush-all-windows)
+
+;; ...or switches windows
+(advice-add #'select-window :before #'nlinum-hl-do-select-window-flush)
+(advice-add #'select-window :after  #'nlinum-hl-do-select-window-flush)
+
+;; after X amount of idle time
+(run-with-idle-timer 5 t #'nlinum-hl-flush-window)
+(run-with-idle-timer 30 t #'nlinum-hl-flush-all-windows)
+
 
 
 ;; ORG-MODE
@@ -820,12 +864,14 @@ Version 2017-11-01"
 
 ;; PYTHON-MODE
 (require 'python)
-(setq py-company-pycomplete-p t
-      py-electric-comment-p t
-      py-pylint-command-args "--max-line-length 120"
-      py-virtualenv-workon-home "~/.virtualenvs"
-      python-shell-interpreter "python3"
-      tab-width 4)
+(setq
+  doom-modeline-env-enable-python t
+  py-company-pycomplete-p t
+  py-electric-comment-p t
+  py-pylint-command-args "--max-line-length 120"
+  py-virtualenv-workon-home "~/.virtualenvs"
+  python-shell-interpreter "python3"
+  tab-width 4)
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
@@ -834,6 +880,7 @@ Version 2017-11-01"
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
+  (lsp-mode 1)
   (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -842,6 +889,7 @@ Version 2017-11-01"
   (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
   (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
   (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names))
+(add-hook 'python-mode-hook #'lsp)
 (add-hook 'python-mode-hook #'setup-python-mode)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 
@@ -851,6 +899,7 @@ Version 2017-11-01"
   "Settings for 'rst-mode'."
   (interactive)
 
+  (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
   (nlinum-mode 1)
@@ -1021,13 +1070,13 @@ Version 2017-11-01"
 ;; WEB-MODE
 ;; https://web-mode.org/
 (require 'web-mode)
-(require 'company-web)
-(setq web-mode-attr-indent-offset 4
-      web-mode-css-indent-offset 2 ;; CSS
-      web-mode-enable-block-face t
-      web-mode-enable-css-colorization t
-      web-mode-enable-current-element-highlight t
-      web-mode-markup-indent-offset 2)
+(setq
+  web-mode-attr-indent-offset 4
+  web-mode-css-indent-offset 2 ;; CSS
+  web-mode-enable-block-face t
+  web-mode-enable-css-colorization t
+  web-mode-enable-current-element-highlight t
+  web-mode-markup-indent-offset 2)
 
 (defun setup-web-mode()
   "Settings for web-mode."
@@ -1054,14 +1103,15 @@ Version 2017-11-01"
 ;; WHITESPACE MODE
 ;; https://www.emacswiki.org/emacs/WhiteSpace
 (require 'whitespace)
-(setq whitespace-display-mappings
-      '(
-	(space-mark   ?\    [?\xB7]     [?.]) ; space
-	(space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
-	(newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
-	(tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
-	)
-      whitespace-line-column 1000) ;; Highlight lines with length bigger than 1000 chars)
+(setq
+  whitespace-display-mappings
+  '(
+     (space-mark   ?\    [?\xB7]     [?.]) ; space
+     (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
+     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
+     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
+     )
+  whitespace-line-column 1000) ;; Highlight lines with length bigger than 1000 chars)
 (set-face-attribute 'whitespace-space nil
                     :family default-font-family
                     :foreground "#75715E")
@@ -1099,9 +1149,12 @@ Version 2017-11-01"
   (make-directory snippets-dir))
 (yas-global-mode 1)
 
+
 (server-start)
 (put 'downcase-region 'disabled nil)
 
 (load custom-file)
+
+(provide 'init.el)
 
 ;;; init.el ends here

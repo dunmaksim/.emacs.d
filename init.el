@@ -12,22 +12,24 @@
 (require 'face-remap)
 (require 'ispell)
 (setq
- buffer-file-coding-system "utf8-auto-unix"
  calendar-week-start-day 1
  create-lockfiles nil
  cursor-type 'bar
  custom-file (expand-file-name "custom.el" emacs-config-dir)
  inhibit-splash-screen t
  inhibit-startup-message t
- initial-major-mode (quote markdown-mode)
+ initial-major-mode 'markdown-mode
  initial-scratch-message nil
  make-backup-files nil
+ overwrite-mode-binary nil
+ overwrite-mode-textual nil
  ring-bell-function #'ignore
  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
  truncate-lines 1
  use-dialog-box nil
  user-full-name "Dunaevsky Maxim"
  visible-bell nil)
+
 
 ;; Aspell для Linux, в Windows без проверки орфографии
 (when (string-equal system-type "gnu/linux")
@@ -38,88 +40,88 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(defvar generic-packages
-  '(
-     adoc-mode
-     anaconda-mode
-     ansible
-     apache-mode
-     apt-sources-list
-     company
-    company-anaconda
-    company-terraform
-    company-web
-    counsel
-    dash
-    diff-hl
-    direnv
-     dockerfile-mode
-     doom-modeline ;; https://github.com/seagle0128/doom-modeline
-    easy-hugo
-    edit-indirect
-    editorconfig
-    flycheck
-    flycheck-clang-tidy
-    flycheck-color-mode-line
-    flycheck-indicator
-    flycheck-pos-tip
-    format-all
-    go-mode
-    helm
-    helm-company
-    highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
-    hl-line
-    ibuffer
-    ivy
-    ivy-rich
-    js2-mode
-     json-mode
-     lsp-mode ; https://github.com/emacs-lsp
-     lsp-ui ; https://github.com/emacs-lsp/lsp-ui
-    magit
-    markdown-mode
-    miniedit
-    multiple-cursors
-     nlinum
-     nlinum-hl ;; https://github.com/hlissner/emacs-nlinum-hl
-    php-mode
-    ;; powerline ; https://github.com/milkypostman/powerline
-    protobuf-mode
-    pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
-    python
-    python-mode
-    rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
-    restclient ; https://github.com/pashky/restclient.el
-    scala-mode
-    terraform-mode
-    tide
-    treemacs
-    treemacs-icons-dired
-    treemacs-magit
-    typescript-mode
-    undo-tree
-    web-beautify
-    web-mode
-    which-key
-    ws-butler
-    yaml-mode
-    yasnippet
+(defvar generic-packages '
+  (
+   adoc-mode
+   anaconda-mode
+   ansible
+   apache-mode
+   apt-sources-list
+   company
+   company-anaconda
+   company-terraform
+   company-web
+   counsel
+   dash
+   diff-hl
+   direnv
+   dockerfile-mode
+   doom-modeline ;; https://github.com/seagle0128/doom-modeline
+   easy-hugo
+   edit-indirect
+   editorconfig
+   flycheck
+   flycheck-clang-tidy
+   flycheck-color-mode-line
+   flycheck-indicator
+   flycheck-pos-tip
+   format-all
+   go-mode
+   helm
+   helm-company
+   highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
+   hl-line
+   ibuffer
+   ivy
+   ivy-rich
+   js2-mode
+   json-mode
+   lsp-mode ; https://github.com/emacs-lsp
+   lsp-ui ; https://github.com/emacs-lsp/lsp-ui
+   magit
+   markdown-mode
+   miniedit
+   multiple-cursors
+   nlinum
+   nlinum-hl ;; https://github.com/hlissner/emacs-nlinum-hl
+   php-mode
+   ;; powerline ; https://github.com/milkypostman/powerline
+   protobuf-mode
+   pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
+   python
+   python-mode
+   rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
+   restclient ; https://github.com/pashky/restclient.el
+   scala-mode
+   terraform-mode
+   tide
+   treemacs
+   treemacs-icons-dired
+   treemacs-magit
+   typescript-mode
+   undo-tree
+   web-beautify
+   web-mode
+   which-key
+   ws-butler
+   yaml-mode
+   yasnippet
 
-    airline-themes ; THEMES
-    base16-theme
-    monokai-theme
-    ) "Packages for any EMACS version: console and UI.")
+   airline-themes ; THEMES
+   base16-theme
+   monokai-theme
+   ) "Packages for any EMACS version: console and UI.")
 
-(defvar graphic-packages
-  '(all-the-icons
-    all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
-    all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
-    all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
-    all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
-    mode-icons
-    org
-    org-roam
-    ) "Packages only for graphical mode.")
+(defvar graphic-packages '
+  (
+   all-the-icons
+   all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
+   all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
+   all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
+   all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
+   mode-icons
+   org
+   org-roam) "Packages only for graphical mode.")
 
 (defvar required-packages)
 (if is-gui-mode
@@ -208,7 +210,7 @@
 
 
 ;; ENCODING
-(set-language-environment "UTF-8")
+(set-language-environment 'utf-8)
 (set-default-coding-systems 'utf-8)
 (prefer-coding-system 'utf-8)
 
@@ -365,13 +367,12 @@ Version 2017-11-01"
 (require 'company)
 (require 'company-dabbrev)
 (setq
-  company-dabbrev-code-ignore-case nil
-  company-dabbrev-downcase nil
-  company-dabbrev-ignore-case nil
-  company-idle-delay 0
-  company-minimum-prefix-length 2
-  company-quickhelp-delay 3
-  company-tooltip-align-annotations t)
+ company-dabbrev-ignore-case nil
+ company-dabbrev-downcase nil
+ company-dabbrev-ignore-case nil
+ company-idle-delay 0
+ company-minimum-prefix-length 2
+ company-tooltip-align-annotations t)
 
 
 ;; COMPANY-WEB
@@ -449,12 +450,12 @@ Version 2017-11-01"
 ;; https://github.com/seagle0128/doom-modeline
 (require 'doom-modeline)
 (setq
-  doom-modeline-hud is-gui-mode
-  doom-modeline-icon is-gui-mode
-  doom-modeline-lsp t
-  doom-modeline-major-mode-icon is-gui-mode
-  doom-modeline-minor-modes t
-  doom-modeline-project-detection 'auto)
+ doom-modeline-hud is-gui-mode
+ doom-modeline-icon is-gui-mode
+ doom-modeline-lsp t
+ doom-modeline-major-mode-icon is-gui-mode
+ doom-modeline-minor-modes t
+ doom-modeline-project-detection 'auto)
 (doom-modeline-mode 1)
 
 
@@ -506,8 +507,7 @@ Version 2017-11-01"
   (interactive)
   (flycheck-color-mode-line-mode 1)
   (flycheck-indicator-mode 1)
-  (when (display-graphic-p)
-    (flycheck-pos-tip-mode 1)))
+  (flycheck-pos-tip-mode is-gui-mode))
 (add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
 
 ;; FORMAT ALL
@@ -558,79 +558,94 @@ Version 2017-11-01"
 (setq
  ibuffer-expert 1
  ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
- ibuffer-hidden-filter-groups (list "Helm")
- ibuffer-saved-filter-groups (quote
-                              (("default"
-                                ("Dired"
-                                 (mode . dired-mode))
-                                ("Markdown"
-                                 (mode . markdown-mode))
-                                ("YAML"
-                                 (mode . yaml-mode))
-                                ("Org"
-                                 (mode . org-mode))
-                                ("Protobuf"
-                                 (mode . protobuf-mode))
-                                ("Lisp"
-                                 (mode . emacs-lisp-mode))
-                                ("Python"
-                                 (or
-                                  (mode . python-mode)
-                                  (mode . elpy-mode)
-                                  (mode . anaconda-mode)))
-                                ("Shell-script"
-                                 (or
-                                  (mode . shell-script-mode)
-                                  (mode . sh-mode)))
-                                ("Terraform"
-                                 (or
-                                  (mode . terraform-mode)))
-                                ("SQL"
-                                 (or
-                                  (mode . sql-mode)))
-                                ("Web"
-                                 (or
-                                  (mode . js-mode)
-                                  (mode . js2-mode)
-                                  (mode . web-mode)))
-                                ("Magit"
-                                 (or
-                                  (mode . magit-status-mode)
-                                  (mode . magit-log-mode)
-                                  (name . "^\\*magit")
-                                  (name . "git-monitor")))
-                                ("Commands"
-                                 (or
-                                  (mode . shell-mode)
-                                  (mode . eshell-mode)
-                                  (mode . term-mode)
-                                  (mode . compilation-mode)))
-                                ("Emacs"
-                                 (or
-                                  (name . "^\\*scratch\\*$")
-                                  (name . "^\\*Messages\\*$")
-                                  (name . "^\\*\\(Customize\\|Help\\)")
-                                  (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+ ibuffer-saved-filter-groups
+ '(
+   ("default"
+    ("Dired"
+     (mode . dired-mode))
+    ("Markdown"
+     (mode . markdown-mode))
+    ("YAML"
+     (mode . yaml-mode))
+    ("Org"
+     (mode . org-mode))
+    ("Protobuf"
+     (mode . protobuf-mode))
+    ("Lisp"
+     (mode . emacs-lisp-mode))
+    ("Python"
+     (or
+      (mode . python-mode)
+      (mode . elpy-mode)
+      (mode . anaconda-mode)))
+    ("Shell-script"
+     (or
+      (mode . shell-script-mode)
+      (mode . sh-mode)))
+    ("Terraform"
+     (or
+      (mode . terraform-mode)))
+    ("SQL"
+     (or
+      (mode . sql-mode)))
+    ("Web"
+     (or
+      (mode . js-mode)
+      (mode . js2-mode)
+      (mode . web-mode)))
+    ("Magit"
+     (or
+      (mode . magit-status-mode)
+      (mode . magit-log-mode)
+      (name . "^\\*magit")
+      (name . "git-monitor")))
+    ("Commands"
+     (or
+      (mode . shell-mode)
+      (mode . eshell-mode)
+      (mode . term-mode)
+      (mode . compilation-mode)))
+    ("Emacs"
+     (or
+      (name . "^\\*scratch\\*$")
+      (name . "^\\*Messages\\*$")
+      (name . "^\\*\\(Customize\\|Help\\)")
+      (name . "\\*\\(Echo\\|Minibuf\\)")))))
  ibuffer-show-empty-filter-groups nil ;; Do not show empty groups
- ibuffer-formats '((mark modified read-only
-			 " " (name 20 -1 :left)
-			 " " (size-h 9 -1 :right)
-			 " " (mode 8 8 :left :elide)
-			 " " filename-and-process)
-                   (mark
-                    " " (name 16 -1)
-                    " " filename))
+ ibuffer-truncate-lines nil
+ ibuffer-sorting-mode 'filename/process
+ ibuffer-formats
+ '(
+   (
+    mark
+    modified
+    read-only
+    locked
+    " "
+    (name 18 -1 :left)
+    " "
+    (size-h 9 -1 :right)
+    " "
+    (mode 8 8 :left :elide)
+    " "
+    filename-and-process)
+   (
+    mark
+    " "
+    (name 16 -1)
+    " "
+    filename))
  ibuffer-use-other-window nil)
+
 (defun setup-ibuffer-mode ()
   "Settings for 'ibuffer-mode'."
   (interactive)
-  (when (display-graphic-p)
-    (all-the-icons-ibuffer-mode 1))
+  (all-the-icons-ibuffer-mode is-gui-mode)
   (hl-line-mode 1)
   (ibuffer-auto-mode 1)
   (ibuffer-switch-to-saved-filter-groups "default"))
 (global-set-key (kbd "<f2>") 'ibuffer)
-(add-to-list 'ibuffer-never-show-predicates "^\\*")
+;; (add-to-list 'ibuffer-never-show-predicates "^\\*")
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
 
 
@@ -643,7 +658,6 @@ Version 2017-11-01"
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 (global-set-key (kbd "C-c v") 'ivy-push-view)
 (global-set-key (kbd "C-c V") 'ivy-pop-view)
-
 
 
 ;; JAVA-MODE
@@ -763,8 +777,7 @@ Version 2017-11-01"
 
 ;; MODE ICONS
 ;; https://github.com/ryuslash/mode-icons
-(when (display-graphic-p)
-  (mode-icons-mode 1))
+(mode-icons-mode is-gui-mode)
 
 
 ;; LOAD THEMES
@@ -777,7 +790,7 @@ Version 2017-11-01"
 ;; MULTIPLE CURSORS
 (require 'multiple-cursors)
 (global-set-key (kbd "C-c C-e") 'mc/edit-lines)
-(when (display-graphic-p)
+(when is-gui-mode
   (progn
     (global-unset-key (kbd "M-<down-mouse-1>"))
     (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
@@ -824,9 +837,6 @@ Version 2017-11-01"
 (add-hook 'org-mode-hook #'setup-org-mode)
 
 
-;; OVERWRITE-MODE
-(overwrite-mode nil) ;; Disable overwrite mode
-
 
 ;; PHP-MODE
 (require 'php)
@@ -865,13 +875,13 @@ Version 2017-11-01"
 ;; PYTHON-MODE
 (require 'python)
 (setq
-  doom-modeline-env-enable-python t
-  py-company-pycomplete-p t
-  py-electric-comment-p t
-  py-pylint-command-args "--max-line-length 120"
-  py-virtualenv-workon-home "~/.virtualenvs"
-  python-shell-interpreter "python3"
-  tab-width 4)
+ doom-modeline-env-enable-python t
+ py-company-pycomplete-p t
+ py-electric-comment-p t
+ py-pylint-command-args "--max-line-length 120"
+ py-virtualenv-workon-home "~/.virtualenvs"
+ python-shell-interpreter "python3"
+ tab-width 4)
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
@@ -1071,12 +1081,12 @@ Version 2017-11-01"
 ;; https://web-mode.org/
 (require 'web-mode)
 (setq
-  web-mode-attr-indent-offset 4
-  web-mode-css-indent-offset 2 ;; CSS
-  web-mode-enable-block-face t
-  web-mode-enable-css-colorization t
-  web-mode-enable-current-element-highlight t
-  web-mode-markup-indent-offset 2)
+ web-mode-attr-indent-offset 4
+ web-mode-css-indent-offset 2 ;; CSS
+ web-mode-enable-block-face t
+ web-mode-enable-css-colorization t
+ web-mode-enable-current-element-highlight t
+ web-mode-markup-indent-offset 2)
 
 (defun setup-web-mode()
   "Settings for web-mode."
@@ -1104,14 +1114,14 @@ Version 2017-11-01"
 ;; https://www.emacswiki.org/emacs/WhiteSpace
 (require 'whitespace)
 (setq
-  whitespace-display-mappings
-  '(
-     (space-mark   ?\    [?\xB7]     [?.]) ; space
-     (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
-     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
-     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
-     )
-  whitespace-line-column 1000) ;; Highlight lines with length bigger than 1000 chars)
+ whitespace-display-mappings
+ '(
+   (space-mark   ?\    [?\xB7]     [?.]) ; space
+   (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
+   (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
+   (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
+   )
+ whitespace-line-column 1000) ;; Highlight lines with length bigger than 1000 chars)
 (set-face-attribute 'whitespace-space nil
                     :family default-font-family
                     :foreground "#75715E")

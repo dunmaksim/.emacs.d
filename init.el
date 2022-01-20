@@ -297,22 +297,6 @@ Version 2017-11-01"
 (global-set-key (kbd "M-o") 'ace-window)
 
 
-;; ALL THE ICONS
-(when is-gui-mode
-  (progn
-    (cond
-     ;; Install fonts in GNU / Linux
-     (
-      (string-equal system-type "gnu/linux")
-      (unless
-          (file-directory-p "~/.local/share/fonts/")
-        (all-the-icons-install-fonts)))
-     (
-      ;; Not install fonts in Windows, but print message
-      (string-equal system-type "windows-nt")
-      (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
-
-
 ;; ADOC MODE
 ;;(require 'adoc-mode)
 (defun setup-adoc-mode ()
@@ -329,6 +313,29 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
 (add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
 (add-hook 'adoc-mode-hook #'setup-adoc-mode)
+
+
+;; ALL THE ICONS
+(if is-gui-mode
+    (progn
+      (cond
+       ;; Install fonts in GNU / Linux
+       (
+	(string-equal system-type "gnu/linux")
+	(unless
+            (file-directory-p "~/.local/share/fonts/")
+          (all-the-icons-install-fonts)))
+       (
+	;; Not install fonts in Windows, but print message
+	(string-equal system-type "windows-nt")
+	(progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
+
+
+;; ALL-THE-ICONS-IBUFFER-MODE
+(if is-gui-mode
+    (progn
+      (require 'all-the-icons-ibuffer)
+      (all-the-icons-ibuffer-mode 1)))
 
 
 ;; ANSIBLE MODE
@@ -423,7 +430,8 @@ Version 2017-11-01"
   "Settings for 'dired-mode'."
   (auto-revert-mode 1)
   (hl-line-mode 1)
-  (all-the-icons-dired-mode is-gui-mode))
+  (if is-gui-mode
+      (all-the-icons-dired-mode 1)))
 (add-hook 'dired-mode-hook #'setup-dired-mode)
 
 ;; DIRENV-MODE
@@ -548,13 +556,6 @@ Version 2017-11-01"
 (require 'ibuffer)
 (require 'ibuf-ext)
 (defalias 'list-buffers 'ibuffer)
-(define-ibuffer-column size-h
-  (:name "Size" :inline t)
-  (cond
-   ((> (buffer-size) 1000000) (format "%7.1fM" (/ (buffer-size) 1000000.0)))
-   ((> (buffer-size) 100000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
-   ((> (buffer-size) 1000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
-   (t (format "%8d" (buffer-size)))))
 (setq
  ibuffer-expert 1
  ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
@@ -622,9 +623,7 @@ Version 2017-11-01"
     read-only
     locked
     " "
-    (name 18 -1 :left)
-    " "
-    (size-h 9 -1 :right)
+    (name 50 -1 :left)
     " "
     (mode 8 8 :left :elide)
     " "
@@ -640,7 +639,6 @@ Version 2017-11-01"
 (defun setup-ibuffer-mode ()
   "Settings for 'ibuffer-mode'."
   (interactive)
-  (all-the-icons-ibuffer-mode is-gui-mode)
   (hl-line-mode 1)
   (ibuffer-auto-mode 1)
   (ibuffer-switch-to-saved-filter-groups "default"))
@@ -777,14 +775,12 @@ Version 2017-11-01"
 
 ;; MODE ICONS
 ;; https://github.com/ryuslash/mode-icons
-(mode-icons-mode is-gui-mode)
+(if is-gui-mode
+    (mode-icons-mode 1))
 
 
-;; LOAD THEMES
+;; LOAD THEME
 (load-theme 'monokai t)
-
-;; (require 'airline-themes)
-;; (load-theme 'airline-doom-molokai t)
 
 
 ;; MULTIPLE CURSORS

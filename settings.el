@@ -5,6 +5,8 @@
  ;; If there is more than one, they won't work right.
   '(custom-safe-themes
      '("2626386033cf34abb74d08f47299cde6bc8b89b768f438422900b6dc20b90732" "c968804189e0fc963c641f5c9ad64bca431d41af2fb7e1d01a2a6666376f819c" default))
+  '(package-selected-packages
+     '(elisp-lint yasnippet yaml-mode ws-butler which-key web-mode web-beautify undo-tree treemacs-magit treemacs-icons-dired tide scala-mode restclient rainbow-delimiters python-mode pyenv-mode protobuf-mode php-mode org-roam nlinum-hl multiple-cursors monokai-theme mode-icons miniedit lsp-ui json-mode js2-mode highlight-indentation helm-company go-mode format-all flycheck-pos-tip flycheck-indicator flycheck-color-mode-line flycheck-clang-tidy editorconfig edit-indirect easy-hugo doom-modeline dockerfile-mode direnv diff-hl counsel company-web company-terraform company-anaconda base16-theme apt-sources-list apache-mode ansible all-the-icons-ivy-rich all-the-icons-ivy all-the-icons-ibuffer all-the-icons-dired airline-themes adoc-mode))
  '(user-full-name "Dunaevsky Maxim"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

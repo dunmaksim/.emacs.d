@@ -16,6 +16,7 @@
  create-lockfiles nil
  cursor-type 'bar
  custom-file (expand-file-name "custom.el" emacs-config-dir)
+ indent-tabs-mode nil
  inhibit-splash-screen t
  inhibit-startup-message t
  initial-major-mode 'markdown-mode
@@ -24,6 +25,7 @@
  overwrite-mode-binary nil
  overwrite-mode-textual nil
  ring-bell-function #'ignore
+ tab-width 4
  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
  truncate-lines 1
  use-dialog-box nil
@@ -51,7 +53,6 @@
    company-anaconda
    company-terraform
    company-web
-   counsel
    dash
    diff-hl
    direnv
@@ -67,13 +68,11 @@
    flycheck-pos-tip
    format-all
    go-mode
-   helm
+   helm ; https://github.com/emacs-helm/helm
    helm-company
    highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
    hl-line
    ibuffer
-   ivy
-   ivy-rich
    js2-mode
    json-mode
    lsp-mode ; https://github.com/emacs-lsp
@@ -84,6 +83,8 @@
    multiple-cursors
    nlinum
    nlinum-hl ;; https://github.com/hlissner/emacs-nlinum-hl
+   org
+   org-roam
    php-mode
    ;; powerline ; https://github.com/milkypostman/powerline
    protobuf-mode
@@ -117,11 +118,8 @@
    all-the-icons
    all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
    all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
-   all-the-icons-ivy ; https://github.com/asok/all-the-icons-ivy
-   all-the-icons-ivy-rich ; https://github.com/seagle0128/all-the-icons-ivy-rich
-   mode-icons
-   org
-   org-roam) "Packages only for graphical mode.")
+   mode-icons ; https://github.com/ryuslash/mode-icons
+   ) "Packages only for graphical mode.")
 
 (defvar required-packages)
 (if is-gui-mode
@@ -171,12 +169,33 @@
 (defvar default-font-family nil "Default font family.")
 (when is-gui-mode
   (progn
+    ;; Install iconic fonts
+    (cond
+     ;; Install fonts in GNU / Linux
+     (
+      (string-equal system-type "gnu/linux")
+      (unless
+          (file-directory-p "~/.local/share/fonts/")
+        (all-the-icons-install-fonts)))
+     (
+      ;; Not install fonts in Windows, but print message
+      (string-equal system-type "windows-nt")
+      (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))
+
+    ;; Turn on iconic modes
+    (require 'all-the-icons)
+    (require 'all-the-icons-dired)
+    (require 'all-the-icons-ibuffer)
+    (require 'mode-icons)
+    (all-the-icons-dired-mode 1)
     (fringe-mode 2)
+    (mode-icons-mode 1)
     (scroll-bar-mode 0) ;; Off scrollbars
+    (set-face-attribute 'default nil :height 130)
     (tool-bar-mode 0) ;; Off toolbar
     (tooltip-mode 0) ;; No windows for tooltip
     (window-divider-mode 0)
-    (set-face-attribute 'default nil :height 130))
+    )
 
   ;; Font settings for Linux and Windows
   (defvar available-fonts (font-family-list))
@@ -315,29 +334,6 @@ Version 2017-11-01"
 (add-hook 'adoc-mode-hook #'setup-adoc-mode)
 
 
-;; ALL THE ICONS
-(if is-gui-mode
-    (progn
-      (cond
-       ;; Install fonts in GNU / Linux
-       (
-	(string-equal system-type "gnu/linux")
-	(unless
-            (file-directory-p "~/.local/share/fonts/")
-          (all-the-icons-install-fonts)))
-       (
-	;; Not install fonts in Windows, but print message
-	(string-equal system-type "windows-nt")
-	(progn (message "Download and install fonts with all-the-icons-install-fonts command."))))))
-
-
-;; ALL-THE-ICONS-IBUFFER-MODE
-(if is-gui-mode
-    (progn
-      (require 'all-the-icons-ibuffer)
-      (all-the-icons-ibuffer-mode 1)))
-
-
 ;; ANSIBLE MODE
 (require 'ansible)
 (defun setup-ansible-mode ()
@@ -395,14 +391,6 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
 
 
-;; COUNSEL
-;; USE TOGETHER WITH IVY-MODE
-(counsel-mode 1)
-;; (global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "M-y") 'counsel-yank-pop)
-
-
 ;; DELETE SELECTION MODE
 ;; BUILTIN
 ;; Delete selected region
@@ -429,9 +417,7 @@ Version 2017-11-01"
 (defun setup-dired-mode ()
   "Settings for 'dired-mode'."
   (auto-revert-mode 1)
-  (hl-line-mode 1)
-  (if is-gui-mode
-      (all-the-icons-dired-mode 1)))
+  (hl-line-mode 1))
 (add-hook 'dired-mode-hook #'setup-dired-mode)
 
 ;; DIRENV-MODE
@@ -544,11 +530,15 @@ Version 2017-11-01"
 
 
 ;; HELM
-(global-set-key (kbd "<f10>") 'helm-buffers-list)
+(require 'helm)
+(setq
+  completion-styles '(flex))
 (helm-mode 1)
+(global-set-key (kbd "M-x") 'helm-M-x)
 
 
 ;; HELM-COMPANY
+(require 'helm-company)
 (define-key company-active-map (kbd "C-:") 'helm-company)
 
 
@@ -623,9 +613,9 @@ Version 2017-11-01"
     read-only
     locked
     " "
-    (name 50 -1 :left)
+    (mode 8 -1 :left)
     " "
-    (mode 8 8 :left :elide)
+    (name 30 40 :left :elide)
     " "
     filename-and-process)
    (
@@ -645,17 +635,6 @@ Version 2017-11-01"
 (global-set-key (kbd "<f2>") 'ibuffer)
 ;; (add-to-list 'ibuffer-never-show-predicates "^\\*")
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
-
-
-;; IVY-MODE
-;; https://github.com/abo-abo/swiper#ivy
-(require 'ivy)
-(setq
- ivy-use-virtual-buffers t
- enable-recursive-minibuffers t)
-(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
-(global-set-key (kbd "C-c v") 'ivy-push-view)
-(global-set-key (kbd "C-c V") 'ivy-pop-view)
 
 
 ;; JAVA-MODE
@@ -773,12 +752,6 @@ Version 2017-11-01"
 (menu-bar-mode 0)
 
 
-;; MODE ICONS
-;; https://github.com/ryuslash/mode-icons
-(if is-gui-mode
-    (mode-icons-mode 1))
-
-
 ;; LOAD THEME
 (load-theme 'monokai t)
 
@@ -786,10 +759,10 @@ Version 2017-11-01"
 ;; MULTIPLE CURSORS
 (require 'multiple-cursors)
 (global-set-key (kbd "C-c C-e") 'mc/edit-lines)
-(when is-gui-mode
-  (progn
-    (global-unset-key (kbd "M-<down-mouse-1>"))
-    (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
+(if is-gui-mode
+    (progn
+      (global-unset-key (kbd "M-<down-mouse-1>"))
+      (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
 
 
 ;; NLINUM MODE
@@ -798,10 +771,6 @@ Version 2017-11-01"
 (require 'nlinum-hl)
 (setq nlinum-format "%d \u2502")
 (add-hook 'post-gc-hook #'nlinum-hl-flush-all-windows)
-
-;; whenever Emacs loses/gains focus
-(add-hook 'focus-in-hook  #'nlinum-hl-flush-all-windows)
-(add-hook 'focus-out-hook #'nlinum-hl-flush-all-windows)
 
 ;; ...or switches windows
 (advice-add #'select-window :before #'nlinum-hl-do-select-window-flush)

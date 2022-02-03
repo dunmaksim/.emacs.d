@@ -4,9 +4,18 @@
 
 ;;; Code:
 
-(put 'upcase-region 'disabled nil)
 (defvar emacs-config-dir (file-name-directory user-init-file) "Root directory with settings.")
+(defvar autosave-dir (concat emacs-config-dir "saves") "Directory for autosaves.")
+(defvar backups-dir (concat emacs-config-dir "backups") "Directory for backups.")
 (defvar is-gui-mode (display-graphic-p) "EMACS runned in GUI mode.")
+
+;;; Создание каталогов для резервных копий и файлов автосохранения
+(unless (file-exists-p autosave-dir)
+  (make-directory autosave-dir)
+  (message "Создана директория для файлов автосохранения."))
+(unless (file-exists-p backups-dir)
+  (make-directory backups-dir)
+  (message "Создана директория для резервных копий."))
 
 (require 'calendar)
 (require 'face-remap)
@@ -16,12 +25,13 @@
  create-lockfiles nil
  cursor-type 'bar
  custom-file (expand-file-name "custom.el" emacs-config-dir)
+ delete-old-versions t
  indent-tabs-mode nil
  inhibit-splash-screen t
  inhibit-startup-message t
  initial-major-mode 'markdown-mode
  initial-scratch-message nil
- make-backup-files nil
+ make-backup-files t
  overwrite-mode-binary nil
  overwrite-mode-textual nil
  ring-bell-function #'ignore
@@ -448,7 +458,7 @@ Version 2017-11-01"
  doom-modeline-icon is-gui-mode
  doom-modeline-lsp t
  doom-modeline-major-mode-icon is-gui-mode
- doom-modeline-minor-modes t
+ ;; doom-modeline-minor-modes t
  doom-modeline-project-detection 'auto)
 (doom-modeline-mode 1)
 
@@ -487,15 +497,17 @@ Version 2017-11-01"
 (require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
 (require 'flycheck-indicator)
 (require 'flycheck-pos-tip) ;; https://github.com/flycheck/flycheck-pos-tip
-(setq flycheck-check-syntax-automatically '(mode-enabled save new-line)
-      flycheck-locate-config-file-functions '(
-                                              flycheck-locate-config-file-by-path
-                                              flycheck-locate-config-file-ancestor-directories
-                                              flycheck-locate-config-file-home)
-      flycheck-highlighting-mode 'lines
-      flycheck-indication-mode 'left-fringe
-      flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
-      )
+(setq
+ flycheck-check-syntax-automatically '(mode-enabled save new-line)
+ flycheck-locate-config-file-functions
+ '(
+   flycheck-locate-config-file-by-path
+   flycheck-locate-config-file-ancestor-directories
+   flycheck-locate-config-file-home)
+ flycheck-highlighting-mode 'lines
+ flycheck-indication-mode 'left-fringe
+ flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
+ )
 (defun setup-flycheck-mode ()
   "Minor modes for 'flycheck-mode'."
   (interactive)
@@ -532,9 +544,9 @@ Version 2017-11-01"
 ;; HELM
 (require 'helm)
 (setq
-  completion-styles '(flex))
-(helm-mode 1)
+ completion-styles '(flex))
 (global-set-key (kbd "M-x") 'helm-M-x)
+(helm-mode 1)
 
 
 ;; HELM-COMPANY
@@ -717,6 +729,7 @@ Version 2017-11-01"
  line-spacing 4
  markdown-fontify-code-blocks-natively t
  right-margin-width 4
+ tab-width 4
  word-wrap t)
 (set-face-attribute 'markdown-code-face        nil :family default-font-family)
 (set-face-attribute 'markdown-inline-code-face nil :family default-font-family)
@@ -1127,6 +1140,7 @@ Version 2017-11-01"
 
 (server-start)
 (put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
 
 (load custom-file)
 

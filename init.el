@@ -14,10 +14,6 @@
   (progn
     (make-directory autosave-dir)
     (message "Создана директория для файлов автосохранения.")))
-(unless (file-exists-p backups-dir)
-  (progn
-    (make-directory backups-dir)
-    (message "Создана директория для резервных копий.")))
 
 (require 'calendar)
 (require 'face-remap)
@@ -1128,7 +1124,7 @@ Version 2017-11-01"
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yfm\\" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yfm\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 

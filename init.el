@@ -11,16 +11,19 @@
 
 ;;; Создание каталогов для резервных копий и файлов автосохранения
 (unless (file-exists-p autosave-dir)
-  (make-directory autosave-dir)
-  (message "Создана директория для файлов автосохранения."))
+  (progn
+    (make-directory autosave-dir)
+    (message "Создана директория для файлов автосохранения.")))
 (unless (file-exists-p backups-dir)
-  (make-directory backups-dir)
-  (message "Создана директория для резервных копий."))
+  (progn
+    (make-directory backups-dir)
+    (message "Создана директория для резервных копий.")))
 
 (require 'calendar)
 (require 'face-remap)
 (require 'ispell)
 (setq
+ auto-save-file-name-transforms `((".*" , autosave-dir) t)
  calendar-week-start-day 1
  create-lockfiles nil
  cursor-type 'bar
@@ -42,6 +45,7 @@
  user-full-name "Dunaevsky Maxim"
  visible-bell nil)
 
+(message backup-directory-alist)
 
 ;; Aspell для Linux, в Windows без проверки орфографии
 (when (string-equal system-type "gnu/linux")
@@ -1123,8 +1127,9 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yfm\\" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 

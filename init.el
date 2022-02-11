@@ -30,7 +30,7 @@
  inhibit-startup-message t
  initial-major-mode 'markdown-mode
  initial-scratch-message nil
- make-backup-files t
+ make-backup-files nil
  overwrite-mode-binary nil
  overwrite-mode-textual nil
  ring-bell-function #'ignore
@@ -838,7 +838,6 @@ Version 2017-11-01"
 (defun setup-protobuf-mode ()
   "Settings for 'protobuf-mode'."
   (interactive)
-
   (company-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
@@ -846,7 +845,7 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-hook 'ptotobuf-mode-hook #'setup-protobuf-mode)
+(add-hook 'protobuf-mode-hook #'setup-protobuf-mode)
 (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
 
 

@@ -25,6 +25,7 @@
  cursor-type 'bar
  custom-file (expand-file-name "custom.el" emacs-config-dir)
  delete-old-versions t
+ display-line-numbers-width 1
  indent-tabs-mode nil
  inhibit-splash-screen t
  inhibit-startup-message t
@@ -41,8 +42,6 @@
  user-full-name "Dunaevsky Maxim"
  visible-bell nil)
 
-(message backup-directory-alist)
-
 ;; Aspell для Linux, в Windows без проверки орфографии
 (when (string-equal system-type "gnu/linux")
   (setq  ispell-program-name "/usr/bin/aspell"))
@@ -52,76 +51,75 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(defvar generic-packages '
-  (
-   adoc-mode
-   anaconda-mode
-   ansible
-   apache-mode
-   apt-sources-list
-   company
-   company-anaconda
-   company-terraform
-   company-web
-   dash
-   diff-hl
-   direnv
-   dockerfile-mode
-   doom-modeline ;; https://github.com/seagle0128/doom-modeline
-   easy-hugo
-   edit-indirect
-   editorconfig
-   flycheck
-   flycheck-clang-tidy
-   flycheck-color-mode-line
-   flycheck-indicator
-   flycheck-pos-tip
-   format-all
-   go-mode
-   helm ; https://github.com/emacs-helm/helm
-   helm-company
-   highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
-   hl-line
-   ibuffer
-   js2-mode
-   json-mode
-   lsp-mode ; https://github.com/emacs-lsp
-   lsp-ui ; https://github.com/emacs-lsp/lsp-ui
-   magit
-   markdown-mode
-   miniedit
-   multiple-cursors
-   nlinum
-   nlinum-hl ;; https://github.com/hlissner/emacs-nlinum-hl
-   org
-   org-roam
-   php-mode
-   ;; powerline ; https://github.com/milkypostman/powerline
-   protobuf-mode
-   pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
-   python
-   python-mode
-   rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
-   restclient ; https://github.com/pashky/restclient.el
-   scala-mode
-   terraform-mode
-   tide
-   treemacs
-   treemacs-icons-dired
-   treemacs-magit
-   typescript-mode
-   undo-tree
-   web-beautify
-   web-mode
-   which-key
-   ws-butler
-   yaml-mode
-   yasnippet
+(defvar generic-packages
+  '(
+    adoc-mode
+    anaconda-mode
+    ansible
+    apache-mode
+    apt-sources-list
+    company
+    company-anaconda
+    company-terraform
+    company-web
+    dash
+    dashboard
+    diff-hl
+    direnv
+    dockerfile-mode
+    doom-modeline ;; https://github.com/seagle0128/doom-modeline
+    easy-hugo
+    edit-indirect
+    editorconfig
+    flycheck
+    flycheck-clang-tidy
+    flycheck-color-mode-line
+    flycheck-indicator
+    flycheck-pos-tip
+    format-all
+    go-mode
+    helm ; https://github.com/emacs-helm/helm
+    helm-company
+    highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
+    hl-line
+    ibuffer
+    js2-mode
+    json-mode
+    lsp-mode ; https://github.com/emacs-lsp
+    lsp-ui ; https://github.com/emacs-lsp/lsp-ui
+    magit
+    markdown-mode
+    miniedit
+    multiple-cursors
+    org
+    org-roam
+    php-mode
+    projectile
+    protobuf-mode
+    pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
+    python
+    python-mode
+    rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
+    restclient ; https://github.com/pashky/restclient.el
+    scala-mode
+    terraform-mode
+    tide
+    treemacs
+    treemacs-icons-dired
+    treemacs-magit
+    typescript-mode
+    undo-tree
+    web-beautify
+    web-mode
+    which-key
+    ws-butler
+    yaml-mode
+    yasnippet
 
-   airline-themes ; THEMES
-   base16-theme
-   monokai-theme
-   ) "Packages for any EMACS version: console and UI.")
+    airline-themes ; THEMES
+    base16-theme
+    monokai-theme
+    ) "Packages for any EMACS version: console and UI.")
 
 (defvar graphic-packages '
   (
@@ -332,9 +330,9 @@ Version 2017-11-01"
   "Settings for 'adoc-mode'."
   (interactive)
   (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
-  (nlinum-mode)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1)
   (whitespace-mode 1)
@@ -357,10 +355,10 @@ Version 2017-11-01"
 (defun setup-apt-sources-list-mode ()
   "Settings for 'apt-sources-list-mode'."
   (interactive)
-  (diff-hl-mode 1)
-  (flycheck-mode 1)
-  (nlinum-mode 1)
   (company-mode 1)
+  (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
+  (flycheck-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
   (visual-line-mode 1)
@@ -394,11 +392,33 @@ Version 2017-11-01"
 
 ;; CONF MODE
 (require 'conf-mode)
+;; (defvar conf-mode-extensions
+;;   '(
+;;      "\\.env\\"
+;;      "\\.flake8\\"
+;;      "\\.ini\\"
+;;      "\\.list\\"
+;;      "\\.pylintrc"
+;;      ))
+;; (dolist (ext conf-mode-extensions)
+;;   (add-to-list 'auto-mode-alist '(ext . conf-mode)))
 (add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode ))
 (add-to-list 'auto-mode-alist '("\\.list\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
+
+
+;; Dashboard
+;; https://github.com/emacs-dashboard/emacs-dashboard
+(require 'dashboard)
+(setq dashboard-items
+      '(
+	(recents . 5)
+	(bookmarks . 5)
+	(projects . 5)
+	(registers . 5)))
+(dashboard-setup-startup-hook)
 
 
 ;; DELETE SELECTION MODE
@@ -483,8 +503,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (diff-hl-mode)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -531,8 +551,8 @@ Version 2017-11-01"
   (buffer-face-mode 1)
   (company-mode 1)
   (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1) ;; Turn on linters
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
@@ -654,8 +674,8 @@ Version 2017-11-01"
   "Settings for 'java-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -669,8 +689,8 @@ Version 2017-11-01"
   "Settings for 'js2-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -685,8 +705,8 @@ Version 2017-11-01"
   "Settings for json-mode."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -710,11 +730,11 @@ Version 2017-11-01"
   "Settings for Makefile-mode."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1))
 (add-hook 'makefile-mode-hook #'setup-makefile-mode)
@@ -740,11 +760,11 @@ Version 2017-11-01"
   (abbrev-mode 1)
   (buffer-face-mode 1)
   (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
   (electric-pair-mode 1)
   (flycheck-mode 1) ;; Turn on linters
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
@@ -778,23 +798,6 @@ Version 2017-11-01"
       (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
 
 
-;; NLINUM MODE
-;; https://elpa.gnu.org/packages/nlinum.html
-(require 'nlinum)
-(require 'nlinum-hl)
-(setq nlinum-format "%d \u2502")
-(add-hook 'post-gc-hook #'nlinum-hl-flush-all-windows)
-
-;; ...or switches windows
-(advice-add #'select-window :before #'nlinum-hl-do-select-window-flush)
-(advice-add #'select-window :after  #'nlinum-hl-do-select-window-flush)
-
-;; after X amount of idle time
-(run-with-idle-timer 5 t #'nlinum-hl-flush-window)
-(run-with-idle-timer 30 t #'nlinum-hl-flush-all-windows)
-
-
-
 ;; ORG-MODE
 ;; https://orgmode.org/
 (require 'org)
@@ -822,14 +825,20 @@ Version 2017-11-01"
   "Minor modes for 'php-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'php-mode-hook #'setup-php-mode)
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
+
+
+;; PROJECTILE
+(require 'projectile)
+(setq projectile-project-search-path '("~/repo/yandex/" "~/repo/documentat/"))
+(define-key projectile-mode-map (kbd "M-p") 'projectile-command-map)
 
 
 ;; PROTOBUF-MODE
@@ -839,9 +848,9 @@ Version 2017-11-01"
   "Settings for 'protobuf-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -864,11 +873,11 @@ Version 2017-11-01"
   (interactive)
   (anaconda-mode 1)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (lsp-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
@@ -885,11 +894,10 @@ Version 2017-11-01"
 (defun setup-rst-mode ()
   "Settings for 'rst-mode'."
   (interactive)
-
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -905,10 +913,10 @@ Version 2017-11-01"
   (interactive)
 
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -950,8 +958,8 @@ Version 2017-11-01"
   "Settings for 'shell-script-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -965,8 +973,8 @@ Version 2017-11-01"
   "Settings for SQL-mode."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1000,9 +1008,9 @@ Version 2017-11-01"
   "Settings for terraform-mode."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1037,9 +1045,9 @@ Version 2017-11-01"
   "Settings for 'typescript-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1070,8 +1078,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (company-web 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1115,10 +1123,10 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))

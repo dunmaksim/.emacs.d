@@ -25,10 +25,10 @@
  cursor-type 'bar
  custom-file (expand-file-name "custom.el" emacs-config-dir)
  delete-old-versions t
- display-line-numbers-width 1
  indent-tabs-mode nil
  inhibit-splash-screen t
  inhibit-startup-message t
+ initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
  initial-major-mode 'markdown-mode
  initial-scratch-message nil
  make-backup-files nil
@@ -68,6 +68,7 @@
     direnv
     dockerfile-mode
     doom-modeline ;; https://github.com/seagle0128/doom-modeline
+    doom-themes ;; https://github.com/doomemacs/themes
     easy-hugo
     edit-indirect
     editorconfig
@@ -91,6 +92,8 @@
     markdown-mode
     miniedit
     multiple-cursors
+    nlinum
+    nlinum-hl
     org
     org-roam
     php-mode
@@ -118,14 +121,12 @@
 
     airline-themes ; THEMES
     base16-theme
-    monokai-theme
     ) "Packages for any EMACS version: console and UI.")
 
 (defvar graphic-packages '
   (
    all-the-icons
    all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
-   all-the-icons-ibuffer ; https://github.com/seagle0128/all-the-icons-ibuffer
    mode-icons ; https://github.com/ryuslash/mode-icons
    ) "Packages only for graphical mode.")
 
@@ -193,7 +194,6 @@
     ;; Turn on iconic modes
     (require 'all-the-icons)
     (require 'all-the-icons-dired)
-    (require 'all-the-icons-ibuffer)
     (require 'mode-icons)
     (all-the-icons-dired-mode 1)
     (fringe-mode 2)
@@ -320,19 +320,21 @@ Version 2017-11-01"
 
 ;; ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
+(message "Загрузка пакета ace-window")
 (require 'ace-window)
 (global-set-key (kbd "M-o") 'ace-window)
 
 
 ;; ADOC MODE
-;;(require 'adoc-mode)
+(message "Загрузка пакета adoc-mode")
+(require 'adoc-mode)
 (defun setup-adoc-mode ()
   "Settings for 'adoc-mode'."
   (interactive)
   (diff-hl-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1)
   (whitespace-mode 1)
@@ -343,6 +345,7 @@ Version 2017-11-01"
 
 
 ;; ANSIBLE MODE
+(message "Загрузка пакета ansible-mode")
 (require 'ansible)
 (defun setup-ansible-mode ()
   "Settings for 'ansible-mode'."
@@ -352,17 +355,18 @@ Version 2017-11-01"
 
 ;; APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
+(message "Загрузка пакета apt-sources-list-mode")
 (defun setup-apt-sources-list-mode ()
   "Settings for 'apt-sources-list-mode'."
   (interactive)
   (company-mode 1)
   (diff-hl-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1)
+  (nlinum-mode 1)
+  (rainbow-delimiters-mode 1)
   (visual-line-mode 1)
-  (rainbow-delimiters-mode 1))
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.list\\'" 'apt-sources-list-mode))
 (add-hook 'apt-sources-list-mode #'setup-apt-sources-list-mode)
 
@@ -375,6 +379,7 @@ Version 2017-11-01"
 
 ;; COMPANY-MODE
 ;;https://company-mode.github.io/
+(message "Загрузка пакета company.")
 (require 'company)
 (require 'company-dabbrev)
 (setq
@@ -387,21 +392,13 @@ Version 2017-11-01"
 
 
 ;; COMPANY-WEB
+(message "Загрузка пакета company-web.")
 (require 'company-web)
 
 
 ;; CONF MODE
+(message "Загрузка пакета conf-mode.")
 (require 'conf-mode)
-;; (defvar conf-mode-extensions
-;;   '(
-;;      "\\.env\\"
-;;      "\\.flake8\\"
-;;      "\\.ini\\"
-;;      "\\.list\\"
-;;      "\\.pylintrc"
-;;      ))
-;; (dolist (ext conf-mode-extensions)
-;;   (add-to-list 'auto-mode-alist '(ext . conf-mode)))
 (add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode ))
@@ -411,13 +408,17 @@ Version 2017-11-01"
 
 ;; Dashboard
 ;; https://github.com/emacs-dashboard/emacs-dashboard
+(message "Загрузка пакета dashboard.")
 (require 'dashboard)
-(setq dashboard-items
-      '(
-	(recents . 5)
-	(bookmarks . 5)
-	(projects . 5)
-	(registers . 5)))
+(setq
+ dashboard-items
+ '(
+   (recents . 15)
+   (bookmarks . 5)
+   (projects . 5)
+   (registers . 5))
+ dashboard-set-heading-icons is-gui-mode
+ dashboard-set-file-icons is-gui-mode)
 (dashboard-setup-startup-hook)
 
 
@@ -428,6 +429,7 @@ Version 2017-11-01"
 
 
 ;; DESKTOP-SAVE-MODE
+(message "Загрузка пакета desktop.")
 (require 'desktop)
 (setq
  desktop-save t
@@ -440,6 +442,7 @@ Version 2017-11-01"
 
 
 ;; DIRED
+(message "Загрузка пакета dired.")
 (require 'dired)
 (when (string-equal system-type "gnu/linux")
   ;; Это может не работать в Windows, надо проверить
@@ -452,12 +455,22 @@ Version 2017-11-01"
 
 ;; DIRENV-MODE
 ;; https://github.com/wbolster/emacs-direnv
+(message "Загрузка пакета direnv.")
 (require 'direnv)
 (setq direnv-use-faces-in-summary nil)
 (direnv-mode 1)
 
 
+;; DISPLAY-LINE-NUMBERS-MODE
+;; Встроенный пакет
+(message "Загрузка пакета display-line-numbers-mode.")
+(require 'display-line-numbers)
+(display-line-numbers-mode 1)
+
+
 ;; DOCKERFILE-MODE
+(message "Загрузка пакета dockerfile-mode")
+(require 'dockerfile-mode)
 (defun setup-dockerfile-mode ()
   "Settings for 'dockerfile-mode'."
   (company-mode 1)
@@ -472,19 +485,31 @@ Version 2017-11-01"
 
 ;; DOOM-MODELINE
 ;; https://github.com/seagle0128/doom-modeline
+(message "Загрузка пакета doom-modeline.")
 (require 'doom-modeline)
 (setq
+ doom-modeline-buffer-encoding t ;; Кодировка
+ doom-modeline-buffer-modification-icon t ;; Наличие изменений
+ doom-modeline-buffer-state-icon t
  doom-modeline-hud is-gui-mode
- doom-modeline-icon is-gui-mode
+ doom-modeline-icon is-gui-mode ;; Иконки?
  doom-modeline-lsp t
+ doom-modeline-major-mode-color-icon t
  doom-modeline-major-mode-icon is-gui-mode
- ;; doom-modeline-minor-modes t
- doom-modeline-project-detection 'auto)
+ doom-modeline-project-detection 'auto
+ doom-modeline-vcs-max-length 0)
 (doom-modeline-mode 1)
+
+
+;; LOAD THEME
+(message "Загрузка темы.")
+(require 'doom-themes)
+(load-theme 'doom-monokai-classic t)
 
 
 ;; EDITORCONFIG EMACS
 ;; https://github.com/editorconfig/editorconfig-emacs
+(message "Загрузка пакета editorconfig.")
 (require 'editorconfig)
 (setq editorconfig-trim-whitespaces-mode 'ws-butler-mode)
 (editorconfig-mode 1)
@@ -492,12 +517,14 @@ Version 2017-11-01"
 
 ;; ELECTRIC-PAIR-MODE
 ;; EMBEDDED
+(message "Загрузка пакета electric-pair-mode.")
 (require 'electric)
 (electric-pair-mode 1)
 
 
 ;; EMACS LISP MODE
 ;; IT IS NOT A ELISP-MODE!
+(message "Загрузка пакета emacs-lisp-mode")
 (defun setup-emacs-lisp-mode ()
   "Settings for EMACS Lisp Mode."
   (interactive)
@@ -513,6 +540,7 @@ Version 2017-11-01"
 
 
 ;; FLYCHECK
+(message "Загрузка пакета flycheck")
 (require 'flycheck)
 (require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
 (require 'flycheck-indicator)
@@ -538,12 +566,15 @@ Version 2017-11-01"
 
 ;; FORMAT ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
+(message "Загрузка пакета format-all.")
 (require 'format-all)
 (global-set-key (kbd "<f12>") 'format-all-buffer)
 
 
 ;; GO-MODE
 ;; https://github.com/dominikh/go-mode.el
+(message "Загрузка пакета go-mode")
+(require 'go-mode)
 (defun setup-go-mode()
   "Settings for 'go-mode'."
   (interactive)
@@ -551,8 +582,8 @@ Version 2017-11-01"
   (buffer-face-mode 1)
   (company-mode 1)
   (diff-hl-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1) ;; Turn on linters
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
@@ -562,19 +593,21 @@ Version 2017-11-01"
 
 
 ;; HELM
+(message "Загрузка пакета helm.")
 (require 'helm)
-(setq
- completion-styles '(flex))
+(setq completion-styles '(flex))
 (global-set-key (kbd "M-x") 'helm-M-x)
 (helm-mode 1)
 
 
 ;; HELM-COMPANY
+(message "Загрузка пакета helm-company.")
 (require 'helm-company)
 (define-key company-active-map (kbd "C-:") 'helm-company)
 
 
 ;; IBUFFER
+(message "Загрузка пакета ibuffer")
 (require 'ibuffer)
 (require 'ibuf-ext)
 (defalias 'list-buffers 'ibuffer)
@@ -674,8 +707,8 @@ Version 2017-11-01"
   "Settings for 'java-mode'."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -684,13 +717,14 @@ Version 2017-11-01"
 
 ;; JS2-MODE
 ;; https://github.com/mooz/js2-mode
+(message "Загрузка пакета js2-mode.")
 (require 'js2-mode)
 (defun setup-js2-mode ()
   "Settings for 'js2-mode'."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -700,13 +734,14 @@ Version 2017-11-01"
 
 ;; JSON-MODE
 ;; https://github.com/joshwnj/json-mode
+(message "Загрузка пакета json-mode.")
 (require 'json)
 (defun setup-json-mode()
   "Settings for json-mode."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -715,11 +750,13 @@ Version 2017-11-01"
 
 
 ;; LSP MODE
+(message "Загрузка пакета lsp-mode")
 (require 'lsp-mode)
 
 
 ;; MAGIT
 ;; https://magit.vc/
+(message "Загрузка пакета magit.")
 (require 'magit)
 (global-set-key (kbd "<f5>") 'magit-status)
 (global-set-key (kbd "<f6>") 'magit-checkout)
@@ -730,11 +767,10 @@ Version 2017-11-01"
   "Settings for Makefile-mode."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
-  (hl-line-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1))
 (add-hook 'makefile-mode-hook #'setup-makefile-mode)
@@ -742,6 +778,7 @@ Version 2017-11-01"
 
 ;; MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
+(message "Загрузка пакета markdown-mode.")
 (require 'markdown-mode)
 (setq
  header-line-format " "
@@ -785,11 +822,8 @@ Version 2017-11-01"
 (menu-bar-mode 0)
 
 
-;; LOAD THEME
-(load-theme 'monokai t)
-
-
 ;; MULTIPLE CURSORS
+(message "Загрузка пакета multiple-cursors.")
 (require 'multiple-cursors)
 (global-set-key (kbd "C-c C-e") 'mc/edit-lines)
 (if is-gui-mode
@@ -798,8 +832,27 @@ Version 2017-11-01"
       (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
 
 
+;; NLINUM MODE
+;; https://elpa.gnu.org/packages/nlinum.html
+(message "Загрузка пакета nlinum.")
+(require 'nlinum)
+(require 'nlinum-hl)
+;;(setq nlinum-format "%d \u2502") ;; │
+(setq nlinum-format "%d |")
+(add-hook 'post-gc-hook #'nlinum-hl-flush-all-windows)
+
+;; ...or switches windows
+(advice-add #'select-window :before #'nlinum-hl-do-select-window-flush)
+(advice-add #'select-window :after  #'nlinum-hl-do-select-window-flush)
+
+;; after X amount of idle time
+(run-with-idle-timer 5 t #'nlinum-hl-flush-window)
+(run-with-idle-timer 30 t #'nlinum-hl-flush-all-windows)
+
+
 ;; ORG-MODE
 ;; https://orgmode.org/
+(message "Загрузка пакета org-mode.")
 (require 'org)
 (setq
  truncate-lines nil
@@ -811,6 +864,7 @@ Version 2017-11-01"
   "Minor modes for 'org-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -818,8 +872,8 @@ Version 2017-11-01"
 (add-hook 'org-mode-hook #'setup-org-mode)
 
 
-
 ;; PHP-MODE
+(message "Загрузка пакета php-mode")
 (require 'php)
 (defun setup-php-mode ()
   "Minor modes for 'php-mode'."
@@ -836,6 +890,7 @@ Version 2017-11-01"
 
 
 ;; PROJECTILE
+(message "Загрузка пакета projectile")
 (require 'projectile)
 (setq projectile-project-search-path '("~/repo/yandex/" "~/repo/documentat/"))
 (define-key projectile-mode-map (kbd "M-p") 'projectile-command-map)
@@ -843,14 +898,15 @@ Version 2017-11-01"
 
 ;; PROTOBUF-MODE
 ;; https://github.com/emacsmirror/protobuf-mode
+(message "Загрузка пакета protobuf-mode.")
 (require 'protobuf-mode)
 (defun setup-protobuf-mode ()
   "Settings for 'protobuf-mode'."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -859,6 +915,7 @@ Version 2017-11-01"
 
 
 ;; PYTHON-MODE
+(message "Загрузка пакета python.")
 (require 'python)
 (setq
  doom-modeline-env-enable-python t
@@ -873,11 +930,11 @@ Version 2017-11-01"
   (interactive)
   (anaconda-mode 1)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (lsp-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
@@ -891,13 +948,15 @@ Version 2017-11-01"
 
 
 ;; RST-MODE
+(message "Загрузка пакета rst-mode.")
+(require 'rst)
 (defun setup-rst-mode ()
   "Settings for 'rst-mode'."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -913,10 +972,10 @@ Version 2017-11-01"
   (interactive)
 
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -925,6 +984,8 @@ Version 2017-11-01"
 
 
 ;; PAREN-MODE
+(message "Загрузка пакета paren.")
+(require 'paren)
 (show-paren-mode 1)
 
 
@@ -932,6 +993,7 @@ Version 2017-11-01"
 ;; https://www.emacswiki.org/emacs/SavePlace
 ;; When you visit a file, point goes to the last place where it was when you
 ;; previously visited the same file.
+(message "Загрузка пакета saveplace.")
 (require 'saveplace)
 (setq save-place-file (expand-file-name ".emacs-places" emacs-config-dir)
       save-place-forget-unreadable-files 1)
@@ -940,11 +1002,14 @@ Version 2017-11-01"
 
 ;; SCALA MODE
 ;; https://github.com/hvesalai/emacs-scala-mode
+(message "Загрузка пакета scala-mode.")
+(require 'scala-mode)
 (defun setup-scala-mode ()
   "Settings for 'scala-mode'."
   (interactive)
   (company-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -954,12 +1019,14 @@ Version 2017-11-01"
 
 
 ;; SHELL-SCRIPT-MODE
+(message "Загрузка пакета shell-script-mode.")
+(require 'sh-script)
 (defun setup-shell-script-mode ()
   "Settings for 'shell-script-mode'."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -969,12 +1036,14 @@ Version 2017-11-01"
 
 
 ;; SQL MODE
+(message "Загрузка пакета sql-mode.")
+(require 'sql)
 (defun setup-sql-mode ()
   "Settings for SQL-mode."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -984,6 +1053,8 @@ Version 2017-11-01"
 
 ;; TIDE-MODE
 ;; https://github.com/ananthakumaran/tide/
+(message "Загрузка пакета tide.")
+(require 'tide)
 (defun setup-tide-mode ()
   "Settings for 'tide-mode'."
   (interactive)
@@ -1002,15 +1073,17 @@ Version 2017-11-01"
 
 ;; TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
+(message "Загрузка пакета terraform-mode.")
+(require 'terraform-mode)
 (with-eval-after-load "terraform-mode"
   (setq flycheck-checker 'terraform))
 (defun setup-terraform-mode ()
   "Settings for terraform-mode."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1021,6 +1094,7 @@ Version 2017-11-01"
 
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
+(message "Загрузка пакета treemacs.")
 (require 'treemacs)
 (setq treemacs-width 30)
 (defun treemacs-get-ignore-files (filename absolute-path)
@@ -1040,14 +1114,15 @@ Version 2017-11-01"
 
 ;; TYPESCRIPT MODE
 ;; https://github.com/emacs-typescript/typescript.el
+(message "Загрузка пакета typescript-mode.")
 (require 'typescript-mode)
 (defun setup-typescript-mode ()
   "Settings for 'typescript-mode'."
   (interactive)
   (company-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1064,6 +1139,7 @@ Version 2017-11-01"
 
 ;; WEB-MODE
 ;; https://web-mode.org/
+(message "Загрузка пакета web-mode.")
 (require 'web-mode)
 (setq
  web-mode-attr-indent-offset 4
@@ -1078,8 +1154,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (company-web 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1097,6 +1173,7 @@ Version 2017-11-01"
 
 ;; WHITESPACE MODE
 ;; https://www.emacswiki.org/emacs/WhiteSpace
+(message "Загрузка пакета whitespace.")
 (require 'whitespace)
 (setq
  whitespace-display-mappings
@@ -1123,10 +1200,10 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (diff-hl-mode 1)
-  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
+  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1138,6 +1215,7 @@ Version 2017-11-01"
 
 ;; YASNIPPET
 ;; http://github.com/joaotavora/yasnippet
+(message "Загрузка пакета yasnippet.")
 (require 'yasnippet)
 (defvar snippets-dir
   (expand-file-name "snippets" emacs-config-dir))
@@ -1146,7 +1224,6 @@ Version 2017-11-01"
 (yas-global-mode 1)
 
 
-(server-start)
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 

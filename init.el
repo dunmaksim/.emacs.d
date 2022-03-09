@@ -22,9 +22,9 @@
  auto-save-file-name-transforms `((".*" , autosave-dir) t)
  calendar-week-start-day 1
  create-lockfiles nil
- cursor-type 'bar
  custom-file (expand-file-name "custom.el" emacs-config-dir)
  delete-old-versions t
+ indent-line-function (quote insert-tab)
  indent-tabs-mode nil
  inhibit-splash-screen t
  inhibit-startup-message t
@@ -47,13 +47,10 @@
   (setq  ispell-program-name "/usr/bin/aspell"))
 
 (require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
 
 (defvar generic-packages
   '(
-    adoc-mode
     anaconda-mode
     ansible
     apache-mode
@@ -82,18 +79,13 @@
     helm ; https://github.com/emacs-helm/helm
     helm-company
     highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
-    hl-line
-    ibuffer
     js2-mode
     json-mode
     lsp-mode ; https://github.com/emacs-lsp
     lsp-ui ; https://github.com/emacs-lsp/lsp-ui
     magit
     markdown-mode
-    miniedit
     multiple-cursors
-    nlinum
-    nlinum-hl
     org
     org-roam
     php-mode
@@ -123,32 +115,37 @@
     base16-theme
     ) "Packages for any EMACS version: console and UI.")
 
-(defvar graphic-packages '
-  (
-   all-the-icons
-   all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
-   mode-icons ; https://github.com/ryuslash/mode-icons
-   ) "Packages only for graphical mode.")
+(defvar graphic-packages
+  '(
+    all-the-icons
+    all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
+    all-the-icons-ibuffer ;; https://github.com/seagle0128/all-the-icons-ibuffer
+    mode-icons ; https://github.com/ryuslash/mode-icons
+    treemacs-all-the-icons
+    ) "Packages only for graphical mode.")
 
-(defvar required-packages)
 (if is-gui-mode
-    (setq required-packages (append generic-packages graphic-packages generic-packages))
-  (setq required-packages generic-packages))
+    (setq package-selected-packages (append generic-packages graphic-packages))
+  (setq package-selected-packages generic-packages))
 
 ;; Установка необходимых пакетов
-(defun install-required-packages ()
-  "Install all required packages."
-  (message "Установка отсутствующих пакетов...")
-  (defvar packages-refreshed 0 "Список пакетов обновлён.")
-  (dolist (pkg required-packages)
-    (unless (package-installed-p pkg)
-      (when (equal packages-refreshed 0)
-        (progn
-          (package-refresh-contents)
-          (message "Список доступных пакетов обновлён...")
-          (setq packages-refreshed 1)))
-      (package-install pkg t))))
-(install-required-packages)
+
+(message "Установка отсутствующих пакетов...")
+
+(defvar packages-refreshed nil "Проверка того, что список пакетов обновлён.")
+;; Если хотя бы один из списка не установлен, нужно
+;; 1. Обновить список пакетов.
+(dolist (pkg package-selected-packages)
+  (unless (package-installed-p pkg)
+    (unless packages-refreshed
+      (progn
+        (message "Не все пакеты установлены: %s" pkg)
+        (package-refresh-contents)
+        (message "Список доступных пакетов обновлён...")
+        (setq packages-refreshed 1)))))
+;; 2. Установить недостающее.
+(if packages-refreshed
+    (package-install-selected-packages))
 
 
 ;; Now EMACS "see" packages in "straight" directory
@@ -194,8 +191,15 @@
     ;; Turn on iconic modes
     (require 'all-the-icons)
     (require 'all-the-icons-dired)
+    (require 'all-the-icons-ibuffer)
     (require 'mode-icons)
+    ;;    (require 'theemacs-all-the-icons)
+    (setq
+     all-the-icons-ibuffer-color-icon t
+     all-the-icons-ibuffer-human-readable-size t
+     all-the-icons-ibuffer-icon t)
     (all-the-icons-dired-mode 1)
+    (all-the-icons-ibuffer-mode 1)
     (fringe-mode 2)
     (mode-icons-mode 1)
     (scroll-bar-mode 0) ;; Off scrollbars
@@ -227,9 +231,7 @@
 ;;; Save user settings in dedicated file
 (setq custom-file (expand-file-name "settings.el" emacs-config-dir))
 (when (file-exists-p custom-file)
-  (progn
-    (install-required-packages)
-    (load-file custom-file)))
+  (load-file custom-file))
 
 
 ;; Auto-revert mode
@@ -325,25 +327,6 @@ Version 2017-11-01"
 (global-set-key (kbd "M-o") 'ace-window)
 
 
-;; ADOC MODE
-(message "Загрузка пакета adoc-mode")
-(require 'adoc-mode)
-(defun setup-adoc-mode ()
-  "Settings for 'adoc-mode'."
-  (interactive)
-  (diff-hl-mode 1)
-  (flycheck-mode 1)
-  (highlight-indentation-mode 1)
-  (nlinum-mode 1)
-  (rainbow-delimiters-mode 1)
-  (visual-line-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
-(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
-(add-hook 'adoc-mode-hook #'setup-adoc-mode)
-
-
 ;; ANSIBLE MODE
 (message "Загрузка пакета ansible-mode")
 (require 'ansible)
@@ -361,8 +344,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1)
   (whitespace-mode 1)
@@ -394,6 +377,8 @@ Version 2017-11-01"
 ;; COMPANY-WEB
 (message "Загрузка пакета company-web.")
 (require 'company-web)
+(require 'company-web-html)
+(add-to-list 'company-backends 'company-web-html)
 
 
 ;; CONF MODE
@@ -582,8 +567,8 @@ Version 2017-11-01"
   (buffer-face-mode 1)
   (company-mode 1)
   (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1) ;; Turn on linters
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
@@ -607,6 +592,7 @@ Version 2017-11-01"
 
 
 ;; IBUFFER
+;; Встроенный пакет для удобной работы с буферами.
 (message "Загрузка пакета ibuffer")
 (require 'ibuffer)
 (require 'ibuf-ext)
@@ -678,15 +664,15 @@ Version 2017-11-01"
     read-only
     locked
     " "
-    (mode 8 -1 :left)
-    " "
     (name 30 40 :left :elide)
+    " "
+    (mode 8 -1 :left)
     " "
     filename-and-process)
    (
     mark
     " "
-    (name 16 -1)
+    (name 32 -1)
     " "
     filename))
  ibuffer-use-other-window nil)
@@ -707,8 +693,8 @@ Version 2017-11-01"
   "Settings for 'java-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -723,8 +709,8 @@ Version 2017-11-01"
   "Settings for 'js2-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -740,8 +726,8 @@ Version 2017-11-01"
   "Settings for json-mode."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -767,10 +753,10 @@ Version 2017-11-01"
   "Settings for Makefile-mode."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1))
 (add-hook 'makefile-mode-hook #'setup-makefile-mode)
@@ -783,10 +769,10 @@ Version 2017-11-01"
 (setq
  header-line-format " "
  left-margin-width 4
- line-spacing 4
+ ;; line-spacing 4
+ markdown-list-indent-width 4
  markdown-fontify-code-blocks-natively t
- right-margin-width 4
- tab-width 4
+ ;; right-margin-width 4
  word-wrap t)
 (set-face-attribute 'markdown-code-face        nil :family default-font-family)
 (set-face-attribute 'markdown-inline-code-face nil :family default-font-family)
@@ -819,7 +805,7 @@ Version 2017-11-01"
 
 ;; Turn off menu bar
 (require 'menu-bar)
-(menu-bar-mode 0)
+(menu-bar-mode nil)
 
 
 ;; MULTIPLE CURSORS
@@ -830,24 +816,6 @@ Version 2017-11-01"
     (progn
       (global-unset-key (kbd "M-<down-mouse-1>"))
       (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
-
-
-;; NLINUM MODE
-;; https://elpa.gnu.org/packages/nlinum.html
-(message "Загрузка пакета nlinum.")
-(require 'nlinum)
-(require 'nlinum-hl)
-;;(setq nlinum-format "%d \u2502") ;; │
-(setq nlinum-format "%d |")
-(add-hook 'post-gc-hook #'nlinum-hl-flush-all-windows)
-
-;; ...or switches windows
-(advice-add #'select-window :before #'nlinum-hl-do-select-window-flush)
-(advice-add #'select-window :after  #'nlinum-hl-do-select-window-flush)
-
-;; after X amount of idle time
-(run-with-idle-timer 5 t #'nlinum-hl-flush-window)
-(run-with-idle-timer 30 t #'nlinum-hl-flush-all-windows)
 
 
 ;; ORG-MODE
@@ -893,7 +861,7 @@ Version 2017-11-01"
 (message "Загрузка пакета projectile")
 (require 'projectile)
 (setq projectile-project-search-path '("~/repo/yandex/" "~/repo/documentat/"))
-(define-key projectile-mode-map (kbd "M-p") 'projectile-command-map)
+;; (define-key projectile-mode-map (kbd "M-p") 'projectile-command-map)
 
 
 ;; PROTOBUF-MODE
@@ -904,9 +872,9 @@ Version 2017-11-01"
   "Settings for 'protobuf-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -923,18 +891,17 @@ Version 2017-11-01"
  py-electric-comment-p t
  py-pylint-command-args "--max-line-length 120"
  py-virtualenv-workon-home "~/.virtualenvs"
- python-shell-interpreter "python3"
- tab-width 4)
+ python-shell-interpreter "python3")
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
   (anaconda-mode 1)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (lsp-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
@@ -954,9 +921,9 @@ Version 2017-11-01"
   "Settings for 'rst-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -970,12 +937,11 @@ Version 2017-11-01"
 (defun setup-ruby-mode ()
   "Settings for 'ruby-mode'."
   (interactive)
-
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1008,8 +974,8 @@ Version 2017-11-01"
   "Settings for 'scala-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1025,8 +991,8 @@ Version 2017-11-01"
   "Settings for 'shell-script-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1042,8 +1008,8 @@ Version 2017-11-01"
   "Settings for SQL-mode."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1081,15 +1047,25 @@ Version 2017-11-01"
   "Settings for terraform-mode."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.tf\\'" 'terraform-mode))
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
 (add-hook 'hcl-mode-hook #'setup-terraform-mode)
+
+
+;; TEXT MODE
+;; Просто указываю, что вместо TAB'ов надо использовать пробелы. Почему-то настройки выше игнорируются.
+(require 'text-mode)
+(add-hook 'text-mode-hook
+	  '(lambda ()
+	     (setq
+	      indent-tabs-mode nil
+	      tab-width 4)))
 
 
 ;; TREEMACS — awesome file manager (instead NeoTree)
@@ -1120,9 +1096,9 @@ Version 2017-11-01"
   "Settings for 'typescript-mode'."
   (interactive)
   (company-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1153,9 +1129,8 @@ Version 2017-11-01"
   "Settings for web-mode."
   (interactive)
   (company-mode 1)
-  (company-web 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1200,10 +1175,10 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (diff-hl-mode 1)
+  (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
-  (nlinum-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))

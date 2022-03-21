@@ -44,7 +44,7 @@
 
 ;; Aspell для Linux, в Windows без проверки орфографии
 (when (string-equal system-type "gnu/linux")
-  (setq  ispell-program-name "/usr/bin/aspell"))
+  (setq ispell-program-name "/usr/bin/aspell"))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -69,6 +69,7 @@
     easy-hugo
     edit-indirect
     editorconfig
+    embark ;; https://github.com/oantolin/embark
     flycheck
     flycheck-clang-tidy
     flycheck-color-mode-line
@@ -87,7 +88,6 @@
     markdown-mode
     multiple-cursors
     org
-    org-roam
     php-mode
     projectile
     protobuf-mode
@@ -104,6 +104,7 @@
     treemacs-magit
     typescript-mode
     undo-tree
+    verb
     web-beautify
     web-mode
     which-key
@@ -131,18 +132,16 @@
 ;; Установка необходимых пакетов
 
 (message "Установка отсутствующих пакетов...")
-
+(package-initialize)
 (defvar packages-refreshed nil "Проверка того, что список пакетов обновлён.")
 ;; Если хотя бы один из списка не установлен, нужно
 ;; 1. Обновить список пакетов.
-(dolist (pkg package-selected-packages)
-  (unless (package-installed-p pkg)
-    (unless packages-refreshed
-      (progn
-        (message "Не все пакеты установлены: %s" pkg)
-        (package-refresh-contents)
-        (message "Список доступных пакетов обновлён...")
-        (setq packages-refreshed 1)))))
+(or (seq-every-p (lambda (pkg)
+                   (or (package-installed-p pkg)
+                       (assq pkg package-archive-contents)))
+		 package-selected-packages)
+    (package-refresh-contents)
+    (setq packages-refreshed 1))
 ;; 2. Установить недостающее.
 (if packages-refreshed
     (package-install-selected-packages))
@@ -489,7 +488,10 @@ Version 2017-11-01"
 ;; LOAD THEME
 (message "Загрузка темы.")
 (require 'doom-themes)
-(load-theme 'doom-monokai-classic t)
+;; (load-theme 'doom-monokai-classic t)
+(load-theme 'doom-one t)
+(doom-themes-org-config)
+(doom-themes-visual-bell-config)
 
 
 ;; EDITORCONFIG EMACS
@@ -522,6 +524,11 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
 (add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
+
+
+;; EMBARK
+(require 'embark)
+(setq prefix-help-command #'embark-prefix-help-command)
 
 
 ;; FLYCHECK
@@ -717,6 +724,7 @@ Version 2017-11-01"
 (add-hook 'javascript-mode-hook #'setup-js2-mode)
 (add-hook 'js2-mode-hook #'setup-js2-mode)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+
 
 ;; JSON-MODE
 ;; https://github.com/joshwnj/json-mode
@@ -955,6 +963,12 @@ Version 2017-11-01"
 (show-paren-mode 1)
 
 
+;; REST-CLIENT_MODE
+;; https://github.com/pashky/restclient.el
+(require 'restclient)
+(add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
+
+
 ;; SAVE-PLACE-MODE
 ;; https://www.emacswiki.org/emacs/SavePlace
 ;; When you visit a file, point goes to the last place where it was when you
@@ -1110,8 +1124,16 @@ Version 2017-11-01"
 
 ;; UNDO-TREE
 (require 'undo-tree)
+(setq undo-tree-auto-save-history nil) ; Не срать в рабочий каталог! Не нужны мне твои backup'ы!
 (global-undo-tree-mode 1)
 
+
+;; VERB-MODE
+;; Удобная работа с REST API
+;; https://github.com/federicotdn/verb
+(require 'verb)
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
 
 ;; WEB-MODE
 ;; https://web-mode.org/
@@ -1143,6 +1165,7 @@ Version 2017-11-01"
 ;; WHICH-KEY MODE
 ;; https://github.com/justbur/emacs-which-key
 (require 'which-key)
+(which-key-setup-side-window-right)
 (which-key-mode 1)
 
 

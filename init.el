@@ -130,25 +130,19 @@
   (setq package-selected-packages generic-packages))
 
 ;; Установка необходимых пакетов
-
-(message "Установка отсутствующих пакетов...")
 (package-initialize)
-(defvar packages-refreshed nil "Проверка того, что список пакетов обновлён.")
-;; Если хотя бы один из списка не установлен, нужно
-;; 1. Обновить список пакетов.
-(or (seq-every-p (lambda (pkg)
-                   (or (package-installed-p pkg)
-                       (assq pkg package-archive-contents)))
-		 package-selected-packages)
-    (package-refresh-contents)
-    (setq packages-refreshed 1))
-;; 2. Установить недостающее.
-(if packages-refreshed
-    (package-install-selected-packages))
+(progn
+  (message "Проверкка наличия необходимых пакетов...")
+  (defvar packages-refreshed nil "Список пакетов обновлён.")
+  (dolist (pkg package-selected-packages)
+    (unless (package-installed-p pkg)
+      (unless packages-refreshed
+        (progn
+          (package-refresh-contents)
+          (message "Список доступных пакетов обновлён...")
+          (setq packages-refreshed 1)))
+      (package-install pkg t))))
 
-
-;; Now EMACS "see" packages in "straight" directory
-;; (add-to-list 'load-path (expand-file-name "straight" emacs-config-dir))
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
 
@@ -192,10 +186,9 @@
     (require 'all-the-icons-dired)
     (require 'all-the-icons-ibuffer)
     (require 'mode-icons)
-    ;;    (require 'theemacs-all-the-icons)
     (setq
-     all-the-icons-ibuffer-color-icon t
-     all-the-icons-ibuffer-human-readable-size t
+     ;; all-the-icons-ibuffer-color-icon t
+     all-the-icons-ibuffer-human-readable-size 1
      all-the-icons-ibuffer-icon t)
     (all-the-icons-dired-mode 1)
     (all-the-icons-ibuffer-mode 1)
@@ -488,8 +481,8 @@ Version 2017-11-01"
 ;; LOAD THEME
 (message "Загрузка темы.")
 (require 'doom-themes)
-;; (load-theme 'doom-monokai-classic t)
-(load-theme 'doom-one t)
+(load-theme 'doom-monokai-classic t)
+;; (load-theme 'doom-one t)
 (doom-themes-org-config)
 (doom-themes-visual-bell-config)
 

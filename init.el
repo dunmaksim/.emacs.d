@@ -78,14 +78,12 @@
     format-all
     go-mode
     helm ; https://github.com/emacs-helm/helm
-    helm-company
     highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
     js2-mode
     json-mode
     lsp-mode ; https://github.com/emacs-lsp
     lsp-ui ; https://github.com/emacs-lsp/lsp-ui
     magit
-    marginalia ;; https://github.com/minad/marginalia
     markdown-mode
     multiple-cursors
     org
@@ -120,7 +118,6 @@
 (defvar graphic-packages
   '(
     all-the-icons
-    all-the-icons-completion ;; https://github.com/iyefrat/all-the-icons-completion
     all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
     all-the-icons-ibuffer ;; https://github.com/seagle0128/all-the-icons-ibuffer
     mode-icons ; https://github.com/ryuslash/mode-icons
@@ -184,7 +181,6 @@
 
     ;; Turn on iconic modes
     (require 'all-the-icons)
-    (require 'all-the-icons-completion)
     (require 'all-the-icons-dired)
     (require 'all-the-icons-ibuffer)
     (require 'mode-icons)
@@ -192,7 +188,6 @@
      ;; all-the-icons-ibuffer-color-icon t
      all-the-icons-ibuffer-human-readable-size 1
      all-the-icons-ibuffer-icon t)
-    (all-the-icons-completion-mode 1)
     (all-the-icons-dired-mode 1)
     (all-the-icons-ibuffer-mode 1)
     (fringe-mode 2)
@@ -588,12 +583,6 @@ Version 2017-11-01"
 (helm-mode 1)
 
 
-;; HELM-COMPANY
-(message "Загрузка пакета helm-company.")
-(require 'helm-company)
-(define-key company-active-map (kbd "C-:") 'helm-company)
-
-
 ;; IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 (message "Загрузка пакета ibuffer")
@@ -764,14 +753,6 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1))
 (add-hook 'makefile-mode-hook #'setup-makefile-mode)
-
-
-;; MARGINALIA-MODE
-;; https://github.com/minad/marginalia
-(message "Загрузка пакета marginalia")
-(require 'marginalia)
-(marginalia-mode 1)
-(global-set-key (kbd "M-A") 'marginalia-cycle)
 
 
 ;; MARKDOWN MODE

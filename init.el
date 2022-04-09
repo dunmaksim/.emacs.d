@@ -85,6 +85,7 @@
     lsp-mode ; https://github.com/emacs-lsp
     lsp-ui ; https://github.com/emacs-lsp/lsp-ui
     magit
+    marginalia ;; https://github.com/minad/marginalia
     markdown-mode
     multiple-cursors
     org
@@ -119,6 +120,7 @@
 (defvar graphic-packages
   '(
     all-the-icons
+    all-the-icons-completion ;; https://github.com/iyefrat/all-the-icons-completion
     all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
     all-the-icons-ibuffer ;; https://github.com/seagle0128/all-the-icons-ibuffer
     mode-icons ; https://github.com/ryuslash/mode-icons
@@ -147,6 +149,7 @@
 
 
 ;; Resize windows
+
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
@@ -154,15 +157,13 @@
 
 (global-set-key (kbd "C-z") 'undo)
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "<C-tab>") 'mode-line-other-buffer)
 
 (global-set-key (kbd "C-v") 'yank)
 (global-set-key (kbd "C-x o") 'next-multiframe-window)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
 (global-set-key (kbd "C-f") 'isearch-forward)
-;; Размер шрифта
-(global-set-key (kbd "C-=") 'text-scale-increase)
-(global-set-key (kbd "M-=") 'text-scale-decrease)
 
 ;; Settings for window (not only a Windows!) system.
 (defvar default-font-family nil "Default font family.")
@@ -183,6 +184,7 @@
 
     ;; Turn on iconic modes
     (require 'all-the-icons)
+    (require 'all-the-icons-completion)
     (require 'all-the-icons-dired)
     (require 'all-the-icons-ibuffer)
     (require 'mode-icons)
@@ -190,6 +192,7 @@
      ;; all-the-icons-ibuffer-color-icon t
      all-the-icons-ibuffer-human-readable-size 1
      all-the-icons-ibuffer-icon t)
+    (all-the-icons-completion-mode 1)
     (all-the-icons-dired-mode 1)
     (all-the-icons-ibuffer-mode 1)
     (fringe-mode 2)
@@ -763,6 +766,14 @@ Version 2017-11-01"
 (add-hook 'makefile-mode-hook #'setup-makefile-mode)
 
 
+;; MARGINALIA-MODE
+;; https://github.com/minad/marginalia
+(message "Загрузка пакета marginalia")
+(require 'marginalia)
+(marginalia-mode 1)
+(global-set-key (kbd "M-A") 'marginalia-cycle)
+
+
 ;; MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 (message "Загрузка пакета markdown-mode.")
@@ -806,6 +817,7 @@ Version 2017-11-01"
 
 ;; Turn off menu bar
 (require 'menu-bar)
+(setq menu-bar-mode nil )
 (menu-bar-mode nil)
 
 
@@ -826,7 +838,17 @@ Version 2017-11-01"
 (setq
  truncate-lines nil
  left-margin-width 4
- org-todo-keywords '((sequence "НОВАЯ" "НА РАСПАКОВКЕ" "РАСПАКОВАНА" "ОТМЕНЕНА" "В РАБОТЕ" "ТРЕБУЕТСЯ ИНФОРМАЦИЯ" "РЕВЬЮ" "ЗАКРЫТА БЕЗ СЛИЯНИЯ" "|" "ВЫПОЛНЕНА"))
+ org-todo-keywords '((
+                      sequence
+                      "НОВАЯ"
+                      "РАСПАКОВКА"
+                      "ПРИОСТАНОВЛЕНА"
+                      "ОТМЕНЕНА"
+                      "В РАБОТЕ"
+                      "ТРЕБУЕТСЯ ИНФОРМАЦИЯ"
+                      "РЕВЬЮ"
+                      "|"
+                      "ВЫПОЛНЕНА"))
  right-margin-width 4
  word-wrap t)
 (defun setup-org-mode ()
@@ -1068,12 +1090,14 @@ Version 2017-11-01"
 ;; TEXT MODE
 ;; Просто указываю, что вместо TAB'ов надо использовать пробелы. Почему-то настройки выше игнорируются.
 (require 'text-mode)
-(add-hook 'text-mode-hook
-	  '(lambda ()
-	     (setq
-	      indent-tabs-mode nil
-	      tab-width 4)))
-
+(add-hook
+ 'text-mode-hook
+ '(lambda ()
+    (setq
+     indent-tabs-mode nil
+     tab-width 4)
+    (whitespace-mode 1)
+    (display-line-numbers-mode 1)))
 
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
@@ -1090,6 +1114,7 @@ Version 2017-11-01"
 (treemacs-follow-mode 1)
 (treemacs-git-mode 'simple)
 (treemacs-filewatch-mode 1)
+
 
 ;; TREEMACS-ICONS-DIRED-MODE
 (treemacs-icons-dired-mode 1)
@@ -1127,6 +1152,7 @@ Version 2017-11-01"
 (require 'verb)
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
+
 
 ;; WEB-MODE
 ;; https://web-mode.org/

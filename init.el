@@ -95,6 +95,7 @@
     python-mode
     rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
     restclient ; https://github.com/pashky/restclient.el
+    rg ; https://github.com/dajva/rg.el
     scala-mode
     terraform-mode
     tide
@@ -107,9 +108,11 @@
     web-beautify
     web-mode
     which-key
+    winner
     ws-butler
     yaml-mode
     yasnippet
+    zoom
 
     airline-themes ; THEMES
     base16-theme
@@ -192,9 +195,7 @@
     (all-the-icons-ibuffer-mode 1)
     (fringe-mode 2)
     (mode-icons-mode 1)
-    (scroll-bar-mode 0) ;; Off scrollbars
     (set-face-attribute 'default nil :height 130)
-    (tool-bar-mode 0) ;; Off toolbar
     (tooltip-mode 0) ;; No windows for tooltip
     (window-divider-mode 0)
     )
@@ -583,6 +584,11 @@ Version 2017-11-01"
 (helm-mode 1)
 
 
+;; GLOBAL HL MODE
+;; Подсвечивает текущую строку
+(global-hl-line-mode 1)
+
+
 ;; IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 (message "Загрузка пакета ibuffer")
@@ -597,15 +603,15 @@ Version 2017-11-01"
    ("default"
     ("Dired"
      (mode . dired-mode))
+    ("Org"
+     (mode . org-mode))
     ("Markdown"
      (mode . markdown-mode))
     ("YAML"
      (mode . yaml-mode))
-    ("Org"
-     (mode . org-mode))
     ("Protobuf"
      (mode . protobuf-mode))
-    ("Lisp"
+    ("EMACS Lisp"
      (mode . emacs-lisp-mode))
     ("Python"
      (or
@@ -798,8 +804,7 @@ Version 2017-11-01"
 
 ;; Turn off menu bar
 (require 'menu-bar)
-(setq menu-bar-mode nil )
-(menu-bar-mode nil)
+(menu-bar-mode -1)
 
 
 ;; MULTIPLE CURSORS
@@ -824,9 +829,8 @@ Version 2017-11-01"
                       "НОВАЯ"
                       "РАСПАКОВКА"
                       "ПРИОСТАНОВЛЕНА"
-                      "ОТМЕНЕНА"
                       "В РАБОТЕ"
-                      "ТРЕБУЕТСЯ ИНФОРМАЦИЯ"
+                      "НУЖНА ИНФОРМАЦИЯ"
                       "РЕВЬЮ"
                       "|"
                       "ВЫПОЛНЕНА"))
@@ -864,8 +868,15 @@ Version 2017-11-01"
 ;; PROJECTILE
 (message "Загрузка пакета projectile")
 (require 'projectile)
-(setq projectile-project-search-path '("~/repo/yandex/" "~/repo/documentat/"))
-;; (define-key projectile-mode-map (kbd "M-p") 'projectile-command-map)
+(setq
+ projectile-globally-ignored-directories '(
+                                           "*/_api-ref-grpc/"
+                                           "*/_api-ref/"
+                                           "*/_cli-ref/"
+                                           )
+ projectile-project-search-path '(
+                                  "~/repo/yandex/"
+                                  "~/repo/documentat/"))
 
 
 ;; PROTOBUF-MODE
@@ -891,10 +902,10 @@ Version 2017-11-01"
 (require 'python)
 (setq
  doom-modeline-env-enable-python t
- py-company-pycomplete-p t
- py-electric-comment-p t
- py-pylint-command-args "--max-line-length 120"
- py-virtualenv-workon-home "~/.virtualenvs"
+ ;; py-company-pycomplete-p t
+ ;; py-electric-comment-p t
+ ;; py-pylint-command-args "--max-line-length 120"
+ ;; py-virtualenv-workon-home "~/.virtualenvs"
  python-shell-interpreter "python3")
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
@@ -965,6 +976,11 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
 
 
+;; RG (ripgrep
+;; https://github.com/dajva/rg.el
+(require 'rg)
+(rg-enable-default-bindings)
+
 ;; SAVE-PLACE-MODE
 ;; https://www.emacswiki.org/emacs/SavePlace
 ;; When you visit a file, point goes to the last place where it was when you
@@ -992,6 +1008,10 @@ Version 2017-11-01"
 (add-hook 'scala-mode-hook #'setup-scala-mode)
 (add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-mode))
 (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode))
+
+
+;; SCROLL-BAR-MODE
+(scroll-bar-mode -1)
 
 
 ;; SHELL-SCRIPT-MODE
@@ -1080,6 +1100,11 @@ Version 2017-11-01"
     (whitespace-mode 1)
     (display-line-numbers-mode 1)))
 
+
+;; TOOL-BAR-MODE OFF
+(tool-bar-mode -1)
+
+
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 (message "Загрузка пакета treemacs.")
@@ -1090,7 +1115,7 @@ Version 2017-11-01"
    (string-equal filename ".emacs.desktop.lock")
    (string-equal filename "__pycache__")))
 (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
-(define-key treemacs-mode-map (kbd "f") 'find-grep)
+(define-key treemacs-mode-map (kbd "f") 'projectile-grep)
 (global-set-key (kbd "<f8>") 'treemacs)
 (treemacs-follow-mode 1)
 (treemacs-git-mode 'simple)
@@ -1190,6 +1215,12 @@ Version 2017-11-01"
                     :foreground "#E6DB74")
 
 
+;; WINNER-MODE
+;; Управление окнами в стиле Ctrl+C ←, Ctrl+C →
+(require 'winner)
+(winner-mode 1)
+
+
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 (require 'yaml-mode)
@@ -1220,6 +1251,15 @@ Version 2017-11-01"
 (unless (file-exists-p snippets-dir)
   (make-directory snippets-dir))
 (yas-global-mode 1)
+
+;; ZOOM
+;; https://github.com/cyrus-and/zoom
+(require 'zoom)
+(custom-set-variables
+ '(zoom-size '(0.618 . 0.618))
+ '(zoom-ingored-major-modes '(dired-mode markdown-mode)
+			    '(zoom-ingored-buffer-names '("init.el"))))
+(global-set-key (kbd "C-x +") 'zoom)
 
 
 (put 'downcase-region 'disabled nil)

@@ -10,7 +10,8 @@
      '(zoom consult eide apheleia 0blayout marginalia vertico projectile doom-themes dashboard embark nlinum paradox parchment-theme kubedoc k8s-mode elisp-lint yasnippet yaml-mode ws-butler which-key web-mode web-beautify undo-tree treemacs-magit treemacs-icons-dired tide scala-mode restclient rainbow-delimiters python-mode pyenv-mode protobuf-mode php-mode org-roam nlinum-hl multiple-cursors monokai-theme mode-icons lsp-ui json-mode js2-mode highlight-indentation helm-company go-mode format-all flycheck-pos-tip flycheck-indicator flycheck-color-mode-line flycheck-clang-tidy editorconfig edit-indirect easy-hugo doom-modeline dockerfile-mode direnv diff-hl counsel company-web company-terraform company-anaconda base16-theme apt-sources-list apache-mode ansible all-the-icons-ivy-rich all-the-icons-ivy all-the-icons-ibuffer all-the-icons-dired airline-themes adoc-mode))
  '(paradox-github-token t)
   '(safe-local-variable-values
-     '((token . t1\.9eudmZ2ZloqSks-WmZ6dlJbNypuPku3rnZmdkI_GzJOXmYyZz5mYyp2QzIzl8_c8Tk1t-e8WQBNE_d3z93x8Sm357xZAE0T9\.EmNH_hpb2658ItWvP_Kkn6D3W4WVrICJsmAHYFOI7SefD3X9wYYGF9Tmfs4GUv4lJVVIDh61m6uizdMcxfh7AQ)
+     '((token . t1\.9euelZrLypnJno-QkZmaipmel5eQku3rnpWalpCQzZbNnMiemYySmpjPlcbl8_dcDjds-e8bb19E_N3z9xw9NGz57xtvX0T8\.PEYGfvRMIML5UQZoV5k5ZWKtdyexDQiTRugs36C6jlniPZw-CWJsF4SUA0dEyUwIS0UkfGOnm5EOSIEt5wrvAA)
+        (token . t1\.9eudmZ2ZloqSks-WmZ6dlJbNypuPku3rnZmdkI_GzJOXmYyZz5mYyp2QzIzl8_c8Tk1t-e8WQBNE_d3z93x8Sm357xZAE0T9\.EmNH_hpb2658ItWvP_Kkn6D3W4WVrICJsmAHYFOI7SefD3X9wYYGF9Tmfs4GUv4lJVVIDh61m6uizdMcxfh7AQ)
         (folder-id . b1gaihr2697j1dbr0mej)
         (cloud-id . b1gkgm9daf9605njnmn8)
         (token . t1\.9euelZqVl8vPkZSJzJbOnY-QlpbGzO3rnpWalpCQzZbNnMiemYySmpjPlcbl8_cmFU9t-e9EWEJ5_t3z92ZDTG3570RYQnn-\.9tky0C4PnUBC0_p_ZzLgNE1i5QlI_GAmeB-HqbNHQAG4hgmgImorUrgF2JHxdKrVHzct9zI73dGpvgdXvE7kBw)

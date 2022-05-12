@@ -35,6 +35,7 @@
  overwrite-mode-binary nil
  overwrite-mode-textual nil
  ring-bell-function #'ignore
+ scroll-bar-mode nil ; Выключить scroll-bar
  tab-width 4
  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
  truncate-lines 1
@@ -108,11 +109,8 @@
     web-beautify
     web-mode
     which-key
-    winner
     ws-butler
     yaml-mode
-    yasnippet
-    zoom
 
     airline-themes ; THEMES
     base16-theme
@@ -352,7 +350,7 @@ Version 2017-11-01"
 
 
 ;; COMPANY-MODE
-;;https://company-mode.github.io/
+;; https://company-mode.github.io/
 (message "Загрузка пакета company.")
 (require 'company)
 (require 'company-dabbrev)
@@ -375,11 +373,20 @@ Version 2017-11-01"
 ;; CONF MODE
 (message "Загрузка пакета conf-mode.")
 (require 'conf-mode)
-(add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
+(defun setup-conf-mode ()
+  "Settings for 'conf-mode'."
+  (company-mode 1)
+  (display-line-numbers-mode 1)
+  (flycheck-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'conf-mode-hook #'setup-conf-mode)
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode ))
 (add-to-list 'auto-mode-alist '("\\.list\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.terraformrc" .conf-mode))
 
 
 ;; Dashboard
@@ -607,12 +614,14 @@ Version 2017-11-01"
      (mode . org-mode))
     ("Markdown"
      (mode . markdown-mode))
+    ("EMACS Lisp"
+     (mode . emacs-lisp-mode))
     ("YAML"
      (mode . yaml-mode))
     ("Protobuf"
      (mode . protobuf-mode))
-    ("EMACS Lisp"
-     (mode . emacs-lisp-mode))
+    ("Golang"
+     (mode . go-mode))
     ("Python"
      (or
       (mode . python-mode)
@@ -869,14 +878,16 @@ Version 2017-11-01"
 (message "Загрузка пакета projectile")
 (require 'projectile)
 (setq
- projectile-globally-ignored-directories '(
-                                           "*/_api-ref-grpc/"
-                                           "*/_api-ref/"
-                                           "*/_cli-ref/"
-                                           )
- projectile-project-search-path '(
-                                  "~/repo/yandex/"
-                                  "~/repo/documentat/"))
+ projectile-globally-ignored-directories
+ '(
+   "*/_api-ref-grpc/"
+   "*/_api-ref/"
+   "*/_cli-ref/"
+   )
+ projectile-project-search-path
+ '(
+   "~/repo/yandex/"
+   "~/repo/documentat/"))
 
 
 ;; PROTOBUF-MODE
@@ -981,6 +992,7 @@ Version 2017-11-01"
 (require 'rg)
 (rg-enable-default-bindings)
 
+
 ;; SAVE-PLACE-MODE
 ;; https://www.emacswiki.org/emacs/SavePlace
 ;; When you visit a file, point goes to the last place where it was when you
@@ -1008,10 +1020,6 @@ Version 2017-11-01"
 (add-hook 'scala-mode-hook #'setup-scala-mode)
 (add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-mode))
 (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode))
-
-
-;; SCROLL-BAR-MODE
-(scroll-bar-mode -1)
 
 
 ;; SHELL-SCRIPT-MODE
@@ -1215,12 +1223,6 @@ Version 2017-11-01"
                     :foreground "#E6DB74")
 
 
-;; WINNER-MODE
-;; Управление окнами в стиле Ctrl+C ←, Ctrl+C →
-(require 'winner)
-(winner-mode 1)
-
-
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 (require 'yaml-mode)
@@ -1240,26 +1242,6 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.yfm\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
-
-
-;; YASNIPPET
-;; http://github.com/joaotavora/yasnippet
-(message "Загрузка пакета yasnippet.")
-(require 'yasnippet)
-(defvar snippets-dir
-  (expand-file-name "snippets" emacs-config-dir))
-(unless (file-exists-p snippets-dir)
-  (make-directory snippets-dir))
-(yas-global-mode 1)
-
-;; ZOOM
-;; https://github.com/cyrus-and/zoom
-(require 'zoom)
-(custom-set-variables
- '(zoom-size '(0.618 . 0.618))
- '(zoom-ingored-major-modes '(dired-mode markdown-mode)
-			    '(zoom-ingored-buffer-names '("init.el"))))
-(global-set-key (kbd "C-x +") 'zoom)
 
 
 (put 'downcase-region 'disabled nil)

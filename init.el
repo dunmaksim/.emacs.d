@@ -4,10 +4,12 @@
 
 ;;; Code:
 
-(defvar emacs-config-dir (file-name-directory user-init-file) "Root directory with settings.")
-(defvar autosave-dir (concat emacs-config-dir "saves") "Directory for autosaves.")
-(defvar backups-dir (concat emacs-config-dir "backups") "Directory for backups.")
-(defvar is-gui-mode (display-graphic-p) "EMACS runned in GUI mode.")
+(defvar emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.")
+(defvar autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
+(defvar backups-dir (concat emacs-config-dir "backups") "Директория для резервных копий.")
+(defvar is-gui-mode (display-graphic-p) "EMACS запущен в графическом режиме.")
+(defvar is-linux (equal system-type "gnu/linux") "EMACS запущен в GNU/Linux.")
+(defvar is-windows (equal system-type "windows-nt") "EMACS запущен в Microsoft Windows.")
 
 ;;; Создание каталогов для резервных копий и файлов автосохранения
 (unless (file-exists-p autosave-dir)
@@ -34,14 +36,22 @@
  make-backup-files nil
  overwrite-mode-binary nil
  overwrite-mode-textual nil
- ring-bell-function #'ignore
+ ring-bell-function #'ignore ; Заблокировать пищание
  scroll-bar-mode nil ; Выключить scroll-bar
  tab-width 4
  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
  truncate-lines 1
  use-dialog-box nil
  user-full-name "Dunaevsky Maxim"
- visible-bell nil)
+ visible-bell t ;; Заблокировать пищание
+ widget-image-enable is-gui-mode;;; Разрешить пиктграммы в виджетах
+ window-divider-default-places 'right-only
+ window-divider-default-right-width 3
+ x-underline-at-descent-line t
+ )
+
+(setq-default line-spacing 0)
+
 
 ;; Aspell для Linux, в Windows без проверки орфографии
 (when (string-equal system-type "gnu/linux")
@@ -79,6 +89,7 @@
     format-all
     go-mode
     helm ; https://github.com/emacs-helm/helm
+    helm-ag ; https://github.com/syohex/emacs-helm-ag
     highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
     js2-mode
     json-mode
@@ -98,6 +109,7 @@
     restclient ; https://github.com/pashky/restclient.el
     rg ; https://github.com/dajva/rg.el
     scala-mode
+    swiper ; https://github.com/abo-abo/swiper
     terraform-mode
     tide
     treemacs
@@ -108,6 +120,7 @@
     verb
     web-beautify
     web-mode
+    wgrep ; https://github.com/mhayashi1120/Emacs-wgrep
     which-key
     ws-butler
     yaml-mode
@@ -161,66 +174,118 @@
 (global-set-key (kbd "C-x o") 'next-multiframe-window)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
-(global-set-key (kbd "C-f") 'isearch-forward)
-
 ;; Settings for window (not only a Windows!) system.
 (defvar default-font-family nil "Default font family.")
-(when is-gui-mode
-  (progn
-    ;; Install iconic fonts
-    (cond
-     ;; Install fonts in GNU / Linux
-     (
-      (string-equal system-type "gnu/linux")
-      (unless
-          (file-directory-p "~/.local/share/fonts/")
-        (all-the-icons-install-fonts)))
-     (
-      ;; Not install fonts in Windows, but print message
-      (string-equal system-type "windows-nt")
-      (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))
-
-    ;; Turn on iconic modes
-    (require 'all-the-icons)
-    (require 'all-the-icons-dired)
-    (require 'all-the-icons-ibuffer)
-    (require 'mode-icons)
-    (setq
-     ;; all-the-icons-ibuffer-color-icon t
-     all-the-icons-ibuffer-human-readable-size 1
-     all-the-icons-ibuffer-icon t)
-    (all-the-icons-dired-mode 1)
-    (all-the-icons-ibuffer-mode 1)
-    (fringe-mode 2)
-    (mode-icons-mode 1)
-    (set-face-attribute 'default nil :height 130)
-    (tooltip-mode 0) ;; No windows for tooltip
-    (window-divider-mode 0)
-    )
-
-  ;; Font settings for Linux and Windows
-  (defvar available-fonts (font-family-list))
-  (cond
-   ( ;; Windows
-    (string-equal system-type "windows-nt")
-    (when (member "Consolas" available-fonts)
-      (setq default-font-family "Consolas")))
-   ( ;; Linux
-    (string-equal system-type "gnu/linux")
-    (cond
-     (
-      (member "Source Code Pro" available-fonts)
-      (setq default-font-family "Source Code Pro"))
-     (
-      (member "DejaVu Sans Mono" available-fonts)
-      (setq default-font-family "DejaVu Sans Mono")))))
-  (set-face-attribute 'default nil :family default-font-family))
-
 
 ;;; Save user settings in dedicated file
 (setq custom-file (expand-file-name "settings.el" emacs-config-dir))
 (when (file-exists-p custom-file)
   (load-file custom-file))
+
+;; Если EMACS запущен в графическом режиме, нужно настроить шрифты.
+(if is-gui-mode
+  (progn ; THEN
+    (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
+
+    (if is-linux
+	    (progn ;; Если запущен в Linux
+            ;; Если каталог не существует, установить шрифты
+            (unless (file-directory-p "~/.local/share/fonts")
+              (all-the-icons-install-fonts))
+
+	      (cond
+             (
+              (member "DejaVu Sans Mono" availiable-fonts)
+              (setq default-font-family "DejaVu Sans Mono"))
+             (
+              (member "FiraCode" availiable-fonts)
+              (setq default-font-family "FiraCode"))
+             (
+              (member "Source Code Pro" availiable-fonts)
+              (setq default-font-family "Source Code Pro"))))) ;; /is-linux
+
+      (if is-windows
+	  (progn
+            (message "Скачайте и установите шрифты с помощью команды all-the-icons-install-fonts.")
+            (cond
+             (
+              (member "Consolas" availiable-fonts)
+              (setq default-font-family "Consolas"))
+             (
+              (member "Courier New" availiable-fonts)
+              (setq default-font-family "Courier New")))))
+
+      ;; Настройка иконочных шрифров и немножко GUI.
+      (require 'all-the-icons)
+      (require 'all-the-icons-dired)
+      (require 'all-the-icons-ibuffer)
+      (require 'mode-icons)
+      (setq
+       all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
+       all-the-icons-ibuffer-icon t
+       )
+      (all-the-icons-ibuffer-mode t)
+      (mode-icons-mode t)
+      (tooltip-mode nil) ;; Убрать всплывающие подсказки в tooltip'ах при наведении мыши
+      (set-face-attribute 'default nil :height 130) ; Шрифт покрупнее
+      (set-face-attribute 'default nil :family default-font-family)
+      ) ;; /progn
+  ) ;; /if
+
+
+;; (when is-gui-mode
+;;   (progn
+;;     ;; Install iconic fonts
+;;     (if is-linux )
+;;     (cond
+;;      ;; Install fonts in GNU / Linux
+;;      (
+;;       is-linux
+;;       (unless
+;;           (file-directory-p "~/.local/share/fonts/")
+;;         (all-the-icons-install-fonts)))
+;;      (
+;;       ;; Not install fonts in Windows, but print message
+;;       (string-equal system-type "windows-nt")
+;;       (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))
+
+;;     ;; Turn on iconic modes
+;;     (require 'all-the-icons)
+;;     (require 'all-the-icons-dired)
+;;     (require 'all-the-icons-ibuffer)
+;;     (require 'mode-icons)
+;;     (setq
+;;      ;; all-the-icons-ibuffer-color-icon t
+;;      all-the-icons-ibuffer-human-readable-size 1
+;;      all-the-icons-ibuffer-icon t)
+;;     (all-the-icons-dired-mode 1)
+;;     (all-the-icons-ibuffer-mode 1)
+;;     (fringe-mode 2)
+;;     (mode-icons-mode 1)
+;;     (set-face-attribute 'default nil :height 130)
+;;     (tooltip-mode 0) ;; No windows for tooltip
+;;     )
+
+;;   ;; Font settings for Linux and Windows
+;;   (defvar available-fonts (font-family-list))
+;;   (cond
+;;    ( ;; Windows
+;;     (string-equal system-type "windows-nt")
+;;     (when (member "Consolas" available-fonts)
+;;       (setq default-font-family "Consolas")))
+;;    ( ;; Linux
+;;     (string-equal system-type "gnu/linux")
+;;     (cond
+;;      (
+;;       (member "Source Code Pro" available-fonts)
+;;       (setq default-font-family "Source Code Pro"))
+;;      (
+;;       (member "DejaVu Sans Mono" available-fonts)
+;;       (setq default-font-family "DejaVu Sans Mono"))
+;;      (
+;;       (member "FiraCode" available-fonts)
+;;       (setq default-font-family "FiraCode")))))
+;; (set-face-attribute 'default nil :family default-font-family))
 
 
 ;; Auto-revert mode
@@ -381,12 +446,8 @@ Version 2017-11-01"
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'conf-mode-hook #'setup-conf-mode)
-(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode ))
-(add-to-list 'auto-mode-alist '("\\.list\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.terraformrc" .conf-mode))
+(add-to-list 'auto-mode-alist
+	     '("\\.\\(?:env\\|flake8\\|ini\\|list\\|pylintrc\\|terraformrc\\)\\'" . conf-mode))
 
 
 ;; Dashboard
@@ -591,6 +652,12 @@ Version 2017-11-01"
 (helm-mode 1)
 
 
+;; HELM-AG
+;; https://github.com/syohex/emacs-helm-ag
+;; Поиск и замена строк в нескольких файлах.
+(require 'helm-ag)
+
+
 ;; GLOBAL HL MODE
 ;; Подсвечивает текущую строку
 (global-hl-line-mode 1)
@@ -627,6 +694,9 @@ Version 2017-11-01"
       (mode . python-mode)
       (mode . elpy-mode)
       (mode . anaconda-mode)))
+    ("SSH keys"
+     (or
+      (name . "^\\*.pub")))
     ("Shell-script"
      (or
       (mode . shell-script-mode)
@@ -777,12 +847,10 @@ Version 2017-11-01"
 (setq
  header-line-format " "
  left-margin-width 4
- ;; line-spacing 4
  markdown-list-indent-width 4
  markdown-fontify-code-blocks-natively t
- ;; right-margin-width 4
+ markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0)
  word-wrap t)
-(set-face-attribute 'markdown-code-face        nil :family default-font-family)
 (set-face-attribute 'markdown-inline-code-face nil :family default-font-family)
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
@@ -797,17 +865,17 @@ Version 2017-11-01"
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (rainbow-delimiters-mode 1)
+  (set-frame-font default-font-family nil t)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
-  (yas-minor-mode 1) ;; Snippets
   (cond ;; Turn on spell-checking only in Linux
    (
     (string-equal system-type "gnu/linux")
     (flyspell-mode 1))))
 (define-key markdown-mode-map (kbd "M-.") 'markdown-follow-thing-at-point)
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\README\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist
+	     '("\\.\\(?:md\\|markdown\\|mkd\\|mdown\\|mkdn\\|mdwn\\)\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
@@ -978,7 +1046,7 @@ Version 2017-11-01"
 ;; PAREN-MODE
 (message "Загрузка пакета paren.")
 (require 'paren)
-(show-paren-mode 1)
+(show-paren-mode t)
 
 
 ;; REST-CLIENT_MODE
@@ -1055,6 +1123,16 @@ Version 2017-11-01"
 (add-hook 'sql-mode-hook #'setup-sql-mode)
 
 
+;; SWIPER MODE
+;; https://github.com/abo-abo/swiper
+;; Пакет для быстрого поиска
+;; По кажатию C-7 можно выполнить быстрое редактирование найденных фрагментов, но чтобы
+;; оно сработало правильно, нужно добавить команду swiper-mc в список mc/cmds-to-run-once
+(require 'swiper)
+;; (add-to-list 'mc/cmds-to-run-once 'swiper-mc)
+(global-set-key (kbd "C-f") 'swiper-isearch)
+
+
 ;; TIDE-MODE
 ;; https://github.com/ananthakumaran/tide/
 (message "Загрузка пакета tide.")
@@ -1071,8 +1149,7 @@ Version 2017-11-01"
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'tide-mode-hook #'setup-tide-mode)
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . tide-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . tide-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(?:jsx\\|tsx\\)\\'" . tide-mode))
 
 
 ;; TERRAFORM-MODE
@@ -1109,6 +1186,10 @@ Version 2017-11-01"
     (display-line-numbers-mode 1)))
 
 
+;; (NO TOOLTIP MODE
+(tooltip-mode 0)
+
+
 ;; TOOL-BAR-MODE OFF
 (tool-bar-mode -1)
 
@@ -1117,7 +1198,7 @@ Version 2017-11-01"
 ;; https://github.com/Alexander-Miller/treemacs
 (message "Загрузка пакета treemacs.")
 (require 'treemacs)
-(setq treemacs-width 30)
+(setq treemacs-width 35)
 (defun treemacs-get-ignore-files (filename absolute-path)
   (or
    (string-equal filename ".emacs.desktop.lock")
@@ -1148,9 +1229,8 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist '("\\.d.ts\\'" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
-(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
+(add-to-list 'auto-mode-alist
+	     '("\\.\\(?:d.ts\\|ts\\|tsx\\)\\'" . typescript-mode))
 (add-hook 'typescript-mode-hook #'setup-typescript-mode)
 
 
@@ -1189,10 +1269,15 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+(add-to-list 'auto-mode-alist
+	     '("\\.\\(?:css\\|djhtml\\|html\\)\\'" . web-mode))
 (add-hook 'web-mode-hook #'setup-web-mode)
+
+
+;; WGREP
+;; https://github.com/mhayashi1120/Emacs-wgrep
+;; Поиск и замена по нескольким файлам
+(require 'wgrep)
 
 
 ;; WHICH-KEY MODE
@@ -1238,9 +1323,8 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yfm\\'" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+(add-to-list 'auto-mode-alist
+	     '("\\.\\(?:yaml\\|yfm\\|yml\\)\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 

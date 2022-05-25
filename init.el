@@ -10,6 +10,10 @@
 (defvar is-gui-mode (display-graphic-p) "EMACS запущен в графическом режиме.")
 (defvar is-linux (equal system-type "gnu/linux") "EMACS запущен в GNU/Linux.")
 (defvar is-windows (equal system-type "windows-nt") "EMACS запущен в Microsoft Windows.")
+(defvar default-font-size 140 "Размер шрифта по умолчанию.")
+(defvar default-font "DejaVu Sans Mono" "Шрифт по умолчанию.")
+(defvar default-font-family "DejaVu Sans Mono" "Семейство шрифтов по умолчанию.")
+
 
 ;;; Создание каталогов для резервных копий и файлов автосохранения
 (unless (file-exists-p autosave-dir)
@@ -38,6 +42,7 @@
  overwrite-mode-textual nil
  ring-bell-function #'ignore ; Заблокировать пищание
  scroll-bar-mode nil ; Выключить scroll-bar
+ suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
  tab-width 4
  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
  truncate-lines 1
@@ -85,7 +90,6 @@
     flycheck-clang-tidy
     flycheck-color-mode-line
     flycheck-indicator
-    flycheck-pos-tip
     format-all
     go-mode
     helm ; https://github.com/emacs-helm/helm
@@ -145,7 +149,7 @@
 ;; Установка необходимых пакетов
 (package-initialize)
 (progn
-  (message "Проверкка наличия необходимых пакетов...")
+  (message "Проверка наличия необходимых пакетов...")
   (defvar packages-refreshed nil "Список пакетов обновлён.")
   (dolist (pkg package-selected-packages)
     (unless (package-installed-p pkg)
@@ -174,118 +178,79 @@
 (global-set-key (kbd "C-x o") 'next-multiframe-window)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
-;; Settings for window (not only a Windows!) system.
-(defvar default-font-family nil "Default font family.")
 
 ;;; Save user settings in dedicated file
 (setq custom-file (expand-file-name "settings.el" emacs-config-dir))
-(when (file-exists-p custom-file)
-  (load-file custom-file))
+(if (file-exists-p custom-file)
+    (load-file custom-file))
 
 ;; Если EMACS запущен в графическом режиме, нужно настроить шрифты.
-(if is-gui-mode
-  (progn ; THEN
-    (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
+(when is-gui-mode
+  (message "Настройка интерфейса.")
+  (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
 
-    (if is-linux
-	    (progn ;; Если запущен в Linux
-            ;; Если каталог не существует, установить шрифты
-            (unless (file-directory-p "~/.local/share/fonts")
-              (all-the-icons-install-fonts))
+  (when is-linux
+    (message "Это Linux")
+    ;; Если каталог не существует, установить шрифты
+    (unless (file-directory-p "~/.local/share/fonts")
+      (all-the-icons-install-fonts))
 
-	      (cond
-             (
-              (member "DejaVu Sans Mono" availiable-fonts)
-              (setq default-font-family "DejaVu Sans Mono"))
-             (
-              (member "FiraCode" availiable-fonts)
-              (setq default-font-family "FiraCode"))
-             (
-              (member "Source Code Pro" availiable-fonts)
-              (setq default-font-family "Source Code Pro"))))) ;; /is-linux
-
-      (if is-windows
-	  (progn
-            (message "Скачайте и установите шрифты с помощью команды all-the-icons-install-fonts.")
-            (cond
-             (
-              (member "Consolas" availiable-fonts)
-              (setq default-font-family "Consolas"))
-             (
-              (member "Courier New" availiable-fonts)
-              (setq default-font-family "Courier New")))))
-
-      ;; Настройка иконочных шрифров и немножко GUI.
-      (require 'all-the-icons)
-      (require 'all-the-icons-dired)
-      (require 'all-the-icons-ibuffer)
-      (require 'mode-icons)
+    (cond
+     (
+      (member "DejaVu Sans Mono" availiable-fonts)
       (setq
-       all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
-       all-the-icons-ibuffer-icon t
-       )
-      (all-the-icons-ibuffer-mode t)
-      (mode-icons-mode t)
-      (tooltip-mode nil) ;; Убрать всплывающие подсказки в tooltip'ах при наведении мыши
-      (set-face-attribute 'default nil :height 130) ; Шрифт покрупнее
-      (set-face-attribute 'default nil :family default-font-family)
-      ) ;; /progn
-  ) ;; /if
+       default-font-family "DejaVu Sans Mono"
+       default-font "DejaVu Sans Mono"))
+     (
+      (member "FiraCode" availiable-fonts)
+      (setq
+       default-font-family "FiraCode"
+       default-font "FiraCode"))
+     (
+      (member "Source Code Pro" availiable-fonts)
+      (setq
+       default-font-family "Source Code Pro"
+       default-font "Source Code Pro")))) ;; /is-linux
+  ;; /Linux
 
+  (when is-windows
+    (message "Это Windows.")
+    (message "Скачайте и установите шрифты с помощью команды all-the-icons-install-fonts.")
+    (cond
+     (
+      (member "Consolas" availiable-fonts)
+      (setq
+       default-font-family "Consolas"
+       default-font "Consolas"))
+     (
+      (member "Courier New" availiable-fonts)
+      (setq
+       default-font-family "Courier New"
+       default-font "Courier New"))))
+  ;; /Windows
 
-;; (when is-gui-mode
-;;   (progn
-;;     ;; Install iconic fonts
-;;     (if is-linux )
-;;     (cond
-;;      ;; Install fonts in GNU / Linux
-;;      (
-;;       is-linux
-;;       (unless
-;;           (file-directory-p "~/.local/share/fonts/")
-;;         (all-the-icons-install-fonts)))
-;;      (
-;;       ;; Not install fonts in Windows, but print message
-;;       (string-equal system-type "windows-nt")
-;;       (progn (message "Download and install fonts with all-the-icons-install-fonts command."))))
+  ;; Настройка иконочных шрифров и немножко GUI.
+  (require 'all-the-icons)
+  (require 'all-the-icons-dired)
+  (require 'all-the-icons-ibuffer)
+  (require 'mode-icons)
+  (setq
+   all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
+   all-the-icons-ibuffer-icon t
+   )
+  (all-the-icons-ibuffer-mode t)
+  (mode-icons-mode t)
+  (tooltip-mode nil) ;; Убрать всплывающие подсказки в tooltip'ах при наведении мыши
 
-;;     ;; Turn on iconic modes
-;;     (require 'all-the-icons)
-;;     (require 'all-the-icons-dired)
-;;     (require 'all-the-icons-ibuffer)
-;;     (require 'mode-icons)
-;;     (setq
-;;      ;; all-the-icons-ibuffer-color-icon t
-;;      all-the-icons-ibuffer-human-readable-size 1
-;;      all-the-icons-ibuffer-icon t)
-;;     (all-the-icons-dired-mode 1)
-;;     (all-the-icons-ibuffer-mode 1)
-;;     (fringe-mode 2)
-;;     (mode-icons-mode 1)
-;;     (set-face-attribute 'default nil :height 130)
-;;     (tooltip-mode 0) ;; No windows for tooltip
-;;     )
-
-;;   ;; Font settings for Linux and Windows
-;;   (defvar available-fonts (font-family-list))
-;;   (cond
-;;    ( ;; Windows
-;;     (string-equal system-type "windows-nt")
-;;     (when (member "Consolas" available-fonts)
-;;       (setq default-font-family "Consolas")))
-;;    ( ;; Linux
-;;     (string-equal system-type "gnu/linux")
-;;     (cond
-;;      (
-;;       (member "Source Code Pro" available-fonts)
-;;       (setq default-font-family "Source Code Pro"))
-;;      (
-;;       (member "DejaVu Sans Mono" available-fonts)
-;;       (setq default-font-family "DejaVu Sans Mono"))
-;;      (
-;;       (member "FiraCode" available-fonts)
-;;       (setq default-font-family "FiraCode")))))
-;; (set-face-attribute 'default nil :family default-font-family))
+  ;; Настройки шрифтов
+  (message "Настройки шрифтов")
+  (set-face-attribute
+   'default nil
+   :font default-font
+   :family default-font-family
+   :height default-font-size
+   )
+  ) ;; /when is gui-mode
 
 
 ;; Auto-revert mode
@@ -308,8 +273,8 @@
       (setq input-method (symbol-name input-method)))
   (let ((current current-input-method)
         (modifiers '(nil (control) (meta) (control meta))))
-    (when input-method
-      (activate-input-method input-method))
+    (if input-method
+	(activate-input-method input-method))
     (when (and current-input-method quail-keyboard-layout)
       (dolist (map (cdr (quail-map)))
         (let* ((to (car map))
@@ -571,7 +536,7 @@ Version 2017-11-01"
 
 ;; EMACS LISP MODE
 ;; IT IS NOT A ELISP-MODE!
-(message "Загрузка пакета emacs-lisp-mode")
+(message "Загрузка пакета emacs-lisp-mode.")
 (defun setup-emacs-lisp-mode ()
   "Settings for EMACS Lisp Mode."
   (interactive)
@@ -587,6 +552,7 @@ Version 2017-11-01"
 
 
 ;; EMBARK
+(message "Загрузка пакета embark.")
 (require 'embark)
 (setq prefix-help-command #'embark-prefix-help-command)
 
@@ -596,7 +562,6 @@ Version 2017-11-01"
 (require 'flycheck)
 (require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
 (require 'flycheck-indicator)
-(require 'flycheck-pos-tip) ;; https://github.com/flycheck/flycheck-pos-tip
 (setq
  flycheck-check-syntax-automatically '(mode-enabled save new-line)
  flycheck-locate-config-file-functions
@@ -613,8 +578,9 @@ Version 2017-11-01"
   (interactive)
   (flycheck-color-mode-line-mode 1)
   (flycheck-indicator-mode 1)
-  (flycheck-pos-tip-mode is-gui-mode))
+  )
 (add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
+
 
 ;; FORMAT ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
@@ -649,6 +615,7 @@ Version 2017-11-01"
 (require 'helm)
 (setq completion-styles '(flex))
 (global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x b") 'helm-buffers-list)
 (helm-mode 1)
 
 
@@ -761,7 +728,6 @@ Version 2017-11-01"
   (ibuffer-auto-mode 1)
   (ibuffer-switch-to-saved-filter-groups "default"))
 (global-set-key (kbd "<f2>") 'ibuffer)
-;; (add-to-list 'ibuffer-never-show-predicates "^\\*")
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
 
 
@@ -865,7 +831,6 @@ Version 2017-11-01"
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (rainbow-delimiters-mode 1)
-  (set-frame-font default-font-family nil t)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
   (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
@@ -954,7 +919,6 @@ Version 2017-11-01"
    )
  projectile-project-search-path
  '(
-   "~/repo/yandex/"
    "~/repo/documentat/"))
 
 
@@ -1009,6 +973,8 @@ Version 2017-11-01"
 
 
 ;; RST-MODE
+;; Основной режим для редактирования reStructutedText
+;; Больше здесь: https://www.writethedocs.org/guide/writing/reStructuredText/
 (message "Загрузка пакета rst-mode.")
 (require 'rst)
 (defun setup-rst-mode ()
@@ -1282,6 +1248,7 @@ Version 2017-11-01"
 
 ;; WHICH-KEY MODE
 ;; https://github.com/justbur/emacs-which-key
+;; Показывает подсказки к командам.
 (require 'which-key)
 (which-key-setup-side-window-right)
 (which-key-mode 1)
@@ -1332,6 +1299,10 @@ Version 2017-11-01"
 (put 'upcase-region 'disabled nil)
 
 (load custom-file)
+
+;; Run EMACS as server without systemd and other
+(require 'server)
+(server-start)
 
 (provide 'init.el)
 

@@ -103,6 +103,7 @@
     markdown-mode
     multiple-cursors
     org
+    pandoc-mode ; http://joostkremers.github.io/pandoc-mode/
     php-mode
     projectile
     protobuf-mode
@@ -830,6 +831,7 @@ Version 2017-11-01"
   (flycheck-mode 1) ;; Turn on linters
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
+  (pandoc-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
@@ -888,6 +890,14 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-hook 'org-mode-hook #'setup-org-mode)
+
+
+;; PANDOC-MODE
+;; http://joostkremers.github.io/pandoc-mode/
+;; Позволяет экспортировать текст из одного формата в другой
+;; Подробнее на странице проекта: https://pandoc.org/
+(require 'pandoc-mode)
+(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 
 
 ;; PHP-MODE
@@ -984,6 +994,7 @@ Version 2017-11-01"
   (display-line-numbers-mode 1)
   (flycheck-mode 1)
   (hl-line-mode 1)
+  (pandoc-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))

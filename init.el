@@ -14,7 +14,6 @@
 (defvar default-font "DejaVu Sans Mono" "Шрифт по умолчанию.")
 (defvar default-font-family "DejaVu Sans Mono" "Семейство шрифтов по умолчанию.")
 
-
 ;;; Создание каталогов для резервных копий и файлов автосохранения
 (unless (file-exists-p autosave-dir)
   (progn
@@ -34,19 +33,20 @@
  indent-tabs-mode nil
  inhibit-splash-screen t
  inhibit-startup-message t
- initial-buffer-choice (lambda () (get-buffer "*dashboard*"))
- initial-major-mode 'markdown-mode
- initial-scratch-message nil
- make-backup-files nil
+ initial-buffer-choice (lambda () (get-buffer "*dashboard*")) ; Буфер по умолчанию — дашборд
+ initial-major-mode (quote markdown-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
+ initial-scratch-message nil ; В новых буферах не нужно ничего писать
+ ;; line-spacing 0
+ make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
  overwrite-mode-binary nil
  overwrite-mode-textual nil
  ring-bell-function #'ignore ; Заблокировать пищание
  scroll-bar-mode nil ; Выключить scroll-bar
  suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
- tab-width 4
+ tab-width 4 ; Обменный курс на TAB — 4 SPACES
  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
- truncate-lines 1
- use-dialog-box nil
+ truncate-lines 1 ; Обрезать длинные строки
+ use-dialog-box nil ; Диалоговые окна не нужны, будем использовать текстовый интерфейс
  user-full-name "Dunaevsky Maxim"
  visible-bell t ;; Заблокировать пищание
  widget-image-enable is-gui-mode;;; Разрешить пиктграммы в виджетах
@@ -55,12 +55,21 @@
  x-underline-at-descent-line t
  )
 
-(setq-default line-spacing 0)
+;; (setq-default line-spacing 0)
+
+(defun load-if-exists (filename)
+  "Загрузить файл, если он существует.
+
+  FILENAME — имя файла."
+  (progn
+    (if (file-exists-p filename)
+      (load-file filename))))
 
 
 ;; Aspell для Linux, в Windows без проверки орфографии
 (when (string-equal system-type "gnu/linux")
-  (setq ispell-program-name "/usr/bin/aspell"))
+  (if (file-exists-p "/usr/bin/aspell")
+    (setq ispell-program-name "/usr/bin/aspell")))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -164,26 +173,25 @@
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
 
-;; Resize windows
-
+;; Изменение размеров окон
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
-(global-set-key (kbd "C-z") 'undo)
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
-(global-set-key (kbd "<C-tab>") 'mode-line-other-buffer)
+(global-set-key (kbd "<escape>") 'keyboard-quit) ; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+(global-set-key (kbd "C-z") 'undo) ; Отмена
+(global-set-key (kbd "C-x k") 'kill-this-buffer) ; Закрыть буфер
+(global-set-key (kbd "<C-tab>") 'mode-line-other-buffer) ; Перейти в другой буфер
 
-(global-set-key (kbd "C-v") 'yank)
-(global-set-key (kbd "C-x o") 'next-multiframe-window)
-(global-set-key (kbd "C-x O") 'previous-multiframe-window)
+(global-set-key (kbd "C-v") 'yank) ; Вставить текст из временного буфера
+(global-set-key (kbd "C-x o") 'next-multiframe-window) ; Перейти в следующее окно
+(global-set-key (kbd "C-x O") 'previous-multiframe-window) ; Перейти в предыдущее окно
 
 
 ;;; Save user settings in dedicated file
 (setq custom-file (expand-file-name "settings.el" emacs-config-dir))
-(if (file-exists-p custom-file)
-    (load-file custom-file))
+(load-if-exists custom-file)
 
 ;; Если EMACS запущен в графическом режиме, нужно настроить шрифты.
 (when is-gui-mode
@@ -612,11 +620,13 @@ Version 2017-11-01"
 
 
 ;; HELM
+;; Подсказки в минибуфере
 (message "Загрузка пакета helm.")
 (require 'helm)
 (setq completion-styles '(flex))
-(global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-x b") 'helm-buffers-list)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-S-p") 'helm-M-x)
 (helm-mode 1)
 
 
@@ -633,6 +643,7 @@ Version 2017-11-01"
 
 ;; IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
+;; По нажатию F2 выводит список открытых буферов.
 (message "Загрузка пакета ibuffer")
 (require 'ibuffer)
 (require 'ibuf-ext)
@@ -765,6 +776,7 @@ Version 2017-11-01"
 
 ;; JSON-MODE
 ;; https://github.com/joshwnj/json-mode
+;; Работа с JSON
 (message "Загрузка пакета json-mode.")
 (require 'json)
 (defun setup-json-mode()
@@ -781,12 +793,14 @@ Version 2017-11-01"
 
 
 ;; LSP MODE
+;; Базовый пакет, необходимый для работы LSP
 (message "Загрузка пакета lsp-mode")
 (require 'lsp-mode)
 
 
 ;; MAGIT
 ;; https://magit.vc/
+;; Magic + Git. Лучшее средство для управления Git.
 (message "Загрузка пакета magit.")
 (require 'magit)
 (global-set-key (kbd "<f5>") 'magit-status)
@@ -861,6 +875,20 @@ Version 2017-11-01"
       (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)))
 
 
+;; NXML-MODE
+;; Почти как xml-mode, только лучше и новее
+(message "Загрузка пакета nxml-mode.")
+(require 'nxml-mode)
+(defun setup-nxml-mode ()
+  "Настройка режима `nxml-mode'."
+  (interactive)
+  (company-mode 1)
+  (flycheck-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
+
+
 ;; ORG-MODE
 ;; https://orgmode.org/
 (message "Загрузка пакета org-mode.")
@@ -918,18 +946,10 @@ Version 2017-11-01"
 
 
 ;; PROJECTILE
+;; Управление проектами
 (message "Загрузка пакета projectile")
 (require 'projectile)
-(setq
- projectile-globally-ignored-directories
- '(
-   "*/_api-ref-grpc/"
-   "*/_api-ref/"
-   "*/_cli-ref/"
-   )
- projectile-project-search-path
- '(
-   "~/repo/documentat/"))
+(load-if-exists "projects.el")
 
 
 ;; PROTOBUF-MODE
@@ -1246,8 +1266,9 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist
-	     '("\\.\\(?:css\\|djhtml\\|html\\)\\'" . web-mode))
+(add-to-list
+  'auto-mode-alist
+  '("\\.\\(?:css\\|djhtml\\|html\\)\\'" . web-mode))
 (add-hook 'web-mode-hook #'setup-web-mode)
 
 
@@ -1301,19 +1322,16 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist
-	     '("\\.\\(?:yaml\\|yfm\\|yml\\)\\'" . yaml-mode))
+(add-to-list
+  'auto-mode-alist
+  '("\\.\\(?:yaml\\|yfm\\|yml\\)\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
-(load custom-file)
-
-;; Run EMACS as server without systemd and other
-(require 'server)
-(server-start)
+(load-if-exists custom-file)
 
 (provide 'init.el)
 

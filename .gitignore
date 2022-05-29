@@ -10,3 +10,4 @@ transient/
 url/
 customize.el
 settings.el
+/projects.el

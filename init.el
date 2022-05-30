@@ -63,13 +63,13 @@
   FILENAME — имя файла."
   (progn
     (if (file-exists-p filename)
-      (load-file filename))))
+	(load-file filename))))
 
 
 ;; Aspell для Linux, в Windows без проверки орфографии
 (when (string-equal system-type "gnu/linux")
   (if (file-exists-p "/usr/bin/aspell")
-    (setq ispell-program-name "/usr/bin/aspell")))
+      (setq ispell-program-name "/usr/bin/aspell")))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -123,6 +123,7 @@
     restclient ; https://github.com/pashky/restclient.el
     rg ; https://github.com/dajva/rg.el
     scala-mode
+    smartparens ; https://github.com/Fuco1/smartparens
     swiper ; https://github.com/abo-abo/swiper
     terraform-mode
     tide
@@ -420,8 +421,9 @@ Version 2017-11-01"
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'conf-mode-hook #'setup-conf-mode)
-(add-to-list 'auto-mode-alist
-	     '("\\.\\(?:env\\|flake8\\|ini\\|list\\|pylintrc\\|terraformrc\\)\\'" . conf-mode))
+(add-to-list
+ 'auto-mode-alist
+ '("\\.\\(?:env\\|flake8\\|ini\\|list\\|pylintrc\\|terraformrc\\)\\'" . conf-mode))
 
 
 ;; Dashboard
@@ -432,8 +434,9 @@ Version 2017-11-01"
  dashboard-items
  '(
    (recents . 15)
-   (bookmarks . 5)
-   (projects . 5)
+   (bookmarks . 10)
+   (projects . 10)
+   (agenda . 10)
    (registers . 5))
  dashboard-set-heading-icons is-gui-mode
  dashboard-set-file-icons is-gui-mode)
@@ -855,8 +858,9 @@ Version 2017-11-01"
     (string-equal system-type "gnu/linux")
     (flyspell-mode 1))))
 (define-key markdown-mode-map (kbd "M-.") 'markdown-follow-thing-at-point)
-(add-to-list 'auto-mode-alist
-	     '("\\.\\(?:md\\|markdown\\|mkd\\|mdown\\|mkdn\\|mdwn\\)\\'" . markdown-mode))
+(add-to-list
+ 'auto-mode-alist
+ '("\\.\\(?:md\\|markdown\\|mkd\\|mdown\\|mkdn\\|mdwn\\)\\'" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
@@ -1104,6 +1108,16 @@ Version 2017-11-01"
 (add-hook 'sh-mode-hook #'setup-shell-script-mode)
 
 
+;; SMARTPARENS
+;; https://github.com/Fuco1/smartparens
+;; Умная работа с парными скобками (и не только)
+(message "Загрузка пакета smartparens.")
+(require 'smartparens-config)
+(add-hook 'markdown-mode-hook #'smartparens-mode)
+(add-hook 'emacs-lisp-mode-hook #'spartparens-mode)
+(add-hook 'js2-mode-hook #'smartparens-mode)
+
+
 ;; SQL MODE
 (message "Загрузка пакета sql-mode.")
 (require 'sql)
@@ -1267,8 +1281,8 @@ Version 2017-11-01"
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list
-  'auto-mode-alist
-  '("\\.\\(?:css\\|djhtml\\|html\\)\\'" . web-mode))
+ 'auto-mode-alist
+ '("\\.\\(?:css\\|djhtml\\|html\\)\\'" . web-mode))
 (add-hook 'web-mode-hook #'setup-web-mode)
 
 
@@ -1323,8 +1337,8 @@ Version 2017-11-01"
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list
-  'auto-mode-alist
-  '("\\.\\(?:yaml\\|yfm\\|yml\\)\\'" . yaml-mode))
+ 'auto-mode-alist
+ '("\\.\\(?:yaml\\|yfm\\|yml\\)\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 

@@ -57,7 +57,6 @@
  x-underline-at-descent-line t
  )
 
-;; (setq-default line-spacing 0)
 
 (defun load-if-exists (filename)
   "Загрузить файл, если он существует.
@@ -66,11 +65,19 @@
   (if (file-exists-p filename)
       (load-file filename)))
 
+(defun set-minor-mode-for-hooks (minor-mode-name hooks-list)
+  "Выполняет установку минорного режима minor-mode-name для списка хуков hooks.
+
+  MINOR-MODE-NAME — имя минорного режима.
+  HOOKS-LIST — список хуков, при которых должен активироваться режим."
+  (dolist (hook-name hooks-list)
+    (add-hook hook-name minor-mode-name)))
 
 ;; Aspell для Linux, в Windows без проверки орфографии
-(if (string-equal system-type "gnu/linux")
-    (if (file-exists-p "/usr/bin/aspell")
-	(setq ispell-program-name "/usr/bin/aspell")))
+(if
+  (string-equal system-type "gnu/linux")
+  (if (file-exists-p "/usr/bin/aspell")
+    (setq ispell-program-name "/usr/bin/aspell")))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -97,6 +104,7 @@
     edit-indirect
     editorconfig
     embark ;; https://github.com/oantolin/embark
+    emmet-mode ; https://github.com/smihica/emmet-mode
     flycheck
     flycheck-clang-tidy
     flycheck-color-mode-line
@@ -345,7 +353,6 @@ Version 2017-11-01"
 (global-set-key (kbd "C-x <right>") 'windmove-right)
 (global-set-key (kbd "C-x <left>") 'windmove-left)
 
-
 (global-set-key (kbd "M--") (lambda () (interactive) (insert "—"))) ;; Long dash by Alt+-
 
 (global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
@@ -354,6 +361,9 @@ Version 2017-11-01"
 (when (get-buffer "*scratch*")
   (kill-buffer "*scratch*"))
 
+;; ABBREV-MODE
+;; Работа с аббревиатурами
+(require 'abbrev)
 
 ;; ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
@@ -380,11 +390,9 @@ Version 2017-11-01"
   (company-mode 1)
   (diff-hl-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.list\\'" 'apt-sources-list-mode))
 (add-hook 'apt-sources-list-mode #'setup-apt-sources-list-mode)
 
@@ -428,6 +436,16 @@ Version 2017-11-01"
  company-idle-delay 0
  company-minimum-prefix-length 2
  company-tooltip-align-annotations t)
+(set-minor-mode-for-hooks
+  'company-mode
+  '(
+     conf-mode-hook
+     markdown-mode-hook
+     python-mode-hook
+     ruby-mode-hook
+     terraform-mode-hook
+     xml-mode-hook
+     nxml-mode-hook))
 
 
 ;; COMPANY-BOX
@@ -452,11 +470,8 @@ Version 2017-11-01"
 (require 'conf-mode)
 (defun setup-conf-mode ()
   "Settings for 'conf-mode'."
-  (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'conf-mode-hook #'setup-conf-mode)
 (add-to-list
  'auto-mode-alist
@@ -543,10 +558,8 @@ Version 2017-11-01"
 (defun setup-dockerfile-mode ()
   "Settings for 'dockerfile-mode'."
   (company-mode 1)
-  (flycheck-mode 1)
   (lsp-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("Dockerfile'" . dockerfile-mode))
 (add-hook 'dockerfile-mode-hook #'lsp)
 (add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
@@ -604,18 +617,50 @@ Version 2017-11-01"
   (company-mode 1)
   (diff-hl-mode)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
 (add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
+(add-to-list 'auto-mode-alist '("\\abbrev_defs" . emacs-lisp-mode))
 
 
 ;; EMBARK
+;; https://github.com/oantolin/embark
 (message "Загрузка пакета embark.")
 (require 'embark)
 (setq prefix-help-command #'embark-prefix-help-command)
+
+
+;; EMMET MODE
+;; https://github.com/smihica/emmet-mode
+;; Позволяет быстро писать HTML-, CSS и XML-теги, например:
+;;
+;; Пример:
+;;
+;; div>p>ul>li*3
+;;
+;; по нажатию Ctrl+J превратится в такой код
+;;
+;; <div>
+;;   <p>
+;;     <ul>
+;;       <li></li>
+;;       <li></li>
+;;       <li></li>
+;;     </ul>
+;;   </p>
+;; </div>
+(message "Загрузка пакета emmet-mode")
+(require 'emmet-mode)
+(set-minor-mode-for-hooks
+  'emmet-mode
+  '(
+     css-mode-hook
+     html-mode-hook
+     nxml-mode-hook
+     xml-mode-hook
+     web-mode-hook
+     ))
 
 
 ;; FLYCHECK
@@ -643,6 +688,35 @@ Version 2017-11-01"
   (flycheck-indicator-mode 1)
   )
 (add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
+(set-minor-mode-for-hooks
+  'flycheck-mode
+  '(
+     apt-sources-list-mode-hook
+     conf-mode-hook
+     dockerfile-mode-hook
+     emacs-lisp-mode-hook
+     go-mode-hook
+     java-mode-hook
+     javascript-mode-hook
+     js2-mode-hook
+     json-mode-hook
+     makefile-mode-hook
+     markdown-mode-hook
+     nxml-mode-hook
+     php-mode-hook
+     protobuf-mode-hook
+     python-mode-hook
+     rst-mode-hook
+     ruby-mode-hook
+     scala-mode-hook
+     shell-script-mode-hook
+     sql-mode-hook
+     terraform-mode-hook
+     tide-mode-hook
+     web-mode-hook
+     xml-mode-hook
+     yaml-mode-hook
+     ))
 
 
 ;; FORMAT ALL
@@ -674,11 +748,9 @@ Version 2017-11-01"
   (company-mode 1)
   (diff-hl-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1) ;; Turn on linters
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1) ;; Highlight current line
-  (whitespace-mode 1) ;; Show spaces, tabs and other
-  (ws-butler-mode 1)) ;; Delete trailing spaces on changed lines)
+  (whitespace-mode 1)) ;; Show spaces, tabs and other
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 (add-hook 'go-mode-hook #'setup-go-mode)
 
@@ -817,10 +889,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'java-mode-hook #'setup-java-mode)
 
 
@@ -833,10 +903,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'javascript-mode-hook #'setup-js2-mode)
 (add-hook 'js2-mode-hook #'setup-js2-mode)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
@@ -852,10 +920,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("\\.\\(?:json\\|bowerrc\\|jshintrc\\)\\'" . json-mode))
 (add-hook 'json-mode-hook #'setup-json-mode)
 
@@ -881,7 +947,6 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (rainbow-delimiters-mode 1)
@@ -910,14 +975,12 @@ Version 2017-11-01"
   (diff-hl-mode 1)
   (display-line-numbers-mode 1)
   (electric-pair-mode 1)
-  (flycheck-mode 1) ;; Turn on linters
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (pandoc-mode 1)
   (rainbow-delimiters-mode 1)
   (visual-line-mode 1) ;; Highlight current line
   (whitespace-mode 1) ;; Show spaces, tabs and other
-  (ws-butler-mode 1) ;; Delete trailing spaces on changed lines
   (cond ;; Turn on spell-checking only in Linux
    (
     (string-equal system-type "gnu/linux")
@@ -951,10 +1014,9 @@ Version 2017-11-01"
 (defun setup-nxml-mode ()
   "Настройка режима `nxml-mode'."
   (interactive)
+  (abbrev-mode 1)
   (company-mode 1)
-  (flycheck-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
 
 
@@ -984,8 +1046,7 @@ Version 2017-11-01"
   (company-mode 1)
   (display-line-numbers-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (add-hook 'org-mode-hook #'setup-org-mode)
 
@@ -1007,11 +1068,9 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (hl-line-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'php-mode-hook #'setup-php-mode)
 (add-to-list 'auto-mode-alist '("\\.php\\'" . php-mode))
 
@@ -1033,11 +1092,9 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (hl-line-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'protobuf-mode-hook #'setup-protobuf-mode)
 (add-to-list 'auto-mode-alist '("\\.proto\\'" . protobuf-mode))
 
@@ -1066,13 +1123,11 @@ Version 2017-11-01"
   (anaconda-mode 1)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (lsp-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
-  (ws-butler-mode 1)
   (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
   (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
   (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
@@ -1092,12 +1147,10 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (hl-line-mode 1)
   (pandoc-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'rst-mode-hook #'setup-rst-mode)
 (add-to-list 'auto-mode-alist '("\\.rst\\'" . rst-mode))
 
@@ -1111,12 +1164,10 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'ruby-mode-hook #'setup-ruby-mode)
 (add-to-list 'auto-mode-alist '("\\.rb\\'" .ruby-mode))
 
@@ -1162,10 +1213,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'scala-mode-hook #'setup-scala-mode)
 (add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-mode))
 (add-to-list 'auto-mode-alist '("\\.sc\\'" . scala-mode))
@@ -1179,10 +1228,9 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
+  ;; (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
 (add-hook 'shell-script-mode #'setup-shell-script-mode)
 (add-hook 'sh-mode-hook #'setup-shell-script-mode)
@@ -1204,10 +1252,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sql\\'" . sql-mode))
 (add-hook 'sql-mode-hook #'setup-sql-mode)
 
@@ -1231,12 +1277,10 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (eldoc-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
   (tide-hl-identifier-mode 1)
   (tide-setup)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-hook 'tide-mode-hook #'setup-tide-mode)
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . tide-mode))
 (add-to-list 'auto-mode-alist '("\\.d.ts\\'" . tide-mode))
@@ -1256,11 +1300,9 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (hl-line-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.tf\\'" 'terraform-mode))
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
 (add-hook 'hcl-mode-hook #'setup-terraform-mode)
@@ -1296,6 +1338,10 @@ Version 2017-11-01"
 (require 'treemacs)
 (setq treemacs-width 35)
 (defun treemacs-get-ignore-files (filename absolute-path)
+  "Функция позволяет игнорировать некоторые имена файлов и каталогов при построении дерева. Подробнее см. в документации пакета.
+
+  FILENAME — имя файла.
+  ABSOLUTE-PATH — абсолютный путь."
   (or
    (string-equal filename ".emacs.desktop.lock")
    (string-equal filename "__pycache__")))
@@ -1348,10 +1394,8 @@ Version 2017-11-01"
   (interactive)
   (company-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list
  'auto-mode-alist
  '("\\.\\(?:css\\|djhtml\\|html\\)\\'" . web-mode))
@@ -1393,6 +1437,19 @@ Version 2017-11-01"
  'whitespace-indentation nil
  :family default-font-family
  :foreground "#E6DB74")
+(dolist
+    (mode-name-hook
+     '(
+       go-mode-hook
+       markdown-mode-hook
+       xml-mode-hook
+       nxml-mode-hook
+       python-mode-hook
+       php-mode-hook
+       ruby-mode-hook
+       terraform-mode-hook
+       ))
+  (add-hook mode-name-hook 'whitespace-mode))
 
 
 ;; WINDOW-DIVIDER-MODE
@@ -1405,7 +1462,34 @@ Version 2017-11-01"
 ;; Чистит висячие пробелы только в измененных строках.
 (message "Загрузка пакета ws-butler.")
 (require 'ws-butler)
-
+(set-minor-mode-for-hooks
+  'ws-butler-mode
+  '(
+     apt-sources-list-mode-hook
+     conf-mode-hook
+     dockerfile-mode-hook
+     emacs-lisp-mode-hook
+     go-mode-hook
+     java-mode-hook
+     js2-mode-hook
+     json-mode-hook
+     markdown-mode-hook
+     nxml-mode-hook
+     org-mode-hook
+     php-mode-hook
+     protobuf-mode-hook
+     python-mode-hook
+     rst-mode-hook
+     ruby-mode-hook
+     scala-mode-hook
+     sh-mode-hook
+     shell-script-mode-hook
+     sql-mode-hook
+     terraform-mode-hook
+     tide-mode-hook
+     web-mode-hook
+     xml-mode-hook
+     yaml-mode-hook))
 
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
@@ -1416,12 +1500,10 @@ Version 2017-11-01"
   (company-mode 1)
   (diff-hl-mode 1)
   (display-line-numbers-mode 1)
-  (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (hl-line-mode 1)
   (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (whitespace-mode 1))
 (add-to-list
  'auto-mode-alist
  '("\\.\\(?:yaml\\|yfm\\|yml\\)\\'" . yaml-mode))

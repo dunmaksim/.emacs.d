@@ -26,21 +26,22 @@
 (require 'widget)
 (setq
  auto-save-file-name-transforms `((".*" , autosave-dir) t)
- calendar-week-start-day 1
- create-lockfiles nil
+ calendar-week-start-day 1 ; Начнём неделю с понедельника
+ create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
  custom-file (expand-file-name "custom.el" emacs-config-dir)
- delete-old-versions t
+ delete-old-versions t ; Удалять старые версии файлов
  indent-line-function (quote insert-tab)
- indent-tabs-mode nil
- inhibit-splash-screen t
- inhibit-startup-message t
+ indent-tabs-mode nil ; Отключить выравнивание по TAB
+ inhibit-splash-screen t ; Не надо показывать загрузочный экран
+ inhibit-startup-message t ; Не надо показывать приветственное сообщение
  initial-buffer-choice (lambda () (get-buffer "*dashboard*")) ; Буфер по умолчанию — дашборд
  initial-major-mode (quote markdown-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
  initial-scratch-message nil ; В новых буферах не нужно ничего писать
  make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
- overwrite-mode-binary nil
- overwrite-mode-textual nil
+ overwrite-mode-binary nil ; Выключить режим перезаписи текста под курсором для бинарных файлов
+ overwrite-mode-textual nil ; Выключить режим перезаписи текста под курсором для текстовых файлов
  ring-bell-function #'ignore ; Заблокировать пищание
+ save-abbrevs 'silently ; Сохранять аббревиатуры без лишних вопросов
  scroll-bar-mode nil ; Выключить scroll-bar
  suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
  tab-width 4 ; Обменный курс на TAB — 4 SPACES
@@ -57,6 +58,19 @@
  x-underline-at-descent-line t
  )
 
+;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
+;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
+(add-hook
+ 'after-make-frame-functions
+ (lambda()
+   (when (display-graphic-p)
+     (
+      ;; Код для графики
+      ))
+   (unless (display-graphic-p)
+     (
+      ;; Код для терминала
+      ))))
 
 (defun load-if-exists (filename)
   "Загрузить файл, если он существует.
@@ -75,9 +89,10 @@
 
 ;; Aspell для Linux, в Windows без проверки орфографии
 (if
-  (string-equal system-type "gnu/linux")
-  (if (file-exists-p "/usr/bin/aspell")
-    (setq ispell-program-name "/usr/bin/aspell")))
+    (string-equal system-type "gnu/linux")
+    (if
+	(file-exists-p "/usr/bin/aspell")
+	(setq ispell-program-name "/usr/bin/aspell")))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -101,6 +116,7 @@
     doom-modeline ;; https://github.com/seagle0128/doom-modeline
     doom-themes ;; https://github.com/doomemacs/themes
     easy-hugo
+    easy-kill ; https://github.com/leoliu/easy-kill
     edit-indirect
     editorconfig
     embark ;; https://github.com/oantolin/embark
@@ -152,6 +168,7 @@
     which-key
     ws-butler
     yaml-mode
+    yascroll ; https://github.com/emacsorphanage/yascroll
 
     airline-themes ; THEMES
     base16-theme
@@ -184,6 +201,15 @@
           (message "Список доступных пакетов обновлён...")
           (setq packages-refreshed 1)))
       (package-install pkg t))))
+
+
+;; (setq package-selected-packages '(lsp-mode yasnippet lsp-treemacs helm-lsp
+;;     projectile hydra flycheck company avy which-key helm-xref dap-mode))
+
+(when
+    (cl-find-if-not #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (mapc #'package-install package-selected-packages))
 
 (fset 'yes-or-no-p 'y-or-n-p) ;;; Shortcuts for yes and no
 
@@ -362,8 +388,11 @@ Version 2017-11-01"
   (kill-buffer "*scratch*"))
 
 ;; ABBREV-MODE
-;; Работа с аббревиатурами
+;; Работа с аббревиатурами. Безо всяких нажатий клавиш текст будет заменяться на расширенную фразу
 (require 'abbrev)
+(set-minor-mode-for-hooks
+ 'abbrev-mode
+ '(markdown-mode-hook))
 
 ;; ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
@@ -437,15 +466,15 @@ Version 2017-11-01"
  company-minimum-prefix-length 2
  company-tooltip-align-annotations t)
 (set-minor-mode-for-hooks
-  'company-mode
-  '(
-     conf-mode-hook
-     markdown-mode-hook
-     python-mode-hook
-     ruby-mode-hook
-     terraform-mode-hook
-     xml-mode-hook
-     nxml-mode-hook))
+ 'company-mode
+ '(
+   conf-mode-hook
+   markdown-mode-hook
+   python-mode-hook
+   ruby-mode-hook
+   terraform-mode-hook
+   xml-mode-hook
+   nxml-mode-hook))
 
 
 ;; COMPANY-BOX
@@ -558,10 +587,8 @@ Version 2017-11-01"
 (defun setup-dockerfile-mode ()
   "Settings for 'dockerfile-mode'."
   (company-mode 1)
-  (lsp-mode 1)
   (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("Dockerfile'" . dockerfile-mode))
-(add-hook 'dockerfile-mode-hook #'lsp)
 (add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
 
 
@@ -590,6 +617,14 @@ Version 2017-11-01"
 ;; (load-theme 'doom-one t)
 (doom-themes-org-config)
 (doom-themes-visual-bell-config)
+
+
+;; EASY KILL
+;; https://github.com/leoliu/easy-kill
+;; Удобнее работать с удалением текстовых блоков
+(message "Загрузка пакета easy-kill.")
+(require 'easy-kill)
+(global-set-key [remap kill-ring-save] 'easy-kill)
 
 
 ;; EDITORCONFIG EMACS
@@ -653,14 +688,14 @@ Version 2017-11-01"
 (message "Загрузка пакета emmet-mode")
 (require 'emmet-mode)
 (set-minor-mode-for-hooks
-  'emmet-mode
-  '(
-     css-mode-hook
-     html-mode-hook
-     nxml-mode-hook
-     xml-mode-hook
-     web-mode-hook
-     ))
+ 'emmet-mode
+ '(
+   css-mode-hook
+   html-mode-hook
+   nxml-mode-hook
+   xml-mode-hook
+   web-mode-hook
+   ))
 
 
 ;; FLYCHECK
@@ -689,34 +724,34 @@ Version 2017-11-01"
   )
 (add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
 (set-minor-mode-for-hooks
-  'flycheck-mode
-  '(
-     apt-sources-list-mode-hook
-     conf-mode-hook
-     dockerfile-mode-hook
-     emacs-lisp-mode-hook
-     go-mode-hook
-     java-mode-hook
-     javascript-mode-hook
-     js2-mode-hook
-     json-mode-hook
-     makefile-mode-hook
-     markdown-mode-hook
-     nxml-mode-hook
-     php-mode-hook
-     protobuf-mode-hook
-     python-mode-hook
-     rst-mode-hook
-     ruby-mode-hook
-     scala-mode-hook
-     shell-script-mode-hook
-     sql-mode-hook
-     terraform-mode-hook
-     tide-mode-hook
-     web-mode-hook
-     xml-mode-hook
-     yaml-mode-hook
-     ))
+ 'flycheck-mode
+ '(
+   apt-sources-list-mode-hook
+   conf-mode-hook
+   dockerfile-mode-hook
+   emacs-lisp-mode-hook
+   go-mode-hook
+   java-mode-hook
+   javascript-mode-hook
+   js2-mode-hook
+   json-mode-hook
+   makefile-mode-hook
+   markdown-mode-hook
+   nxml-mode-hook
+   php-mode-hook
+   protobuf-mode-hook
+   python-mode-hook
+   rst-mode-hook
+   ruby-mode-hook
+   scala-mode-hook
+   shell-script-mode-hook
+   sql-mode-hook
+   terraform-mode-hook
+   tide-mode-hook
+   web-mode-hook
+   xml-mode-hook
+   yaml-mode-hook
+   ))
 
 
 ;; FORMAT ALL
@@ -927,14 +962,50 @@ Version 2017-11-01"
 
 
 ;; LSP MODE
+;; https://emacs-lsp.github.io/lsp-mode/
 ;; Базовый пакет, необходимый для работы LSP
-(message "Загрузка пакета lsp-mode")
+;;
+;; Полный список поддерживаемых языков и технологий:
+;; https://emacs-lsp.github.io/lsp-mode/page/lsp-dockerfile/
+;;
+;; Чтобы LSP "видел" директорию, её нужно добавить с помощью `lsp-workspace-folder-add'
+;;
+;; Для работы пакета нужны дополнительные средства:
+;;
+;; DOCKERFILE: npm install -g dockerfile-language-server-nodejs
+;; GOLANG: go install golang.org/x/tools/gopls@latest
+;; JSON: npm install -g vscode-json-languageserver
+;; MAKEFILE: sudo pip3 install cmake-language-server
+;; MARKDOWN: npm install -g remark-language-server
+;; NXML: lsp-install-server, выбрать xmlls
+;; SQL: go install github.com/lighttiger2505/sqls@latest
+;; XML: lsp-install-server, выбрать xmlls
+;; YAML: npm install -g yaml-language-server
+(message "Загрузка пакета lsp-mode.")
 (require 'lsp-mode)
+(setq
+ lsp-sqls-workspace-config-path nil ; Работать с любыми SQL-командами
+ lsp-headerline-breadcrumb-enable t ; Показывать "хлебные крошки" в заголовке
+ lsp-modeline-diagnostics-enable t ; Показывать ошибки LSP в статусной строке
+ )
+(set-minor-mode-for-hooks
+ 'lsp
+ '(
+   dockerfile-mode-hook
+   go-mode-hook
+   json-mode-hook
+   makefile-mode-hook
+   markdown-mode-hook
+   nxml-mode-hook
+   sql-mode-hook
+   xml-mode-hook
+   yaml-mode-hook
+   ))
 
 
 ;; MAGIT
 ;; https://magit.vc/
-;; Magic + Git. Лучшее средство для управления Git.
+;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (message "Загрузка пакета magit.")
 (require 'magit)
 (global-set-key (kbd "<f5>") 'magit-status)
@@ -962,7 +1033,7 @@ Version 2017-11-01"
  header-line-format " "
  left-margin-width 4
  markdown-list-indent-width 4
- markdown-fontify-code-blocks-natively t
+ markdown-fontify-code-blocks-natively t ; Подсвечивать синтаксис в примерах кода
  markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0)
  word-wrap t)
 (set-face-attribute 'markdown-inline-code-face nil :family default-font-family)
@@ -1353,9 +1424,11 @@ Version 2017-11-01"
 (treemacs-filewatch-mode 1)
 
 
-;; TREEMACS-ICONS-DIRED-MODE
-;; Отображать иконки файлов в TreeMacs
-(treemacs-icons-dired-mode 1)
+;; TREEMACS-ICONS-DIRED
+;; Отображать иконки файлов из  TreeMacs в dired-mode
+(message "Загрузка пакета treemacs-icons")
+(require 'treemacs-icons)
+(add-hook 'dired-mode-hook 'treemacs-icons-dired-enable-once)
 
 
 ;; UNDO-TREE
@@ -1463,33 +1536,33 @@ Version 2017-11-01"
 (message "Загрузка пакета ws-butler.")
 (require 'ws-butler)
 (set-minor-mode-for-hooks
-  'ws-butler-mode
-  '(
-     apt-sources-list-mode-hook
-     conf-mode-hook
-     dockerfile-mode-hook
-     emacs-lisp-mode-hook
-     go-mode-hook
-     java-mode-hook
-     js2-mode-hook
-     json-mode-hook
-     markdown-mode-hook
-     nxml-mode-hook
-     org-mode-hook
-     php-mode-hook
-     protobuf-mode-hook
-     python-mode-hook
-     rst-mode-hook
-     ruby-mode-hook
-     scala-mode-hook
-     sh-mode-hook
-     shell-script-mode-hook
-     sql-mode-hook
-     terraform-mode-hook
-     tide-mode-hook
-     web-mode-hook
-     xml-mode-hook
-     yaml-mode-hook))
+ 'ws-butler-mode
+ '(
+   apt-sources-list-mode-hook
+   conf-mode-hook
+   dockerfile-mode-hook
+   emacs-lisp-mode-hook
+   go-mode-hook
+   java-mode-hook
+   js2-mode-hook
+   json-mode-hook
+   markdown-mode-hook
+   nxml-mode-hook
+   org-mode-hook
+   php-mode-hook
+   protobuf-mode-hook
+   python-mode-hook
+   rst-mode-hook
+   ruby-mode-hook
+   scala-mode-hook
+   sh-mode-hook
+   shell-script-mode-hook
+   sql-mode-hook
+   terraform-mode-hook
+   tide-mode-hook
+   web-mode-hook
+   xml-mode-hook
+   yaml-mode-hook))
 
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
@@ -1509,6 +1582,13 @@ Version 2017-11-01"
  '("\\.\\(?:yaml\\|yfm\\|yml\\)\\'" . yaml-mode))
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
+
+;; YASCROLL-MODE
+;; https://github.com/emacsorphanage/yascroll
+;; Альтернативная полоса прокрутки
+(message "Загрузка пакета yascroll-mode")
+(require 'yascroll)
+(global-yascroll-bar-mode 1)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)

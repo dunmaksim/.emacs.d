@@ -21,12 +21,15 @@
     (load-file filename)))
 
 (defun set-minor-mode (minor-mode-name modes-list)
-  "Выполняет установку минорного режима minor-mode-name для списка хуков hooks.
+  "Выполняет установку минорного режима minor-mode-name для списка режимов `modes-list'.
 
   MINOR-MODE-NAME — имя минорного режима.
   MODES-LIST — список основных режимов, при которых должен активироваться указанный дополнительный."
   (dolist (mode-name modes-list)
-    (add-hook (derived-mode-hook-name mode-name) minor-mode-name)))
+    (add-hook
+      (derived-mode-hook-name mode-name) ; Эта функция позвращает имя хука, вызываемого при активации режима mode-name.
+      minor-mode-name
+      )))
 
 
 (defvar emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.")
@@ -40,7 +43,7 @@
 (defvar default-font-family "DejaVu Sans Mono" "Семейство шрифтов по умолчанию.")
 
 ;;; Создание каталогов для резервных копий и файлов автосохранения
-(unless (file-exists-p autosave-dir)
+(unless (file-directory-p autosave-dir)
   (progn
     (make-directory autosave-dir)
     (message "Создана директория для файлов автосохранения.")))
@@ -81,6 +84,7 @@
   initial-buffer-choice (lambda () (get-buffer "*dashboard*")) ; Буфер по умолчанию — дашборд
   initial-major-mode (quote markdown-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
   initial-scratch-message nil ; В новых буферах не нужно ничего писать
+  locale-coding-system 'utf-8 ; UTF-8 по умолчанию
   make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
   overwrite-mode-binary nil ; Выключить режим перезаписи текста под курсором для бинарных файлов
   overwrite-mode-textual nil ; Выключить режим перезаписи текста под курсором для текстовых файлов
@@ -88,7 +92,7 @@
   save-abbrevs 'silently ; Сохранять аббревиатуры без лишних вопросов
   save-place-file (expand-file-name ".emacs-places" emacs-config-dir) ; Хранить данные о позициях в открытых файлах в .emacs-places
   save-place-forget-unreadable-files 1 ; Если файл нельзя открыть, то и помнить о нём ничего не надо
-  scroll-bar-mode nil ; Выключить scroll-bar
+  scroll-bar-mode -1 ; Выключить scroll-bar
   show-trailing-whitespace t ; Показывать висячие пробелы
   suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
   tab-width 4 ; Обменный курс на TAB — 4 SPACES
@@ -119,8 +123,8 @@
         ))))
 
 (column-number-mode 1) ;; Показывать номер колонки в статусной строке
-(desktop-save-mode 1) ; Запоминать список открытых файлов и буферов, а также установленных для них режимов.
 (delete-selection-mode 1) ; Если регион выделен, удалить его, а не последний символ.
+(desktop-save-mode 1) ; Запоминать список открытых файлов и буферов, а также установленных для них режимов.
 (electric-pair-mode 1) ; Автоматически закрывает парные скобки. Это глобальный режим.
 (global-auto-revert-mode 1) ; Автоматически перезагружать буфер при изменении файла на дискею
 (global-hl-line-mode 1) ; Подсветить активные строки во всех открытых буферах
@@ -128,11 +132,15 @@
 (line-number-mode 1) ;; Показывать номер строки в статусной строке
 (menu-bar-mode -1) ; Меню не нужно
 (prefer-coding-system 'utf-8)
-(show-paren-mode 1) ; Подсвечивать парные скобки и текст между ними. Это глобальный режим.
+(prefer-coding-system 'utf-8)
 (save-place-mode 1) ; Помнить позицию курсора в открытых когда-либо файлах.
+(scroll-bar-mode -1) ; Отключить полосы прокрутки
 (set-default-coding-systems 'utf-8) ; Кодировка по умолчанию
+(set-keyboard-coding-system 'utf-8)
 (set-language-environment 'utf-8) ; Кодировка языка по умолчанию
-;;(toolbar-mode 0) ; Не надо показывать понель инструментов в графическом режиме
+(set-selection-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(show-paren-mode 1) ; Подсвечивать парные скобки и текст между ними. Это глобальный режим.
 (tooltip-mode 0) ; Не надо показывать подсказки в GUI, используй мини-буфер.
 (window-divider-mode 1) ; Визуально разделять окна EMACS
 
@@ -151,6 +159,7 @@
   package-selected-packages
   '(
      airline-themes ; THEMES
+     adoc-mode ; https://github.com/sensorflo/adoc-mode/wiki
      all-the-icons
      all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
      all-the-icons-ibuffer ;; https://github.com/seagle0128/all-the-icons-ibuffer
@@ -165,8 +174,10 @@
      company-box
      company-terraform
      company-web
+     csharp-mode ; https://github.com/emacs-csharp/csharp-mode
      dash
      dashboard
+     demap ; https://gitlab.com/sawyerjgardner/demap.el
      diff-hl ; https://github.com/dgutov/diff-hl
      direnv
      dockerfile-mode
@@ -197,9 +208,8 @@
      mode-icons ; https://github.com/ryuslash/mode-icons
      multiple-cursors
      org
-     pandoc-mode ; http://joostkremers.github.io/pandoc-mode/
      php-mode
-     projectile
+     projectile ; https://docs.projectile.mx/projectile/installation.html
      protobuf-mode
      pulsar ; https://protesilaos.com/emacs/pulsar
      pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
@@ -227,6 +237,8 @@
      ws-butler
      yaml-mode
      yascroll ; https://github.com/emacsorphanage/yascroll
+     yasnippet ; http://github.com/joaotavora/yasnippet
+     yasnippet-snippets ; https://github.com/AndreaCrotti/yasnippet-snippets
      ))
 
 ;; Установка необходимых пакетов
@@ -416,6 +428,15 @@ Version 2017-11-01"
 (global-set-key (kbd "M-o") 'ace-window)
 
 
+;; ADOC-MODE
+;; https://github.com/sensorflo/adoc-mode/wiki
+;; Работа с AsciiDoc
+(load-pkg-msg "adoc-mode")
+(require 'adoc-mode)
+(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
+(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
+
+
 ;; ANSIBLE MODE
 (load-pkg-msg "ansible")
 (require 'ansible)
@@ -434,7 +455,7 @@ Version 2017-11-01"
 (setq
   centaur-tabs-enable-key-bindings t; Включить комбинации клавиш из `centaur-tabs`.
   centaur-tabs-close-button "×" ; Будем использовать вот этот символ вместо X
-  centaur-tabs-height 48 ; Высота вкладок
+  centaur-tabs-height 36 ; Высота вкладок
   centaur-tabs-modified-marker t ; Показывать маркер, если содержимое вкладки изменилось
   centaur-tabs-set-bar 'under ; Доступные значения: over, under
   centaur-tabs-set-icons is-gui-mode ; Включить иконки. если это графический режим
@@ -446,6 +467,13 @@ Version 2017-11-01"
   (progn
     (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
     (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)))
+;; В этих режимах не нужно показывать вкладки
+(set-minor-mode
+  'centaur-tabs-local-mode
+  '(
+     dashboard-mode
+     dired-mode
+     ))
 
 
 ;; COMPANY-MODE
@@ -467,6 +495,7 @@ Version 2017-11-01"
      ansible-mode
      apt-sources-list-mode
      conf-mode
+     csharp-mode
      dockerfile-mode
      emacs-lisp-mode
      go-mode
@@ -535,8 +564,14 @@ Version 2017-11-01"
      (registers . 5)) ;; Регистры
   dashboard-set-heading-icons is-gui-mode ;; Иконка EMACS в графическом режиме
   dashboard-set-file-icons is-gui-mode) ;; Иконки типов файлов в графическом режиме
-(add-hook 'dashboard-mode-hook 'centaur-tabs-local-mode)
 (dashboard-setup-startup-hook)
+
+
+;; DEMAP
+;; https://gitlab.com/sawyerjgardner/demap.el
+;; Мини-карта и плавный скроллинг
+(require 'demap)
+(setq demap-minimap-window-width 15) ; Ширина мини-карты
 
 
 ; DIFF-HL
@@ -556,7 +591,6 @@ Version 2017-11-01"
   ;; Это может не работать в Windows, надо проверить
   (setq dired-listing-switches "-lahX --group-directories-first"))
 (add-hook 'dired-mode-hook #'auto-revert-mode)
-(add-hook 'dired-mode-hook #'centaur-tabs-local-mode)
 
 
 ;; DIRENV-MODE
@@ -725,6 +759,7 @@ Version 2017-11-01"
 (set-minor-mode
   'flycheck-mode
   '(
+     adoc-mode
      apt-sources-list-mode
      conf-mode
      dockerfile-mode
@@ -800,8 +835,10 @@ Version 2017-11-01"
 ;; Показывает направляющие для отступов
 (load-pkg-msg "highlight-indentation")
 (require 'highlight-indentation)
+(set-face-background 'highlight-indentation-face "#e3e3d3")
+(set-face-background 'highlight-indentation-current-column-face "#c3b3b3")
 (set-minor-mode
-  'highlight-indentation
+  'highlight-indentation-mode
   '(
      makefile-mode
      markdown-mode
@@ -856,53 +893,53 @@ Version 2017-11-01"
          (or
            (mode . sql-mode)))
        ("Web"
-         (or
-           (mode . js-mode)
-           (mode . js2-mode)
-           (mode . web-mode)))
+        (or
+		 (mode . javascript-mode)
+         (mode . js-mode)
+         (mode . js2-mode)
+         (mode . web-mode)))
        ("Magit"
-         (or
-           (mode . magit-status-mode)
-           (mode . magit-log-mode)
-           (name . "^\\*magit")
-           (name . "git-monitor")))
+        (or
+         (mode . magit-status-mode)
+         (mode . magit-log-mode)
+         (name . "^\\*magit")
+         (name . "git-monitor")))
        ("Commands"
-         (or
-           (mode . shell-mode)
-           (mode . eshell-mode)
-           (mode . term-mode)
-           (mode . compilation-mode)))
+        (or
+         (mode . shell-mode)
+         (mode . eshell-mode)
+         (mode . term-mode)
+         (mode . compilation-mode)))
        ("Emacs"
-         (or
-           (name . "^\\*scratch\\*$")
-           (name . "^\\*Messages\\*$")
-           (name . "^\\*\\(Customize\\|Help\\)")
-           (name . "\\*\\(Echo\\|Minibuf\\)")))))
+        (or
+         (name . "^\\*scratch\\*$")
+         (name . "^\\*Messages\\*$")
+         (name . "^\\*\\(Customize\\|Help\\)")
+         (name . "\\*\\(Echo\\|Minibuf\\)")))))
   ibuffer-formats
   '(
-     (
-       mark
-       modified
-       read-only
-       locked
-       " "
-       (name 30 40 :left :elide)
-       " "
-       (mode 8 -1 :left)
-       " "
-       filename-and-process)
-     (
-       mark
-       " "
-       (name 32 -1)
-       " "
-       filename)))
-(add-hook 'ibuffer-mode-hook
-  '(progn
-     (
-       (ibuffer-auto-mode 1)
-       (ibuffer-switch-to-saved-filter-groups "default") ; Автоматически использовать группу настроек "default" (см. ниже)
-       )))
+    (
+     mark
+     modified
+     read-only
+     locked
+     " "
+     (name 30 40 :left :elide)
+     " "
+     (mode 8 -1 :left)
+     " "
+     filename-and-process)
+    (
+     mark
+     " "
+     (name 32 -1)
+     " "
+     filename)))
+(defun setup-ibuffer-mode ()
+  "Настройки при запуске `ibuffer-mode'."
+  (ibuffer-auto-mode 1)
+  (ibuffer-switch-to-saved-filter-groups "default"))
+(add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
 (global-set-key (kbd "<f2>") 'ibuffer)
 
 
@@ -983,10 +1020,11 @@ Version 2017-11-01"
 (setq
   header-line-format " "
   left-margin-width 4
-  markdown-list-indent-width 4
   markdown-fontify-code-blocks-natively t ; Подсвечивать синтаксис в примерах кода
-  markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0)
-  word-wrap t)
+  markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) ; Все заголовки одной высоты
+  markdown-list-indent-width 4
+  word-wrap t ; Перенос по словам
+  )
 (set-face-attribute 'markdown-inline-code-face nil :family default-font-family)
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
@@ -1012,6 +1050,7 @@ Version 2017-11-01"
 
 
 ;; NXML-MODE
+;; Встроенный пакет
 ;; Почти как xml-mode, только лучше и новее
 (load-pkg-msg "nxml-mode")
 (require 'nxml-mode)
@@ -1041,21 +1080,6 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.org$'" . org-mode))
 
 
-;; PANDOC-MODE
-;; http://joostkremers.github.io/pandoc-mode/
-;; Позволяет экспортировать текст из одного формата в другой
-;; Подробнее на странице проекта: https://pandoc.org/
-(load-pkg-msg "pandoc-mode")
-(require 'pandoc-mode)
-(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
-(set-minor-mode
-  'pandoc-mode
-  '(
-     markdown-mode
-     rst-mode
-     ))
-
-
 ;; PHP-MODE
 (load-pkg-msg "php-mode")
 (require 'php)
@@ -1063,10 +1087,12 @@ Version 2017-11-01"
 
 
 ;; PROJECTILE
+;; https://docs.projectile.mx/projectile/installation.html
 ;; Управление проектами
 (load-pkg-msg "projectile")
 (require 'projectile)
-(load-if-exists "projects.el")
+(load-if-exists (expand-file-name "projects.el" emacs-config-dir))
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 
 ;; PROTOBUF-MODE
@@ -1123,6 +1149,7 @@ Version 2017-11-01"
      json-mode
      makefile-mode
      markdown-mode
+     nxml-mode
      org-mode
      php-mode
      protobuf-mode
@@ -1135,6 +1162,7 @@ Version 2017-11-01"
      terraform-mode
      tide-mode
      web-mode
+     xml-mode
      yaml-mode
      ))
 
@@ -1426,8 +1454,8 @@ Version 2017-11-01"
 (load-pkg-msg "yaml-mode")
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yfm$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
 
 ;; YASCROLL-MODE
@@ -1436,6 +1464,18 @@ Version 2017-11-01"
 (load-pkg-msg "yascroll")
 (require 'yascroll)
 (global-yascroll-bar-mode 1)
+
+
+;; YASNIPPET
+;; http://github.com/joaotavora/yasnippet
+;; Предоставляет функциональность сниппетов — блоков кода, в которые всего-лишь нужно подставить значения.
+(load-pkg-msg "yasnippet")
+(require 'yasnippet)
+; Если директории для сниппектов нет, её нужно создать.
+(defvar yas-snippet-root-dir (concat emacs-config-dir "snippets"))
+(unless (file-directory-p yas-snippet-root-dir)
+  (mkdir yas-snippet-root-dir))
+(yas-global-mode 1)
 
 
 (put 'downcase-region 'disabled nil)

@@ -67,6 +67,7 @@
  blink-matching-paren t ; Мигать, когда скобки парные
  calendar-week-start-day 1 ; Начнём неделю с понедельника
  create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
+ cursor-type 'bar ; Курсор в виде вертикальной черты
  custom-file (expand-file-name "custom.el" emacs-config-dir)
  delete-old-versions t ; Удалять старые версии файлов
  desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
@@ -138,7 +139,7 @@
 (global-hl-line-mode 1) ; Подсветить активные строки во всех открытых буферах
 (global-visual-line-mode 1) ; Подсвечивать текущую строку
 (line-number-mode 1) ;; Показывать номер строки в статусной строке
-(menu-bar-mode -1) ; Меню не нужно
+(menu-bar-mode 0) ; Меню не нужно
 (prefer-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 (save-place-mode 1) ; Помнить позицию курсора в открытых когда-либо файлах.
@@ -150,6 +151,7 @@
 (set-terminal-coding-system 'utf-8)
 (show-paren-mode 1) ; Подсвечивать парные скобки и текст между ними. Это глобальный режим.
 (tooltip-mode 0) ; Не надо показывать подсказки в GUI, используй мини-буфер.
+(tool-bar-mode 0) ; Выключить тулбар с кнопками
 (window-divider-mode 1) ; Визуально разделять окна EMACS
 
 
@@ -239,6 +241,7 @@
    treemacs-magit
    typescript-mode
    undo-tree
+   vagrant ; https://github.com/ottbot/vagrant.el
    verb
    vertico ; https://github.com/minad/vertico
    web-beautify
@@ -1252,6 +1255,8 @@ Version 2017-11-01"
 ;; SHELL-SCRIPT-MODE
 (load-pkg-msg "shell-script-mode")
 (require 'sh-script)
+(add-to-list 'auto-mode-alist '("\\.bashrc$" . shell-script-mode))
+(add-to-list 'auto-mode-alist '("\\.profile$" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.sh$" . shell-script-mode))
 
 
@@ -1349,6 +1354,14 @@ Version 2017-11-01"
 (require 'undo-tree)
 (setq undo-tree-auto-save-history nil) ; Отключить создание резервных копий файлов
 (global-undo-tree-mode 1)
+
+
+;; VAGRANT MODE
+;; Работа с файлами Vagrant
+;; https://github.com/ottbot/vagrant.el
+(load-pkg-msg "vagrant")
+(require 'vagrant)
+(add-to-list 'auto-mode-alist (cons "Vagrantfile$\\'" 'vagrant-mode))
 
 
 ;; VERB-MODE
@@ -1498,7 +1511,10 @@ Version 2017-11-01"
 ;; Работа с YAML-файлами
 (load-pkg-msg "yaml-mode")
 (require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.pre\\-commit\\-config\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yamllint$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yamllint\\-config\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yfm$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 

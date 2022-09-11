@@ -49,18 +49,20 @@
     (message "Создана директория для файлов автосохранения.")))
 
 (require 'calendar)
+(require 'cyrillic)
 (require 'derived)
 (require 'desktop)
-(require 'ibuffer)
+(require 'elec-pair)
+(require 'electric)
+(require 'face-remap)
 (require 'ibuf-ext)
+(require 'ibuffer)
+(require 'ispell)
 (require 'menu-bar)
 (require 'paren)
-(require 'face-remap)
-(require 'ispell)
+(require 'quail)
 (require 'saveplace)
 (require 'widget)
-(require 'electric)
-(require 'elec-pair)
 
 (setq-default
  auto-save-file-name-transforms `((".*" , autosave-dir) t)
@@ -71,7 +73,7 @@
  custom-file (expand-file-name "custom.el" emacs-config-dir)
  delete-old-versions t ; Удалять старые версии файлов
  desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
- desktop-save t ;; Сохранять список открытых буферов, файлов и т. д.
+ desktop-save 1 ;; Сохранять список открытых буферов, файлов и т. д.
  gc-cons-threshold (* 50 1000 1000) ; Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
  ibuffer-expert 1 ; Расширенный  режим для ibuffer
  ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
@@ -83,7 +85,7 @@
  indent-tabs-mode nil ; Использовать для выравнивания по нажатию TAB пробелы вместо табуляций
  inhibit-splash-screen t ; Не надо показывать загрузочный экран
  inhibit-startup-message t ; Не надо показывать приветственное сообщение
- initial-buffer-choice (lambda () (get-buffer "*dashboard*")) ; Буфер по умолчанию — дашборд
+ ;; initial-buffer-choice (lambda () (get-buffer "*dashboard*")) ; Буфер по умолчанию — дашборд
  initial-major-mode (quote markdown-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
  initial-scratch-message nil ; В новых буферах не нужно ничего писать
  large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
@@ -172,7 +174,7 @@
  package-selected-packages
  '(
    airline-themes ; THEMES
-   adoc-mode ; https://github.com/sensorflo/adoc-mode/wiki
+   adoc-mode ; https://github.com/bbatsov/adoc-mode
    all-the-icons
    all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
    all-the-icons-ibuffer ;; https://github.com/seagle0128/all-the-icons-ibuffer
@@ -263,7 +265,12 @@
     (cl-find-if-not #'package-installed-p package-selected-packages)
     (progn
       (package-refresh-contents)
-      (package-install-selected-packages)))
+      (dolist (pkg-name package-selected-packages)
+        (message "Before check")
+        (unless (package-installed-p pkg-name)
+          (progn
+            (message (format "Install package %s" pkg-name))
+            (package-install pkg-name t))))))
 
 
 ;; Изменение размеров окон
@@ -445,7 +452,7 @@ Version 2017-11-01"
 
 
 ;; ADOC-MODE
-;; https://github.com/sensorflo/adoc-mode/wiki
+;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
 (load-pkg-msg "adoc-mode")
 (require 'adoc-mode)
@@ -546,9 +553,9 @@ Version 2017-11-01"
 ;; COMPANY-BOX
 ;; https://github.com/sebastiencs/company-box
 ;; Расширение для company-mode, которое показывает доступные варианты, используя иконки
-(load-pkg-msg "company-box")
-(require 'company-box)
-(add-hook 'company-mode-hook 'company-box-mode)
+;; (load-pkg-msg "company-box")
+;; (require 'company-box)
+;; (add-hook 'company-mode-hook 'company-box-mode)
 
 
 ;; COMPANY-WEB
@@ -595,7 +602,7 @@ Version 2017-11-01"
 (setq-default demap-minimap-window-width 15) ; Ширина мини-карты
 
 
-                                        ; DIFF-HL
+;; DIFF-HL
 ;; https://github.com/dgutov/diff-hl
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
@@ -709,8 +716,10 @@ Version 2017-11-01"
 
 ;; ELECTRIC-PAIR MODE
 ;; Встроенный пакет.
-(add-to-list 'electric-pair-pairs '(« . »))
-(add-to-list 'electric-pair-text-pairs '(« . »))
+(require 'elec-pair)
+(add-to-list 'electric-pair-pairs '(?« . ?»))
+(add-to-list 'electric-pair-pairs '(?{ . ?}))
+(electric-pair-mode 1)
 
 
 ;; EMACS LISP MODE
@@ -1412,17 +1421,17 @@ Version 2017-11-01"
 
 
 ;; WHITESPACE MODE
-;; https://www.emacswiki.org/emacs/WhiteSpace
+;; Встроенный пакет для отображения невидимых символов
 ;; Показывает невидимые символы.
 (load-pkg-msg "whitespace")
 (require 'whitespace)
 (setq-default
  whitespace-display-mappings
  '(
-   (space-mark   ?\    [?\xB7]     [?.]) ; space
-   (space-mark   ?\xA0 [?\xA4]     [?_]) ; hard space
-   (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; end of line
-   (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; tab
+   (space-mark   ?\    [?\xB7]     [?.]) ; Пробел
+   (space-mark   ?\xA0 [?\xA4]     [?_]) ; Неразрывный пробел
+   (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; Конец строки
+   (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; TAB
    )
  whitespace-line-column 1000 ;; Highlight lines with length bigger than 1000 chars)
  )
@@ -1511,6 +1520,7 @@ Version 2017-11-01"
 ;; Работа с YAML-файлами
 (load-pkg-msg "yaml-mode")
 (require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.ansible\\-lint" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.pre\\-commit\\-config\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yamllint$" . yaml-mode))
@@ -1543,5 +1553,4 @@ Version 2017-11-01"
 (put 'upcase-region 'disabled nil)
 
 (provide 'init.el)
-
 ;;; init.el ends here

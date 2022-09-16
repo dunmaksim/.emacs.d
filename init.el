@@ -17,8 +17,8 @@
   "Загрузить файл, если он существует.
 
   FILENAME — имя файла."
-  (if (file-exists-p filename)
-      (load-file filename)))
+  (when (file-exists-p filename)
+        (load-file filename)))
 
 (defun set-minor-mode (minor-mode-name modes-list)
   "Выполняет установку минорного режима minor-mode-name для списка режимов `modes-list'.
@@ -26,11 +26,9 @@
   MINOR-MODE-NAME — имя минорного режима.
   MODES-LIST — список основных режимов, при которых должен активироваться указанный дополнительный."
   (dolist (mode-name modes-list)
-    (add-hook
-     (derived-mode-hook-name mode-name) ; Эта функция позвращает имя хука, вызываемого при активации режима mode-name.
-     minor-mode-name t
-     )))
-
+          (add-hook
+            (derived-mode-hook-name mode-name) ; Эта функция позвращает имя хука, вызываемого при активации режима mode-name.
+            minor-mode-name t)))
 
 (defvar emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.")
 (defvar autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
@@ -70,7 +68,8 @@
  calendar-week-start-day 1 ; Начнём неделю с понедельника
  create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
  cursor-type 'bar ; Курсор в виде вертикальной черты
- custom-file (expand-file-name "custom.el" emacs-config-dir)
+  custom-file (expand-file-name "custom.el" emacs-config-dir)
+  default-input-method 'russian-computer ; Чтобы хоткеи работали в любой раскладке
  delete-old-versions t ; Удалять старые версии файлов
  desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
  desktop-save 1 ;; Сохранять список открытых буферов, файлов и т. д.
@@ -93,9 +92,6 @@
  make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
  overwrite-mode-binary nil ; Выключить режим перезаписи текста под курсором для бинарных файлов
  overwrite-mode-textual nil ; Выключить режим перезаписи текста под курсором для текстовых файлов
- package-hidden-regexps ; Скрыть пакеты из поисковой выдачи `package.el`.
- '(
-   )
  ring-bell-function #'ignore ; Заблокировать пищание
  save-abbrevs 'silently ; Сохранять аббревиатуры без лишних вопросов
  save-place-file (expand-file-name ".emacs-places" emacs-config-dir) ; Хранить данные о позициях в открытых файлах в .emacs-places
@@ -120,17 +116,16 @@
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
-(add-hook
- 'after-make-frame-functions
- (lambda()
-   (when (display-graphic-p)
-     (
-      ;; Код для графики
-      ))
-   (unless (display-graphic-p)
-     (
-      ;; Код для терминала
-      ))))
+(add-to-list 'after-make-frame-functions
+  (lambda (frame-name)
+    (if (display-graphic-p frame-name)
+      (progn ;; GUI
+        (message "Графический режим.")
+        )
+      (progn
+        ;; TUI
+        (message "Текстовый режим.")
+        ))))
 
 (column-number-mode 1) ;; Показывать номер колонки в статусной строке
 (delete-selection-mode 1) ; Если регион выделен, удалить его, а не последний символ.
@@ -262,15 +257,15 @@
 
 ;; Установка необходимых пакетов
 (if
-    (cl-find-if-not #'package-installed-p package-selected-packages)
-    (progn
-      (package-refresh-contents)
-      (dolist (pkg-name package-selected-packages)
-        (message "Before check")
-        (unless (package-installed-p pkg-name)
-          (progn
-            (message (format "Install package %s" pkg-name))
-            (package-install pkg-name t))))))
+  (cl-find-if-not #'package-installed-p package-selected-packages)
+  (progn
+    (package-refresh-contents)
+    (dolist (pkg-name package-selected-packages)
+      (message "Before check")
+      (unless (package-installed-p pkg-name)
+        (progn
+          (message (format "Install package %s" pkg-name))
+          (package-install pkg-name t))))))
 
 
 ;; Изменение размеров окон
@@ -339,50 +334,46 @@
   (require 'all-the-icons-dired)
   (require 'all-the-icons-ibuffer)
   (require 'mode-icons)
-  (setq
-   all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
-   all-the-icons-ibuffer-icon t
-   )
+  (setq all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
+        all-the-icons-ibuffer-icon t)
   (all-the-icons-ibuffer-mode t)
   (mode-icons-mode t)
   (tooltip-mode nil) ;; Убрать всплывающие подсказки в tooltip'ах при наведении мыши
 
   ;; Настройки шрифтов
   (message "Настройки шрифтов")
-  (set-face-attribute
-   'default nil
-   :font default-font
-   :family default-font-family
-   :height default-font-size
-   )
-  ) ;; /when is gui-mode
+  (set-face-attribute 'default nil
+                      :font default-font
+                      :family default-font-family
+                      :height default-font-size)) ;; /when is gui-mode
 
 
 ;; Settings for hotkeys on any layout
-(require 'quail)
-(defun cfg:reverse-input-method (input-method)
-  "Build the reverse mapping of single letters from INPUT-METHOD."
-  (interactive
-   (list (read-input-method-name "Use input method (default current): ")))
-  (if (and input-method (symbolp input-method))
-      (setq input-method (symbol-name input-method)))
-  (let ((current current-input-method)
-        (modifiers '(nil (control) (meta) (control meta))))
-    (if input-method
-	    (activate-input-method input-method))
-    (when (and current-input-method quail-keyboard-layout)
-      (dolist (map (cdr (quail-map)))
-        (let* ((to (car map))
-               (from (quail-get-translation
-                      (cadr map) (char-to-string to) 1)))
-          (when (and (characterp from) (characterp to))
-            (dolist (mod modifiers)
-              (define-key local-function-key-map
-                (vector (append mod (list from)))
-                (vector (append mod (list to)))))))))
-    (when input-method
-      (activate-input-method current))))
-(cfg:reverse-input-method 'russian-computer)
+;; (require 'quail)
+;; (defun cfg:reverse-input-method (input-method)
+;;   "Build the reverse mapping of single letters from INPUT-METHOD."
+;;   (interactive
+;;     (list (read-input-method-name "Use input method (default current): ")))
+;;   (if (and input-method (symbolp input-method))
+;;     (setq input-method (symbol-name input-method)))
+;;   (let ((current current-input-method)
+;;          (modifiers '(nil (control) (meta) (control meta))))
+;;     (if input-method
+;;       (activate-input-method input-method))
+;;     (when (and current-input-method quail-keyboard-layout)
+;;       (dolist (map (cdr (quail-map)))
+;;         (let* ((to (car map))
+;;               (from (quail-get-translation
+;;                     (cadr map) (char-to-string to) 1)))
+;;           (when (and (characterp from) (characterp to))
+;;             (dolist (mod modifiers)
+;;               (define-key local-function-key-map
+;;                 (vector (append mod (list from)))
+;;                 (vector (append mod (list to)))))))))
+;;     (when input-method
+;;       (activate-input-method current))))
+;; (cfg:reverse-input-method 'russian-computer)
+(set-input-method 'russian-computer)
 
 
 (defun xah-new-empty-buffer ()
@@ -1324,7 +1315,10 @@ Version 2017-11-01"
  '(lambda ()
     (setq
      indent-tabs-mode nil
-     tab-width 4)))
+     tab-width 4)
+    (whitespace-mode 1)
+    (rainbow-delimiters-mode 1)
+    (ws-butler-mode 1)))
 
 
 ;; TREEMACS — awesome file manager (instead NeoTree)

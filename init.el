@@ -12,13 +12,12 @@
   PKG-NAME — имя пакета"
   (message (concat "Загрузка пакета " pkg-name)))
 
-
 (defun load-if-exists (filename)
   "Загрузить файл, если он существует.
 
   FILENAME — имя файла."
   (when (file-exists-p filename)
-        (load-file filename)))
+    (load-file filename)))
 
 (defun set-minor-mode (minor-mode-name modes-list)
   "Выполняет установку минорного режима minor-mode-name для списка режимов `modes-list'.
@@ -26,9 +25,9 @@
   MINOR-MODE-NAME — имя минорного режима.
   MODES-LIST — список основных режимов, при которых должен активироваться указанный дополнительный."
   (dolist (mode-name modes-list)
-          (add-hook
-            (derived-mode-hook-name mode-name) ; Эта функция позвращает имя хука, вызываемого при активации режима mode-name.
-            minor-mode-name t)))
+    (add-hook
+     (derived-mode-hook-name mode-name) ; Эта функция позвращает имя хука, вызываемого при активации режима mode-name.
+     minor-mode-name t)))
 
 (defvar emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.")
 (defvar autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
@@ -68,8 +67,8 @@
  calendar-week-start-day 1 ; Начнём неделю с понедельника
  create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
  cursor-type 'bar ; Курсор в виде вертикальной черты
-  custom-file (expand-file-name "custom.el" emacs-config-dir)
-  default-input-method 'russian-computer ; Чтобы хоткеи работали в любой раскладке
+ custom-file (expand-file-name "custom.el" emacs-config-dir)
+ default-input-method 'russian-computer ; Чтобы хоткеи работали в любой раскладке
  delete-old-versions t ; Удалять старые версии файлов
  desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
  desktop-save 1 ;; Сохранять список открытых буферов, файлов и т. д.
@@ -87,7 +86,8 @@
  ;; initial-buffer-choice (lambda () (get-buffer "*dashboard*")) ; Буфер по умолчанию — дашборд
  initial-major-mode (quote markdown-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
  initial-scratch-message nil ; В новых буферах не нужно ничего писать
- large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
+  large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
+  load-prefer-newer t ; Если есть файл elc, но el новее, загрузить el-файл
  locale-coding-system 'utf-8 ; UTF-8 по умолчанию
  make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
  overwrite-mode-binary nil ; Выключить режим перезаписи текста под курсором для бинарных файлов
@@ -117,15 +117,15 @@
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions
-  (lambda (frame-name)
-    (if (display-graphic-p frame-name)
-      (progn ;; GUI
-        (message "Графический режим.")
-        )
-      (progn
-        ;; TUI
-        (message "Текстовый режим.")
-        ))))
+             (lambda (frame-name)
+               (if (display-graphic-p frame-name)
+                   (progn ;; GUI
+                     (message "Графический режим.")
+                     )
+                 (progn
+                   ;; TUI
+                   (message "Текстовый режим.")
+                   ))))
 
 (column-number-mode 1) ;; Показывать номер колонки в статусной строке
 (delete-selection-mode 1) ; Если регион выделен, удалить его, а не последний символ.
@@ -136,8 +136,7 @@
 (global-hl-line-mode 1) ; Подсветить активные строки во всех открытых буферах
 (global-visual-line-mode 1) ; Подсвечивать текущую строку
 (line-number-mode 1) ;; Показывать номер строки в статусной строке
-(menu-bar-mode 0) ; Меню не нужно
-(prefer-coding-system 'utf-8)
+(menu-bar-mode -1) ; Меню не нужно
 (prefer-coding-system 'utf-8)
 (save-place-mode 1) ; Помнить позицию курсора в открытых когда-либо файлах.
 (scroll-bar-mode -1) ; Отключить полосы прокрутки
@@ -153,19 +152,17 @@
 
 
 ;; Aspell для Linux, в Windows без проверки орфографии
-(if
-    (string-equal system-type "gnu/linux")
-    (if
-	    (file-exists-p "/usr/bin/aspell")
-	    (setq ispell-program-name "/usr/bin/aspell")))
+(when (string-equal system-type "gnu/linux")
+  (when (file-exists-p "/usr/bin/aspell")
+    (setq ispell-program-name "/usr/bin/aspell")))
 
 (require 'package)
 (package-initialize)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages") t)
 (add-to-list 'package-archive-priorities '("gnu" . 1))
 (add-to-list 'package-archive-priorities '("melpa" . 0))
 
-(setq
+(setq-default
  package-selected-packages
  '(
    airline-themes ; THEMES
@@ -252,20 +249,17 @@
    yasnippet-snippets ; https://github.com/AndreaCrotti/yasnippet-snippets
    ))
 
-(message "After setq-default package-selected-packages")
-(message "%s" package-selected-packages)
-
 ;; Установка необходимых пакетов
 (if
-  (cl-find-if-not #'package-installed-p package-selected-packages)
-  (progn
-    (package-refresh-contents)
-    (dolist (pkg-name package-selected-packages)
-      (message "Before check")
-      (unless (package-installed-p pkg-name)
-        (progn
-          (message (format "Install package %s" pkg-name))
-          (package-install pkg-name t))))))
+    (cl-find-if-not #'package-installed-p package-selected-packages)
+    (progn
+      (package-refresh-contents)
+      (dolist (pkg-name package-selected-packages)
+        (message "Before check")
+        (unless (package-installed-p pkg-name)
+          (progn
+            (message (format "Install package %s" pkg-name))
+            (package-install pkg-name t))))))
 
 
 ;; Изменение размеров окон
@@ -349,30 +343,30 @@
 
 
 ;; Settings for hotkeys on any layout
-;; (require 'quail)
-;; (defun cfg:reverse-input-method (input-method)
-;;   "Build the reverse mapping of single letters from INPUT-METHOD."
-;;   (interactive
-;;     (list (read-input-method-name "Use input method (default current): ")))
-;;   (if (and input-method (symbolp input-method))
-;;     (setq input-method (symbol-name input-method)))
-;;   (let ((current current-input-method)
-;;          (modifiers '(nil (control) (meta) (control meta))))
-;;     (if input-method
-;;       (activate-input-method input-method))
-;;     (when (and current-input-method quail-keyboard-layout)
-;;       (dolist (map (cdr (quail-map)))
-;;         (let* ((to (car map))
-;;               (from (quail-get-translation
-;;                     (cadr map) (char-to-string to) 1)))
-;;           (when (and (characterp from) (characterp to))
-;;             (dolist (mod modifiers)
-;;               (define-key local-function-key-map
-;;                 (vector (append mod (list from)))
-;;                 (vector (append mod (list to)))))))))
-;;     (when input-method
-;;       (activate-input-method current))))
-;; (cfg:reverse-input-method 'russian-computer)
+(require 'quail)
+(defun cfg:reverse-input-method (input-method)
+  "Build the reverse mapping of single letters from INPUT-METHOD."
+  (interactive
+   (list (read-input-method-name "Use input method (default current): ")))
+  (if (and input-method (symbolp input-method))
+      (setq input-method (symbol-name input-method)))
+  (let ((current current-input-method)
+        (modifiers '(nil (control) (meta) (control meta))))
+    (if input-method
+        (activate-input-method input-method))
+    (when (and current-input-method quail-keyboard-layout)
+      (dolist (map (cdr (quail-map)))
+        (let* ((to (car map))
+               (from (quail-get-translation
+                      (cadr map) (char-to-string to) 1)))
+          (when (and (characterp from) (characterp to))
+            (dolist (mod modifiers)
+              (define-key local-function-key-map
+                (vector (append mod (list from)))
+                (vector (append mod (list to)))))))))
+    (when input-method
+      (activate-input-method current))))
+(cfg:reverse-input-method 'russian-computer)
 (set-input-method 'russian-computer)
 
 
@@ -385,10 +379,7 @@ It returns the buffer (for elisp programing).
 URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
 Version 2017-11-01"
   (interactive)
-  (let
-      (
-       ($buf
-        (generate-new-buffer "untitled")))
+  (let (($buf (generate-new-buffer "untitled")))
     (switch-to-buffer $buf)
     (funcall initial-major-mode)
     (setq buffer-offer-save t)
@@ -1113,11 +1104,6 @@ Version 2017-11-01"
  org-todo-keywords '((
                       sequence
                       "НОВАЯ"
-                      "РАСПАКОВКА"
-                      "ПРИОСТАНОВЛЕНА"
-                      "В РАБОТЕ"
-                      "НУЖНА ИНФОРМАЦИЯ"
-                      "РЕВЬЮ"
                       "|"
                       "ВЫПОЛНЕНА"))
  right-margin-width 4

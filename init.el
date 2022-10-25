@@ -33,7 +33,7 @@
 (defconst autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
 (defconst backups-dir (concat emacs-config-dir "backups") "Директория для резервных копий.")
 (defconst is-gui-mode (display-graphic-p) "EMACS запущен в графическом режиме.")
-(defconst default-font-size 14 "Размер шрифта по умолчанию.")
+(defconst default-font-height 14 "Размер шрифта по умолчанию.")
 
 ;;; Создание каталогов для резервных копий и файлов автосохранения
 (unless (file-directory-p autosave-dir)
@@ -66,7 +66,7 @@
   default-input-method 'russian-computer ; Чтобы хоткеи работали в любой раскладке
   delete-old-versions t ; Удалять старые версии файлов
   desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
-  desktop-save 1 ;; Сохранять список открытых буферов, файлов и т. д.
+  desktop-save 1 ; Сохранять список открытых буферов, файлов и т. д.
   gc-cons-threshold (* 50 1000 1000) ; Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
   ibuffer-expert 1 ; Расширенный  режим для ibuffer
   ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
@@ -92,6 +92,7 @@
   save-place-forget-unreadable-files 1 ; Если файл нельзя открыть, то и помнить о нём ничего не надо
   scroll-bar-mode -1 ; Выключить scroll-bar
   show-trailing-whitespace t ; Показывать висячие пробелы
+  source-directory "/usr/share/emacs/27.1/src/" ; Путь к исходному коду EMACS
   suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
   tab-width 4 ; Обменный курс на TAB — 4 SPACES
   text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
@@ -133,9 +134,10 @@
 
 
 ;; Aspell для Linux, в Windows без проверки орфографии
-(when (and
-        (string-equal system-type "gnu/linux")
-        (file-exists-p "/usr/bin/aspell"))
+(when
+  (and
+    (string-equal system-type "gnu/linux")
+    (file-exists-p "/usr/bin/aspell"))
   (setq-default ispell-program-name "/usr/bin/aspell"))
 
 ;; Настройка пакетов
@@ -194,7 +196,7 @@
      magit
      markdown-mode
      mode-icons ; https://github.com/ryuslash/mode-icons
-     multiple-cursors
+     multiple-cursors ; https://github.com/magnars/multiple-cursors.el
      org
      php-mode
      projectile ; https://docs.projectile.mx/projectile/installation.html
@@ -235,14 +237,12 @@
   (package-refresh-contents))
 
 ;; Установка необходимых пакетов
-(if (cl-find-if-not #'package-installed-p package-selected-packages)
-  (progn
-    (package-refresh-contents)
-    (dolist (pkg-name package-selected-packages)
-      (unless (package-installed-p pkg-name)
-        (message (format "Install package %s" pkg-name))
-        (package-install pkg-name t)))))
-
+(when (cl-find-if-not #'package-installed-p package-selected-packages)
+  (package-refresh-contents)
+  (dolist (pkg-name package-selected-packages)
+    (unless (package-installed-p pkg-name)
+      (message (format "Install package %s" pkg-name))
+      (package-install pkg-name t))))
 
 ;; Изменение размеров окон
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
@@ -280,23 +280,26 @@
     (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
 
     ;; Перебор шрифтов
-    (defvar default-font nil "Шрифт по умолчанию.")
+    (defvar default-font-family nil "Шрифт по умолчанию.")
     (cond
-      ((member "Fira Code" availiable-fonts) (setq default-font "Fira Code"))
-      ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font "DejaVu Sans Mono"))
-      ((member "Source Code Pro" availiable-fonts) (setq default-font "Source Code Pro"))
-      ((member "Consolas" availiable-fonts) (setq default-font "Consolas")))
+      ((member "Fira Code" availiable-fonts) (setq default-font-family "Fira Code"))
+      ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font-family "DejaVu Sans Mono"))
+      ((member "Source Code Pro" availiable-fonts) (setq default-font-family "Source Code Pro"))
+      ((member "Consolas" availiable-fonts) (setq default-font-family "Consolas")))
 
-    (when default-font
-      (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font default-font-size))
-      (add-to-list 'default-frame-alist `(font . ,(format "%s-%d" default-font default-font-size)))
-      (set-face-font 'markdown-inline-code-face default-font)
-      (set-face-font 'markup-meta-face default-font)
-      (set-face-font 'markup-meta-hide-face default-font)
-      (set-face-font 'markup-value-face default-font)
-      (set-face-font 'whitespace-indentation default-font)
-      (set-face-font 'whitespace-space default-font)
-      (set-face-font 'rainbow-delimiters-base-face default-font))
+    (when default-font-family
+      (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family default-font-height))
+      (add-to-list 'default-frame-alist `(font . ,(format "%s-%d" default-font-family default-font-height)))
+      ;; (set-face-attribute 'default  nil :family default-font-family :height default-font-height)
+      ;; (set-face-attribute 'markup-meta-face nil :height 120) ; Высота шрифта 100%
+      (set-face-font 'markdown-inline-code-face default-font-family)
+      (set-face-font 'markdown-table-face default-font-family)
+      (set-face-font 'markup-meta-face default-font-family)
+      (set-face-font 'markup-meta-hide-face default-font-family)
+      (set-face-font 'markup-value-face default-font-family)
+      (set-face-font 'rainbow-delimiters-base-face default-font-family)
+      (set-face-font 'whitespace-indentation default-font-family)
+      (set-face-font 'whitespace-space default-font-family))
 
     ;; Настройка иконочных шрифров и немножко GUI.
     (require 'all-the-icons)
@@ -679,6 +682,7 @@ Version 2017-11-01"
 ;; Встроенный пакет для EMACS Lisp
 (add-to-list 'auto-mode-alist '("\\.el$'" . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("\\abbrev_defs$" . emacs-lisp-mode))
+(add-hook 'emacs-lisp-mode-hook #'flymake-mode)
 
 
 ;; EMBARK
@@ -703,20 +707,19 @@ Version 2017-11-01"
                                          flycheck-locate-config-file-home)
  flycheck-highlighting-mode 'lines
  flycheck-indication-mode 'left-fringe
- flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc"
- )
+ flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 (defun setup-flycheck-mode ()
   "Minor modes for 'flycheck-mode'."
   (interactive)
   (flycheck-color-mode-line-mode 1)
-  (flycheck-indicator-mode 1)
-  )
+  (flycheck-indicator-mode 1))
 (add-hook 'flycheck-mode-hook #'setup-flycheck-mode)
 (set-minor-mode
  'flycheck-mode
  '(
    adoc-mode
    apt-sources-list-mode
+   c-mode
    conf-mode
    dockerfile-mode
    emacs-lisp-mode
@@ -994,10 +997,14 @@ Version 2017-11-01"
 
 
 ;; MULTIPLE CURSORS
+;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (load-pkg-msg "multiple-cursors")
 (require 'multiple-cursors)
-(global-set-key (kbd "C-c C-e") 'mc/edit-lines)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 
 ;; NXML-MODE
@@ -1290,6 +1297,7 @@ Version 2017-11-01"
 ;; Автодополнение на основе встроенной функциональности EMACS
 (load-pkg-msg "vertico")
 (require 'vertico)
+(vertico-mode 1)
 
 
 ;; WEB-MODE
@@ -1345,6 +1353,7 @@ Version 2017-11-01"
  '(
    adoc-mode
    apt-sources-list-mode
+   c-mode
    conf-mode
    dockerfile-mode
    emacs-lisp-mode

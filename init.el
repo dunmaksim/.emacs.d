@@ -1039,14 +1039,6 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
 
-;; PULSAR
-;; https://protesilaos.com/emacs/pulsar
-;; Подсвечивает текущую строку при наступлении различных событий: смена или закрытие буфера, переход по ссылке и т. д.
-(load-pkg-msg "pulsar")
-(require 'pulsar)
-(pulsar-global-mode 1)
-
-
 ;; PYTHON-MODE
 (load-pkg-msg "python")
 (require 'python)

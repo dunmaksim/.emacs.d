@@ -63,7 +63,7 @@
   create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
   cursor-type 'bar ; Курсор в виде вертикальной черты
   custom-file (expand-file-name "custom.el" emacs-config-dir)
-  default-input-method 'russian-computer ; Чтобы хоткеи работали в любой раскладке
+  default-input-method 'russian-computer ; Поддержка метода ввода по умолчанию
   delete-old-versions t ; Удалять старые версии файлов
   desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
   desktop-save t ; Сохранять список открытых буферов, файлов и т. д.
@@ -519,7 +519,6 @@ Version 2017-11-01"
 ;; COUNCEL-MODE
 ;; https://oremacs.com/swiper/
 (load-pkg-msg "counsel")
-(global-set-key (kbd "M-x") 'counsel-M-x)
 
 
 ;; Dashboard
@@ -610,11 +609,16 @@ Version 2017-11-01"
 (load-pkg-msg "doom-modeline")
 (require 'doom-modeline)
 (setq-default
-  doom-modeline-buffer-encoding t ;; Кодировка
-  doom-modeline-buffer-modification-icon t ;; Наличие изменений
-  doom-modeline-buffer-state-icon t
-  doom-modeline-hud t ;;
-  doom-modeline-icon t ;; Иконки?
+  doom-modeline-buffer-encoding t ; Кодировка
+  doom-modeline-buffer-modification-icon t ; Наличие изменений
+  doom-modeline-buffer-name t ; Имя буфера
+  doom-modeline-buffer-state-icon t ; Состояние буфера
+  doom-modeline-env-enable-go t ; Показывать версию Golang
+  doom-modeline-env-enable-python t ; Показывать версию Python
+  doom-modeline-env-enable-ruby t ; Показывать версию Ruby
+  doom-modeline-hud t ;
+  doom-modeline-icon t ; Иконки
+  doom-modeline-indent-info t ; Информация об отступах
   doom-modeline-lsp t
   doom-modeline-major-mode-color-icon t
   doom-modeline-major-mode-icon t
@@ -726,7 +730,7 @@ Version 2017-11-01"
         (file-exists-p "/usr/bin/aspell"))
   (setq-default ispell-program-name "/usr/bin/aspell")
   (set-minor-mode
-    'flyspell-mode
+    'ispell-minor-mode
     '(
        adoc-mode
        markdown-mode)))
@@ -757,12 +761,13 @@ Version 2017-11-01"
 
 ;; HELM
 ;; https://github.com/emacs-helm/helm
-;; Подсказки в минибуфере
+;; Подсказки в минибуфере, и не только
 (load-pkg-msg "helm")
 (require 'helm)
 (setq-default completion-styles '(flex))
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
 (global-set-key (kbd "C-S-p") 'helm-M-x)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x b") 'helm-buffers-list)
 (helm-mode 1)
 
 

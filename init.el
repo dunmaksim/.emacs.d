@@ -22,12 +22,6 @@
 
 (fset 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (скоращает объём вводимого текста для подтверждения команд)
 
-(defun load-pkg-msg (pkg-name)
-  "Показывает сообщение о загрузке указанного пакета.
-
-  PKG-NAME — имя пакета"
-  (message (concat "Загрузка пакета " pkg-name)))
-
 (defun load-if-exists (filename)
   "Загрузить файл, если он существует.
 
@@ -56,14 +50,20 @@
   (make-directory autosave-dir)
   (message "Создана директория для файлов автосохранения."))
 
+;; RUSSIAN-TECHWRITER
+;; Метод ввода для технических писателей
+(add-to-list 'load-path (concat emacs-config-dir "russian-techwriter"))
+(require 'russian-techwriter)
+
 (setq-default
+  abbrev-mode t ; Включить поддержку аббревиатур глобально
   auto-save-file-name-transforms `((".*" , autosave-dir) t)
   blink-matching-paren t ; Мигать, когда скобки парные
   calendar-week-start-day 1 ; Начнём неделю с понедельника
   create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
   cursor-type 'bar ; Курсор в виде вертикальной черты
   custom-file (expand-file-name "custom.el" emacs-config-dir)
-  default-input-method 'russian-computer ; Поддержка метода ввода по умолчанию
+  default-input-method 'russian-techwriter ; Поддержка метода ввода по умолчанию
   delete-old-versions t ; Удалять старые версии файлов
   desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
   desktop-save t ; Сохранять список открытых буферов, файлов и т. д.
@@ -78,7 +78,7 @@
   indent-tabs-mode nil ; Использовать для выравнивания по нажатию TAB пробелы вместо табуляций
   inhibit-splash-screen t ; Не надо показывать загрузочный экран
   inhibit-startup-message t ; Не надо показывать приветственное сообщение
-  initial-major-mode (quote markdown-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
+  initial-major-mode (quote web-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
   initial-scratch-message nil ; В новых буферах не нужно ничего писать
   large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
   load-prefer-newer t ; Если есть файл elc, но el новее, загрузить el-файл
@@ -86,11 +86,15 @@
   make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
   overwrite-mode-binary nil ; Выключить режим перезаписи текста под курсором для бинарных файлов
   overwrite-mode-textual nil ; Выключить режим перезаписи текста под курсором для текстовых файлов
+  package-user-dir (expand-file-name "elpa" user-emacs-directory) ; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
   ring-bell-function #'ignore ; Заблокировать пищание
   save-abbrevs 'silently ; Сохранять аббревиатуры без лишних вопросов
   save-place-file (expand-file-name ".emacs-places" emacs-config-dir) ; Хранить данные о позициях в открытых файлах в .emacs-places
   save-place-forget-unreadable-files 1 ; Если файл нельзя открыть, то и помнить о нём ничего не надо
   scroll-bar-mode -1 ; Выключить scroll-bar
+  scroll-margin 0 ; TODO: проверить
+  scroll-conservatively 100000 ; TODO: проверить
+  scroll-preserve-screen-position 1 ; TODO: проверить
   show-trailing-whitespace t ; Показывать висячие пробелы
   source-directory "/usr/share/emacs/27.1/src/" ; Путь к исходному коду EMACS
   suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
@@ -110,7 +114,7 @@
 
 ;; Включение стандартных режимов
 (column-number-mode 1) ;; Показывать номер колонки в статусной строке
-(delete-selection-mode 1) ; Если регион выделен, удалить его, а не последний символ.
+(delete-selection-mode t) ; Если регион выделен, удалить его, а не последний символ.
 (desktop-save-mode t) ; Запоминать список открытых файлов и буферов, а также установленных для них режимов.
 (electric-pair-mode t) ; Автоматически закрывает парные скобки. Это глобальный режим.
 (global-font-lock-mode t) ; Отображать шрифты красиво, используя Font Face's
@@ -119,19 +123,22 @@
 (global-visual-line-mode 1) ; Подсвечивать текущую строку
 (line-number-mode 1) ;; Показывать номер строки в статусной строке
 (menu-bar-mode -1) ; Меню не нужно
-(prefer-coding-system 'utf-8) ; При попытке определить кодировку файла начинать перебор с UTF-8
 (save-place-mode 1) ; Помнить позицию курсора в открытых когда-либо файлах.
 (scroll-bar-mode -1) ; Отключить полосы прокрутки
-(set-default-coding-systems 'utf-8) ; Кодировка по умолчанию
-(set-keyboard-coding-system 'utf-8) ; Кодировка символов при вводе текста в терминале
-(set-language-environment 'utf-8) ; Кодировка языка по умолчанию
-(set-selection-coding-system 'utf-8) ; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
-(set-terminal-coding-system 'utf-8) ; Кодировка символов для вывода команд, запущенных в терминале
 (size-indication-mode 1) ; Отображать размер буфера в строке статуса
 (show-paren-mode 1) ; Подсвечивать парные скобки и текст между ними. Это глобальный режим.
 (tooltip-mode 0) ; Не надо показывать подсказки в GUI, используй мини-буфер.
 (tool-bar-mode 0) ; Выключить тулбар с кнопками
 (window-divider-mode t) ; Визуально разделять окна EMACS
+
+
+;; КОДИРОВКИ
+(prefer-coding-system 'utf-8)          ;; При попытке определить кодировку файла начинать перебор с UTF-8
+(set-default-coding-systems 'utf-8)  ;; Кодировка по умолчанию
+(set-keyboard-coding-system 'utf-8)  ;; Кодировка символов при вводе текста в терминале
+(set-language-environment 'utf-8)     ;; Кодировка языка по умолчанию
+(set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
+(set-terminal-coding-system 'utf-8)  ;; Кодировка символов для вывода команд, запущенных в терминале
 
 
 ;; Настройка пакетов
@@ -181,6 +188,7 @@
      go-mode
      helm ; https://github.com/emacs-helm/helm
      highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
+     hl-todo ;; Подсветка TODO, FIXME и подобных слов
      js2-mode
      lsp-mode ; https://github.com/emacs-lsp
      lsp-ui ; https://github.com/emacs-lsp/lsp-ui
@@ -233,6 +241,7 @@
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>") 'shrink-window)
 (global-set-key (kbd "S-C-<up>") 'enlarge-window)
+(global-set-key (kbd "S-<SPC>") 'just-one-space) ; Заменить пробелы и TAB'ы до и после курсора на один пробел
 
 (global-set-key (kbd "<escape>") 'keyboard-quit) ; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
 (global-set-key (kbd "C-z") 'undo) ; Отмена
@@ -331,8 +340,8 @@
                 (vector (append mod (list from)))
                 (vector (append mod (list to)))))))))
     (when input-method (activate-input-method current))))
-(cfg:reverse-input-method 'russian-computer)
-(set-input-method 'russian-computer)
+(cfg:reverse-input-method 'russian-techwriter)
+(set-input-method 'russian-techwriter)
 
 
 (defun xah-new-empty-buffer ()
@@ -377,24 +386,18 @@ Version 2017-11-01"
 (when (get-buffer "*scratch*") (kill-buffer "*scratch*"))
 
 
-;; ABBREV-MODE
-;; Работа с аббревиатурами. Безо всяких нажатий клавиш текст будет заменяться
-;; на расширенную фразу, например, кл будет разворачиваться в кластер, а п в
-;; пользователя.
-(load-pkg-msg "abbrev")
-(require 'abbrev)
-(set-minor-mode 'abbrev-mode
-  '(
-     markdown-mode
-     nxml-mode
-     xml-mode
-   ))
 
+;; ABBREV-MODE
+;; Аббревиатуры — это фрагменты текста, которые по нажатию [C-x, '] превращаются в другие конструкции
+(require 'abbrev)
+(setq-default
+  abbrev-mode t ; Глобальный режим
+  save-abbrevs 'silently ; Сохранять добавленные аббревиатуры без лишних вопросов
+  )
 
 ;; ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами
-(load-pkg-msg "ace-window")
 (require 'ace-window)
 (global-set-key (kbd "M-o") 'ace-window)
 
@@ -402,7 +405,6 @@ Version 2017-11-01"
 ;; ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
-(load-pkg-msg "adoc-mode")
 (require 'adoc-mode)
 (require 'markup-faces)
 (add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
@@ -411,13 +413,11 @@ Version 2017-11-01"
 
 
 ;; ANSIBLE MODE
-(load-pkg-msg "ansible")
 (require 'ansible)
 
 
 ;; APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
-(load-pkg-msg "apt-sources-list-mode")
 (add-to-list 'auto-mode-alist (cons "\\.list$" 'apt-sources-list-mode))
 
 
@@ -445,7 +445,6 @@ Version 2017-11-01"
 ;; COMPANY-MODE
 ;; https://company-mode.github.io/
 ;; Автодополнение
-(load-pkg-msg "company")
 (require 'company)
 (require 'company-dabbrev)
 (setq-default
@@ -453,10 +452,10 @@ Version 2017-11-01"
  company-dabbrev-ignore-case nil
  company-dabbrev-ignore-case nil
  company-idle-delay 0.5 ; Задержка вывода подсказки — полсекунды
- company-minimum-prefix-length 2
+ company-minimum-prefix-length 2 ;; Минимум 2 знака, чтобы company начала работать
  company-show-quick-access t ; Показывать номера возле потенциальных кандидатов
  company-tooltip-align-annotations t
- company-tooltip-limit 10
+ company-tooltip-limit 10 ;; Ограничение на число подсказок
  )
 (set-minor-mode
  'company-mode
@@ -489,17 +488,8 @@ Version 2017-11-01"
    ))
 
 
-;; COMPANY-BOX
-;; https://github.com/sebastiencs/company-box
-;; Отображает иконки в списке автодополнения `company-mode`.
-;;(load-pkg-msg "company-box")
-;;(require 'company-box)
-;(add-hook 'company-mode-hook 'company-box-mode)
-
-
 ;; COMPANY-WEB
 ;; Автодополнение для режима web-mode
-(load-pkg-msg "company-web")
 (require 'company-web)
 (require 'company-web-html)
 (add-to-list 'company-backends 'company-web-html)
@@ -507,7 +497,6 @@ Version 2017-11-01"
 
 ;; CONF MODE
 ;; Основной режим для редактирования конфигурационных файлов.
-(load-pkg-msg "conf-mode")
 (require 'conf-mode)
 (add-to-list 'auto-mode-alist '("\\.env$" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.flake8$" . conf-mode))
@@ -516,15 +505,9 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.terraformrc$" . conf-mode))
 
 
-;; COUNCEL-MODE
-;; https://oremacs.com/swiper/
-(load-pkg-msg "counsel")
-
-
 ;; Dashboard
 ;; https://github.com/emacs-dashboard/emacs-dashboard
 ;; Отображает дашборд при запуске EMACS
-(load-pkg-msg "dashboard")
 (require 'dashboard)
 (setq-default
  dashboard-items
@@ -548,14 +531,12 @@ Version 2017-11-01"
 ;; https://github.com/dgutov/diff-hl
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
-(load-pkg-msg "diff-hl")
 (require 'diff-hl)
 (global-diff-hl-mode 1)
 
 
 ;; DIRED
 ;; Встроенный пакет для работы с файлами и каталогами.
-(load-pkg-msg "dired")
 (require 'dired)
 (when (string-equal system-type "gnu/linux")
   ;; Это может не работать в Windows, надо проверить
@@ -566,7 +547,6 @@ Version 2017-11-01"
 ;; DISPLAY-LINE-NUMBERS-MODE
 ;; Встроенный пакет
 ;; Показывает номера строк
-(load-pkg-msg "display-line-numbers")
 (require 'display-line-numbers)
 (set-minor-mode
  'display-line-numbers-mode
@@ -598,7 +578,6 @@ Version 2017-11-01"
 
 
 ;; DOCKERFILE-MODE
-(load-pkg-msg "dockerfile-mode")
 (require 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("^Dockerfile$" . dockerfile-mode))
 
@@ -606,7 +585,6 @@ Version 2017-11-01"
 ;; DOOM-MODELINE
 ;; https://github.com/seagle0128/doom-modeline
 ;; Красивая и многофункциональная статусная панель
-(load-pkg-msg "doom-modeline")
 (require 'doom-modeline)
 (setq-default
   doom-modeline-buffer-encoding t ; Кодировка
@@ -628,7 +606,6 @@ Version 2017-11-01"
 
 
 ;; LOAD THEME
-(load-pkg-msg "doom-themes")
 (require 'doom-themes)
 (load-theme 'doom-monokai-classic t)
 ;; (load-theme 'doom-one t)
@@ -639,14 +616,13 @@ Version 2017-11-01"
 ;; EASY KILL
 ;; https://github.com/leoliu/easy-kill
 ;; Удобнее работать с удалением текстовых блоков
-(load-pkg-msg "easy-kill")
 (require 'easy-kill)
 (global-set-key [remap kill-ring-save] 'easy-kill)
 
 
 ;; EDITORCONFIG EMACS
+;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
-(load-pkg-msg "editorconfig")
 (require 'editorconfig)
 (setq-default editorconfig-trim-whitespaces-mode 'ws-butler-mode)
 (editorconfig-mode 1)
@@ -670,7 +646,6 @@ Version 2017-11-01"
 
 ;; EMBARK
 ;; https://github.com/oantolin/embark
-(load-pkg-msg "embark")
 (require 'embark)
 (setq-default prefix-help-command #'embark-prefix-help-command)
 
@@ -678,7 +653,6 @@ Version 2017-11-01"
 ;; FLYCHECK
 ;; https://flycheck.org
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
-(load-pkg-msg "flycheck")
 (require 'flycheck)
 (require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
 (setq-default
@@ -725,9 +699,10 @@ Version 2017-11-01"
 ;; FLYSPELL-MODE
 ;; Проверка орфографии с помощью словарей
 (require 'flyspell)
-(when (and
-        (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
-        (file-exists-p "/usr/bin/aspell"))
+(when
+  (and
+    (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
+    (file-exists-p "/usr/bin/aspell"))
   (setq-default ispell-program-name "/usr/bin/aspell")
   (set-minor-mode
     'ispell-minor-mode
@@ -739,14 +714,12 @@ Version 2017-11-01"
 ;; FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода по нажатию [F12]
-(load-pkg-msg "format-all")
 (require 'format-all)
 (global-set-key (kbd "<f12>") 'format-all-buffer)
 
 
 ;; GIT-GUTTER
 ;; https://github.com/emacsorphanage/git-gutter
-(load-pkg-msg "git-gutter")
 (require 'git-gutter)
 (setq-default git-gutter:visual-line t)
 
@@ -754,7 +727,6 @@ Version 2017-11-01"
 ;; GO-MODE
 ;; https://github.com/dominikh/go-mode.el
 ;; Поддержка Golang
-(load-pkg-msg "go-mode")
 (require 'go-mode)
 (add-to-list 'auto-mode-alist '("\\.go$'" . go-mode))
 
@@ -762,7 +734,6 @@ Version 2017-11-01"
 ;; HELM
 ;; https://github.com/emacs-helm/helm
 ;; Подсказки в минибуфере, и не только
-(load-pkg-msg "helm")
 (require 'helm)
 (setq-default completion-styles '(flex))
 (global-set-key (kbd "C-S-p") 'helm-M-x)
@@ -774,7 +745,6 @@ Version 2017-11-01"
 ;; HIGHLIGHT-INDENTATION-MODE
 ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
 ;; Показывает направляющие для отступов
-(load-pkg-msg "highlight-indentation")
 (require 'highlight-indentation)
 (set-face-background 'highlight-indentation-face "#e3e3d3")
 (set-face-background 'highlight-indentation-current-column-face "#c3b3b3")
@@ -788,6 +758,12 @@ Version 2017-11-01"
    terraform-mode
    yaml-mode
    ))
+
+;; HL-TODO
+;; url: https://github.com/tarsius/hl-todo
+;; Подсветка TODO, FIXME и т. п.
+(require 'hl-todo)
+(global-hl-todo-mode t)
 
 
 ;; IBUFFER
@@ -883,7 +859,6 @@ Version 2017-11-01"
 
 ;; JS2-MODE
 ;; https://github.com/mooz/js2-mode
-(load-pkg-msg "js2-mode")
 (require 'js2-mode)
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
@@ -909,7 +884,6 @@ Version 2017-11-01"
 ;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
 ;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
 ;; YAML: npm install -g yaml-language-server
-(load-pkg-msg "lsp-mode")
 (require 'lsp-mode)
 (require 'lsp-ui)
 (setq-default
@@ -936,7 +910,6 @@ Version 2017-11-01"
 ;; MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
-(load-pkg-msg "magit")
 (require 'magit)
 (global-set-key (kbd "<f5>") 'magit-status)
 (global-set-key (kbd "<f6>") 'magit-checkout)
@@ -944,7 +917,6 @@ Version 2017-11-01"
 
 ;; MAKEFILE
 ;; Встроенный пакет для работы с Makefile
-(load-pkg-msg "makefile")
 (defun setup-makefile-mode ()
   "Настройка режима `makefile-mode`."
   (setq indent-tabs-mode 1))
@@ -954,7 +926,6 @@ Version 2017-11-01"
 
 ;; MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
-(load-pkg-msg "markdown-mode")
 (require 'markdown-mode)
 (setq
  header-line-format " "
@@ -977,7 +948,6 @@ Version 2017-11-01"
 ;; MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
-(load-pkg-msg "multiple-cursors")
 (require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -988,7 +958,6 @@ Version 2017-11-01"
 ;; NXML-MODE
 ;; Встроенный пакет
 ;; Почти как xml-mode, только лучше и новее
-(load-pkg-msg "nxml-mode")
 (require 'nxml-mode)
 (add-to-list 'auto-mode-alist '("\\.xml$'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.pom$'" . nxml-mode))
@@ -1006,7 +975,6 @@ Version 2017-11-01"
 ;; ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, и не только
-(load-pkg-msg "org-mode")
 (require 'org)
 (setq
  truncate-lines nil
@@ -1022,15 +990,18 @@ Version 2017-11-01"
 
 
 ;; PHP-MODE
-(load-pkg-msg "php-mode")
 (require 'php)
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
 
 
+;; PIXEL-SCROLL-PRECISION-MODE
+;; TODO: что это?
+(when (fboundp 'pixel-scroll-precision-mode)
+  (pixel-scoll-precision-mode t))
+
 ;; PROJECTILE
 ;; https://docs.projectile.mx/projectile/installation.html
 ;; Управление проектами
-(load-pkg-msg "projectile")
 (require 'projectile)
 (load-if-exists (expand-file-name "projects.el" emacs-config-dir))
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -1039,13 +1010,11 @@ Version 2017-11-01"
 ;; PROTOBUF-MODE
 ;; https://github.com/emacsmirror/protobuf-mode
 ;; Работа с файлами Protobuf: подсветка синтаксиса, переход по ссылками и т. д.
-(load-pkg-msg "protobuf-mode")
 (require 'protobuf-mode)
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
 
 ;; PYTHON-MODE
-(load-pkg-msg "python")
 (require 'python)
 (setq-default
  doom-modeline-env-enable-python t
@@ -1069,7 +1038,6 @@ Version 2017-11-01"
 ;; RAINBOW-DELIMITERS-MODE
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Каждая пара скобок отрисовывается своим цветом
-(load-pkg-msg "rainbow-delimiters")
 (require 'rainbow-delimiters)
 (set-minor-mode
  'rainbow-delimiters-mode
@@ -1101,7 +1069,6 @@ Version 2017-11-01"
 ;; RST-MODE
 ;; Основной режим для редактирования reStructutedText
 ;; Больше здесь: https://www.writethedocs.org/guide/writing/reStructuredText/
-(load-pkg-msg "rst-mode")
 (require 'rst)
 (add-to-list 'auto-mode-alist '("\\.rst$" . rst-mode))
 
@@ -1109,7 +1076,6 @@ Version 2017-11-01"
 ;; RUBY-MODE
 ;; Это встроенный пакет
 ;;Поддержка Ruby on Rails
-(load-pkg-msg "ruby-mode")
 (require 'ruby-mode)
 (add-to-list 'auto-mode-alist '("\\.rb$" .ruby-mode))
 
@@ -1117,21 +1083,18 @@ Version 2017-11-01"
 ;; RG (ripgrep)
 ;; https://github.com/dajva/rg.el
 ;; Для работы пакета требуется наличие в системе утилиты ripgrep
-(load-pkg-msg "rg")
 (require 'rg)
 (rg-enable-default-bindings)
 
 
 ;; SCALA MODE
 ;; https://github.com/hvesalai/emacs-scala-mode
-(load-pkg-msg "scala-mode")
 (require 'scala-mode)
 (add-to-list 'auto-mode-alist '("\\.scala$" . scala-mode))
 (add-to-list 'auto-mode-alist '("\\.sc$" . scala-mode))
 
 
 ;; SHELL-SCRIPT-MODE
-(load-pkg-msg "shell-script-mode")
 (require 'sh-script)
 (add-to-list 'auto-mode-alist '("\\.bashrc$" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.profile$" . shell-script-mode))
@@ -1140,7 +1103,6 @@ Version 2017-11-01"
 
 ;; SQL MODE
 ;; Это встроенный режим
-(load-pkg-msg "sql")
 (require 'sql)
 (add-to-list 'auto-mode-alist '("\\.sql$" . sql-mode))
 
@@ -1150,7 +1112,6 @@ Version 2017-11-01"
 ;; Пакет для быстрого поиска.
 ;; По кажатию C-7 можно выполнить быстрое редактирование найденных фрагментов, но чтобы
 ;; оно сработало правильно, нужно добавить команду swiper-mc в список mc/cmds-to-run-once.
-(load-pkg-msg "swiper")
 (require 'swiper)
 (add-to-list 'mc/cmds-to-run-once 'swiper-mc)
 (global-set-key (kbd "C-s") 'swiper-isearch)
@@ -1159,7 +1120,6 @@ Version 2017-11-01"
 ;; TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
-(load-pkg-msg "terraform-mode")
 (require 'terraform-mode)
 (with-eval-after-load "terraform-mode"
   (setq-default flycheck-checker 'terraform))
@@ -1168,7 +1128,6 @@ Version 2017-11-01"
 
 ;; TEXT-MODE
 ;; Встроенный пакет для работы с простыми текстовыми файлами.
-(load-pkg-msg "text-mode")
 (require 'text-mode)
 (add-hook 'text-mode-hook 'paragraph-indent-minor-mode)
 
@@ -1176,7 +1135,6 @@ Version 2017-11-01"
 ;; TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Дерево файлов и каталогов
-(load-pkg-msg "treemacs")
 (require 'treemacs)
 (setq-default treemacs-width 35)
 (defun treemacs-get-ignore-files (filename absolute-path)
@@ -1197,7 +1155,6 @@ Version 2017-11-01"
 
 ;; TREEMACS-ICONS-DIRED
 ;; Отображать иконки файлов из  TreeMacs в dired-mode
-(load-pkg-msg "treemacs-icons")
 (require 'treemacs-icons)
 (add-hook 'dired-mode-hook 'treemacs-icons-dired-enable-once)
 
@@ -1205,7 +1162,6 @@ Version 2017-11-01"
 ;; UNDO-TREE
 ;; Не только предоставляет привычное поведение при отмене команд, но и даёт мощные возможности по
 ;; ведению дерева правок.
-(load-pkg-msg "undo-tree")
 (require 'undo-tree)
 (setq undo-tree-auto-save-history nil) ; Отключить создание резервных копий файлов
 (global-undo-tree-mode 1)
@@ -1214,7 +1170,6 @@ Version 2017-11-01"
 ;; VAGRANT MODE
 ;; Работа с файлами Vagrant
 ;; https://github.com/ottbot/vagrant.el
-(load-pkg-msg "vagrant")
 (require 'vagrant)
 (add-to-list 'auto-mode-alist (cons "Vagrantfile$\\'" 'vagrant-mode))
 
@@ -1222,7 +1177,6 @@ Version 2017-11-01"
 ;; VERB-MODE
 ;; Удобная работа с REST API
 ;; https://github.com/federicotdn/verb
-(load-pkg-msg "verb")
 (require 'verb)
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
@@ -1231,22 +1185,20 @@ Version 2017-11-01"
 ;; VERTICO
 ;; https://github.com/minad/vertico
 ;; Автодополнение на основе встроенной функциональности EMACS
-(load-pkg-msg "vertico")
 (require 'vertico)
 (vertico-mode 1)
 
 
 ;; WEB-MODE
 ;; https://web-mode.org/
-(load-pkg-msg "web-mode")
 (require 'web-mode)
-(setq
- web-mode-attr-indent-offset 4
- web-mode-css-indent-offset 2 ;; CSS
- web-mode-enable-block-face t
- web-mode-enable-css-colorization t
- web-mode-enable-current-element-highlight t
- web-mode-markup-indent-offset 2)
+(setq-default
+  web-mode-attr-indent-offset 4
+  web-mode-css-indent-offset 2 ;; CSS
+  web-mode-enable-block-face t
+  web-mode-enable-css-colorization t
+  web-mode-enable-current-element-highlight t
+  web-mode-markup-indent-offset 2)
 (add-to-list 'auto-mode-alist '("\\.css$" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 
@@ -1254,14 +1206,12 @@ Version 2017-11-01"
 ;; WGREP
 ;; https://github.com/mhayashi1120/Emacs-wgrep
 ;; Поиск и замена по нескольким файлам
-(load-pkg-msg "wgrep")
 (require 'wgrep)
 
 
 ;; WHICH-KEY MODE
 ;; https://github.com/justbur/emacs-which-key
 ;; Показывает подсказки к командам.
-(load-pkg-msg "which-key")
 (require 'which-key)
 (which-key-setup-side-window-right)
 (which-key-mode 1)
@@ -1270,18 +1220,17 @@ Version 2017-11-01"
 ;; WHITESPACE MODE
 ;; Встроенный пакет для отображения невидимых символов
 ;; Показывает невидимые символы.
-(load-pkg-msg "whitespace")
 (require 'whitespace)
 (setq-default
- whitespace-display-mappings
- '(
-   (space-mark   ?\    [?\xB7]     [?.]) ; Пробел
-   (space-mark   ?\xA0 [?\xA4]     [?_]) ; Неразрывный пробел
-   (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; Конец строки
-   (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; TAB
-   )
- whitespace-line-column 1000 ;; Highlight lines with length bigger than 1000 chars)
- )
+  whitespace-display-mappings
+  '(
+     (space-mark   ?\    [?\xB7]     [?.]) ; Пробел
+     (space-mark   ?\xA0 [?\xA4]     [?_]) ; Неразрывный пробел
+     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; Конец строки
+     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; TAB
+     )
+  whitespace-line-column 1000 ;; Highlight lines with length bigger than 1000 chars)
+  )
 (set-face-attribute 'whitespace-space nil :foreground "#75715E")
 (set-face-attribute 'whitespace-indentation nil :foreground "#E6DB74")
 (set-minor-mode
@@ -1321,7 +1270,6 @@ Version 2017-11-01"
 ;; WS-BUTLER MODE
 ;; https://github.com/lewang/ws-butler
 ;; Чистит висячие пробелы только в измененных строках.
-(load-pkg-msg "ws-butler")
 (require 'ws-butler)
 (set-minor-mode
  'ws-butler-mode
@@ -1356,7 +1304,6 @@ Version 2017-11-01"
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
-(load-pkg-msg "yaml-mode")
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.ansible\\-lint" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.pre\\-commit\\-config\\.yaml$" . yaml-mode))
@@ -1370,7 +1317,6 @@ Version 2017-11-01"
 ;; YASCROLL-MODE
 ;; https://github.com/emacsorphanage/yascroll
 ;; Альтернативная полоса прокрутки
-(load-pkg-msg "yascroll")
 (require 'yascroll)
 (global-yascroll-bar-mode 1)
 
@@ -1378,7 +1324,6 @@ Version 2017-11-01"
 ;; YASNIPPET
 ;; http://github.com/joaotavora/yasnippet
 ;; Предоставляет функциональность сниппетов — блоков кода, в которые всего-лишь нужно подставить значения.
-(load-pkg-msg "yasnippet")
 (require 'yasnippet)
 ;; Если директории для сниппектов нет, её нужно создать.
 (defvar yas-snippet-root-dir (concat emacs-config-dir "snippets"))

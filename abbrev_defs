@@ -1,14 +1,6 @@
-;;; abbrev_defs --- Summary
-;;; Commentary:
-;;; Аббревиатуры для разных режимов
-
-;;; Code:
-
-(define-abbrev-table 'markdown-mode-abbrev-table
+;;-*-coding: utf-8;-*-
+(define-abbrev-table 'global-abbrev-table
   '(
-    ("кл" "кластер" nil :count 5)
+    (" --- " " — " nil :count 0)
    ))
 
-(provide 'abbrev_defs)
-
-;;; abbrev_defs ends here

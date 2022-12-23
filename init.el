@@ -50,11 +50,6 @@
   (make-directory autosave-dir)
   (message "Создана директория для файлов автосохранения."))
 
-;; RUSSIAN-TECHWRITER
-;; Метод ввода для технических писателей
-(add-to-list 'load-path (concat emacs-config-dir "russian-techwriter"))
-(require 'russian-techwriter)
-
 (setq-default
   abbrev-mode t ; Включить поддержку аббревиатур глобально
   auto-save-file-name-transforms `((".*" , autosave-dir) t)
@@ -63,7 +58,6 @@
   create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
   cursor-type 'bar ; Курсор в виде вертикальной черты
   custom-file (expand-file-name "custom.el" emacs-config-dir)
-  default-input-method 'russian-techwriter ; Поддержка метода ввода по умолчанию
   delete-old-versions t ; Удалять старые версии файлов
   desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
   desktop-save t ; Сохранять список открытых буферов, файлов и т. д.
@@ -88,16 +82,17 @@
   overwrite-mode-textual nil ; Выключить режим перезаписи текста под курсором для текстовых файлов
   package-user-dir (expand-file-name "elpa" user-emacs-directory) ; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
   ring-bell-function #'ignore ; Заблокировать пищание
+  require-final-newline t ;; Автоматически вставлять в конец файла пустую строку, если её там нет
   save-abbrevs 'silently ; Сохранять аббревиатуры без лишних вопросов
   save-place-file (expand-file-name ".emacs-places" emacs-config-dir) ; Хранить данные о позициях в открытых файлах в .emacs-places
   save-place-forget-unreadable-files 1 ; Если файл нельзя открыть, то и помнить о нём ничего не надо
-  scroll-bar-mode -1 ; Выключить scroll-bar
   scroll-margin 0 ; TODO: проверить
   scroll-conservatively 100000 ; TODO: проверить
   scroll-preserve-screen-position 1 ; TODO: проверить
   show-trailing-whitespace t ; Показывать висячие пробелы
   source-directory "/usr/share/emacs/27.1/src/" ; Путь к исходному коду EMACS
   suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
+  tab-always-indent 'complete ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
   tab-width 4 ; Обменный курс на TAB — 4 SPACES
   text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
   truncate-lines 1 ; Обрезать длинные строки
@@ -121,7 +116,7 @@
 (global-auto-revert-mode 1) ; Автоматически перезагружать буфер при изменении файла на дискею
 (global-hl-line-mode 1) ; Подсветить активные строки во всех открытых буферах
 (global-visual-line-mode 1) ; Подсвечивать текущую строку
-(line-number-mode 1) ;; Показывать номер строки в статусной строке
+(line-number-mode t) ;; Показывать номер строки в статусной строке
 (menu-bar-mode -1) ; Меню не нужно
 (save-place-mode 1) ; Помнить позицию курсора в открытых когда-либо файлах.
 (scroll-bar-mode -1) ; Отключить полосы прокрутки
@@ -223,6 +218,7 @@
      yascroll ; https://github.com/emacsorphanage/yascroll
      yasnippet ; http://github.com/joaotavora/yasnippet
      yasnippet-snippets ; https://github.com/AndreaCrotti/yasnippet-snippets
+     quelpa ;; https://github.com/quelpa/quelpa
    ))
 
 ;; Проверка наличия индекса пакетов
@@ -235,6 +231,17 @@
     (unless (package-installed-p pkg-name)
       (message (format "Install package %s" pkg-name))
       (package-install pkg-name t))))
+
+;; RUSSIAN-TECHWRITER
+;; Метод ввода для технических писателей
+(unless (package-installed-p 'russian-techwriter)
+  (quelpa '(russian-techwriter
+             :repo "dunmaksim/emacs-russian-techwriter-input-method"
+             :fetcher github)))
+
+(add-to-list 'load-path (concat emacs-config-dir "russian-techwriter"))
+(require 'russian-techwriter)
+(setq-default default-input-method 'russian-techwriter)
 
 ;; Изменение размеров окон
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
@@ -340,8 +347,8 @@
                 (vector (append mod (list from)))
                 (vector (append mod (list to)))))))))
     (when input-method (activate-input-method current))))
-(cfg:reverse-input-method 'russian-techwriter)
-(set-input-method 'russian-techwriter)
+(cfg:reverse-input-method default-input-method)
+(set-input-method default-input-method)
 
 
 (defun xah-new-empty-buffer ()
@@ -760,7 +767,7 @@ Version 2017-11-01"
    ))
 
 ;; HL-TODO
-;; url: https://github.com/tarsius/hl-todo
+;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
 (require 'hl-todo)
 (global-hl-todo-mode t)
@@ -997,7 +1004,7 @@ Version 2017-11-01"
 ;; PIXEL-SCROLL-PRECISION-MODE
 ;; TODO: что это?
 (when (fboundp 'pixel-scroll-precision-mode)
-  (pixel-scoll-precision-mode t))
+  (pixel-scroll-precision-mode t))
 
 ;; PROJECTILE
 ;; https://docs.projectile.mx/projectile/installation.html
@@ -1121,15 +1128,24 @@ Version 2017-11-01"
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
 (require 'terraform-mode)
-(with-eval-after-load "terraform-mode"
+(defun setup-terraform-mode ()
+  "Настройка `terraform-mode`."
   (setq-default flycheck-checker 'terraform))
 (add-to-list 'auto-mode-alist (cons "\\.tf$" 'terraform-mode))
+(add-hook 'terraform-mode-hook #'setup-terraform-mode)
 
 
 ;; TEXT-MODE
 ;; Встроенный пакет для работы с простыми текстовыми файлами.
 (require 'text-mode)
 (add-hook 'text-mode-hook 'paragraph-indent-minor-mode)
+
+
+;; TOOLBAR-MODE
+;; Встроенная панель с кнопками. Не нужна. В EMACS NOX вовсе отсутствует.
+;; Перед отключением нужно проверить, что такая функциональность поддерживается.
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
 
 
 ;; TREEMACS — awesome file manager (instead NeoTree)

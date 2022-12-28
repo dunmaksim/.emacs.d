@@ -57,7 +57,6 @@
   calendar-week-start-day 1 ; Начнём неделю с понедельника
   create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
   cursor-type 'bar ; Курсор в виде вертикальной черты
-  custom-file (expand-file-name "custom.el" emacs-config-dir)
   delete-old-versions t ; Удалять старые версии файлов
   desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
   desktop-save t ; Сохранять список открытых буферов, файлов и т. д.
@@ -104,8 +103,6 @@
   window-divider-default-places 't ; Разделители окон со всех сторон (по умолчанию только справа)
   window-divider-default-right-width 3 ; Ширина в пикселях для линии-разделителя окон
   x-underline-at-descent-line t)
-
-(load-if-exists custom-file)
 
 ;; Включение стандартных режимов
 (column-number-mode 1) ;; Показывать номер колонки в статусной строке
@@ -155,6 +152,7 @@
      apache-mode
      apt-sources-list
      centaur-tabs
+     checkdoc
      company
      company-anaconda
      company-box
@@ -191,9 +189,11 @@
      markdown-mode
      multiple-cursors ; https://github.com/magnars/multiple-cursors.el
      org
+     package-lint ;; https://github.com/purcell/package-lint
      php-mode
      projectile ; https://docs.projectile.mx/projectile/installation.html
      protobuf-mode
+     pulsar ;; https://github.com/protesilaos/pulsar
      pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
      python
      python-mode
@@ -368,7 +368,6 @@ Version 2017-11-01"
 
 
 ;; Save/close/open
-(global-set-key (kbd "C-r") 'revert-buffer)
 (global-set-key (kbd "M-'") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-o") 'dired)
 
@@ -445,6 +444,13 @@ Version 2017-11-01"
 (centaur-tabs-mode 1)
 
 
+;; CHECKDOC-MODE
+;; Проверка документации к коду на EMACS Lisp
+;;
+(require 'checkdoc)
+(add-hook 'emacs-lisp-mode-hook 'checkdoc-minor-mode)
+
+
 ;; В этих режимах не нужно показывать вкладки
 (set-minor-mode 'centaur-tabs-local-mode '(dashboard-mode dired-mode))
 
@@ -510,6 +516,12 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.ini$" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.pylintrc$" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.terraformrc$" . conf-mode))
+
+
+;; CYRILLYC
+;; Встроенный пакет
+(require 'cyril-util)
+
 
 
 ;; Dashboard
@@ -996,6 +1008,12 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.org$'" . org-mode))
 
 
+;; PACKAGE-LINT
+;; https://github.com/purcell/package-lint
+;; Провека пакетов. Обязательно нужно это делать, когда пишешь собственный пакет.
+(require 'package-lint)
+
+
 ;; PHP-MODE
 (require 'php)
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
@@ -1021,6 +1039,15 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
 
 
+;; PULSAR-MODE
+;; https://github.com/protesilaos/pulsar
+;; Подсвечивать курсор
+(require 'pulsar)
+(setq pulsar-pulse t)
+(add-hook 'next-error-hook #'pulsar-pulse-line)
+(pulsar-global-mode 1)
+
+
 ;; PYTHON-MODE
 (require 'python)
 (setq-default
@@ -1034,6 +1061,7 @@ Version 2017-11-01"
   "Settings for 'python-mode'."
   (interactive)
   (anaconda-mode 1)
+  (setq-default python-indent-offset )
   (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
   (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
   (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
@@ -1321,6 +1349,17 @@ Version 2017-11-01"
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
 (require 'yaml-mode)
+;; (setq  yaml-mode-file-extensions (list
+;;                         "\\.ansible\\-lint$"
+;;                         "\\.pre\\-commit\\-config\\.yaml$"
+;;                         "\\.yaml$"
+;;                         "\\.yamllint$"
+;;                         "\\.yamllint\\-config\\.yaml$"
+;;                         "\\.yfm$"
+;;                         "\\.yml$"
+;;                         ))
+;; (dolist file-extension yaml-mode-file-extensions
+;;   (add-to-list 'auto-mode-alist `(file-extension . ,yaml-mode)))
 (add-to-list 'auto-mode-alist '("\\.ansible\\-lint" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.pre\\-commit\\-config\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
@@ -1352,6 +1391,13 @@ Version 2017-11-01"
 (put 'upcase-region 'disabled nil)
 
 (setup-gui-settings (selected-frame))
+
+
+;; Загрузка CUSTOM FILE
+(setq custom-file (expand-file-name "custom.el" emacs-config-dir))
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 
 (provide 'init.el)
 ;;; init.el ends here

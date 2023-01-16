@@ -136,8 +136,6 @@
 ;; Настройка пакетов
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archive-priorities '("gnu" . 1))
-(add-to-list 'package-archive-priorities '("melpa" . 0))
 (package-initialize)
 
 (setq-default package-selected-packages
@@ -176,6 +174,7 @@
      flycheck-clang-tidy
      flycheck-color-mode-line
      flycheck-indicator
+     flycheck-package ;; https://github.com/purcell/flycheck-package
      format-all
      git-gutter ; https://github.com/emacsorphanage/git-gutter
      go-mode
@@ -199,6 +198,7 @@
      python-mode
      rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
      rg ; https://github.com/dajva/rg.el
+     russian-techwriter ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
      scala-mode
      swiper ; https://github.com/abo-abo/swiper
      terraform-mode
@@ -232,16 +232,6 @@
       (message (format "Install package %s" pkg-name))
       (package-install pkg-name t))))
 
-;; RUSSIAN-TECHWRITER
-;; Метод ввода для технических писателей
-(unless (package-installed-p 'russian-techwriter)
-  (quelpa '(russian-techwriter
-             :repo "dunmaksim/emacs-russian-techwriter-input-method"
-             :fetcher github)))
-
-(add-to-list 'load-path (concat emacs-config-dir "russian-techwriter"))
-(require 'russian-techwriter)
-(setq-default default-input-method 'russian-techwriter)
 
 ;; Изменение размеров окон
 (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
@@ -290,16 +280,12 @@
     (when default-font-family
       (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family default-font-height))
       (add-to-list 'default-frame-alist `(font . ,(format "%s-%d" default-font-family default-font-height)))
-      ;; (set-face-attribute 'default  nil :family default-font-family :height default-font-height)
-      ;; (set-face-attribute 'markup-meta-face nil :height 120) ; Высота шрифта 100%
       (set-face-font 'markdown-inline-code-face default-font-family)
       (set-face-font 'markdown-table-face default-font-family)
       (set-face-font 'markup-meta-face default-font-family)
       (set-face-font 'markup-meta-hide-face default-font-family)
       (set-face-font 'markup-value-face default-font-family)
-      (set-face-font 'rainbow-delimiters-base-face default-font-family)
-      (set-face-font 'whitespace-indentation default-font-family)
-      (set-face-font 'whitespace-space default-font-family))
+      (set-face-font 'rainbow-delimiters-base-face default-font-family))
 
     ;; Настройка иконочных шрифров и немножко GUI.
     (require 'all-the-icons)
@@ -325,30 +311,6 @@
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
-
-
-;; Settings for hotkeys on any layout
-(require 'quail)
-(defun cfg:reverse-input-method (input-method)
-  "Build the reverse mapping of single letters from INPUT-METHOD."
-  (interactive
-   (list (read-input-method-name "Use input method (default current): ")))
-  (when (and input-method (symbolp input-method)) (setq input-method (symbol-name input-method)))
-  (let ((current current-input-method)
-        (modifiers '(nil (control) (meta) (control meta))))
-    (when input-method (activate-input-method input-method))
-    (when (and current-input-method quail-keyboard-layout)
-      (dolist (map (cdr (quail-map)))
-        (let* ((to (car map))
-               (from (quail-get-translation (cadr map) (char-to-string to) 1)))
-          (when (and (characterp from) (characterp to))
-            (dolist (mod modifiers)
-              (define-key local-function-key-map
-                (vector (append mod (list from)))
-                (vector (append mod (list to)))))))))
-    (when input-method (activate-input-method current))))
-(cfg:reverse-input-method default-input-method)
-(set-input-method default-input-method)
 
 
 (defun xah-new-empty-buffer ()
@@ -411,6 +373,7 @@ Version 2017-11-01"
 ;; ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
+(add-to-list 'load-path "~/repo/adoc-mode/")
 (require 'adoc-mode)
 (require 'markup-faces)
 (add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
@@ -483,13 +446,11 @@ Version 2017-11-01"
    java-mode
    js2-mode
    makefile-mode
-   markdown-mode
    nxml-mode
    org-mode
    php-mode
    protobuf-mode
    python-mode
-   rst-mode
    ruby-mode
    scala-mode
    shell-script-mode
@@ -516,12 +477,6 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.ini$" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.pylintrc$" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.terraformrc$" . conf-mode))
-
-
-;; CYRILLYC
-;; Встроенный пакет
-(require 'cyril-util)
-
 
 
 ;; Dashboard
@@ -715,6 +670,13 @@ Version 2017-11-01"
    ))
 
 
+;; FLYCHECK-PACKAGE
+;; https://github.com/purcell/flycheck-package
+;; Проверка пакетов с помощью Flycheck
+(require 'flycheck-package)
+(eval-after-load 'flycheck '(flycheck-package-setup))
+
+
 ;; FLYSPELL-MODE
 ;; Проверка орфографии с помощью словарей
 (require 'flyspell)
@@ -797,6 +759,7 @@ Version 2017-11-01"
     ("Org" (mode . org-mode))
     ("Markdown" (mode . markdown-mode))
     ("AsciiDoc" (mode . adoc-mode))
+    ("ReStructured Text" (mode . rst-mode))
     ("EMACS Lisp" (mode . emacs-lisp-mode))
     ("XML"
      (or
@@ -1041,7 +1004,7 @@ Version 2017-11-01"
 
 ;; PULSAR-MODE
 ;; https://github.com/protesilaos/pulsar
-;; Подсвечивать курсор
+;; Подсвечивать курсор при его перемещении на несколько строк
 (require 'pulsar)
 (setq pulsar-pulse t)
 (add-hook 'next-error-hook #'pulsar-pulse-line)
@@ -1113,6 +1076,35 @@ Version 2017-11-01"
 ;;Поддержка Ruby on Rails
 (require 'ruby-mode)
 (add-to-list 'auto-mode-alist '("\\.rb$" .ruby-mode))
+
+
+;; RUSSIAN-TECHWRITER
+;; Метод ввода для технических писателей
+;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
+(require 'russian-techwriter)
+(setq-default default-input-method 'russian-techwriter)
+;; Чтобы сочетания клавиш работали в любом методе ввода и любой раскладке:
+(require 'quail)
+(defun cfg:reverse-input-method (input-method)
+  "Build the reverse mapping of single letters from INPUT-METHOD."
+  (interactive
+   (list (read-input-method-name "Use input method (default current): ")))
+  (when (and input-method (symbolp input-method)) (setq input-method (symbol-name input-method)))
+  (let ((current current-input-method)
+        (modifiers '(nil (control) (meta) (control meta))))
+    (when input-method (activate-input-method input-method))
+    (when (and current-input-method quail-keyboard-layout)
+      (dolist (map (cdr (quail-map)))
+        (let* ((to (car map))
+               (from (quail-get-translation (cadr map) (char-to-string to) 1)))
+          (when (and (characterp from) (characterp to))
+            (dolist (mod modifiers)
+              (define-key local-function-key-map
+                (vector (append mod (list from)))
+                (vector (append mod (list to)))))))))
+    (when input-method (activate-input-method current))))
+(cfg:reverse-input-method default-input-method)
+(set-input-method default-input-method)
 
 
 ;; RG (ripgrep)

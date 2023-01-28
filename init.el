@@ -1,4 +1,4 @@
-;;; init.el --- Summary
+;;; init.el --- Dunaevsky Maxim GNU EMACS config -*- lexical-binding:t -*-
 ;;; Commentary:
 ;;; Main EMACS settings file, load settings from parts.
 
@@ -7,9 +7,6 @@
 (require 'calendar)
 (require 'cyrillic)
 (require 'derived)
-(require 'desktop)
-(require 'elec-pair)
-(require 'electric)
 (require 'face-remap)
 (require 'ibuf-ext)
 (require 'ibuffer)
@@ -36,14 +33,14 @@
   MODES-LIST — список основных режимов, при которых должен активироваться указанный дополнительный."
   (dolist (mode-name modes-list)
     (add-hook
-     (derived-mode-hook-name mode-name) ; Эта функция позвращает имя хука, вызываемого при активации режима mode-name.
-     minor-mode-name t)))
+      (derived-mode-hook-name mode-name) ; Эта функция позвращает имя хука, вызываемого при активации режима mode-name.
+      minor-mode-name t)))
 
 (defconst emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.")
 (defconst autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
 (defconst backups-dir (concat emacs-config-dir "backups") "Директория для резервных копий.")
 (defconst is-gui-mode (display-graphic-p) "EMACS запущен в графическом режиме.")
-(defconst default-font-height 14 "Размер шрифта по умолчанию.")
+(defconst default-font-height 16 "Размер шрифта по умолчанию.")
 
 ;;; Создание каталогов для резервных копий и файлов автосохранения
 (unless (file-directory-p autosave-dir)
@@ -51,64 +48,54 @@
   (message "Создана директория для файлов автосохранения."))
 
 (setq-default
- abbrev-mode t ; Включить поддержку аббревиатур глобально
- auto-save-file-name-transforms `((".*" , autosave-dir) t)
- blink-matching-paren t ; Мигать, когда скобки парные
- calendar-week-start-day 1 ; Начнём неделю с понедельника
- create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
- cursor-type 'bar ; Курсор в виде вертикальной черты
- delete-old-versions t ; Удалять старые версии файлов
- desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
- desktop-save t ; Сохранять список открытых буферов, файлов и т. д.
- gc-cons-threshold (* 50 1000 1000) ; Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
- ibuffer-expert 1 ; Расширенный  режим для ibuffer
- ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
- ibuffer-show-empty-filter-groups nil ; Если группа пустая, ibuffer не должен её отображать.
- ibuffer-sorting-mode 'filename/process ; Сортировать файлы в ibuffer по имени / процессу.
- ibuffer-truncate-lines nil ; Не обкусывать строки в ibuffer
- ibuffer-use-other-window nil ; Не надо открывать ibuffer в другом окне, пусть открывается в текущем
- indent-line-function (quote insert-tab)
- indent-tabs-mode nil ; Использовать для выравнивания по нажатию TAB пробелы вместо табуляций
- inhibit-splash-screen t ; Не надо показывать загрузочный экран
- inhibit-startup-message t ; Не надо показывать приветственное сообщение
- initial-major-mode (quote web-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
- initial-scratch-message nil ; В новых буферах не нужно ничего писать
- large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
- load-prefer-newer t ; Если есть файл elc, но el новее, загрузить el-файл
- locale-coding-system 'utf-8 ; UTF-8 по умолчанию
- make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
- overwrite-mode-binary nil ; Выключить режим перезаписи текста под курсором для бинарных файлов
- overwrite-mode-textual nil ; Выключить режим перезаписи текста под курсором для текстовых файлов
- package-user-dir (expand-file-name "elpa" user-emacs-directory) ; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
- ring-bell-function #'ignore ; Заблокировать пищание
- require-final-newline t ;; Автоматически вставлять в конец файла пустую строку, если её там нет
- save-abbrevs 'silently ; Сохранять аббревиатуры без лишних вопросов
- save-place-file (expand-file-name ".emacs-places" emacs-config-dir) ; Хранить данные о позициях в открытых файлах в .emacs-places
- save-place-forget-unreadable-files 1 ; Если файл нельзя открыть, то и помнить о нём ничего не надо
- scroll-margin 0 ; TODO: проверить
- scroll-conservatively 100000 ; TODO: проверить
- scroll-preserve-screen-position 1 ; TODO: проверить
- show-trailing-whitespace t ; Показывать висячие пробелы
- source-directory "/usr/share/emacs/27.1/src/" ; Путь к исходному коду EMACS
- suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
- tab-always-indent 'complete ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
- tab-width 4 ; Обменный курс на TAB — 4 SPACES
- text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
- truncate-lines 1 ; Обрезать длинные строки
- uniquify-buffer-name-style 'forward ; Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)
- uniquify-separator "/" ; Разделять буферы с похожими именами, используя /
- use-dialog-box nil ; Диалоговые окна не нужны, будем использовать текстовый интерфейс
- user-full-name "Dunaevsky Maxim"
- visible-bell t ;; Заблокировать пищание
- window-divider-default-places 't ; Разделители окон со всех сторон (по умолчанию только справа)
- window-divider-default-right-width 3 ; Ширина в пикселях для линии-разделителя окон
- x-underline-at-descent-line t)
+  abbrev-mode t ; Включить поддержку аббревиатур глобально
+  auto-save-file-name-transforms `((".*" , autosave-dir) t)
+  blink-matching-paren t ; Мигать, когда скобки парные
+  calendar-week-start-day 1 ; Начнём неделю с понедельника
+  create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
+  cursor-type 'bar ; Курсор в виде вертикальной черты
+  delete-old-versions t ; Удалять старые версии файлов
+  gc-cons-threshold (* 50 1000 1000) ; Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
+  indent-line-function (quote insert-tab)
+  indent-tabs-mode nil ; Использовать для выравнивания по нажатию TAB пробелы вместо табуляций
+  inhibit-splash-screen t ; Не надо показывать загрузочный экран
+  inhibit-startup-message t ; Не надо показывать приветственное сообщение
+  initial-major-mode (quote web-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
+  initial-scratch-message nil ; В новых буферах не нужно ничего писать
+  large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
+  load-prefer-newer t ; Если есть файл elc, но el новее, загрузить el-файл
+  locale-coding-system 'utf-8 ; UTF-8 по умолчанию
+  make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
+  overwrite-mode-binary nil ; Выключить режим перезаписи текста под курсором для бинарных файлов
+  overwrite-mode-textual nil ; Выключить режим перезаписи текста под курсором для текстовых файлов
+  package-user-dir (expand-file-name "elpa" user-emacs-directory) ; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
+  require-final-newline t ;; Автоматически вставлять в конец файла пустую строку, если её там нет
+  ring-bell-function #'ignore ; Заблокировать пищание
+  save-abbrevs 'silently ; Сохранять аббревиатуры без лишних вопросов
+  save-place-file (expand-file-name ".emacs-places" emacs-config-dir) ; Хранить данные о позициях в открытых файлах в .emacs-places
+  save-place-forget-unreadable-files 1 ; Если файл нельзя открыть, то и помнить о нём ничего не надо
+  scroll-conservatively 100000 ; TODO: проверить
+  scroll-margin 0 ; TODO: проверить
+  scroll-preserve-screen-position 1 ; TODO: проверить
+  show-trailing-whitespace t ; Показывать висячие пробелы
+  source-directory "/usr/share/emacs/27.1/src/" ; Путь к исходному коду EMACS
+  suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
+  tab-always-indent 'complete ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
+  tab-width 4 ; Обменный курс на TAB — 4 SPACES
+  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
+  truncate-lines 1 ; Обрезать длинные строки
+  uniquify-buffer-name-style 'forward ; Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)
+  uniquify-separator "/" ; Разделять буферы с похожими именами, используя /
+  use-dialog-box nil ; Диалоговые окна не нужны, будем использовать текстовый интерфейс
+  user-full-name "Dunaevsky Maxim"
+  visible-bell t ;; Заблокировать пищание
+  window-divider-default-places 't ; Разделители окон со всех сторон (по умолчанию только справа)
+  window-divider-default-right-width 3 ; Ширина в пикселях для линии-разделителя окон
+  x-underline-at-descent-line t)
 
 ;; Включение стандартных режимов
 (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
 (delete-selection-mode t)   ;; Если регион выделен, удалить его, а не последний символ.
-(desktop-save-mode t)       ;; Запоминать список открытых файлов и буферов, а также установленных для них режимов.
-(electric-pair-mode t)      ;; Автоматически закрывает парные скобки. Это глобальный режим.
 (global-font-lock-mode t)   ;; Отображать шрифты красиво, используя Font Face's
 (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
 (global-hl-line-mode 1)     ;; Подсветить активные строки во всех открытых буферах
@@ -139,87 +126,88 @@
 (package-initialize)
 
 (setq-default package-selected-packages
-              '(
-                airline-themes ; THEMES
-                adoc-mode ; https://github.com/bbatsov/adoc-mode
-                all-the-icons
-                all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
-                all-the-icons-ibuffer ;; https://github.com/seagle0128/all-the-icons-ibuffer
-                anaconda-mode
-                ansible
-                apache-mode
-                apt-sources-list
-                centaur-tabs
-                checkdoc
-                company
-                company-anaconda
-                company-box
-                company-terraform
-                company-web
-                counsel
-                csharp-mode ; https://github.com/emacs-csharp/csharp-mode
-                dash
-                dashboard
-                demap ; https://gitlab.com/sawyerjgardner/demap.el
-                diff-hl ; https://github.com/dgutov/diff-hl
-                dockerfile-mode
-                doom-modeline ;; https://github.com/seagle0128/doom-modeline
-                doom-themes ;; https://github.com/doomemacs/themes
-                easy-hugo
-                easy-kill ; https://github.com/leoliu/easy-kill
-                edit-indirect
-                editorconfig
-                embark ;; https://github.com/oantolin/embark
-                flycheck
-                flycheck-clang-tidy
-                flycheck-color-mode-line
-                flycheck-indicator
-                flycheck-package ;; https://github.com/purcell/flycheck-package
-                format-all
-                git-gutter ; https://github.com/emacsorphanage/git-gutter
-                go-mode
-                helm ; https://github.com/emacs-helm/helm
-                highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
-                hl-todo ;; Подсветка TODO, FIXME и подобных слов
-                js2-mode
-                lsp-mode ; https://github.com/emacs-lsp
-                lsp-ui ; https://github.com/emacs-lsp/lsp-ui
-                magit
-                markdown-mode
-                multiple-cursors ; https://github.com/magnars/multiple-cursors.el
-                org
-                package-lint ;; https://github.com/purcell/package-lint
-                php-mode
-                projectile ; https://docs.projectile.mx/projectile/installation.html
-                protobuf-mode
-                pulsar ;; https://github.com/protesilaos/pulsar
-                pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
-                python
-                python-mode
-                rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
-                rg ; https://github.com/dajva/rg.el
-                russian-techwriter ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
-                scala-mode
-                swiper ; https://github.com/abo-abo/swiper
-                terraform-mode
-                treemacs
-                treemacs-all-the-icons
-                treemacs-icons-dired
-                treemacs-magit
-                undo-tree
-                vagrant ; https://github.com/ottbot/vagrant.el
-                verb
-                vertico ; https://github.com/minad/vertico
-                web-mode
-                wgrep ; https://github.com/mhayashi1120/Emacs-wgrep
-                which-key
-                ws-butler
-                yaml-mode
-                yascroll ; https://github.com/emacsorphanage/yascroll
-                yasnippet ; http://github.com/joaotavora/yasnippet
-                yasnippet-snippets ; https://github.com/AndreaCrotti/yasnippet-snippets
-                quelpa ;; https://github.com/quelpa/quelpa
-                ))
+  '(
+     airline-themes ; THEMES
+     adoc-mode ; https://github.com/bbatsov/adoc-mode
+     aggressive-indent
+     all-the-icons
+     all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
+     all-the-icons-ibuffer ;; https://github.com/seagle0128/all-the-icons-ibuffer
+     anaconda-mode
+     ansible
+     apache-mode
+     apt-sources-list
+     centaur-tabs
+     checkdoc
+     company
+     company-anaconda
+     company-box
+     company-terraform
+     company-web
+     counsel
+     csharp-mode ; https://github.com/emacs-csharp/csharp-mode
+     dash
+     dashboard
+     demap ; https://gitlab.com/sawyerjgardner/demap.el
+     diff-hl ; https://github.com/dgutov/diff-hl
+     dockerfile-mode
+     doom-modeline ;; https://github.com/seagle0128/doom-modeline
+     doom-themes ;; https://github.com/doomemacs/themes
+     easy-hugo
+     easy-kill ; https://github.com/leoliu/easy-kill
+     edit-indirect
+     editorconfig
+     embark ;; https://github.com/oantolin/embark
+     flycheck
+     flycheck-clang-tidy
+     flycheck-color-mode-line
+     flycheck-indicator
+     flycheck-package ;; https://github.com/purcell/flycheck-package
+     format-all
+     git-gutter ; https://github.com/emacsorphanage/git-gutter
+     go-mode
+     helm ; https://github.com/emacs-helm/helm
+     highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
+     hl-todo ;; Подсветка TODO, FIXME и подобных слов
+     js2-mode
+     lsp-mode ; https://github.com/emacs-lsp
+     lsp-ui ; https://github.com/emacs-lsp/lsp-ui
+     magit
+     markdown-mode
+     multiple-cursors ; https://github.com/magnars/multiple-cursors.el
+     org
+     package-lint ;; https://github.com/purcell/package-lint
+     php-mode
+     projectile ; https://docs.projectile.mx/projectile/installation.html
+     protobuf-mode
+     pulsar ;; https://github.com/protesilaos/pulsar
+     pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
+     python
+     python-mode
+     pyvenv-auto ;; https://github.com/nryotaro/pyvenv-auto
+     rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
+     rg ; https://github.com/dajva/rg.el
+     russian-techwriter ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
+     scala-mode
+     swiper ; https://github.com/abo-abo/swiper
+     terraform-mode
+     treemacs
+     treemacs-all-the-icons
+     treemacs-icons-dired
+     treemacs-magit
+     undo-tree
+     vagrant ; https://github.com/ottbot/vagrant.el
+     verb
+     vertico ; https://github.com/minad/vertico
+     web-mode
+     wgrep ; https://github.com/mhayashi1120/Emacs-wgrep
+     which-key
+     ws-butler
+     yaml-mode
+     yascroll ; https://github.com/emacsorphanage/yascroll
+     yasnippet ; http://github.com/joaotavora/yasnippet
+     yasnippet-snippets ; https://github.com/AndreaCrotti/yasnippet-snippets
+     ))
 
 ;; Проверка наличия индекса пакетов
 (unless package-archive-contents (package-refresh-contents))
@@ -255,11 +243,11 @@
   ;; В Windows такое не будет работать, поэтому пользователя просят установить шрифты,
   ;; скачав их с помощью этой же функции.
   (cond
-   ((equal system-type "gnu-linux")
-    (unless (file-directory-p "~/.local/share/fonts/")
-      (all-the-icons-install-fonts)))
-   ((equal system-type "windows-nt")
-    (message "Скачайте шрифты с помощью команды all-the-icons-install-fonts.\nУстановите их и перезапустите EMACS."))))
+    ((equal system-type "gnu-linux")
+      (unless (file-directory-p "~/.local/share/fonts/")
+        (all-the-icons-install-fonts)))
+    ((equal system-type "windows-nt")
+      (message "Скачайте шрифты с помощью команды all-the-icons-install-fonts.\nУстановите их и перезапустите EMACS."))))
 
 
 (defun setup-gui-settings (frame-name)
@@ -272,33 +260,38 @@
 
     ;; Перебор шрифтов
     (cond
-     ((member "Fira Code" availiable-fonts) (setq default-font-family "Fira Code"))
-     ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font-family "DejaVu Sans Mono"))
-     ((member "Source Code Pro" availiable-fonts) (setq default-font-family "Source Code Pro"))
-     ((member "Consolas" availiable-fonts) (setq default-font-family "Consolas")))
+      ((member "Fira Code" availiable-fonts) (setq default-font-family "Fira Code"))
+      ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font-family "DejaVu Sans Mono"))
+      ((member "Source Code Pro" availiable-fonts) (setq default-font-family "Source Code Pro"))
+      ((member "Consolas" availiable-fonts) (setq default-font-family "Consolas")))
 
     (when default-font-family
-      (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family default-font-height))
-      (add-to-list 'default-frame-alist `(font . ,(format "%s-%d" default-font-family default-font-height)))
-      (set-face-font 'markdown-inline-code-face default-font-family)
-      (set-face-font 'markdown-table-face default-font-family)
-      (set-face-font 'markup-meta-face default-font-family)
-      (set-face-font 'markup-meta-hide-face default-font-family)
-      (set-face-font 'markup-value-face default-font-family)
-      (set-face-font 'rainbow-delimiters-base-face default-font-family))
+      (message "Выбран шрифт по умолчанию.")
+      ;;       (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family default-font-height))
+      ;;       (add-to-list 'default-frame-alist `(font . ,(format "%s-%d" default-font-family default-font-height)))
+      ;;       (set-face-font 'markdown-inline-code-face default-font-family)
+      ;;       (set-face-font 'markdown-table-face default-font-family)
+      ;;       (set-face-font 'markup-meta-face default-font-family)
+      ;;       (set-face-font 'markup-meta-hide-face default-font-family)
+      ;;       (set-face-font 'markup-value-face default-font-family)
+      ;; (set-face-font 'rainbow-delimiters-base-face default-font-family)
+      (set-face-attribute 'default nil
+        :family default-font-family)
+      )
+
+    (set-face-attribute 'default nil :height (* default-font-height 10))
 
     ;; Настройка иконочных шрифров и немножко GUI.
     (require 'all-the-icons)
     (require 'all-the-icons-dired)
     (require 'all-the-icons-ibuffer)
     (setq-default
-     all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
-     all-the-icons-ibuffer-icon t
-     dashboard-set-file-icons t ;; Иконки типов файлов в графическом режиме
-     dashboard-set-heading-icons t ;; Иконка EMACS в графическом режиме
-     )
+      all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
+      all-the-icons-ibuffer-icon t
+      dashboard-set-file-icons t ;; Иконки типов файлов в графическом режиме
+      dashboard-set-heading-icons t ;; Иконка EMACS в графическом режиме
+      )
     (all-the-icons-ibuffer-mode t)
-    (tooltip-mode nil)
 
     (with-eval-after-load "centaur-tabs"
       (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
@@ -359,9 +352,9 @@ Version 2017-11-01"
 ;; Аббревиатуры — это фрагменты текста, которые по нажатию [C-x, '] превращаются в другие конструкции
 (require 'abbrev)
 (setq-default
- abbrev-mode t ; Глобальный режим
- save-abbrevs 'silently ; Сохранять добавленные аббревиатуры без лишних вопросов
- )
+  abbrev-mode t ; Глобальный режим
+  save-abbrevs 'silently) ; Сохранять добавленные аббревиатуры без лишних вопросов
+
 
 ;; ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
@@ -381,10 +374,6 @@ Version 2017-11-01"
 (add-hook 'adoc-mode-hook (lambda () (buffer-face-mode t)))
 
 
-;; ANSIBLE MODE
-(require 'ansible)
-
-
 ;; APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
 (add-to-list 'auto-mode-alist (cons "\\.list$" 'apt-sources-list-mode))
@@ -395,27 +384,18 @@ Version 2017-11-01"
 ;; Вкладки с иконками и прочими удобствами
 (require 'centaur-tabs)
 (setq-default
- centaur-tabs-close-button "×" ; Будем использовать вот этот символ вместо X
- centaur-tabs-enable-key-bindings t; Включить комбинации клавиш из `centaur-tabs`.
- centaur-tabs-height 36 ; Высота вкладок
- centaur-tabs-modified-marker t ; Показывать маркер, если содержимое вкладки изменилось
- centaur-tabs-set-bar 'under ; Доступные значения: over, under
- centaur-tabs-set-icons t ; Включить иконки. если это графический режим
- centaur-tabs-style "slant" ; Также доступны: bar, alternate, box, chamfer, rounded, slant, wawe, zigzag
- x-underline-at-descent-line t ; Если пакет используется вне Spacemacs, необходимо включить это, чтобы подчёркивание отображалось корректно
- )
+  centaur-tabs-close-button "×" ; Будем использовать вот этот символ вместо X
+  centaur-tabs-enable-key-bindings t; Включить комбинации клавиш из `centaur-tabs`.
+  centaur-tabs-height 36 ; Высота вкладок
+  centaur-tabs-modified-marker t ; Показывать маркер, если содержимое вкладки изменилось
+  centaur-tabs-set-bar 'under ; Доступные значения: over, under
+  centaur-tabs-set-icons t ; Включить иконки. если это графический режим
+  centaur-tabs-style "slant" ; Также доступны: bar, alternate, box, chamfer, rounded, slant, wawe, zigzag
+  x-underline-at-descent-line t ; Если пакет используется вне Spacemacs, необходимо включить это, чтобы подчёркивание отображалось корректно
+  )
 (centaur-tabs-mode 1)
-
-
-;; CHECKDOC-MODE
-;; Проверка документации к коду на EMACS Lisp
-;;
-(require 'checkdoc)
-(add-hook 'emacs-lisp-mode-hook 'checkdoc-minor-mode)
-
-
-;; В этих режимах не нужно показывать вкладки
-(set-minor-mode 'centaur-tabs-local-mode '(dashboard-mode dired-mode))
+(add-hook 'dashboard-mode-hook #'centaur-tabs-local-mode)
+(add-hook 'dired-mode-hook #'centaur-tabs-local-mode)
 
 
 ;; COMPANY-MODE
@@ -424,42 +404,15 @@ Version 2017-11-01"
 (require 'company)
 (require 'company-dabbrev)
 (setq-default
- company-dabbrev-downcase nil
- company-dabbrev-ignore-case nil
- company-dabbrev-ignore-case nil
- company-idle-delay 0.5 ; Задержка вывода подсказки — полсекунды
- company-minimum-prefix-length 2 ;; Минимум 2 знака, чтобы company начала работать
- company-show-quick-access t ; Показывать номера возле потенциальных кандидатов
- company-tooltip-align-annotations t
- company-tooltip-limit 10 ;; Ограничение на число подсказок
- )
-(set-minor-mode
- 'company-mode
- '(
-   ansible-mode
-   apt-sources-list-mode
-   conf-mode
-   csharp-mode
-   dockerfile-mode
-   emacs-lisp-mode
-   go-mode
-   java-mode
-   js2-mode
-   makefile-mode
-   nxml-mode
-   org-mode
-   php-mode
-   protobuf-mode
-   python-mode
-   ruby-mode
-   scala-mode
-   shell-script-mode
-   sql-mode
-   terraform-mode
-   web-mode
-   xml-mode
-   yaml-mode
-   ))
+  company-dabbrev-downcase nil
+  company-dabbrev-ignore-case nil
+  company-dabbrev-ignore-case nil
+  company-idle-delay 0.5 ; Задержка вывода подсказки — полсекунды
+  company-minimum-prefix-length 2 ;; Минимум 2 знака, чтобы company начала работать
+  company-show-quick-access t ; Показывать номера возле потенциальных кандидатов
+  company-tooltip-align-annotations t
+  company-tooltip-limit 10 ;; Ограничение на число подсказок
+  )
 
 
 ;; COMPANY-WEB
@@ -498,13 +451,13 @@ Version 2017-11-01"
 ;; Отображает дашборд при запуске EMACS
 (require 'dashboard)
 (setq-default
- dashboard-items
- '(
-   (recents . 15) ;; Последние открытые файлы
-   (bookmarks . 10) ;; Последние закладки
-   (projects . 10) ;; Последние проекты
-   (agenda . 10) ;; Агенда
-   (registers . 5))) ;; Регистры
+  dashboard-items
+  '(
+     (recents . 15) ;; Последние открытые файлы
+     (bookmarks . 10) ;; Последние закладки
+     (projects . 10) ;; Последние проекты
+     (agenda . 10) ;; Агенда
+     (registers . 5))) ;; Регистры
 (dashboard-setup-startup-hook)
 
 
@@ -513,6 +466,16 @@ Version 2017-11-01"
 ;; Мини-карта и плавный скроллинг
 (require 'demap)
 (setq-default demap-minimap-window-width 15) ; Ширина мини-карты
+
+
+;; DESKTOP-SAVE-MODE
+;; Встроенный пакет
+;; Позволяет сохранять состояние EMACS между сессиями
+(require 'desktop)
+(setq-default
+  desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
+  desktop-save t) ; Сохранять список открытых буферов, файлов и т. д. без лишних вопросов
+(desktop-save-mode t)
 
 
 ;; DIFF-HL
@@ -537,33 +500,6 @@ Version 2017-11-01"
 ;; Показывает номера строк
 (require 'display-line-numbers)
 (global-display-line-numbers-mode 1)
-(set-minor-mode
- 'display-line-numbers-mode
- '(
-   apt-sources-list-mode
-   conf-mode
-   emacs-lisp-mode
-   go-mode
-   hcl-mode
-   java-mode
-   javascript-mode
-   js2-mode
-   makefile-mode
-   markdown-mode
-   org-mode
-   php-mode
-   protobuf-mode
-   python-mode
-   rst-mode
-   ruby-mode
-   scala-mode
-   shell-script-mode
-   sql-mode
-   terraform-mode
-   text-mode
-   web-mode
-   yaml-mode
-   ))
 
 
 ;; DOCKERFILE-MODE
@@ -576,28 +512,27 @@ Version 2017-11-01"
 ;; Красивая и многофункциональная статусная панель
 (require 'doom-modeline)
 (setq-default
- doom-modeline-buffer-encoding t ; Кодировка
- doom-modeline-buffer-modification-icon t ; Наличие изменений
- doom-modeline-buffer-name t ; Имя буфера
- doom-modeline-buffer-state-icon t ; Состояние буфера
- doom-modeline-env-enable-go t ; Показывать версию Golang
- doom-modeline-env-enable-python t ; Показывать версию Python
- doom-modeline-env-enable-ruby t ; Показывать версию Ruby
- doom-modeline-hud t ;
- doom-modeline-icon t ; Иконки
- doom-modeline-indent-info t ; Информация об отступах
- doom-modeline-lsp t
- doom-modeline-major-mode-color-icon t
- doom-modeline-major-mode-icon t
- doom-modeline-project-detection 'auto
- doom-modeline-vcs-max-length 0)
+  doom-modeline-buffer-encoding t ; Кодировка
+  doom-modeline-buffer-modification-icon t ; Наличие изменений
+  doom-modeline-buffer-name t ; Имя буфера
+  doom-modeline-buffer-state-icon t ; Состояние буфера
+  doom-modeline-env-enable-go t ; Показывать версию Golang
+  doom-modeline-env-enable-python t ; Показывать версию Python
+  doom-modeline-env-enable-ruby t ; Показывать версию Ruby
+  doom-modeline-hud t ;
+  doom-modeline-icon t ; Иконки
+  doom-modeline-indent-info t ; Информация об отступах
+  doom-modeline-lsp t ; Статус LSP
+  doom-modeline-major-mode-color-icon t ; Иконка основного режима вместо текста
+  doom-modeline-major-mode-icon t
+  doom-modeline-project-detection 'auto
+  doom-modeline-vcs-max-length 0)
 (doom-modeline-mode 1)
 
 
 ;; LOAD THEME
 (require 'doom-themes)
 (load-theme 'doom-monokai-classic t)
-;; (load-theme 'doom-one t)
 (doom-themes-org-config)
 (doom-themes-visual-bell-config)
 
@@ -617,12 +552,14 @@ Version 2017-11-01"
 (editorconfig-mode 1)
 
 
-;; ELECTRIC-PAIR MODE
+;; ELEC-PAIR MODE
 ;; Встроенный пакет.
+;; Автоматически вставляет при вводе одной скобки парную ей. Если
+;; выделен регион, то в скобки обрамляется он.
 (require 'elec-pair)
 (add-to-list 'electric-pair-pairs '(?« . ?»))
 (add-to-list 'electric-pair-pairs '(?{ . ?}))
-(electric-pair-mode 1)
+(electric-pair-mode t)
 
 
 ;; EMACS LISP MODE
@@ -630,7 +567,18 @@ Version 2017-11-01"
 ;; Встроенный пакет для EMACS Lisp
 (add-to-list 'auto-mode-alist '("\\.el$'" . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("\\abbrev_defs$" . emacs-lisp-mode))
-(add-hook 'emacs-lisp-mode-hook #'flymake-mode)
+(defun setup-emacs-lisp-mode ()
+  "Настройки для `emacs-lisp-mode`."
+  (setq highlight-indentation-offset 2)
+  (aggressive-indent-mode 1)
+  (checkdoc-minor-mode 1)
+  (electric-indent-mode 1)
+  (flymake-mode 1)
+  (highlight-indentation-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
 
 
 ;; EMBARK
@@ -645,44 +593,16 @@ Version 2017-11-01"
 (require 'flycheck)
 (require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
 (setq-default
- flycheck-check-syntax-automatically '(mode-enabled save new-line)
- flycheck-locate-config-file-functions '(
-                                         flycheck-locate-config-file-by-path
-                                         flycheck-locate-config-file-ancestor-directories
-                                         flycheck-locate-config-file-home)
- flycheck-highlighting-mode 'lines
- flycheck-indication-mode 'left-fringe
- flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
+  flycheck-check-syntax-automatically '(mode-enabled save new-line)
+  flycheck-locate-config-file-functions '(
+                                           flycheck-locate-config-file-by-path
+                                           flycheck-locate-config-file-ancestor-directories
+                                           flycheck-locate-config-file-home)
+  flycheck-highlighting-mode 'lines
+  flycheck-indication-mode 'left-fringe
+  flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 (add-hook 'flycheck-mode-hook #'flycheck-color-mode-line-mode)
-(set-minor-mode
- 'flycheck-mode
- '(
-   adoc-mode
-   apt-sources-list-mode
-   c-mode
-   conf-mode
-   dockerfile-mode
-   emacs-lisp-mode
-   go-mode
-   java-mode
-   javascript-mode
-   js2-mode
-   makefile-mode
-   markdown-mode
-   nxml-mode
-   php-mode
-   protobuf-mode
-   python-mode
-   rst-mode
-   ruby-mode
-   scala-mode
-   shell-script-mode
-   sql-mode
-   terraform-mode
-   web-mode
-   xml-mode
-   yaml-mode
-   ))
+(global-flycheck-mode 1)
 
 
 ;; FLYCHECK-PACKAGE
@@ -696,15 +616,11 @@ Version 2017-11-01"
 ;; Проверка орфографии с помощью словарей
 (require 'flyspell)
 (when
-    (and
-     (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
-     (file-exists-p "/usr/bin/aspell"))
+  (and
+    (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
+    (file-exists-p "/usr/bin/aspell"))
   (setq-default ispell-program-name "/usr/bin/aspell")
-  (set-minor-mode
-   'ispell-minor-mode
-   '(
-     adoc-mode
-     markdown-mode)))
+  (add-hook 'text-mode-hook #'ispell-minor-mode))
 
 
 ;; FORMAT-ALL
@@ -742,18 +658,18 @@ Version 2017-11-01"
 ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
 ;; Показывает направляющие для отступов
 (require 'highlight-indentation)
-(set-face-background 'highlight-indentation-face "#e3e3d3")
+;;(set-face-background 'highlight-indentation-face "#e3e3d3")
+(set-face-background 'highlight-indentation-face "#4d4d4d")
 (set-face-background 'highlight-indentation-current-column-face "#c3b3b3")
 (set-minor-mode
- 'highlight-indentation-mode
- '(
-   makefile-mode
-   markdown-mode
-   python-mode
-   ruby-mode
-   terraform-mode
-   yaml-mode
-   ))
+  'highlight-indentation-mode
+  '(
+     markdown-mode
+     python-mode
+     ruby-mode
+     terraform-mode
+     yaml-mode
+     ))
 
 ;; HL-TODO
 ;; https://github.com/tarsius/hl-todo
@@ -767,85 +683,91 @@ Version 2017-11-01"
 ;; По нажатию F2 выводит список открытых буферов.
 (defalias 'list-buffers 'ibuffer)
 (setq-default
- ibuffer-saved-filter-groups
- '(
-   ("default"
-    ("Dired" (mode . dired-mode))
-    ("Org" (mode . org-mode))
-    ("Markdown" (mode . markdown-mode))
-    ("AsciiDoc" (mode . adoc-mode))
-    ("ReStructured Text" (mode . rst-mode))
-    ("EMACS Lisp" (mode . emacs-lisp-mode))
-    ("XML"
-     (or
-      (mode . xml-mode)
-      (mode . nxml-mode)))
-    ("YAML" (mode . yaml-mode))
-    ("Makefile"
-     (or
-      (mode . makefile-mode)
-      (name  . "^Makefile$")))
-    ("Protobuf" (mode . protobuf-mode))
-    ("Golang" (mode . go-mode))
-    ("Python"
-     (or
-      (mode . python-mode)
-      (mode . elpy-mode)
-      (mode . anaconda-mode)))
-    ("SSH keys" (or (name . "^\\*.pub$")))
-    ("Shell-script"
-     (or
-      (mode . shell-script-mode)
-      (mode . sh-mode)))
-    ("Terraform"
-     (or
-      (mode . terraform-mode)
-      (name . "^\\*.tf$")))
-    ("SQL" (mode . sql-mode))
-    ("Web"
-     (or
-      (mode . javascript-mode)
-      (mode . js-mode)
-      (mode . js2-mode)
-      (mode . web-mode)
-      (name . "^\\*.js$")))
-    ("Magit"
-     (or
-      (mode . magit-status-mode)
-      (mode . magit-log-mode)
-      (name . "^\\*magit")
-      (name . "git-monitor")))
-    ("Commands"
-     (or
-      (mode . compilation-mode)
-      (mode . eshell-mode)
-      (mode . shell-mode)
-      (mode . term-mode)))
-    ("Emacs"
-     (or
-      (name . "^\\*scratch\\*$")
-      (name . "^\\*Messages\\*$")
-      (name . "^\\*\\(Customize\\|Help\\)")
-      (name . "\\*\\(Echo\\|Minibuf\\)")))))
- ibuffer-formats
- '(
-   (
-    mark
-    modified
-    read-only
-    locked
-    " "
-    (name 30 40 :left :elide)
-    " "
-    (mode 8 -1 :left)
-    " "
-    filename-and-process)
-   (
-    mark
-    " "
-    (name 32 -1)
-    " "
-    filename)))
+  ibuffer-expert 1 ; Расширенный  режим для ibuffer
+  ibuffer-hidden-filter-groups (list "Helm" "*Internal*")
+  ibuffer-show-empty-filter-groups nil ; Если группа пустая, ibuffer не должен её отображать.
+  ibuffer-sorting-mode 'filename/process ; Сортировать файлы в ibuffer по имени / процессу.
+  ibuffer-truncate-lines nil ; Не обкусывать строки в ibuffer
+  ibuffer-use-other-window nil ; Не надо открывать ibuffer в другом окне, пусть открывается в текущем
+  ibuffer-saved-filter-groups
+  '(
+     ("default"
+       ("Dired" (mode . dired-mode))
+       ("Org" (mode . org-mode))
+       ("Markdown" (mode . markdown-mode))
+       ("AsciiDoc" (mode . adoc-mode))
+       ("ReStructured Text" (mode . rst-mode))
+       ("EMACS Lisp" (mode . emacs-lisp-mode))
+       ("XML"
+         (or
+           (mode . xml-mode)
+           (mode . nxml-mode)))
+       ("YAML" (mode . yaml-mode))
+       ("Makefile"
+         (or
+           (mode . makefile-mode)
+           (name  . "^Makefile$")))
+       ("Protobuf" (mode . protobuf-mode))
+       ("Golang" (mode . go-mode))
+       ("Python"
+         (or
+           (mode . python-mode)
+           (mode . elpy-mode)
+           (mode . anaconda-mode)))
+       ("SSH keys" (or (name . "^\\*.pub$")))
+       ("Shell-script"
+         (or
+           (mode . shell-script-mode)
+           (mode . sh-mode)))
+       ("Terraform"
+         (or
+           (mode . terraform-mode)
+           (name . "^\\*.tf$")))
+       ("SQL" (mode . sql-mode))
+       ("Web"
+         (or
+           (mode . javascript-mode)
+           (mode . js-mode)
+           (mode . js2-mode)
+           (mode . web-mode)
+           (name . "^\\*.js$")))
+       ("Magit"
+         (or
+           (mode . magit-status-mode)
+           (mode . magit-log-mode)
+           (name . "^\\*magit")
+           (name . "git-monitor")))
+       ("Commands"
+         (or
+           (mode . compilation-mode)
+           (mode . eshell-mode)
+           (mode . shell-mode)
+           (mode . term-mode)))
+       ("Emacs"
+         (or
+           (name . "^\\*scratch\\*$")
+           (name . "^\\*Messages\\*$")
+           (name . "^\\*\\(Customize\\|Help\\)")
+           (name . "\\*\\(Echo\\|Minibuf\\)")))))
+  ibuffer-formats
+  '(
+     (
+       mark
+       modified
+       read-only
+       locked
+       " "
+       (name 30 40 :left :elide)
+       " "
+       (mode 8 -1 :left)
+       " "
+       filename-and-process)
+     (
+       mark
+       " "
+       (name 32 -1)
+       " "
+       filename)))
 (defun setup-ibuffer-mode ()
   "Настройки при запуске `ibuffer-mode'."
   (ibuffer-auto-mode 1)
@@ -884,25 +806,23 @@ Version 2017-11-01"
 (require 'lsp-mode)
 (require 'lsp-ui)
 (setq-default
- lsp-headerline-breadcrumb-enable t ; Показывать "хлебные крошки" в заголовке
- lsp-modeline-diagnostics-enable t ; Показывать ошибки LSP в статусной строке
- lsp-ui-doc-enable t
- lsp-ui-peek-always-show t
- lsp-ui-peek-enable t
- lsp-ui-sideline-enable t
- )
+  lsp-headerline-breadcrumb-enable t ; Показывать "хлебные крошки" в заголовке
+  lsp-modeline-diagnostics-enable t ; Показывать ошибки LSP в статусной строке
+  lsp-ui-doc-enable t
+  lsp-ui-peek-always-show t
+  lsp-ui-peek-enable t
+  lsp-ui-sideline-enable t
+  )
 (set-minor-mode
- 'lsp
- '(
-   dockerfile-mode
-   go-mode
-   nxml-mode
-   python-mode
-   sql-mode
-   terraform-mode
-   xml-mode
-   yaml-mode
-   ))
+  'lsp
+  '(
+     dockerfile-mode
+     go-mode
+     nxml-mode
+     terraform-mode
+     xml-mode
+     yaml-mode
+     ))
 
 
 ;; MAGIT
@@ -917,7 +837,10 @@ Version 2017-11-01"
 ;; Встроенный пакет для работы с Makefile
 (defun setup-makefile-mode ()
   "Настройка режима `makefile-mode`."
-  (setq indent-tabs-mode 1))
+  (setq indent-tabs-mode 1)
+  (highlight-indentation-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1))
 (add-hook 'makefile-gmake-mode-hook #'setup-makefile-mode)
 (add-hook 'makefile-mode-hook #'setup-makefile-mode)
 
@@ -926,13 +849,13 @@ Version 2017-11-01"
 ;; https://github.com/jrblevin/markdown-mode
 (require 'markdown-mode)
 (setq
- header-line-format " "
- left-margin-width 4
- markdown-fontify-code-blocks-natively t ; Подсвечивать синтаксис в примерах кода
- markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) ; Все заголовки одной высоты
- markdown-list-indent-width 4
- word-wrap t ; Перенос по словам
- )
+  header-line-format " "
+  left-margin-width 4
+  markdown-fontify-code-blocks-natively t ; Подсвечивать синтаксис в примерах кода
+  markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) ; Все заголовки одной высоты
+  markdown-list-indent-width 4
+  word-wrap t ; Перенос по словам
+  )
 (defun setup-markdown-mode()
   "Settings for editing markdown documents."
   (interactive)
@@ -962,11 +885,11 @@ Version 2017-11-01"
 (defun setup-nxml-mode ()
   "Настройки `nxml-mode`."
   (setq-local
-   nxml-attribute-indent 4 ; Выравнивание атрибутов
-   nxml-auto-insert-xml-declaration-flag nil ; Не вставлять декларацию
-   nxml-bind-meta-tab-to-complete-flag t ; Использовать TAB для завершения ввода
-   nxml-child-indent 4 ; Выравнивание дочерних элементов
-   nxml-slash-auto-complete-flag t)) ; Закрывать теги по вводу /
+    nxml-attribute-indent 4 ; Выравнивание атрибутов
+    nxml-auto-insert-xml-declaration-flag nil ; Не вставлять декларацию
+    nxml-bind-meta-tab-to-complete-flag t ; Использовать TAB для завершения ввода
+    nxml-child-indent 4 ; Выравнивание дочерних элементов
+    nxml-slash-auto-complete-flag t)) ; Закрывать теги по вводу /
 (add-hook 'nxml-mode-hook #'setup-nxml-mode)
 
 
@@ -975,15 +898,15 @@ Version 2017-11-01"
 ;; Органайзер, и не только
 (require 'org)
 (setq
- truncate-lines nil
- left-margin-width 4
- org-todo-keywords '((
-                      sequence
-                      "НОВАЯ"
-                      "|"
-                      "ВЫПОЛНЕНА"))
- right-margin-width 4
- word-wrap t)
+  truncate-lines nil
+  left-margin-width 4
+  org-todo-keywords '((
+                        sequence
+                        "НОВАЯ"
+                        "|"
+                        "ВЫПОЛНЕНА"))
+  right-margin-width 4
+  word-wrap t)
 (add-to-list 'auto-mode-alist '("\\.org$'" . org-mode))
 
 
@@ -1002,6 +925,18 @@ Version 2017-11-01"
 ;; TODO: что это?
 (when (fboundp 'pixel-scroll-precision-mode)
   (pixel-scroll-precision-mode t))
+
+
+;; PROG-MODE
+;; Фундаментальный режим, на основе которого сделаны все режимы программирования.
+(require 'prog-mode)
+(add-hook 'prog-mode-hook #'company-mode)
+(add-hook 'prog-mode-hook #'flycheck-mode)
+(add-hook 'prog-mode-hook #'paragraph-indent-minor-mode)
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'prog-mode-hook #'ws-butler-mode)
+
 
 ;; PROJECTILE
 ;; https://docs.projectile.mx/projectile/installation.html
@@ -1033,22 +968,25 @@ Version 2017-11-01"
 ;; PYTHON-MODE
 (require 'python)
 (setq-default
- doom-modeline-env-enable-python t
- ;; py-company-pycomplete-p t
- ;; py-electric-comment-p t
- ;; py-pylint-command-args "--max-line-length 120"
- ;; py-virtualenv-workon-home "~/.virtualenvs"
- python-shell-interpreter "python3")
+  doom-modeline-env-enable-python t
+  ;; py-company-pycomplete-p t
+  ;; py-electric-comment-p t
+  ;; py-pylint-command-args "--max-line-length 120"
+  ;; py-virtualenv-workon-home "~/.virtualenvs"
+  python-shell-interpreter "python3")
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
   (anaconda-mode 1)
+  (lsp-mode 1)
+  (pyvenv-mode 1)
   (setq-default python-indent-offset 4)
   (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
   (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
   (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
   (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names))
 (add-hook 'python-mode-hook #'setup-python-mode)
+(add-hook 'python-mode-hook #'pyvenv-mode)
 (add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
 
 
@@ -1056,31 +994,29 @@ Version 2017-11-01"
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Каждая пара скобок отрисовывается своим цветом
 (require 'rainbow-delimiters)
-(set-minor-mode
- 'rainbow-delimiters-mode
- '(
-   apt-sources-list-mode
-   emacs-lisp-mode
-   go-mode
-   java-mode
-   js2-mode
-   makefile-mode
-   markdown-mode
-   nxml-mode
-   org-mode
-   php-mode
-   protobuf-mode
-   python-mode
-   rst-mode
-   ruby-mode
-   scala-mode
-   shell-script-mode
-   sql-mode
-   terraform-mode
-   web-mode
-   xml-mode
-   yaml-mode
-   ))
+;; (set-minor-mode
+;;  'rainbow-delimiters-mode
+;;  '(
+;;    apt-sources-list-mode
+;;    go-mode
+;;    java-mode
+;;    js2-mode
+;;    markdown-mode
+;;    nxml-mode
+;;    org-mode
+;;    php-mode
+;;    protobuf-mode
+;;    python-mode
+;;    rst-mode
+;;    ruby-mode
+;;    scala-mode
+;;    shell-script-mode
+;;    sql-mode
+;;    terraform-mode
+;;    web-mode
+;;    xml-mode
+;;    yaml-mode
+;;    ))
 
 
 ;; RST-MODE
@@ -1107,15 +1043,15 @@ Version 2017-11-01"
 (defun cfg:reverse-input-method (input-method)
   "Build the reverse mapping of single letters from INPUT-METHOD."
   (interactive
-   (list (read-input-method-name "Use input method (default current): ")))
+    (list (read-input-method-name "Use input method (default current): ")))
   (when (and input-method (symbolp input-method)) (setq input-method (symbol-name input-method)))
   (let ((current current-input-method)
-        (modifiers '(nil (control) (meta) (control meta))))
+         (modifiers '(nil (control) (meta) (control meta))))
     (when input-method (activate-input-method input-method))
     (when (and current-input-method quail-keyboard-layout)
       (dolist (map (cdr (quail-map)))
         (let* ((to (car map))
-               (from (quail-get-translation (cadr map) (char-to-string to) 1)))
+                (from (quail-get-translation (cadr map) (char-to-string to) 1)))
           (when (and (characterp from) (characterp to))
             (dolist (mod modifiers)
               (define-key local-function-key-map
@@ -1151,6 +1087,7 @@ Version 2017-11-01"
 ;; Это встроенный режим
 (require 'sql)
 (add-to-list 'auto-mode-alist '("\\.sql$" . sql-mode))
+(add-hook 'sql-mode-hook #'lsp)
 
 
 ;; SWIPER MODE
@@ -1175,9 +1112,14 @@ Version 2017-11-01"
 
 
 ;; TEXT-MODE
-;; Встроенный пакет для работы с простыми текстовыми файлами.
+;; Фундаментальный режим, активный во всех буферах с "простым" текстом.
 (require 'text-mode)
-(add-hook 'text-mode-hook 'paragraph-indent-minor-mode)
+(add-hook 'text-mode-hook #'company-mode)
+(add-hook 'text-mode-hook #'flycheck-mode)
+(add-hook 'text-mode-hook #'paragraph-indent-minor-mode)
+(add-hook 'text-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'text-mode-hook #'whitespace-mode)
+(add-hook 'text-mode-hook #'ws-butler-mode)
 
 
 ;; TOOLBAR-MODE
@@ -1185,6 +1127,13 @@ Version 2017-11-01"
 ;; Перед отключением нужно проверить, что такая функциональность поддерживается.
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
+
+
+;; TOOLTIP-MODE
+;; Встроенный режим. Показывает подсказки, используя возможности GUI.
+;; Не нужен, поэтому лучше выключить (всё будет отображаться в мини-буфере).
+(when (fboundp 'tooltip-mode)
+  (tooltip-mode nil))
 
 
 ;; TREEMACS — awesome file manager (instead NeoTree)
@@ -1198,8 +1147,8 @@ Version 2017-11-01"
   FILENAME — имя файла.
   ABSOLUTE-PATH — абсолютный путь."
   (or
-   (string-equal filename ".emacs.desktop.lock")
-   (string-equal filename "__pycache__")))
+    (string-equal filename ".emacs.desktop.lock")
+    (string-equal filename "__pycache__")))
 (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
 (define-key treemacs-mode-map (kbd "f") 'projectile-grep)
 (global-set-key (kbd "<f8>") 'treemacs)
@@ -1248,12 +1197,12 @@ Version 2017-11-01"
 ;; https://web-mode.org/
 (require 'web-mode)
 (setq-default
- web-mode-attr-indent-offset 4
- web-mode-css-indent-offset 2 ;; CSS
- web-mode-enable-block-face t
- web-mode-enable-css-colorization t
- web-mode-enable-current-element-highlight t
- web-mode-markup-indent-offset 2)
+  web-mode-attr-indent-offset 4
+  web-mode-css-indent-offset 2 ;; CSS
+  web-mode-enable-block-face t
+  web-mode-enable-css-colorization t
+  web-mode-enable-current-element-highlight t
+  web-mode-markup-indent-offset 2)
 ;; (add-to-list 'auto-mode-alist '("\\.css$" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 
@@ -1277,83 +1226,80 @@ Version 2017-11-01"
 ;; Показывает невидимые символы.
 (require 'whitespace)
 (setq-default
- whitespace-display-mappings
- '(
-   (space-mark   ?\    [?\xB7]     [?.]) ; Пробел
-   (space-mark   ?\xA0 [?\xA4]     [?_]) ; Неразрывный пробел
-   (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; Конец строки
-   (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; TAB
-   )
- whitespace-line-column 1000 ;; Highlight lines with length bigger than 1000 chars)
- )
+  whitespace-display-mappings
+  '(
+     (space-mark   ?\    [?\xB7]     [?.]) ; Пробел
+     (space-mark   ?\xA0 [?\xA4]     [?_]) ; Неразрывный пробел
+     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; Конец строки
+     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; TAB
+     )
+  whitespace-line-column 1000 ;; Highlight lines with length bigger than 1000 chars)
+  )
 (set-face-attribute 'whitespace-space nil :foreground "#75715E")
 (set-face-attribute 'whitespace-indentation nil :foreground "#E6DB74")
-(set-minor-mode
- 'whitespace-mode
- '(
-   adoc-mode
-   apt-sources-list-mode
-   c-mode
-   conf-mode
-   dockerfile-mode
-   emacs-lisp-mode
-   go-mode
-   hcl-mode
-   java-mode
-   js2-mode
-   makefile-mode
-   markdown-mode
-   nxml-mode
-   org-mode
-   php-mode
-   protobuf-mode
-   python-mode
-   rst-mode
-   ruby-mode
-   scala-mode
-   sh-mode
-   shell-script-mode
-   sql-mode
-   terraform-mode
-   text-mode
-   web-mode
-   xml-mode
-   yaml-mode
-   ))
+;; (set-minor-mode
+;;  'whitespace-mode
+;;  '(
+;;    adoc-mode
+;;    apt-sources-list-mode
+;;    c-mode
+;;    conf-mode
+;;    dockerfile-mode
+;;    go-mode
+;;    hcl-mode
+;;    java-mode
+;;    js2-mode
+;;    markdown-mode
+;;    nxml-mode
+;;    org-mode
+;;    php-mode
+;;    protobuf-mode
+;;    python-mode
+;;    rst-mode
+;;    ruby-mode
+;;    scala-mode
+;;    sh-mode
+;;    shell-script-mode
+;;    sql-mode
+;;    terraform-mode
+;;    text-mode
+;;    web-mode
+;;    xml-mode
+;;    yaml-mode
+;;    ))
 
 
 ;; WS-BUTLER MODE
 ;; https://github.com/lewang/ws-butler
 ;; Чистит висячие пробелы только в измененных строках.
 (require 'ws-butler)
-(set-minor-mode
- 'ws-butler-mode
- '(
-   adoc-mode
-   apt-sources-list-mode
-   conf-mode
-   dockerfile-mode
-   emacs-lisp-mode
-   go-mode
-   java-mode
-   js2-mode
-   markdown-mode
-   nxml-mode
-   org-mode
-   php-mode
-   protobuf-mode
-   python-mode
-   rst-mode
-   ruby-mode
-   scala-mode
-   sh-mode
-   shell-script-mode
-   sql-mode
-   terraform-mode
-   web-mode
-   xml-mode
-   yaml-mode
-   ))
+;; (set-minor-mode
+;;  'ws-butler-mode
+;;  '(
+;;    adoc-mode
+;;    apt-sources-list-mode
+;;    conf-mode
+;;    dockerfile-mode
+;;    go-mode
+;;    java-mode
+;;    js2-mode
+;;    markdown-mode
+;;    nxml-mode
+;;    org-mode
+;;    php-mode
+;;    protobuf-mode
+;;    python-mode
+;;    rst-mode
+;;    ruby-mode
+;;    scala-mode
+;;    sh-mode
+;;    shell-script-mode
+;;    sql-mode
+;;    terraform-mode
+;;    web-mode
+;;    xml-mode
+;;    yaml-mode
+;;    ))
 
 
 ;; YAML-MODE

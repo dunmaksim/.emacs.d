@@ -618,7 +618,8 @@ Version 2017-11-01"
 (when
   (and
     (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
-    (file-exists-p "/usr/bin/aspell"))
+    (file-exists-p "/usr/bin/aspell") ;; Надо убедиться, что программа установлена в ОС
+    )
   (setq-default ispell-program-name "/usr/bin/aspell")
   (add-hook 'text-mode-hook #'ispell-minor-mode))
 
@@ -640,7 +641,14 @@ Version 2017-11-01"
 ;; https://github.com/dominikh/go-mode.el
 ;; Поддержка Golang
 (require 'go-mode)
+(defun setup-go-mode ()
+  "Настройки `go-mode`."
+  (lsp-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.go$'" . go-mode))
+(add-hook 'go-mode-hook #'setup-go-mode)
 
 
 ;; HELM
@@ -664,9 +672,7 @@ Version 2017-11-01"
 (set-minor-mode
   'highlight-indentation-mode
   '(
-     markdown-mode
      python-mode
-     ruby-mode
      terraform-mode
      yaml-mode
      ))
@@ -817,7 +823,6 @@ Version 2017-11-01"
   'lsp
   '(
      dockerfile-mode
-     go-mode
      nxml-mode
      terraform-mode
      xml-mode
@@ -860,7 +865,11 @@ Version 2017-11-01"
   "Settings for editing markdown documents."
   (interactive)
   (when (string-equal system-type "gnu/linux") ;; Turn on spell-checking only in Linux
-    (flyspell-mode 1)))
+    (flyspell-mode 1))
+  (highlight-indentation-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (define-key markdown-mode-map (kbd "M-.") 'markdown-follow-thing-at-point)
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
@@ -998,17 +1007,13 @@ Version 2017-11-01"
 ;;  'rainbow-delimiters-mode
 ;;  '(
 ;;    apt-sources-list-mode
-;;    go-mode
 ;;    java-mode
 ;;    js2-mode
-;;    markdown-mode
 ;;    nxml-mode
 ;;    org-mode
 ;;    php-mode
 ;;    protobuf-mode
 ;;    python-mode
-;;    rst-mode
-;;    ruby-mode
 ;;    scala-mode
 ;;    shell-script-mode
 ;;    sql-mode
@@ -1023,13 +1028,26 @@ Version 2017-11-01"
 ;; Основной режим для редактирования reStructutedText
 ;; Больше здесь: https://www.writethedocs.org/guide/writing/reStructuredText/
 (require 'rst)
+(defun setup-rst-mode ()
+  "Настройки для `rst-mode`."
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1)
+  )
 (add-to-list 'auto-mode-alist '("\\.rst$" . rst-mode))
+(add-hook 'rst-mode-hook #'setup-rst-mode)
 
 
 ;; RUBY-MODE
 ;; Это встроенный пакет
 ;;Поддержка Ruby on Rails
 (require 'ruby-mode)
+(defun setup-ruby-mode ()
+  "Настройки для `ruby-mode`."
+  (highlight-indentation-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.rb$" .ruby-mode))
 
 
@@ -1114,12 +1132,11 @@ Version 2017-11-01"
 ;; TEXT-MODE
 ;; Фундаментальный режим, активный во всех буферах с "простым" текстом.
 (require 'text-mode)
-(add-hook 'text-mode-hook #'company-mode)
-(add-hook 'text-mode-hook #'flycheck-mode)
-(add-hook 'text-mode-hook #'paragraph-indent-minor-mode)
-(add-hook 'text-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'text-mode-hook #'whitespace-mode)
-(add-hook 'text-mode-hook #'ws-butler-mode)
+(defun setup-text-mode ()
+  "Настройки для всех режимов на базе `text-mode`."
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'text-mode-hook #'setup-text-mode)
 
 
 ;; TOOLBAR-MODE
@@ -1203,8 +1220,14 @@ Version 2017-11-01"
   web-mode-enable-css-colorization t
   web-mode-enable-current-element-highlight t
   web-mode-markup-indent-offset 2)
-;; (add-to-list 'auto-mode-alist '("\\.css$" . web-mode))
+(defun setup-web-mode ()
+  "Настройки `web-mode`."
+  (highlight-indentation-mode 1)
+  (highlight-indentation-set-offset 2)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
+(add-hook 'web-mode-hook #'setup-web-mode)
 
 
 ;; WGREP
@@ -1245,18 +1268,14 @@ Version 2017-11-01"
 ;;    c-mode
 ;;    conf-mode
 ;;    dockerfile-mode
-;;    go-mode
 ;;    hcl-mode
 ;;    java-mode
 ;;    js2-mode
-;;    markdown-mode
 ;;    nxml-mode
 ;;    org-mode
 ;;    php-mode
 ;;    protobuf-mode
 ;;    python-mode
-;;    rst-mode
-;;    ruby-mode
 ;;    scala-mode
 ;;    sh-mode
 ;;    shell-script-mode
@@ -1280,17 +1299,13 @@ Version 2017-11-01"
 ;;    apt-sources-list-mode
 ;;    conf-mode
 ;;    dockerfile-mode
-;;    go-mode
 ;;    java-mode
 ;;    js2-mode
-;;    markdown-mode
 ;;    nxml-mode
 ;;    org-mode
 ;;    php-mode
 ;;    protobuf-mode
 ;;    python-mode
-;;    rst-mode
-;;    ruby-mode
 ;;    scala-mode
 ;;    sh-mode
 ;;    shell-script-mode

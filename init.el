@@ -60,7 +60,6 @@
   indent-tabs-mode nil ; Использовать для выравнивания по нажатию TAB пробелы вместо табуляций
   inhibit-splash-screen t ; Не надо показывать загрузочный экран
   inhibit-startup-message t ; Не надо показывать приветственное сообщение
-  initial-major-mode (quote web-mode) ; Режим по умолчанию сменим с EMACS Lisp на Markdown
   initial-scratch-message nil ; В новых буферах не нужно ничего писать
   large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
   load-prefer-newer t ; Если есть файл elc, но el новее, загрузить el-файл
@@ -157,6 +156,7 @@
      easy-kill ; https://github.com/leoliu/easy-kill
      edit-indirect
      editorconfig
+     eglot ;; https://github.com/joaotavora/eglot
      embark ;; https://github.com/oantolin/embark
      flycheck
      flycheck-clang-tidy
@@ -347,8 +347,8 @@ Version 2017-11-01"
 (when (get-buffer "*scratch*") (kill-buffer "*scratch*"))
 
 
-
 ;; ABBREV-MODE
+;; Встроенный режим
 ;; Аббревиатуры — это фрагменты текста, которые по нажатию [C-x, '] превращаются в другие конструкции
 (require 'abbrev)
 (setq-default
@@ -369,14 +369,27 @@ Version 2017-11-01"
 (add-to-list 'load-path "~/repo/adoc-mode/")
 (require 'adoc-mode)
 (require 'markup-faces)
+(defun setup-adoc-mode()
+  "Настройки для `adoc-mode`."
+  (flycheck-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1)
+  (buffer-face-mode t))
 (add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
 (add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
-(add-hook 'adoc-mode-hook (lambda () (buffer-face-mode t)))
+(add-hook 'adoc-mode-hook #'setup-adoc-mode)
 
 
 ;; APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
+(require 'apt-sources-list)
+(defun setup-apt-sources-list-mode ()
+  "Настройки для `apt-sources-list-mode`."
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.list$" 'apt-sources-list-mode))
+(add-hook 'apt-sources-list-mode-hook #'setup-apt-sources-list-mode)
 
 
 ;; CENTAUR-TABS
@@ -456,8 +469,8 @@ Version 2017-11-01"
      (recents . 15) ;; Последние открытые файлы
      (bookmarks . 10) ;; Последние закладки
      (projects . 10) ;; Последние проекты
-     (agenda . 10) ;; Агенда
-     (registers . 5))) ;; Регистры
+     (agenda . 0) ;; Агенда
+     (registers . 0))) ;; Регистры
 (dashboard-setup-startup-hook)
 
 
@@ -559,7 +572,7 @@ Version 2017-11-01"
 (require 'elec-pair)
 (add-to-list 'electric-pair-pairs '(?« . ?»))
 (add-to-list 'electric-pair-pairs '(?{ . ?}))
-(electric-pair-mode t)
+(electric-pair-mode t) ;; Глобальный режим
 
 
 ;; EMACS LISP MODE
@@ -569,22 +582,16 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\abbrev_defs$" . emacs-lisp-mode))
 (defun setup-emacs-lisp-mode ()
   "Настройки для `emacs-lisp-mode`."
-  (setq highlight-indentation-offset 2)
   (aggressive-indent-mode 1)
   (checkdoc-minor-mode 1)
   (electric-indent-mode 1)
   (flymake-mode 1)
   (highlight-indentation-mode 1)
+  (highlight-indentation-set-offset 2)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
-
-
-;; EMBARK
-;; https://github.com/oantolin/embark
-(require 'embark)
-(setq-default prefix-help-command #'embark-prefix-help-command)
 
 
 ;; FLYCHECK
@@ -1006,7 +1013,6 @@ Version 2017-11-01"
 ;; (set-minor-mode
 ;;  'rainbow-delimiters-mode
 ;;  '(
-;;    apt-sources-list-mode
 ;;    java-mode
 ;;    js2-mode
 ;;    nxml-mode
@@ -1018,7 +1024,6 @@ Version 2017-11-01"
 ;;    shell-script-mode
 ;;    sql-mode
 ;;    terraform-mode
-;;    web-mode
 ;;    xml-mode
 ;;    yaml-mode
 ;;    ))
@@ -1214,18 +1219,20 @@ Version 2017-11-01"
 ;; https://web-mode.org/
 (require 'web-mode)
 (setq-default
+  initial-major-mode 'web-mode
   web-mode-attr-indent-offset 4
   web-mode-css-indent-offset 2 ;; CSS
   web-mode-enable-block-face t
-  web-mode-enable-css-colorization t
+  web-mode-enable-css-colorization t ;; Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета
   web-mode-enable-current-element-highlight t
   web-mode-markup-indent-offset 2)
 (defun setup-web-mode ()
   "Настройки `web-mode`."
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode t)
+  (ws-butler-mode t))
 (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 (add-hook 'web-mode-hook #'setup-web-mode)
 
@@ -1245,26 +1252,23 @@ Version 2017-11-01"
 
 
 ;; WHITESPACE MODE
-;; Встроенный пакет для отображения невидимых символов
-;; Показывает невидимые символы.
+;; Встроенный пакет для отображения невидимых символов.
 (require 'whitespace)
 (setq-default
   whitespace-display-mappings
   '(
-     (space-mark   ?\    [?\xB7]     [?.]) ; Пробел
-     (space-mark   ?\xA0 [?\xA4]     [?_]) ; Неразрывный пробел
-     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n]) ; Конец строки
-     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ; TAB
+     (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
+     (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
+     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
+     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
      )
-  whitespace-line-column 1000 ;; Highlight lines with length bigger than 1000 chars)
+  whitespace-line-column 1000 ;; По умолчанию подсвечиваются длинные строки
   )
 (set-face-attribute 'whitespace-space nil :foreground "#75715E")
 (set-face-attribute 'whitespace-indentation nil :foreground "#E6DB74")
 ;; (set-minor-mode
 ;;  'whitespace-mode
 ;;  '(
-;;    adoc-mode
-;;    apt-sources-list-mode
 ;;    c-mode
 ;;    conf-mode
 ;;    dockerfile-mode
@@ -1295,8 +1299,6 @@ Version 2017-11-01"
 ;; (set-minor-mode
 ;;  'ws-butler-mode
 ;;  '(
-;;    adoc-mode
-;;    apt-sources-list-mode
 ;;    conf-mode
 ;;    dockerfile-mode
 ;;    java-mode

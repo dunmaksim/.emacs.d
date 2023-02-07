@@ -370,7 +370,7 @@ Version 2017-11-01"
 (require 'adoc-mode)
 (require 'markup-faces)
 (defun setup-adoc-mode()
-  "Настройки для `adoc-mode`."
+  "Настройки для `adoc-mode'."
   (flycheck-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
@@ -384,7 +384,7 @@ Version 2017-11-01"
 ;; https://git.korewanetadesu.com/apt-sources-list.git
 (require 'apt-sources-list)
 (defun setup-apt-sources-list-mode ()
-  "Настройки для `apt-sources-list-mode`."
+  "Настройки для `apt-sources-list-mode'."
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -398,7 +398,7 @@ Version 2017-11-01"
 (require 'centaur-tabs)
 (setq-default
   centaur-tabs-close-button "×" ; Будем использовать вот этот символ вместо X
-  centaur-tabs-enable-key-bindings t; Включить комбинации клавиш из `centaur-tabs`.
+  centaur-tabs-enable-key-bindings t; Включить комбинации клавиш из `centaur-tabs'.
   centaur-tabs-height 36 ; Высота вкладок
   centaur-tabs-modified-marker t ; Показывать маркер, если содержимое вкладки изменилось
   centaur-tabs-set-bar 'under ; Доступные значения: over, under
@@ -450,7 +450,7 @@ Version 2017-11-01"
 (require 'css-mode)
 (setq-default css-indent-offset 2)
 (defun setup-css-mode ()
-  "Настройки для `css-mode`."
+  "Настройки для `css-mode'."
   (company-mode 1)
   (display-line-numbers-mode 1)
   (flycheck-mode 1)
@@ -581,7 +581,7 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.el$'" . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("\\abbrev_defs$" . emacs-lisp-mode))
 (defun setup-emacs-lisp-mode ()
-  "Настройки для `emacs-lisp-mode`."
+  "Настройки для `emacs-lisp-mode'."
   (aggressive-indent-mode 1)
   (checkdoc-minor-mode 1)
   (electric-indent-mode 1)
@@ -649,7 +649,7 @@ Version 2017-11-01"
 ;; Поддержка Golang
 (require 'go-mode)
 (defun setup-go-mode ()
-  "Настройки `go-mode`."
+  "Настройки `go-mode'."
   (lsp-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -848,7 +848,7 @@ Version 2017-11-01"
 ;; MAKEFILE
 ;; Встроенный пакет для работы с Makefile
 (defun setup-makefile-mode ()
-  "Настройка режима `makefile-mode`."
+  "Настройка режима `makefile-mode'."
   (setq indent-tabs-mode 1)
   (highlight-indentation-mode 1)
   (rainbow-delimiters-mode 1)
@@ -899,7 +899,7 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.xml$'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.pom$'" . nxml-mode))
 (defun setup-nxml-mode ()
-  "Настройки `nxml-mode`."
+  "Настройки `nxml-mode'."
   (setq-local
     nxml-attribute-indent 4 ; Выравнивание атрибутов
     nxml-auto-insert-xml-declaration-flag nil ; Не вставлять декларацию
@@ -1034,7 +1034,7 @@ Version 2017-11-01"
 ;; Больше здесь: https://www.writethedocs.org/guide/writing/reStructuredText/
 (require 'rst)
 (defun setup-rst-mode ()
-  "Настройки для `rst-mode`."
+  "Настройки для `rst-mode'."
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
@@ -1048,7 +1048,7 @@ Version 2017-11-01"
 ;;Поддержка Ruby on Rails
 (require 'ruby-mode)
 (defun setup-ruby-mode ()
-  "Настройки для `ruby-mode`."
+  "Настройки для `ruby-mode'."
   (highlight-indentation-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -1128,7 +1128,7 @@ Version 2017-11-01"
 ;; Работа с файлами конфигурации Terraform
 (require 'terraform-mode)
 (defun setup-terraform-mode ()
-  "Настройка `terraform-mode`."
+  "Настройка `terraform-mode'."
   (setq-default flycheck-checker 'terraform))
 (add-to-list 'auto-mode-alist (cons "\\.tf$" 'terraform-mode))
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
@@ -1138,7 +1138,7 @@ Version 2017-11-01"
 ;; Фундаментальный режим, активный во всех буферах с "простым" текстом.
 (require 'text-mode)
 (defun setup-text-mode ()
-  "Настройки для всех режимов на базе `text-mode`."
+  "Настройки для всех режимов на базе `text-mode'."
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'text-mode-hook #'setup-text-mode)
@@ -1227,7 +1227,7 @@ Version 2017-11-01"
   web-mode-enable-current-element-highlight t
   web-mode-markup-indent-offset 2)
 (defun setup-web-mode ()
-  "Настройки `web-mode`."
+  "Настройки `web-mode'."
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)
   (rainbow-delimiters-mode 1)
@@ -1235,12 +1235,6 @@ Version 2017-11-01"
   (ws-butler-mode t))
 (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
 (add-hook 'web-mode-hook #'setup-web-mode)
-
-
-;; WGREP
-;; https://github.com/mhayashi1120/Emacs-wgrep
-;; Поиск и замена по нескольким файлам
-(require 'wgrep)
 
 
 ;; WHICH-KEY MODE

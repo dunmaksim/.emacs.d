@@ -40,7 +40,7 @@
 (defconst autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
 (defconst backups-dir (concat emacs-config-dir "backups") "Директория для резервных копий.")
 (defconst is-gui-mode (display-graphic-p) "EMACS запущен в графическом режиме.")
-(defconst default-font-height 16 "Размер шрифта по умолчанию.")
+(defconst default-font-height 15 "Размер шрифта по умолчанию.")
 
 ;;; Создание каталогов для резервных копий и файлов автосохранения
 (unless (file-directory-p autosave-dir)
@@ -124,10 +124,10 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(setq-default package-selected-packages
+(setq package-selected-packages
   '(
-     airline-themes ; THEMES
-     adoc-mode ; https://github.com/bbatsov/adoc-mode
+     airline-themes ;; https://github.com/AnthonyDiGirolamo/airline-themes
+     adoc-mode ;; https://github.com/bbatsov/adoc-mode
      aggressive-indent
      all-the-icons
      all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
@@ -135,8 +135,8 @@
      anaconda-mode
      ansible
      apache-mode
-     apt-sources-list
-     centaur-tabs
+     apt-sources-list ;; https://git.korewanetadesu.com/apt-sources-list.git
+     centaur-tabs ;; https://github.com/ema2159/centaur-tabs
      checkdoc
      company
      company-anaconda
@@ -146,63 +146,61 @@
      counsel
      csharp-mode ; https://github.com/emacs-csharp/csharp-mode
      dash
-     dashboard
-     demap ; https://gitlab.com/sawyerjgardner/demap.el
-     diff-hl ; https://github.com/dgutov/diff-hl
+     dashboard ;; https://github.com/emacs-dashboard/emacs-dashboard
+     demap ;; https://gitlab.com/sawyerjgardner/demap.el
+     diff-hl ;; https://github.com/dgutov/diff-hl
      dockerfile-mode
      doom-modeline ;; https://github.com/seagle0128/doom-modeline
      doom-themes ;; https://github.com/doomemacs/themes
-     easy-hugo
-     easy-kill ; https://github.com/leoliu/easy-kill
+     easy-kill ;; https://github.com/leoliu/easy-kill
      edit-indirect
-     editorconfig
+     editorconfig ;; https://github.com/editorconfig/editorconfig-emacs
      eglot ;; https://github.com/joaotavora/eglot
      embark ;; https://github.com/oantolin/embark
-     flycheck
+     flycheck ;; https://flycheck.org
      flycheck-clang-tidy
      flycheck-color-mode-line
      flycheck-indicator
      flycheck-package ;; https://github.com/purcell/flycheck-package
-     format-all
-     git-gutter ; https://github.com/emacsorphanage/git-gutter
-     go-mode
-     helm ; https://github.com/emacs-helm/helm
-     highlight-indentation ; https://github.com/antonj/Highlight-Indentation-for-Emacs
-     hl-todo ;; Подсветка TODO, FIXME и подобных слов
-     js2-mode
-     lsp-mode ; https://github.com/emacs-lsp
-     lsp-ui ; https://github.com/emacs-lsp/lsp-ui
-     magit
-     markdown-mode
-     multiple-cursors ; https://github.com/magnars/multiple-cursors.el
+     format-all ;; https://github.com/lassik/emacs-format-all-the-code
+     go-mode ;; https://github.com/dominikh/go-mode.el
+     helm ;; https://github.com/emacs-helm/helm
+     highlight-indentation ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
+     hl-todo ;; https://github.com/tarsius/hl-todo
+     js2-mode ;; https://github.com/mooz/js2-mode
+     lsp-mode ;; https://github.com/emacs-lsp
+     lsp-ui ;; https://github.com/emacs-lsp/lsp-ui
+     magit ;; https://magit.org/
+     markdown-mode ;; https://github.com/jrblevin/markdown-mode
+     multiple-cursors ;; https://github.com/magnars/multiple-cursors.el
      org
      package-lint ;; https://github.com/purcell/package-lint
      php-mode
-     projectile ; https://docs.projectile.mx/projectile/installation.html
+     projectile ;; https://docs.projectile.mx/projectile/installation.html
      protobuf-mode
      pulsar ;; https://github.com/protesilaos/pulsar
-     pyenv-mode ; https://github.com/pythonic-emacs/pyenv-mode
+     pyenv-mode ;; https://github.com/pythonic-emacs/pyenv-mode
      python
      python-mode
      pyvenv-auto ;; https://github.com/nryotaro/pyvenv-auto
-     rainbow-delimiters ; https://github.com/Fanael/rainbow-delimiters
-     rg ; https://github.com/dajva/rg.el
+     rainbow-delimiters ;; https://github.com/Fanael/rainbow-delimiters
+     rg ;; https://github.com/dajva/rg.el
      russian-techwriter ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
      scala-mode
-     swiper ; https://github.com/abo-abo/swiper
+     swiper ;; https://github.com/abo-abo/swiper
      terraform-mode
      treemacs
      treemacs-all-the-icons
      treemacs-icons-dired
      treemacs-magit
-     undo-tree
-     vagrant ; https://github.com/ottbot/vagrant.el
+     undo-tree ;; https://gitlab.com/tsc25/undo-tree
+     vagrant ;; https://github.com/ottbot/vagrant.el
      verb
-     vertico ; https://github.com/minad/vertico
+     vertico ;; https://github.com/minad/vertico
      web-mode
-     wgrep ; https://github.com/mhayashi1120/Emacs-wgrep
-     which-key
-     ws-butler
+     wgrep ;; https://github.com/mhayashi1120/Emacs-wgrep
+     which-key ;; https://github.com/justbur/emacs-which-key
+     ws-butler ;; https://github.com/lewang/ws-butler
      yaml-mode
      yascroll ; https://github.com/emacsorphanage/yascroll
      yasnippet ; http://github.com/joaotavora/yasnippet
@@ -327,12 +325,12 @@ Version 2017-11-01"
 (global-set-key (kbd "C-o") 'dired)
 
 
+(global-set-key (kbd "<f3>") 'replace-string) ;; Поиск и замена
 (global-set-key (kbd "<f7>") 'xah-new-empty-buffer) ;; Buffers and windows
 (global-set-key (kbd "<f9>") 'sort-lines) ;; Sort lines
 (global-set-key (kbd "<esc>") 'keyboard-quit) ;; Execute commands — like [g]
-(global-set-key (kbd "<f3>") 'replace-string)
 
-;; Switch windows with C-x and arrow keys
+;; Переключение буферов с помощью Ctrl+X и стрелочек
 (global-set-key (kbd "C-x <up>") 'windmove-up)
 (global-set-key (kbd "C-x <down>") 'windmove-down)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
@@ -426,6 +424,7 @@ Version 2017-11-01"
   company-tooltip-align-annotations t
   company-tooltip-limit 10 ;; Ограничение на число подсказок
   )
+(global-set-key (kbd "<tab>") #'company-indent-or-complete-common)
 
 
 ;; COMPANY-WEB
@@ -476,9 +475,10 @@ Version 2017-11-01"
 
 ;; DEMAP
 ;; https://gitlab.com/sawyerjgardner/demap.el
-;; Мини-карта и плавный скроллинг
+;; Мини-карта
 (require 'demap)
-(setq-default demap-minimap-window-width 15) ; Ширина мини-карты
+(global-set-key (kbd "<f4>") #'demap-toggle)
+(setq-default demap-minimap-window-width 20) ; Ширина мини-карты
 
 
 ;; DESKTOP-SAVE-MODE
@@ -512,6 +512,7 @@ Version 2017-11-01"
 ;; Встроенный пакет
 ;; Показывает номера строк
 (require 'display-line-numbers)
+(setq-default display-line-numbers t)
 (global-display-line-numbers-mode 1)
 
 
@@ -578,8 +579,6 @@ Version 2017-11-01"
 ;; EMACS LISP MODE
 ;; IT IS NOT A ELISP-MODE!
 ;; Встроенный пакет для EMACS Lisp
-(add-to-list 'auto-mode-alist '("\\.el$'" . emacs-lisp-mode))
-(add-to-list 'auto-mode-alist '("\\abbrev_defs$" . emacs-lisp-mode))
 (defun setup-emacs-lisp-mode ()
   "Настройки для `emacs-lisp-mode'."
   (aggressive-indent-mode 1)
@@ -591,6 +590,8 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
+(add-to-list 'auto-mode-alist '("\\.el$'" . emacs-lisp-mode))
+(add-to-list 'auto-mode-alist '("\\abbrev_defs$" . emacs-lisp-mode))
 (add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
 
 
@@ -627,8 +628,7 @@ Version 2017-11-01"
     (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
     (file-exists-p "/usr/bin/aspell") ;; Надо убедиться, что программа установлена в ОС
     )
-  (setq-default ispell-program-name "/usr/bin/aspell")
-  (add-hook 'text-mode-hook #'ispell-minor-mode))
+  (setq-default ispell-program-name "/usr/bin/aspell"))
 
 
 ;; FORMAT-ALL
@@ -636,12 +636,6 @@ Version 2017-11-01"
 ;; Форматирование кода по нажатию [F12]
 (require 'format-all)
 (global-set-key (kbd "<f12>") 'format-all-buffer)
-
-
-;; GIT-GUTTER
-;; https://github.com/emacsorphanage/git-gutter
-(require 'git-gutter)
-(setq-default git-gutter:visual-line t)
 
 
 ;; GO-MODE
@@ -681,7 +675,6 @@ Version 2017-11-01"
   '(
      python-mode
      terraform-mode
-     yaml-mode
      ))
 
 ;; HL-TODO
@@ -782,17 +775,36 @@ Version 2017-11-01"
        " "
        filename)))
 (defun setup-ibuffer-mode ()
-  "Настройки при запуске `ibuffer-mode'."
+  "Настройки `ibuffer-mode'."
   (ibuffer-auto-mode 1)
   (ibuffer-switch-to-saved-filter-groups "default"))
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
 (global-set-key (kbd "<f2>") 'ibuffer)
 
 
+(require 'java)
+(defun setup-java-mode ()
+  "Настройки для `java-mode'."
+  (aggressive-indent-mode 1)
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'java-mode-hook #'setup-java-mode)
+
+
+
 ;; JS2-MODE
 ;; https://github.com/mooz/js2-mode
 (require 'js2-mode)
+(defun setup-js2-mode ()
+  "Настройки для `js2-mode'."
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(add-hook 'js2-mode-hook #'setup-js2-mode)
 
 
 ;; LSP MODE
@@ -824,17 +836,7 @@ Version 2017-11-01"
   lsp-ui-doc-enable t
   lsp-ui-peek-always-show t
   lsp-ui-peek-enable t
-  lsp-ui-sideline-enable t
-  )
-(set-minor-mode
-  'lsp
-  '(
-     dockerfile-mode
-     nxml-mode
-     terraform-mode
-     xml-mode
-     yaml-mode
-     ))
+  lsp-ui-sideline-enable t)
 
 
 ;; MAGIT
@@ -859,20 +861,20 @@ Version 2017-11-01"
 
 ;; MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
+;; Режим для работы с файлами в формате Markdown
 (require 'markdown-mode)
 (setq
   header-line-format " "
-  left-margin-width 4
+  ;; left-margin-width 4
   markdown-fontify-code-blocks-natively t ; Подсвечивать синтаксис в примерах кода
   markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) ; Все заголовки одной высоты
-  markdown-list-indent-width 4
+  markdown-list-indent-width 4 ;; Размер отступа для выравнивания вложенных списков
   word-wrap t ; Перенос по словам
   )
 (defun setup-markdown-mode()
-  "Settings for editing markdown documents."
+  "Settings for `markdown-mode'."
   (interactive)
-  (when (string-equal system-type "gnu/linux") ;; Turn on spell-checking only in Linux
-    (flyspell-mode 1))
+  (setq left-margin-width 4)
   (highlight-indentation-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -905,7 +907,11 @@ Version 2017-11-01"
     nxml-auto-insert-xml-declaration-flag nil ; Не вставлять декларацию
     nxml-bind-meta-tab-to-complete-flag t ; Использовать TAB для завершения ввода
     nxml-child-indent 4 ; Выравнивание дочерних элементов
-    nxml-slash-auto-complete-flag t)) ; Закрывать теги по вводу /
+    nxml-slash-auto-complete-flag t) ; Закрывать теги по вводу /
+  (aggressive-indent-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-hook 'nxml-mode-hook #'setup-nxml-mode)
 
 
@@ -926,15 +932,17 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.org$'" . org-mode))
 
 
-;; PACKAGE-LINT
-;; https://github.com/purcell/package-lint
-;; Провека пакетов. Обязательно нужно это делать, когда пишешь собственный пакет.
-(require 'package-lint)
-
-
 ;; PHP-MODE
 (require 'php)
+(defun setup-php-mode ()
+  "Настройки для `php-mode'."
+  (aggressive-indent-mode 1)
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
+(add-hook 'php-mode-hook #'setup-php-mode)
 
 
 ;; PIXEL-SCROLL-PRECISION-MODE
@@ -969,7 +977,15 @@ Version 2017-11-01"
 ;; https://github.com/emacsmirror/protobuf-mode
 ;; Работа с файлами Protobuf: подсветка синтаксиса, переход по ссылками и т. д.
 (require 'protobuf-mode)
+(defun setup-protobuf-mode ()
+  "Настройки `protobuf-mode'."
+  (aggressive-indent-mode 1)
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
+(add-hook 'protobuf-mode-hook #'setup-protobuf-mode)
 
 
 ;; PULSAR-MODE
@@ -996,14 +1012,15 @@ Version 2017-11-01"
   (anaconda-mode 1)
   (lsp-mode 1)
   (pyvenv-mode 1)
-  (setq-default python-indent-offset 4)
+  (rainbow-delimiters-mode 1)
+  (setq-local python-indent-offset 4)
   (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
   (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
   (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
   (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names))
+(add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
 (add-hook 'python-mode-hook #'setup-python-mode)
 (add-hook 'python-mode-hook #'pyvenv-mode)
-(add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
 
 
 ;; RAINBOW-DELIMITERS-MODE
@@ -1013,19 +1030,11 @@ Version 2017-11-01"
 ;; (set-minor-mode
 ;;  'rainbow-delimiters-mode
 ;;  '(
-;;    java-mode
-;;    js2-mode
-;;    nxml-mode
 ;;    org-mode
-;;    php-mode
-;;    protobuf-mode
-;;    python-mode
-;;    scala-mode
 ;;    shell-script-mode
 ;;    sql-mode
 ;;    terraform-mode
 ;;    xml-mode
-;;    yaml-mode
 ;;    ))
 
 
@@ -1095,8 +1104,16 @@ Version 2017-11-01"
 ;; SCALA MODE
 ;; https://github.com/hvesalai/emacs-scala-mode
 (require 'scala-mode)
+(defun setup-scala-mode ()
+  "Настройки `scala-mode'."
+  (aggressive-indent-mode 1)
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.scala$" . scala-mode))
 (add-to-list 'auto-mode-alist '("\\.sc$" . scala-mode))
+(add-hook 'scala-mode-hook #'setup-scala-mode)
 
 
 ;; SHELL-SCRIPT-MODE
@@ -1109,8 +1126,16 @@ Version 2017-11-01"
 ;; SQL MODE
 ;; Это встроенный режим
 (require 'sql)
+(defun setup-sql-mode ()
+  "Настройки `sql-mode'."
+  (aggressive-indent-mode 1)
+  (flycheck-mode 1)
+  (lsp-mode 1)
+  (rainbow-delimiters 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sql$" . sql-mode))
-(add-hook 'sql-mode-hook #'lsp)
+(add-hook 'sql-mode-hook #'setup-sql-mode)
 
 
 ;; SWIPER MODE
@@ -1139,6 +1164,7 @@ Version 2017-11-01"
 (require 'text-mode)
 (defun setup-text-mode ()
   "Настройки для всех режимов на базе `text-mode'."
+  (ispell-minor-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-hook 'text-mode-hook #'setup-text-mode)
@@ -1260,63 +1286,16 @@ Version 2017-11-01"
   )
 (set-face-attribute 'whitespace-space nil :foreground "#75715E")
 (set-face-attribute 'whitespace-indentation nil :foreground "#E6DB74")
-;; (set-minor-mode
-;;  'whitespace-mode
-;;  '(
-;;    c-mode
-;;    conf-mode
-;;    dockerfile-mode
-;;    hcl-mode
-;;    java-mode
-;;    js2-mode
-;;    nxml-mode
-;;    org-mode
-;;    php-mode
-;;    protobuf-mode
-;;    python-mode
-;;    scala-mode
-;;    sh-mode
-;;    shell-script-mode
-;;    sql-mode
-;;    terraform-mode
-;;    text-mode
-;;    web-mode
-;;    xml-mode
-;;    yaml-mode
-;;    ))
-
-
-;; WS-BUTLER MODE
-;; https://github.com/lewang/ws-butler
-;; Чистит висячие пробелы только в измененных строках.
-(require 'ws-butler)
-;; (set-minor-mode
-;;  'ws-butler-mode
-;;  '(
-;;    conf-mode
-;;    dockerfile-mode
-;;    java-mode
-;;    js2-mode
-;;    nxml-mode
-;;    org-mode
-;;    php-mode
-;;    protobuf-mode
-;;    python-mode
-;;    scala-mode
-;;    sh-mode
-;;    shell-script-mode
-;;    sql-mode
-;;    terraform-mode
-;;    web-mode
-;;    xml-mode
-;;    yaml-mode
-;;    ))
 
 
 ;; YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
 (require 'yaml-mode)
+(defun setup-yaml-mode ()
+  "Настройки для `yaml-mode'."
+  (highlight-indentation-mode 1)
+  (rainbow-delimiters-mode 1))
 (add-to-list 'auto-mode-alist '("\\.ansible\\-lint" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.pre\\-commit\\-config\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
@@ -1324,6 +1303,7 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.yamllint\\-config\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yfm$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 
 ;; YASCROLL-MODE

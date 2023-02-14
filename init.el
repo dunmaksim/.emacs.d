@@ -380,6 +380,7 @@ Version 2017-11-01"
 
 ;; APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
+;; Режим для редактирования файлов настройки репозиториев APT
 (require 'apt-sources-list)
 (defun setup-apt-sources-list-mode ()
   "Настройки для `apt-sources-list-mode'."
@@ -453,6 +454,7 @@ Version 2017-11-01"
   (company-mode 1)
   (display-line-numbers-mode 1)
   (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
   (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("\\.css" . css-mode))
 (add-hook 'css-mode-hook #'setup-css-mode)
@@ -465,11 +467,12 @@ Version 2017-11-01"
 (setq-default
   dashboard-items
   '(
-     (recents . 15) ;; Последние открытые файлы
-     (bookmarks . 10) ;; Последние закладки
-     (projects . 10) ;; Последние проекты
-     (agenda . 0) ;; Агенда
-     (registers . 0))) ;; Регистры
+     (recents . 15)         ;; Последние открытые файлы
+     (bookmarks . 10)       ;; Последние закладки
+     (projects . 10)        ;; Последние проекты
+     (agenda . 0)           ;; Агенда
+     (registers . 0))       ;; Регистры
+  dashboard-set-footer nil) ;; Скрыть "весёлые" надписи в нижней части дашборда
 (dashboard-setup-startup-hook)
 
 
@@ -782,10 +785,13 @@ Version 2017-11-01"
 (global-set-key (kbd "<f2>") 'ibuffer)
 
 
-(require 'java)
+;; JAVA-MODE
+;; Встроенный режим из пакета `cc-mode'.
+(require 'cc-mode)
 (defun setup-java-mode ()
   "Настройки для `java-mode'."
   (aggressive-indent-mode 1)
+  (company-mode 1)
   (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)

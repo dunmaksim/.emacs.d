@@ -1,6 +1,6 @@
 ;;; init.el --- Dunaevsky Maxim GNU EMACS config -*- lexical-binding:t -*-
 ;;; Commentary:
-;;; Main EMACS settings file, load settings from parts.
+;;; Настройки EMACS для работы техническим писателем.
 
 ;;; Code:
 
@@ -63,33 +63,32 @@
   initial-scratch-message nil ; В новых буферах не нужно ничего писать
   large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
   load-prefer-newer t ; Если есть файл elc, но el новее, загрузить el-файл
-  locale-coding-system 'utf-8 ; UTF-8 по умолчанию
-  make-backup-files nil ; Резервные копии не нужны, у нас есть undo-tree
-  overwrite-mode-binary nil ; Выключить режим перезаписи текста под курсором для бинарных файлов
-  overwrite-mode-textual nil ; Выключить режим перезаписи текста под курсором для текстовых файлов
+  make-backup-files nil                 ;; Резервные копии не нужны, у нас есть undo-tree
+  overwrite-mode-binary nil             ;; Выключить режим перезаписи текста под курсором для бинарных файлов
+  overwrite-mode-textual nil            ;; Выключить режим перезаписи текста под курсором для текстовых файлов
   package-user-dir (expand-file-name "elpa" user-emacs-directory) ; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
-  require-final-newline t ;; Автоматически вставлять в конец файла пустую строку, если её там нет
-  ring-bell-function #'ignore ; Заблокировать пищание
-  save-abbrevs 'silently ; Сохранять аббревиатуры без лишних вопросов
+  require-final-newline t               ;; Автоматически вставлять в конец файла пустую строку, если её там нет
+  ring-bell-function #'ignore           ;; Заблокировать пищание
+  save-abbrevs 'silently                ;; Сохранять аббревиатуры без лишних вопросов
   save-place-file (expand-file-name ".emacs-places" emacs-config-dir) ; Хранить данные о позициях в открытых файлах в .emacs-places
-  save-place-forget-unreadable-files 1 ; Если файл нельзя открыть, то и помнить о нём ничего не надо
-  scroll-conservatively 100000 ; TODO: проверить
-  scroll-margin 0 ; TODO: проверить
-  scroll-preserve-screen-position 1 ; TODO: проверить
-  show-trailing-whitespace t ; Показывать висячие пробелы
-  source-directory "/usr/share/emacs/27.1/src/" ; Путь к исходному коду EMACS
-  suggest-key-bindings t ; Показывать подсказку клавиатурной комбинации для команды
-  tab-always-indent 'complete ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
-  tab-width 4 ; Обменный курс на TAB — 4 SPACES
-  text-scale-mode-step 1.1 ;; Шаг увеличения масштаба
-  truncate-lines 1 ; Обрезать длинные строки
-  uniquify-buffer-name-style 'forward ; Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)
-  uniquify-separator "/" ; Разделять буферы с похожими именами, используя /
-  use-dialog-box nil ; Диалоговые окна не нужны, будем использовать текстовый интерфейс
+  save-place-forget-unreadable-files 1  ;; Если файл нельзя открыть, то и помнить о нём ничего не надо
+  scroll-conservatively 100000          ;; TODO: проверить, что это такое
+  scroll-margin 5                       ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
+  scroll-preserve-screen-position 1     ;; TODO: проверить, что это такое
+  show-trailing-whitespace t                    ;; Показывать висячие пробелы
+  source-directory "/usr/share/emacs/27.1/src/" ;; Путь к исходному коду EMACS
+  suggest-key-bindings t               ;; Показывать подсказку клавиатурной комбинации для команды
+  tab-always-indent 'complete          ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
+  tab-width 4                          ;; Обменный курс на TAB — 4 SPACES
+  text-scale-mode-step 1.1             ;; Шаг увеличения масштаба
+  truncate-lines 1                     ;; Обрезать длинные строки
+  uniquify-buffer-name-style 'forward  ;; Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)
+  uniquify-separator "/"               ;; Разделять буферы с похожими именами, используя /
+  use-dialog-box nil                   ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
   user-full-name "Dunaevsky Maxim"
-  visible-bell t ;; Заблокировать пищание
-  window-divider-default-places 't ; Разделители окон со всех сторон (по умолчанию только справа)
-  window-divider-default-right-width 3 ; Ширина в пикселях для линии-разделителя окон
+  visible-bell t                       ;; Заблокировать пищание
+  window-divider-default-places 't     ;; Разделители окон со всех сторон (по умолчанию только справа)
+  window-divider-default-right-width 3 ;; Ширина в пикселях для линии-разделителя окон
   x-underline-at-descent-line t)
 
 ;; Включение стандартных режимов
@@ -111,12 +110,13 @@
 
 
 ;; КОДИРОВКИ
-(prefer-coding-system 'utf-8)        ;; При попытке определить кодировку файла начинать перебор с UTF-8
-(set-default-coding-systems 'utf-8)  ;; Кодировка по умолчанию
-(set-keyboard-coding-system 'utf-8)  ;; Кодировка символов при вводе текста в терминале
-(set-language-environment 'utf-8)    ;; Кодировка языка по умолчанию
-(set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
-(set-terminal-coding-system 'utf-8)  ;; Кодировка символов для вывода команд, запущенных в терминале
+(prefer-coding-system 'utf-8)               ;; При попытке определить кодировку файла начинать перебор с UTF-8
+(set-default-coding-systems 'utf-8)         ;; Кодировка по умолчанию
+(set-keyboard-coding-system 'utf-8)         ;; Кодировка символов при вводе текста в терминале
+(set-language-environment 'utf-8)           ;; Кодировка языка по умолчанию
+(set-selection-coding-system 'utf-8)        ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
+(set-terminal-coding-system 'utf-8)         ;; Кодировка символов для вывода команд, запущенных в терминале
+(setq-default locale-coding-system 'utf-8)  ;; UTF-8 по умолчанию
 
 
 ;; Настройка пакетов
@@ -127,7 +127,7 @@
 (setq package-selected-packages
   '(
      airline-themes ;; https://github.com/AnthonyDiGirolamo/airline-themes
-     adoc-mode ;; https://github.com/bbatsov/adoc-mode
+     ;; adoc-mode ;; https://github.com/bbatsov/adoc-mode
      aggressive-indent
      all-the-icons
      all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
@@ -188,6 +188,7 @@
      russian-techwriter ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
      scala-mode
      swiper ;; https://github.com/abo-abo/swiper
+     tempel ;; https://github.com/minad/tempel
      terraform-mode
      treemacs
      treemacs-all-the-icons
@@ -366,9 +367,10 @@ Version 2017-11-01"
 ;; Работа с AsciiDoc
 (add-to-list 'load-path "~/repo/adoc-mode/")
 (require 'adoc-mode)
-(require 'markup-faces)
 (defun setup-adoc-mode()
   "Настройки для `adoc-mode'."
+  (setq-local completion-at-point-functions
+    (cons #'tempel-expand completion-at-point-functions))
   (flycheck-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
@@ -396,14 +398,14 @@ Version 2017-11-01"
 ;; Вкладки с иконками и прочими удобствами
 (require 'centaur-tabs)
 (setq-default
-  centaur-tabs-close-button "×" ; Будем использовать вот этот символ вместо X
-  centaur-tabs-enable-key-bindings t; Включить комбинации клавиш из `centaur-tabs'.
-  centaur-tabs-height 36 ; Высота вкладок
-  centaur-tabs-modified-marker t ; Показывать маркер, если содержимое вкладки изменилось
-  centaur-tabs-set-bar 'under ; Доступные значения: over, under
-  centaur-tabs-set-icons t ; Включить иконки. если это графический режим
-  centaur-tabs-style "slant" ; Также доступны: bar, alternate, box, chamfer, rounded, slant, wawe, zigzag
-  x-underline-at-descent-line t ; Если пакет используется вне Spacemacs, необходимо включить это, чтобы подчёркивание отображалось корректно
+  centaur-tabs-close-button "×"      ;; Будем использовать вот этот символ вместо X
+  centaur-tabs-enable-key-bindings t ;; Включить комбинации клавиш из `centaur-tabs'.
+  centaur-tabs-height 36             ;; Высота вкладок
+  centaur-tabs-modified-marker t     ;; Показывать маркер, если содержимое вкладки изменилось
+  centaur-tabs-set-bar 'under        ;; Доступные значения: over, under
+  centaur-tabs-set-icons t           ;; Включить иконки. если это графический режим
+  centaur-tabs-style "slant"         ;; Также доступны: bar, alternate, box, chamfer, rounded, slant, wawe, zigzag
+  x-underline-at-descent-line t      ;; Если пакет используется вне Spacemacs, необходимо включить это, чтобы подчёркивание отображалось корректно
   )
 (centaur-tabs-mode 1)
 (add-hook 'dashboard-mode-hook #'centaur-tabs-local-mode)
@@ -436,7 +438,7 @@ Version 2017-11-01"
 
 
 ;; CONF MODE
-;; Основной режим для редактирования конфигурационных файлов.
+;; Встроенный пакет. Основной режим для редактирования конфигурационных файлов.
 (require 'conf-mode)
 (add-to-list 'auto-mode-alist '("\\.env$" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.flake8$" . conf-mode))
@@ -857,7 +859,7 @@ Version 2017-11-01"
 ;; Встроенный пакет для работы с Makefile
 (defun setup-makefile-mode ()
   "Настройка режима `makefile-mode'."
-  (setq indent-tabs-mode 1)
+  (setq indent-tabs-mode t)
   (highlight-indentation-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1))
@@ -962,7 +964,6 @@ Version 2017-11-01"
 (require 'prog-mode)
 (add-hook 'prog-mode-hook #'company-mode)
 (add-hook 'prog-mode-hook #'flycheck-mode)
-(add-hook 'prog-mode-hook #'paragraph-indent-minor-mode)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 (add-hook 'prog-mode-hook #'whitespace-mode)
 (add-hook 'prog-mode-hook #'ws-butler-mode)
@@ -1152,6 +1153,17 @@ Version 2017-11-01"
 (require 'swiper)
 (add-to-list 'mc/cmds-to-run-once 'swiper-mc)
 (global-set-key (kbd "C-s") 'swiper-isearch)
+
+
+;; TEMPEL
+;; https://github.com/minad/tempel
+;; Система шаблонов, более новая, чем `tempo.el'. Основные функции:
+;; * `tempel-complete' — завершить ввод шаблона и раскрыть его
+;; * `tempel-expand' — раскрыть введенный шаблон
+;; * `tempel-insert' — выбрать шаблон из списка и вставить в позицию под курсором
+(require 'tempel)
+(global-set-key (kbd "M-+") #'tempel-complete)
+(global-set-key (kbd "M-*") #'tempel-insert)
 
 
 ;; TERRAFORM-MODE

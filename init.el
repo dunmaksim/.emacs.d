@@ -166,46 +166,47 @@
      go-mode ;; https://github.com/dominikh/go-mode.el
      helm ;; https://github.com/emacs-helm/helm
      highlight-indentation ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
-     hl-todo ;; https://github.com/tarsius/hl-todo
-     js2-mode ;; https://github.com/mooz/js2-mode
-     lsp-mode ;; https://github.com/emacs-lsp
-     lsp-ui ;; https://github.com/emacs-lsp/lsp-ui
-     magit ;; https://magit.org/
-     markdown-mode ;; https://github.com/jrblevin/markdown-mode
-     multiple-cursors ;; https://github.com/magnars/multiple-cursors.el
+     hl-todo            ;; https://github.com/tarsius/hl-todo
+     js2-mode           ;; https://github.com/mooz/js2-mode
+     lsp-mode           ;; https://github.com/emacs-lsp
+     lsp-ui             ;; https://github.com/emacs-lsp/lsp-ui
+     magit              ;; https://magit.org/
+     markdown-mode      ;; https://github.com/jrblevin/markdown-mode
+     multiple-cursors   ;; https://github.com/magnars/multiple-cursors.el
      org
-     package-lint ;; https://github.com/purcell/package-lint
+     package-lint       ;; https://github.com/purcell/package-lint
      php-mode
-     projectile ;; https://docs.projectile.mx/projectile/installation.html
+     projectile         ;; https://docs.projectile.mx/projectile/installation.html
      protobuf-mode
-     pulsar ;; https://github.com/protesilaos/pulsar
-     pyenv-mode ;; https://github.com/pythonic-emacs/pyenv-mode
+     pulsar             ;; https://github.com/protesilaos/pulsar
+     pyenv-mode         ;; https://github.com/pythonic-emacs/pyenv-mode
      python
      python-mode
-     pyvenv-auto ;; https://github.com/nryotaro/pyvenv-auto
+     pyvenv-auto        ;; https://github.com/nryotaro/pyvenv-auto
      rainbow-delimiters ;; https://github.com/Fanael/rainbow-delimiters
-     rg ;; https://github.com/dajva/rg.el
+     reverse-im         ;; https://github.com/a13/reverse-im.el
+     rg                 ;; https://github.com/dajva/rg.el
      russian-techwriter ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
      scala-mode
-     swiper ;; https://github.com/abo-abo/swiper
-     tempel ;; https://github.com/minad/tempel
+     swiper             ;; https://github.com/abo-abo/swiper
+     tempel             ;; https://github.com/minad/tempel
      terraform-mode
      treemacs
      treemacs-all-the-icons
      treemacs-icons-dired
      treemacs-magit
-     undo-tree ;; https://gitlab.com/tsc25/undo-tree
-     vagrant ;; https://github.com/ottbot/vagrant.el
+     undo-tree          ;; https://gitlab.com/tsc25/undo-tree
+     vagrant            ;; https://github.com/ottbot/vagrant.el
      verb
-     vertico ;; https://github.com/minad/vertico
+     vertico            ;; https://github.com/minad/vertico
      web-mode
-     wgrep ;; https://github.com/mhayashi1120/Emacs-wgrep
-     which-key ;; https://github.com/justbur/emacs-which-key
-     ws-butler ;; https://github.com/lewang/ws-butler
+     wgrep              ;; https://github.com/mhayashi1120/Emacs-wgrep
+     which-key          ;; https://github.com/justbur/emacs-which-key
+     ws-butler          ;; https://github.com/lewang/ws-butler
      yaml-mode
-     yascroll ; https://github.com/emacsorphanage/yascroll
-     yasnippet ; http://github.com/joaotavora/yasnippet
-     yasnippet-snippets ; https://github.com/AndreaCrotti/yasnippet-snippets
+     yascroll           ;; https://github.com/emacsorphanage/yascroll
+     yasnippet          ;; https://github.com/joaotavora/yasnippet
+     yasnippet-snippets ;; https://github.com/AndreaCrotti/yasnippet-snippets
      ))
 
 ;; Проверка наличия индекса пакетов
@@ -927,16 +928,19 @@ Version 2017-11-01"
 ;; https://orgmode.org/
 ;; Органайзер, и не только
 (require 'org)
-(setq
-  truncate-lines nil
-  left-margin-width 4
-  org-todo-keywords '((
-                        sequence
-                        "НОВАЯ"
-                        "|"
-                        "ВЫПОЛНЕНА"))
-  right-margin-width 4
-  word-wrap t)
+(defun setup-org-mode ()
+  "Настройки для `org-mode'."
+  (setq
+    truncate-lines nil
+    left-margin-width 4
+    org-todo-keywords '((
+                          sequence
+                          "НОВАЯ"
+                          "|"
+                          "ВЫПОЛНЕНА"))
+    right-margin-width 4
+    word-wrap t)
+  (rainbow-delimiters-mode 1))
 (add-to-list 'auto-mode-alist '("\\.org$'" . org-mode))
 
 
@@ -1030,19 +1034,12 @@ Version 2017-11-01"
 (add-hook 'python-mode-hook #'pyvenv-mode)
 
 
-;; RAINBOW-DELIMITERS-MODE
-;; https://github.com/Fanael/rainbow-delimiters
-;; Каждая пара скобок отрисовывается своим цветом
-(require 'rainbow-delimiters)
-;; (set-minor-mode
-;;  'rainbow-delimiters-mode
-;;  '(
-;;    org-mode
-;;    shell-script-mode
-;;    sql-mode
-;;    terraform-mode
-;;    xml-mode
-;;    ))
+;; REVERSE-IM
+;; https://github.com/a13/reverse-im.el
+;; Чтобы сочетания клавиш работали в любой раскладке.
+(require 'reverse-im)
+(setq-default reverse-im-input-methods '("russian-computer" "russian-techwriter"))
+(reverse-im-mode t)
 
 
 ;; RST-MODE
@@ -1077,28 +1074,6 @@ Version 2017-11-01"
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (require 'russian-techwriter)
 (setq-default default-input-method 'russian-techwriter)
-;; Чтобы сочетания клавиш работали в любом методе ввода и любой раскладке:
-(require 'quail)
-(defun cfg:reverse-input-method (input-method)
-  "Build the reverse mapping of single letters from INPUT-METHOD."
-  (interactive
-    (list (read-input-method-name "Use input method (default current): ")))
-  (when (and input-method (symbolp input-method)) (setq input-method (symbol-name input-method)))
-  (let ((current current-input-method)
-         (modifiers '(nil (control) (meta) (control meta))))
-    (when input-method (activate-input-method input-method))
-    (when (and current-input-method quail-keyboard-layout)
-      (dolist (map (cdr (quail-map)))
-        (let* ((to (car map))
-                (from (quail-get-translation (cadr map) (char-to-string to) 1)))
-          (when (and (characterp from) (characterp to))
-            (dolist (mod modifiers)
-              (define-key local-function-key-map
-                (vector (append mod (list from)))
-                (vector (append mod (list to)))))))))
-    (when input-method (activate-input-method current))))
-(cfg:reverse-input-method default-input-method)
-(set-input-method default-input-method)
 
 
 ;; RG (ripgrep)
@@ -1125,6 +1100,13 @@ Version 2017-11-01"
 
 ;; SHELL-SCRIPT-MODE
 (require 'sh-script)
+(defun setup-shell-script-mode ()
+  "Настройки для `sh-script'."
+  (aggressive-indent-mode 1)
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.bashrc$" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.profile$" . shell-script-mode))
 (add-to-list 'auto-mode-alist '("\\.sh$" . shell-script-mode))
@@ -1138,7 +1120,7 @@ Version 2017-11-01"
   (aggressive-indent-mode 1)
   (flycheck-mode 1)
   (lsp-mode 1)
-  (rainbow-delimiters 1)
+  (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.sql$" . sql-mode))
@@ -1172,7 +1154,11 @@ Version 2017-11-01"
 (require 'terraform-mode)
 (defun setup-terraform-mode ()
   "Настройка `terraform-mode'."
-  (setq-default flycheck-checker 'terraform))
+  (setq-default flycheck-checker 'terraform)
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.tf$" 'terraform-mode))
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
 

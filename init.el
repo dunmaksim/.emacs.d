@@ -110,6 +110,7 @@
 
 
 ;; КОДИРОВКИ
+;; Везде насаждаем UTF-8
 (prefer-coding-system 'utf-8)               ;; При попытке определить кодировку файла начинать перебор с UTF-8
 (set-default-coding-systems 'utf-8)         ;; Кодировка по умолчанию
 (set-keyboard-coding-system 'utf-8)         ;; Кодировка символов при вводе текста в терминале
@@ -126,87 +127,89 @@
 
 (setq package-selected-packages
   '(
-     airline-themes ;; https://github.com/AnthonyDiGirolamo/airline-themes
-     ;; adoc-mode ;; https://github.com/bbatsov/adoc-mode
-     aggressive-indent
-     all-the-icons
-     all-the-icons-dired ;; https://github.com/wyuenho/all-the-icons-dired
-     all-the-icons-ibuffer ;; https://github.com/seagle0128/all-the-icons-ibuffer
-     anaconda-mode
-     ansible
-     apache-mode
-     apt-sources-list ;; https://git.korewanetadesu.com/apt-sources-list.git
-     centaur-tabs ;; https://github.com/ema2159/centaur-tabs
-     checkdoc
-     company
-     company-anaconda
-     company-box
-     company-terraform
-     company-web
-     counsel
-     csharp-mode ; https://github.com/emacs-csharp/csharp-mode
-     dash
-     dashboard ;; https://github.com/emacs-dashboard/emacs-dashboard
-     demap ;; https://gitlab.com/sawyerjgardner/demap.el
-     diff-hl ;; https://github.com/dgutov/diff-hl
-     dockerfile-mode
-     doom-modeline ;; https://github.com/seagle0128/doom-modeline
-     doom-themes ;; https://github.com/doomemacs/themes
-     easy-kill ;; https://github.com/leoliu/easy-kill
-     edit-indirect
-     editorconfig ;; https://github.com/editorconfig/editorconfig-emacs
-     eglot ;; https://github.com/joaotavora/eglot
-     embark ;; https://github.com/oantolin/embark
-     flycheck ;; https://flycheck.org
-     flycheck-clang-tidy
-     flycheck-color-mode-line
-     flycheck-indicator
-     flycheck-package ;; https://github.com/purcell/flycheck-package
-     format-all ;; https://github.com/lassik/emacs-format-all-the-code
-     go-mode ;; https://github.com/dominikh/go-mode.el
-     helm ;; https://github.com/emacs-helm/helm
-     highlight-indentation ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
-     hl-todo            ;; https://github.com/tarsius/hl-todo
-     js2-mode           ;; https://github.com/mooz/js2-mode
-     lsp-mode           ;; https://github.com/emacs-lsp
-     lsp-ui             ;; https://github.com/emacs-lsp/lsp-ui
-     magit              ;; https://magit.org/
-     markdown-mode      ;; https://github.com/jrblevin/markdown-mode
-     multiple-cursors   ;; https://github.com/magnars/multiple-cursors.el
-     org
-     package-lint       ;; https://github.com/purcell/package-lint
-     php-mode
-     projectile         ;; https://docs.projectile.mx/projectile/installation.html
-     protobuf-mode
-     pulsar             ;; https://github.com/protesilaos/pulsar
-     pyenv-mode         ;; https://github.com/pythonic-emacs/pyenv-mode
-     python
-     python-mode
-     pyvenv-auto        ;; https://github.com/nryotaro/pyvenv-auto
-     rainbow-delimiters ;; https://github.com/Fanael/rainbow-delimiters
-     reverse-im         ;; https://github.com/a13/reverse-im.el
-     rg                 ;; https://github.com/dajva/rg.el
-     russian-techwriter ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
-     scala-mode
-     swiper             ;; https://github.com/abo-abo/swiper
-     tempel             ;; https://github.com/minad/tempel
-     terraform-mode
-     treemacs
-     treemacs-all-the-icons
-     treemacs-icons-dired
-     treemacs-magit
-     undo-tree          ;; https://gitlab.com/tsc25/undo-tree
-     vagrant            ;; https://github.com/ottbot/vagrant.el
-     verb
-     vertico            ;; https://github.com/minad/vertico
-     web-mode
-     wgrep              ;; https://github.com/mhayashi1120/Emacs-wgrep
-     which-key          ;; https://github.com/justbur/emacs-which-key
-     ws-butler          ;; https://github.com/lewang/ws-butler
-     yaml-mode
-     yascroll           ;; https://github.com/emacsorphanage/yascroll
-     yasnippet          ;; https://github.com/joaotavora/yasnippet
-     yasnippet-snippets ;; https://github.com/AndreaCrotti/yasnippet-snippets
+     airline-themes           ;; https://github.com/AnthonyDiGirolamo/airline-themes
+     ;; adoc-mode                ;; https://github.com/bbatsov/adoc-mode
+     aggressive-indent        ;;
+     all-the-icons            ;;
+     all-the-icons-dired      ;; https://github.com/wyuenho/all-the-icons-dired
+     all-the-icons-ibuffer    ;; https://github.com/seagle0128/all-the-icons-ibuffer
+     anaconda-mode            ;;
+     ansible                  ;;
+     apache-mode              ;;
+     apt-sources-list         ;; https://git.korewanetadesu.com/apt-sources-list.git
+     centaur-tabs             ;; https://github.com/ema2159/centaur-tabs
+     checkdoc                 ;;
+     company                  ;;
+     company-anaconda         ;;
+     company-box              ;;
+     company-terraform        ;;
+     company-web              ;;
+     counsel                  ;;
+     csharp-mode              ;; https://github.com/emacs-csharp/csharp-mode
+     dash                     ;;
+     dashboard                ;; https://github.com/emacs-dashboard/emacs-dashboard
+     demap                    ;; https://gitlab.com/sawyerjgardner/demap.el
+     diff-hl                  ;; https://github.com/dgutov/diff-hl
+     dockerfile-mode          ;;
+     doom-modeline            ;; https://github.com/seagle0128/doom-modeline
+     doom-themes              ;; https://github.com/doomemacs/themes
+     easy-kill                ;; https://github.com/leoliu/easy-kill
+     edit-indirect            ;;
+     editorconfig             ;; https://github.com/editorconfig/editorconfig-emacs
+     eglot                    ;; https://github.com/joaotavora/eglot
+     elsa                     ;; https://github.com/emacs-elsa/Elsa
+     embark                   ;; https://github.com/oantolin/embark
+     flycheck                 ;; https://flycheck.org
+     flycheck-clang-tidy      ;;
+     flycheck-color-mode-line ;;
+     flycheck-elsa            ;; https://github.com/emacs-elsa/flycheck-elsa
+     flycheck-indicator       ;;
+     flycheck-package         ;; https://github.com/purcell/flycheck-package
+     format-all               ;; https://github.com/lassik/emacs-format-all-the-code
+     go-mode                  ;; https://github.com/dominikh/go-mode.el
+     helm                     ;; https://github.com/emacs-helm/helm
+     highlight-indentation    ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
+     hl-todo                  ;; https://github.com/tarsius/hl-todo
+     js2-mode                 ;; https://github.com/mooz/js2-mode
+     lsp-mode                 ;; https://github.com/emacs-lsp
+     lsp-ui                   ;; https://github.com/emacs-lsp/lsp-ui
+     magit                    ;; https://magit.org/
+     markdown-mode            ;; https://github.com/jrblevin/markdown-mode
+     multiple-cursors         ;; https://github.com/magnars/multiple-cursors.el
+     org                      ;;
+     package-lint             ;; https://github.com/purcell/package-lint
+     php-mode                 ;;
+     projectile               ;; https://docs.projectile.mx/projectile/installation.html
+     protobuf-mode            ;;
+     pulsar                   ;; https://github.com/protesilaos/pulsar
+     pyenv-mode               ;; https://github.com/pythonic-emacs/pyenv-mode
+     python                   ;;
+     python-mode              ;;
+     pyvenv-auto              ;; https://github.com/nryotaro/pyvenv-auto
+     rainbow-delimiters       ;; https://github.com/Fanael/rainbow-delimiters
+     reverse-im               ;; https://github.com/a13/reverse-im.el
+     rg                       ;; https://github.com/dajva/rg.el
+     russian-techwriter       ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
+     scala-mode               ;;
+     swiper                   ;; https://github.com/abo-abo/swiper
+     tempel                   ;; https://github.com/minad/tempel
+     terraform-mode           ;;
+     treemacs                 ;;
+     treemacs-all-the-icons   ;;
+     treemacs-icons-dired     ;;
+     treemacs-magit           ;;
+     undo-tree                ;; https://gitlab.com/tsc25/undo-tree
+     vagrant                  ;; https://github.com/ottbot/vagrant.el
+     verb                     ;;
+     vertico                  ;; https://github.com/minad/vertico
+     web-mode                 ;;
+     wgrep                    ;; https://github.com/mhayashi1120/Emacs-wgrep
+     which-key                ;; https://github.com/justbur/emacs-which-key
+     ws-butler                ;; https://github.com/lewang/ws-butler
+     yaml-mode                ;;
+     yascroll                 ;; https://github.com/emacsorphanage/yascroll
+     yasnippet                ;; https://github.com/joaotavora/yasnippet
+     yasnippet-snippets       ;; https://github.com/AndreaCrotti/yasnippet-snippets
      ))
 
 ;; Проверка наличия индекса пакетов
@@ -591,6 +594,7 @@ Version 2017-11-01"
   (checkdoc-minor-mode 1)
   (electric-indent-mode 1)
   (flymake-mode 1)
+  (flycheck-elsa-setup)
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)
   (rainbow-delimiters-mode 1)
@@ -617,6 +621,14 @@ Version 2017-11-01"
   flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 (add-hook 'flycheck-mode-hook #'flycheck-color-mode-line-mode)
 (global-flycheck-mode 1)
+
+
+;; FLYCHECK ELSA
+;; https://github.com/emacs-elsa/flycheck-elsa
+(require 'flycheck-elsa)
+(setq-default flycheck-elsa-backend 'cask)
+(unless (executable-find "cask")
+  (push (format "/home/%s/.local/bin/cask" (user-login-name)) exec-path))
 
 
 ;; FLYCHECK-PACKAGE
@@ -1034,11 +1046,20 @@ Version 2017-11-01"
 (add-hook 'python-mode-hook #'pyvenv-mode)
 
 
+;; RUSSIAN-TECHWRITER
+;; Метод ввода для технических писателей
+;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
+(require 'russian-techwriter)
+(setq-default default-input-method 'russian-techwriter)
+
+
 ;; REVERSE-IM
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
 (require 'reverse-im)
-(setq-default reverse-im-input-methods '("russian-computer" "russian-techwriter"))
+(setq-default reverse-im-input-methods '(
+                                          "russian-computer"
+                                          "russian-techwriter"))
 (reverse-im-mode t)
 
 
@@ -1067,13 +1088,6 @@ Version 2017-11-01"
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.rb$" .ruby-mode))
-
-
-;; RUSSIAN-TECHWRITER
-;; Метод ввода для технических писателей
-;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
-(require 'russian-techwriter)
-(setq-default default-input-method 'russian-techwriter)
 
 
 ;; RG (ripgrep)

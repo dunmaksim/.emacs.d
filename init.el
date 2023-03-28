@@ -96,7 +96,7 @@
 (delete-selection-mode t)   ;; Если регион выделен, удалить его, а не последний символ.
 (global-font-lock-mode t)   ;; Отображать шрифты красиво, используя Font Face's
 (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
-(global-hl-line-mode 1)     ;; Подсветить активные строки во всех открытых буферах
+;; (global-hl-line-mode 1)     ;; Подсветить активные строки во всех открытых буферах
 (global-visual-line-mode 1) ;; Подсвечивать текущую строку
 (line-number-mode t)        ;; Показывать номер строки в статусной строке
 (menu-bar-mode -1)          ;; Меню не нужно
@@ -137,13 +137,13 @@
      ansible                  ;;
      apache-mode              ;;
      apt-sources-list         ;; https://git.korewanetadesu.com/apt-sources-list.git
+     avy
+     catppuccin-theme
      centaur-tabs             ;; https://github.com/ema2159/centaur-tabs
      checkdoc                 ;;
      company                  ;;
-     company-anaconda         ;;
      company-box              ;;
-     company-terraform        ;;
-     company-web              ;;
+     compat                   ;; https://github.com/emacs-compat/compat
      counsel                  ;;
      csharp-mode              ;; https://github.com/emacs-csharp/csharp-mode
      dash                     ;;
@@ -167,6 +167,7 @@
      flycheck-package         ;; https://github.com/purcell/flycheck-package
      format-all               ;; https://github.com/lassik/emacs-format-all-the-code
      go-mode                  ;; https://github.com/dominikh/go-mode.el
+     gruvbox-theme
      helm                     ;; https://github.com/emacs-helm/helm
      highlight-indentation    ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
      hl-todo                  ;; https://github.com/tarsius/hl-todo
@@ -187,6 +188,7 @@
      python-mode              ;;
      pyvenv-auto              ;; https://github.com/nryotaro/pyvenv-auto
      rainbow-delimiters       ;; https://github.com/Fanael/rainbow-delimiters
+     rainbow-mode             ;; https://elpa.gnu.org/packages/rainbow-mode.html
      reverse-im               ;; https://github.com/a13/reverse-im.el
      rg                       ;; https://github.com/dajva/rg.el
      russian-techwriter       ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
@@ -210,6 +212,7 @@
      yascroll                 ;; https://github.com/emacsorphanage/yascroll
      yasnippet                ;; https://github.com/joaotavora/yasnippet
      yasnippet-snippets       ;; https://github.com/AndreaCrotti/yasnippet-snippets
+     zenburn-theme
      ))
 
 ;; Проверка наличия индекса пакетов
@@ -270,16 +273,8 @@
 
     (when default-font-family
       (message "Выбран шрифт по умолчанию.")
-      ;;       (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family default-font-height))
-      ;;       (add-to-list 'default-frame-alist `(font . ,(format "%s-%d" default-font-family default-font-height)))
-      ;;       (set-face-font 'markdown-inline-code-face default-font-family)
-      ;;       (set-face-font 'markdown-table-face default-font-family)
-      ;;       (set-face-font 'markup-meta-face default-font-family)
-      ;;       (set-face-font 'markup-meta-hide-face default-font-family)
-      ;;       (set-face-font 'markup-value-face default-font-family)
-      ;; (set-face-font 'rainbow-delimiters-base-face default-font-family)
-      (set-face-attribute 'default nil
-        :family default-font-family)
+      (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family default-font-height) nil t)
+      (set-face-attribute 'default nil :family default-font-family)
       )
 
     (set-face-attribute 'default nil :height (* default-font-height 10))
@@ -290,11 +285,10 @@
     (require 'all-the-icons-ibuffer)
     (setq-default
       all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
-      all-the-icons-ibuffer-icon t
-      dashboard-set-file-icons t ;; Иконки типов файлов в графическом режиме
-      dashboard-set-heading-icons t ;; Иконка EMACS в графическом режиме
+      all-the-icons-ibuffer-icon t                ;;
+      dashboard-set-file-icons t                  ;; Иконки типов файлов в графическом режиме
+      dashboard-set-heading-icons t               ;; Иконка EMACS в графическом режиме
       )
-    (all-the-icons-ibuffer-mode t)
 
     (with-eval-after-load "centaur-tabs"
       (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
@@ -369,19 +363,19 @@ Version 2017-11-01"
 ;; ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
-(add-to-list 'load-path "~/repo/adoc-mode/")
-(require 'adoc-mode)
-(defun setup-adoc-mode()
-  "Настройки для `adoc-mode'."
-  (setq-local completion-at-point-functions
-    (cons #'tempel-expand completion-at-point-functions))
-  (flycheck-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1)
-  (buffer-face-mode t))
-(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
-(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
-(add-hook 'adoc-mode-hook #'setup-adoc-mode)
+;; (add-to-list 'load-path "~/repo/adoc-mode/")
+;; (require 'adoc-mode "~/repo/adoc-mode/adoc-mode.el")
+;; (defun setup-adoc-mode()
+;;   "Настройки для `adoc-mode'."
+;;   (setq-local completion-at-point-functions
+;;     (cons #'tempel-expand completion-at-point-functions))
+;;   (flycheck-mode 1)
+;;   (whitespace-mode 1)
+;;   (ws-butler-mode 1)
+;;   (buffer-face-mode t))
+;; (add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
+;; (add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
+;; (add-hook 'adoc-mode-hook #'setup-adoc-mode)
 
 
 ;; APT SOURCES LIST MODE
@@ -395,6 +389,13 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.list$" 'apt-sources-list-mode))
 (add-hook 'apt-sources-list-mode-hook #'setup-apt-sources-list-mode)
+
+
+;; CASK
+;; Средство повышения качества кода на EMACS Lisp
+;; https://cask.github.io/
+(when (file-exists-p "~/.cask/cask.el")
+  (require 'cask "~/.cask/cask.el"))
 
 
 ;; CENTAUR-TABS
@@ -432,13 +433,6 @@ Version 2017-11-01"
   company-tooltip-limit 10 ;; Ограничение на число подсказок
   )
 (global-set-key (kbd "<tab>") #'company-indent-or-complete-common)
-
-
-;; COMPANY-WEB
-;; Автодополнение для режима web-mode
-(require 'company-web)
-(require 'company-web-html)
-(add-to-list 'company-backends 'company-web-html)
 
 
 ;; CONF MODE
@@ -556,6 +550,8 @@ Version 2017-11-01"
 ;; LOAD THEME
 (require 'doom-themes)
 (load-theme 'doom-monokai-classic t)
+;; (require 'gruvbox)
+;; (load-theme 'gruvbox t)
 (doom-themes-org-config)
 (doom-themes-visual-bell-config)
 
@@ -582,6 +578,8 @@ Version 2017-11-01"
 (require 'elec-pair)
 (add-to-list 'electric-pair-pairs '(?« . ?»))
 (add-to-list 'electric-pair-pairs '(?{ . ?}))
+(add-to-list 'electric-pair-pairs '(?‘ . ’?))
+(add-to-list 'electric-pair-pairs '(?“ . ”?))
 (electric-pair-mode t) ;; Глобальный режим
 
 
@@ -598,6 +596,7 @@ Version 2017-11-01"
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)
   (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.el$'" . emacs-lisp-mode))
@@ -628,7 +627,8 @@ Version 2017-11-01"
 (require 'flycheck-elsa)
 (setq-default flycheck-elsa-backend 'cask)
 (unless (executable-find "cask")
-  (push (format "/home/%s/.local/bin/cask" (user-login-name)) exec-path))
+  (push (format "/home/%s/.local/bin/cask" (user-login-name)) exec-path)
+  (setq flycheck-emacs-lisp-elsa-executable "cask"))
 
 
 ;; FLYCHECK-PACKAGE
@@ -794,6 +794,7 @@ Version 2017-11-01"
        filename)))
 (defun setup-ibuffer-mode ()
   "Настройки `ibuffer-mode'."
+  (all-the-icons-ibuffer-mode 1)
   (ibuffer-auto-mode 1)
   (ibuffer-switch-to-saved-filter-groups "default"))
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
@@ -1275,6 +1276,7 @@ Version 2017-11-01"
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)
   (rainbow-delimiters-mode 1)
+  (rainbow-mode 1)
   (whitespace-mode t)
   (ws-butler-mode t))
 (add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
@@ -1302,8 +1304,8 @@ Version 2017-11-01"
      )
   whitespace-line-column 1000 ;; По умолчанию подсвечиваются длинные строки
   )
-(set-face-attribute 'whitespace-space nil :foreground "#75715E")
-(set-face-attribute 'whitespace-indentation nil :foreground "#E6DB74")
+;; (set-face-attribute 'whitespace-space nil :foreground "#75715E")
+;; (set-face-attribute 'whitespace-indentation nil :foreground "#E6DB74")
 
 
 ;; YAML-MODE

@@ -11,7 +11,6 @@
 (require 'ibuf-ext)
 (require 'ibuffer)
 (require 'ispell)
-(require 'menu-bar)
 (require 'paren)
 (require 'quail)
 (require 'saveplace)
@@ -42,27 +41,28 @@
 (defconst is-gui-mode (display-graphic-p) "EMACS запущен в графическом режиме.")
 (defconst default-font-height 15 "Размер шрифта по умолчанию.")
 
-;;; Создание каталогов для резервных копий и файлов автосохранения
+;; Создание каталогов для резервных копий и файлов автосохранения
 (unless (file-directory-p autosave-dir)
   (make-directory autosave-dir)
   (message "Создана директория для файлов автосохранения."))
 
+;; -> Стандартные настройки
 (setq-default
   abbrev-mode t ; Включить поддержку аббревиатур глобально
   auto-save-file-name-transforms `((".*" , autosave-dir) t)
-  blink-matching-paren t ; Мигать, когда скобки парные
-  calendar-week-start-day 1 ; Начнём неделю с понедельника
-  create-lockfiles nil ; Не надо создавать lock-файлы, от них одни проблемы
-  cursor-type 'bar ; Курсор в виде вертикальной черты
-  delete-old-versions t ; Удалять старые версии файлов
-  gc-cons-threshold (* 50 1000 1000) ; Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
-  indent-line-function (quote insert-tab)
-  indent-tabs-mode nil ; Использовать для выравнивания по нажатию TAB пробелы вместо табуляций
-  inhibit-splash-screen t ; Не надо показывать загрузочный экран
-  inhibit-startup-message t ; Не надо показывать приветственное сообщение
-  initial-scratch-message nil ; В новых буферах не нужно ничего писать
-  large-file-warning-threshold (* 100 1024 1024) ; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
-  load-prefer-newer t ; Если есть файл elc, но el новее, загрузить el-файл
+  blink-matching-paren t                         ;; Мигать, когда скобки парные
+  calendar-week-start-day 1                      ;; Начнём неделю с понедельника
+  create-lockfiles nil                           ;; Не надо создавать lock-файлы, от них одни проблемы
+  cursor-type 'bar                               ;; Курсор в виде вертикальной черты
+  delete-old-versions t                          ;; Удалять старые версии файлов
+  gc-cons-threshold (* 50 1000 1000)             ;; Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
+  indent-line-function (quote insert-tab)        ;;
+  indent-tabs-mode nil                           ;; Использовать для выравнивания по нажатию TAB пробелы вместо табуляций
+  inhibit-splash-screen t                        ;; Не надо показывать загрузочный экран
+  inhibit-startup-message t                      ;; Не надо показывать приветственное сообщение
+  initial-scratch-message nil                    ;; В новых буферах не нужно ничего писать
+  large-file-warning-threshold (* 100 1024 1024) ;; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
+  load-prefer-newer t                            ;; Если есть файл elc, но el новее, загрузить el-файл
   make-backup-files nil                 ;; Резервные копии не нужны, у нас есть undo-tree
   overwrite-mode-binary nil             ;; Выключить режим перезаписи текста под курсором для бинарных файлов
   overwrite-mode-textual nil            ;; Выключить режим перезаписи текста под курсором для текстовых файлов
@@ -91,15 +91,14 @@
   window-divider-default-right-width 3 ;; Ширина в пикселях для линии-разделителя окон
   x-underline-at-descent-line t)
 
-;; Включение стандартных режимов
+;; -> Стандартные режимы
 (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
 (delete-selection-mode t)   ;; Если регион выделен, удалить его, а не последний символ.
 (global-font-lock-mode t)   ;; Отображать шрифты красиво, используя Font Face's
 (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
-;; (global-hl-line-mode 1)     ;; Подсветить активные строки во всех открытых буферах
+(global-hl-line-mode 1)     ;; Подсветить активные строки во всех открытых буферах
 (global-visual-line-mode 1) ;; Подсвечивать текущую строку
 (line-number-mode t)        ;; Показывать номер строки в статусной строке
-(menu-bar-mode -1)          ;; Меню не нужно
 (save-place-mode 1)         ;; Помнить позицию курсора в открытых когда-либо файлах.
 (scroll-bar-mode -1)        ;; Отключить полосы прокрутки
 (size-indication-mode 1)    ;; Отображать размер буфера в строке статуса
@@ -109,7 +108,7 @@
 (window-divider-mode t)     ;; Визуально разделять окна EMACS
 
 
-;; КОДИРОВКИ
+;; -> КОДИРОВКИ
 ;; Везде насаждаем UTF-8
 (prefer-coding-system 'utf-8)               ;; При попытке определить кодировку файла начинать перебор с UTF-8
 (set-default-coding-systems 'utf-8)         ;; Кодировка по умолчанию
@@ -120,7 +119,7 @@
 (setq-default locale-coding-system 'utf-8)  ;; UTF-8 по умолчанию
 
 
-;; Настройка пакетов
+;; -> Настройка пакетов
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -202,7 +201,6 @@
      treemacs-magit           ;;
      undo-tree                ;; https://gitlab.com/tsc25/undo-tree
      vagrant                  ;; https://github.com/ottbot/vagrant.el
-     verb                     ;;
      vertico                  ;; https://github.com/minad/vertico
      web-mode                 ;;
      wgrep                    ;; https://github.com/mhayashi1120/Emacs-wgrep
@@ -227,22 +225,66 @@
       (package-install pkg-name t))))
 
 
+;; -> Создание пустого буфера
+(defun xah-new-empty-buffer ()
+  "Create a new empty buffer.
+New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
+
+It returns the buffer (for elisp programming).
+
+URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
+Version 2017-11-01"
+  (interactive)
+  (let (($buf (generate-new-buffer "untitled")))
+    (switch-to-buffer $buf)
+    (funcall initial-major-mode)
+    (setq buffer-offer-save t)
+    $buf))
+
+;; -> Сочетания клавиш
 ;; Изменение размеров окон
-(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
-(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "S-C-<down>") 'shrink-window)
-(global-set-key (kbd "S-C-<up>") 'enlarge-window)
-(global-set-key (kbd "S-<SPC>") 'just-one-space) ; Заменить пробелы и TAB'ы до и после курсора на один пробел
+;;
+;;                         enlarge-window
+;;                              ↑
+;; shrink-window-horizontally ←   → enlarge-window-horizontally
+;;                              ↓
+;;                         shrink-window
+;;
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)   ;; Уменьшить размер окна по ширине
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally) ;; Увеличить размер окна по ширине
+(global-set-key (kbd "S-C-<down>") 'enlarge-window)               ;; Увеличить размер окна по ширине
+(global-set-key (kbd "S-C-<up>") 'shrink-window)                  ;; Уменьшить размер окна по высоте
 
-(global-set-key (kbd "<escape>") 'keyboard-quit) ; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-(global-set-key (kbd "C-z") 'undo) ; Отмена
-(global-set-key (kbd "C-x k") 'kill-this-buffer) ; Закрыть буфер
-;; (global-set-key (kbd "<C-tab>") 'mode-line-other-buffer) ; Перейти в другой буфер
+;; Разные сочетания клавиш
+(global-set-key (kbd "S-<SPC>") 'just-one-space)                  ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+(global-set-key (kbd "<escape>") 'keyboard-quit)                  ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+(global-set-key (kbd "C-z") 'undo)                                ;; Отмена
+(global-set-key (kbd "C-x k") 'kill-this-buffer)                  ;; Закрыть буфер
+(global-set-key (kbd "C-v") 'yank)                                ;; Вставить текст из временного буфера
+(global-set-key (kbd "C-x o") 'next-multiframe-window)            ;; Перейти в следующее окно
+(global-set-key (kbd "C-x O") 'previous-multiframe-window)        ;; Перейти в предыдущее окно
+(global-set-key (kbd "<C-tab>") 'next-buffer)                     ;; Следующий буфер
 
-(global-set-key (kbd "C-v") 'yank) ; Вставить текст из временного буфера
-(global-set-key (kbd "C-x o") 'next-multiframe-window) ; Перейти в следующее окно
-(global-set-key (kbd "C-x O") 'previous-multiframe-window) ; Перейти в предыдущее окно
+;; Save/close/open
+(global-set-key (kbd "M-'") 'comment-or-uncomment-region)         ;; Закомментировать/раскомментировать область
 
+(global-set-key (kbd "<f3>") 'replace-string)                     ;; Поиск и замена
+(global-set-key (kbd "<f7>") 'xah-new-empty-buffer)               ;; Создание пустого буфера
+(global-set-key (kbd "<f9>") 'sort-lines)                         ;; Отсортировать выделенные строки
+(global-set-key (kbd "<esc>") 'keyboard-quit)                     ;; Аналог Ctrl+g
+
+;; Переключение буферов с помощью Ctrl+X и стрелочек
+(global-set-key (kbd "C-x <up>") 'windmove-up)
+(global-set-key (kbd "C-x <down>") 'windmove-down)
+(global-set-key (kbd "C-x <right>") 'windmove-right)
+(global-set-key (kbd "C-x <left>") 'windmove-left)
+
+(global-set-key (kbd "M--") (lambda () (interactive) (insert "—"))) ;; Вставка длинного тире по нажатию Alt+-
+
+(global-unset-key (kbd "<insert>")) ;; Запретить нажатие клавиши Insert (переключает режим перезаписи)
+(global-unset-key (kbd "M-,"))      ;; Disable M-, as markers
+
+;; -> Установка шрифтов
 (defun install-required-fonts ()
   "Выполняет установку шрифтов или говорит, как это сделать."
   ;; В Linux автоматически вызывается функция (all-the-icons-install-fonts).
@@ -256,6 +298,7 @@
       (message "Скачайте шрифты с помощью команды all-the-icons-install-fonts.\nУстановите их и перезапустите EMACS."))))
 
 
+;; -> Настройки, специфичные для графического режима
 (defun setup-gui-settings (frame-name)
   "Настройки, необходимые при запуске EMACS в графической среде.
 
@@ -302,49 +345,11 @@
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
 
-
-(defun xah-new-empty-buffer ()
-  "Create a new empty buffer.
-New buffer will be named “untitled” or “untitled<2>”, “untitled<3>”, etc.
-
-It returns the buffer (for elisp programming).
-
-URL `http://ergoemacs.org/emacs/emacs_new_empty_buffer.html'
-Version 2017-11-01"
-  (interactive)
-  (let (($buf (generate-new-buffer "untitled")))
-    (switch-to-buffer $buf)
-    (funcall initial-major-mode)
-    (setq buffer-offer-save t)
-    $buf))
-
-
-;; Save/close/open
-(global-set-key (kbd "M-'") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-o") 'dired)
-
-
-(global-set-key (kbd "<f3>") 'replace-string) ;; Поиск и замена
-(global-set-key (kbd "<f7>") 'xah-new-empty-buffer) ;; Buffers and windows
-(global-set-key (kbd "<f9>") 'sort-lines) ;; Sort lines
-(global-set-key (kbd "<esc>") 'keyboard-quit) ;; Execute commands — like [g]
-
-;; Переключение буферов с помощью Ctrl+X и стрелочек
-(global-set-key (kbd "C-x <up>") 'windmove-up)
-(global-set-key (kbd "C-x <down>") 'windmove-down)
-(global-set-key (kbd "C-x <right>") 'windmove-right)
-(global-set-key (kbd "C-x <left>") 'windmove-left)
-
-(global-set-key (kbd "M--") (lambda () (interactive) (insert "—"))) ;; Long dash by Alt+-
-
-(global-unset-key (kbd "<insert>")) ;; Disable overwrite mode
-(global-unset-key (kbd "M-,")) ;; Disable M-, as markers
-
 ;; Удалить буфер *scratch* после запуска EMACS.
 (when (get-buffer "*scratch*") (kill-buffer "*scratch*"))
 
 
-;; ABBREV-MODE
+;; -> ABBREV-MODE
 ;; Встроенный режим
 ;; Аббревиатуры — это фрагменты текста, которые по нажатию [C-x, '] превращаются в другие конструкции
 (require 'abbrev)
@@ -353,32 +358,32 @@ Version 2017-11-01"
   save-abbrevs 'silently) ; Сохранять добавленные аббревиатуры без лишних вопросов
 
 
-;; ACE-WINDOW
+;; -> ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами
 (require 'ace-window)
 (global-set-key (kbd "M-o") 'ace-window)
 
 
-;; ADOC-MODE
+;; -> ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
-;; (add-to-list 'load-path "~/repo/adoc-mode/")
-;; (require 'adoc-mode "~/repo/adoc-mode/adoc-mode.el")
-;; (defun setup-adoc-mode()
-;;   "Настройки для `adoc-mode'."
-;;   (setq-local completion-at-point-functions
-;;     (cons #'tempel-expand completion-at-point-functions))
-;;   (flycheck-mode 1)
-;;   (whitespace-mode 1)
-;;   (ws-butler-mode 1)
-;;   (buffer-face-mode t))
-;; (add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
-;; (add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
-;; (add-hook 'adoc-mode-hook #'setup-adoc-mode)
+(add-to-list 'load-path "~/repo/adoc-mode/")
+(require 'adoc-mode "~/repo/adoc-mode/adoc-mode.el")
+(defun setup-adoc-mode()
+  "Настройки для `adoc-mode'."
+  (setq-local completion-at-point-functions (cons #'tempel-expand completion-at-point-functions))
+	(setq-local adoc-fontify-code-blocks-natively 10000)
+  (flycheck-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1)
+  (buffer-face-mode t))
+(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
+(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
+(add-hook 'adoc-mode-hook #'setup-adoc-mode)
 
 
-;; APT SOURCES LIST MODE
+;; -> APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
 ;; Режим для редактирования файлов настройки репозиториев APT
 (require 'apt-sources-list)
@@ -391,14 +396,7 @@ Version 2017-11-01"
 (add-hook 'apt-sources-list-mode-hook #'setup-apt-sources-list-mode)
 
 
-;; CASK
-;; Средство повышения качества кода на EMACS Lisp
-;; https://cask.github.io/
-(when (file-exists-p "~/.cask/cask.el")
-  (require 'cask "~/.cask/cask.el"))
-
-
-;; CENTAUR-TABS
+;; -> CENTAUR-TABS
 ;; https://github.com/ema2159/centaur-tabs
 ;; Вкладки с иконками и прочими удобствами
 (require 'centaur-tabs)
@@ -417,7 +415,7 @@ Version 2017-11-01"
 (add-hook 'dired-mode-hook #'centaur-tabs-local-mode)
 
 
-;; COMPANY-MODE
+;; -> COMPANY-MODE
 ;; https://company-mode.github.io/
 ;; Автодополнение
 (require 'company)
@@ -435,7 +433,7 @@ Version 2017-11-01"
 (global-set-key (kbd "<tab>") #'company-indent-or-complete-common)
 
 
-;; CONF MODE
+;; -> CONF MODE
 ;; Встроенный пакет. Основной режим для редактирования конфигурационных файлов.
 (require 'conf-mode)
 (add-to-list 'auto-mode-alist '("\\.env$" . conf-mode))
@@ -445,7 +443,7 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.terraformrc$" . conf-mode))
 
 
-;; CSS-MODE
+;; -> CSS-MODE
 ;; Встроенный режим
 (require 'css-mode)
 (setq-default css-indent-offset 2)
@@ -460,7 +458,7 @@ Version 2017-11-01"
 (add-hook 'css-mode-hook #'setup-css-mode)
 
 
-;; Dashboard
+;; -> Dashboard
 ;; https://github.com/emacs-dashboard/emacs-dashboard
 ;; Отображает дашборд при запуске EMACS
 (require 'dashboard)
@@ -476,7 +474,7 @@ Version 2017-11-01"
 (dashboard-setup-startup-hook)
 
 
-;; DEMAP
+;; -> DEMAP
 ;; https://gitlab.com/sawyerjgardner/demap.el
 ;; Мини-карта
 (require 'demap)
@@ -484,7 +482,7 @@ Version 2017-11-01"
 (setq-default demap-minimap-window-width 20) ; Ширина мини-карты
 
 
-;; DESKTOP-SAVE-MODE
+;; -> DESKTOP-SAVE-MODE
 ;; Встроенный пакет
 ;; Позволяет сохранять состояние EMACS между сессиями
 (require 'desktop)
@@ -494,7 +492,7 @@ Version 2017-11-01"
 (desktop-save-mode t)
 
 
-;; DIFF-HL
+;; -> DIFF-HL
 ;; https://github.com/dgutov/diff-hl
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
@@ -502,16 +500,17 @@ Version 2017-11-01"
 (global-diff-hl-mode 1)
 
 
-;; DIRED
+;; -> DIRED
 ;; Встроенный пакет для работы с файлами и каталогами.
 (require 'dired)
 (when (string-equal system-type "gnu/linux")
   ;; Это может не работать в Windows, надо проверить
   (setq-default dired-listing-switches "-lahX --group-directories-first"))
+(global-set-key (kbd "C-o") 'dired)
 (add-hook 'dired-mode-hook #'auto-revert-mode)
 
 
-;; DISPLAY-LINE-NUMBERS-MODE
+;; -> DISPLAY-LINE-NUMBERS-MODE
 ;; Встроенный пакет
 ;; Показывает номера строк
 (require 'display-line-numbers)
@@ -519,12 +518,12 @@ Version 2017-11-01"
 (global-display-line-numbers-mode 1)
 
 
-;; DOCKERFILE-MODE
+;; -> DOCKERFILE-MODE
 (require 'dockerfile-mode)
 (add-to-list 'auto-mode-alist '("^Dockerfile$" . dockerfile-mode))
 
 
-;; DOOM-MODELINE
+;; -> DOOM-MODELINE
 ;; https://github.com/seagle0128/doom-modeline
 ;; Красивая и многофункциональная статусная панель
 (require 'doom-modeline)
@@ -547,7 +546,7 @@ Version 2017-11-01"
 (doom-modeline-mode 1)
 
 
-;; LOAD THEME
+;; -> LOAD THEME
 (require 'doom-themes)
 (load-theme 'doom-monokai-classic t)
 ;; (require 'gruvbox)
@@ -556,14 +555,14 @@ Version 2017-11-01"
 (doom-themes-visual-bell-config)
 
 
-;; EASY KILL
+;; -> EASY KILL
 ;; https://github.com/leoliu/easy-kill
 ;; Удобнее работать с удалением текстовых блоков
 (require 'easy-kill)
 (global-set-key [remap kill-ring-save] 'easy-kill)
 
 
-;; EDITORCONFIG EMACS
+;; -> EDITORCONFIG EMACS
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (require 'editorconfig)
@@ -571,7 +570,7 @@ Version 2017-11-01"
 (editorconfig-mode 1)
 
 
-;; ELEC-PAIR MODE
+;; -> ELEC-PAIR MODE
 ;; Встроенный пакет.
 ;; Автоматически вставляет при вводе одной скобки парную ей. Если
 ;; выделен регион, то в скобки обрамляется он.
@@ -583,7 +582,7 @@ Version 2017-11-01"
 (electric-pair-mode t) ;; Глобальный режим
 
 
-;; EMACS LISP MODE
+;; -> EMACS LISP MODE
 ;; IT IS NOT A ELISP-MODE!
 ;; Встроенный пакет для EMACS Lisp
 (defun setup-emacs-lisp-mode ()
@@ -604,7 +603,7 @@ Version 2017-11-01"
 (add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
 
 
-;; FLYCHECK
+;; -> FLYCHECK
 ;; https://flycheck.org
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (require 'flycheck)
@@ -622,23 +621,14 @@ Version 2017-11-01"
 (global-flycheck-mode 1)
 
 
-;; FLYCHECK ELSA
-;; https://github.com/emacs-elsa/flycheck-elsa
-(require 'flycheck-elsa)
-(setq-default flycheck-elsa-backend 'cask)
-(unless (executable-find "cask")
-  (push (format "/home/%s/.local/bin/cask" (user-login-name)) exec-path)
-  (setq flycheck-emacs-lisp-elsa-executable "cask"))
-
-
-;; FLYCHECK-PACKAGE
+;; -> FLYCHECK-PACKAGE
 ;; https://github.com/purcell/flycheck-package
 ;; Проверка пакетов с помощью Flycheck
 (require 'flycheck-package)
 (eval-after-load 'flycheck '(flycheck-package-setup))
 
 
-;; FLYSPELL-MODE
+;; -> FLYSPELL-MODE
 ;; Проверка орфографии с помощью словарей
 (require 'flyspell)
 (when
@@ -649,14 +639,14 @@ Version 2017-11-01"
   (setq-default ispell-program-name "/usr/bin/aspell"))
 
 
-;; FORMAT-ALL
+;; -> FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода по нажатию [F12]
 (require 'format-all)
 (global-set-key (kbd "<f12>") 'format-all-buffer)
 
 
-;; GO-MODE
+;; -> GO-MODE
 ;; https://github.com/dominikh/go-mode.el
 ;; Поддержка Golang
 (require 'go-mode)
@@ -670,7 +660,7 @@ Version 2017-11-01"
 (add-hook 'go-mode-hook #'setup-go-mode)
 
 
-;; HELM
+;; -> HELM
 ;; https://github.com/emacs-helm/helm
 ;; Подсказки в минибуфере, и не только
 (require 'helm)
@@ -681,7 +671,7 @@ Version 2017-11-01"
 (helm-mode 1)
 
 
-;; HIGHLIGHT-INDENTATION-MODE
+;; -> HIGHLIGHT-INDENTATION-MODE
 ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
 ;; Показывает направляющие для отступов
 (require 'highlight-indentation)
@@ -695,14 +685,14 @@ Version 2017-11-01"
      terraform-mode
      ))
 
-;; HL-TODO
+;; -> HL-TODO
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
 (require 'hl-todo)
 (global-hl-todo-mode t)
 
 
-;; IBUFFER
+;; -> IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 ;; По нажатию F2 выводит список открытых буферов.
 (defalias 'list-buffers 'ibuffer)
@@ -801,7 +791,7 @@ Version 2017-11-01"
 (global-set-key (kbd "<f2>") 'ibuffer)
 
 
-;; JAVA-MODE
+;; -> JAVA-MODE
 ;; Встроенный режим из пакета `cc-mode'.
 (require 'cc-mode)
 (defun setup-java-mode ()
@@ -816,7 +806,7 @@ Version 2017-11-01"
 
 
 
-;; JS2-MODE
+;; -> JS2-MODE
 ;; https://github.com/mooz/js2-mode
 (require 'js2-mode)
 (defun setup-js2-mode ()
@@ -829,7 +819,17 @@ Version 2017-11-01"
 (add-hook 'js2-mode-hook #'setup-js2-mode)
 
 
-;; LSP MODE
+;; -> JSON-MODE
+;; Встроенный пакет
+(require 'json)
+(defun setup-json-mode ()
+  "Настройки для `json-mode'."
+  (flycheck-mode 1)
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1))
+(add-hook 'json-mode-hook #'setup-json-mode)
+
+;; -> LSP
 ;; https://emacs-lsp.github.io/lsp-mode/
 ;; Базовый пакет, необходимый для работы LSP
 ;;
@@ -861,7 +861,7 @@ Version 2017-11-01"
   lsp-ui-sideline-enable t)
 
 
-;; MAGIT
+;; -> MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (require 'magit)
@@ -869,7 +869,7 @@ Version 2017-11-01"
 (global-set-key (kbd "<f6>") 'magit-checkout)
 
 
-;; MAKEFILE
+;; -> MAKEFILE
 ;; Встроенный пакет для работы с Makefile
 (defun setup-makefile-mode ()
   "Настройка режима `makefile-mode'."
@@ -881,7 +881,7 @@ Version 2017-11-01"
 (add-hook 'makefile-mode-hook #'setup-makefile-mode)
 
 
-;; MARKDOWN MODE
+;; -> MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (require 'markdown-mode)
@@ -906,7 +906,13 @@ Version 2017-11-01"
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
-;; MULTIPLE CURSORS
+;; -> MENU-BAR-MODE
+;; Отключить меню за ненадобностью.
+(when (fbound 'menu-bar-mode)
+  (menu-bar-mode -1))
+
+
+;; -> MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (require 'multiple-cursors)
@@ -916,7 +922,7 @@ Version 2017-11-01"
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 
-;; NXML-MODE
+;; -> NXML-MODE
 ;; Встроенный пакет
 ;; Почти как xml-mode, только лучше и новее
 (require 'nxml-mode)
@@ -937,7 +943,7 @@ Version 2017-11-01"
 (add-hook 'nxml-mode-hook #'setup-nxml-mode)
 
 
-;; ORG-MODE
+;; -> ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, и не только
 (require 'org)
@@ -957,7 +963,7 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.org$'" . org-mode))
 
 
-;; PHP-MODE
+;; -> PHP-MODE
 (require 'php)
 (defun setup-php-mode ()
   "Настройки для `php-mode'."
@@ -970,13 +976,13 @@ Version 2017-11-01"
 (add-hook 'php-mode-hook #'setup-php-mode)
 
 
-;; PIXEL-SCROLL-PRECISION-MODE
+;; -> PIXEL-SCROLL-PRECISION-MODE
 ;; TODO: что это?
 (when (fboundp 'pixel-scroll-precision-mode)
   (pixel-scroll-precision-mode t))
 
 
-;; PROG-MODE
+;; -> PROG-MODE
 ;; Фундаментальный режим, на основе которого сделаны все режимы программирования.
 (require 'prog-mode)
 (add-hook 'prog-mode-hook #'company-mode)
@@ -986,18 +992,17 @@ Version 2017-11-01"
 (add-hook 'prog-mode-hook #'ws-butler-mode)
 
 
-;; PROJECTILE
+;; -> PROJECTILE
 ;; https://docs.projectile.mx/projectile/installation.html
 ;; Управление проектами. Чтобы каталог считался проектом, он должен быть
 ;; под контролем любой системы версионирования, либо содержать специальные
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (require 'projectile)
-(setq projectile-completion-system 'company)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 
-;; PROTOBUF-MODE
+;; -> PROTOBUF-MODE
 ;; https://github.com/emacsmirror/protobuf-mode
 ;; Работа с файлами Protobuf: подсветка синтаксиса, переход по ссылками и т. д.
 (require 'protobuf-mode)
@@ -1012,7 +1017,7 @@ Version 2017-11-01"
 (add-hook 'protobuf-mode-hook #'setup-protobuf-mode)
 
 
-;; PULSAR-MODE
+;; -> PULSAR-MODE
 ;; https://github.com/protesilaos/pulsar
 ;; Подсвечивать курсор при его перемещении на несколько строк
 (require 'pulsar)
@@ -1021,14 +1026,14 @@ Version 2017-11-01"
 (pulsar-global-mode 1)
 
 
-;; PYTHON-MODE
+;; -> PYTHON-MODE
 (require 'python)
 (setq-default
   doom-modeline-env-enable-python t
   ;; py-company-pycomplete-p t
   ;; py-electric-comment-p t
   ;; py-pylint-command-args "--max-line-length 120"
-  ;; py-virtualenv-workon-home "~/.virtualenvs"
+  py-virtualenv-workon-home "~/.virtualenvs"
   python-shell-interpreter "python3")
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
@@ -1037,6 +1042,8 @@ Version 2017-11-01"
   (lsp-mode 1)
   (pyvenv-mode 1)
   (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1)
   (setq-local python-indent-offset 4)
   (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
   (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
@@ -1047,14 +1054,14 @@ Version 2017-11-01"
 (add-hook 'python-mode-hook #'pyvenv-mode)
 
 
-;; RUSSIAN-TECHWRITER
+;; -> RUSSIAN-TECHWRITER
 ;; Метод ввода для технических писателей
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (require 'russian-techwriter)
 (setq-default default-input-method 'russian-techwriter)
 
 
-;; REVERSE-IM
+;; -> REVERSE-IM
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
 (require 'reverse-im)
@@ -1064,7 +1071,7 @@ Version 2017-11-01"
 (reverse-im-mode t)
 
 
-;; RST-MODE
+;; -> RST-MODE
 ;; Основной режим для редактирования reStructutedText
 ;; Больше здесь: https://www.writethedocs.org/guide/writing/reStructuredText/
 (require 'rst)
@@ -1078,7 +1085,7 @@ Version 2017-11-01"
 (add-hook 'rst-mode-hook #'setup-rst-mode)
 
 
-;; RUBY-MODE
+;; -> RUBY-MODE
 ;; Это встроенный пакет
 ;;Поддержка Ruby on Rails
 (require 'ruby-mode)
@@ -1091,14 +1098,14 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.rb$" .ruby-mode))
 
 
-;; RG (ripgrep)
+;; -> RG (ripgrep)
 ;; https://github.com/dajva/rg.el
 ;; Для работы пакета требуется наличие в системе утилиты ripgrep
 (require 'rg)
 (rg-enable-default-bindings)
 
 
-;; SCALA MODE
+;; -> SCALA MODE
 ;; https://github.com/hvesalai/emacs-scala-mode
 (require 'scala-mode)
 (defun setup-scala-mode ()
@@ -1113,7 +1120,7 @@ Version 2017-11-01"
 (add-hook 'scala-mode-hook #'setup-scala-mode)
 
 
-;; SHELL-SCRIPT-MODE
+;; -> SHELL-SCRIPT-MODE
 (require 'sh-script)
 (defun setup-shell-script-mode ()
   "Настройки для `sh-script'."
@@ -1127,7 +1134,7 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.sh$" . shell-script-mode))
 
 
-;; SQL MODE
+;; -> SQL MODE
 ;; Это встроенный режим
 (require 'sql)
 (defun setup-sql-mode ()
@@ -1142,7 +1149,7 @@ Version 2017-11-01"
 (add-hook 'sql-mode-hook #'setup-sql-mode)
 
 
-;; SWIPER MODE
+;; -> SWIPER MODE
 ;; https://github.com/abo-abo/swiper
 ;; Пакет для быстрого поиска.
 ;; По кажатию C-7 можно выполнить быстрое редактирование найденных фрагментов, но чтобы
@@ -1152,7 +1159,7 @@ Version 2017-11-01"
 (global-set-key (kbd "C-s") 'swiper-isearch)
 
 
-;; TEMPEL
+;; -> TEMPEL
 ;; https://github.com/minad/tempel
 ;; Система шаблонов, более новая, чем `tempo.el'. Основные функции:
 ;; * `tempel-complete' — завершить ввод шаблона и раскрыть его
@@ -1163,7 +1170,7 @@ Version 2017-11-01"
 (global-set-key (kbd "M-*") #'tempel-insert)
 
 
-;; TERRAFORM-MODE
+;; -> TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
 (require 'terraform-mode)
@@ -1178,7 +1185,7 @@ Version 2017-11-01"
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
 
 
-;; TEXT-MODE
+;; -> TEXT-MODE
 ;; Фундаментальный режим, активный во всех буферах с "простым" текстом.
 (require 'text-mode)
 (defun setup-text-mode ()
@@ -1189,21 +1196,21 @@ Version 2017-11-01"
 (add-hook 'text-mode-hook #'setup-text-mode)
 
 
-;; TOOLBAR-MODE
+;; -> TOOLBAR-MODE
 ;; Встроенная панель с кнопками. Не нужна. В EMACS NOX вовсе отсутствует.
 ;; Перед отключением нужно проверить, что такая функциональность поддерживается.
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
 
 
-;; TOOLTIP-MODE
+;; -> TOOLTIP-MODE
 ;; Встроенный режим. Показывает подсказки, используя возможности GUI.
 ;; Не нужен, поэтому лучше выключить (всё будет отображаться в мини-буфере).
 (when (fboundp 'tooltip-mode)
   (tooltip-mode nil))
 
 
-;; TREEMACS — awesome file manager (instead NeoTree)
+;; -> TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Дерево файлов и каталогов
 (require 'treemacs)
@@ -1224,13 +1231,13 @@ Version 2017-11-01"
 (treemacs-filewatch-mode 1)
 
 
-;; TREEMACS-ICONS-DIRED
+;; -> TREEMACS-ICONS-DIRED
 ;; Отображать иконки файлов из  TreeMacs в dired-mode
 (require 'treemacs-icons)
 (add-hook 'dired-mode-hook 'treemacs-icons-dired-enable-once)
 
 
-;; UNDO-TREE
+;; -> UNDO-TREE
 ;; Не только предоставляет привычное поведение при отмене команд, но и даёт мощные возможности по
 ;; ведению дерева правок.
 (require 'undo-tree)
@@ -1238,29 +1245,21 @@ Version 2017-11-01"
 (global-undo-tree-mode 1)
 
 
-;; VAGRANT MODE
+;; -> VAGRANT MODE
 ;; Работа с файлами Vagrant
 ;; https://github.com/ottbot/vagrant.el
 (require 'vagrant)
 (add-to-list 'auto-mode-alist (cons "Vagrantfile$\\'" 'vagrant-mode))
 
 
-;; VERB-MODE
-;; Удобная работа с REST API
-;; https://github.com/federicotdn/verb
-(require 'verb)
-(with-eval-after-load 'org
-  (define-key org-mode-map (kbd "C-c C-r") verb-command-map))
-
-
-;; VERTICO
+;; -> VERTICO
 ;; https://github.com/minad/vertico
 ;; Автодополнение на основе встроенной функциональности EMACS
 (require 'vertico)
 (vertico-mode 1)
 
 
-;; WEB-MODE
+;; -> WEB-MODE
 ;; https://web-mode.org/
 (require 'web-mode)
 (setq-default
@@ -1283,15 +1282,18 @@ Version 2017-11-01"
 (add-hook 'web-mode-hook #'setup-web-mode)
 
 
-;; WHICH-KEY MODE
+;; -> WHICH-KEY MODE
 ;; https://github.com/justbur/emacs-which-key
 ;; Показывает подсказки к командам.
 (require 'which-key)
+(setq-default
+	which-key-idle-delay 2
+	which-key-idle-secondary-delay 0.05)
 (which-key-setup-side-window-right)
 (which-key-mode 1)
 
 
-;; WHITESPACE MODE
+;; -> WHITESPACE MODE
 ;; Встроенный пакет для отображения невидимых символов.
 (require 'whitespace)
 (setq-default
@@ -1308,14 +1310,16 @@ Version 2017-11-01"
 ;; (set-face-attribute 'whitespace-indentation nil :foreground "#E6DB74")
 
 
-;; YAML-MODE
+;; -> YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
 (require 'yaml-mode)
 (defun setup-yaml-mode ()
   "Настройки для `yaml-mode'."
   (highlight-indentation-mode 1)
-  (rainbow-delimiters-mode 1))
+  (rainbow-delimiters-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist '("\\.ansible\\-lint" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.pre\\-commit\\-config\\.yaml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
@@ -1326,14 +1330,14 @@ Version 2017-11-01"
 (add-hook 'yaml-mode-hook #'setup-yaml-mode)
 
 
-;; YASCROLL-MODE
+;; -> YASCROLL-MODE
 ;; https://github.com/emacsorphanage/yascroll
 ;; Альтернативная полоса прокрутки
 (require 'yascroll)
 (global-yascroll-bar-mode 1)
 
 
-;; YASNIPPET
+;; -> YASNIPPET
 ;; http://github.com/joaotavora/yasnippet
 ;; Предоставляет функциональность сниппетов — блоков кода, в которые всего-лишь нужно подставить значения.
 (require 'yasnippet)

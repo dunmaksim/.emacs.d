@@ -364,7 +364,6 @@ Version 2017-11-01"
 (require 'ace-window)
 (global-set-key (kbd "M-o") 'ace-window)
 
-
 ;; -> ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
@@ -908,7 +907,7 @@ Version 2017-11-01"
 
 ;; -> MENU-BAR-MODE
 ;; Отключить меню за ненадобностью.
-(when (fbound 'menu-bar-mode)
+(when (fboundp 'menu-bar-mode)
   (menu-bar-mode -1))
 
 

@@ -18,42 +18,29 @@
 
 (fset 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (скоращает объём вводимого текста для подтверждения команд)
 
-(defun load-if-exists (filename)
-  "Загрузить файл, если он существует.
-
-  FILENAME — имя файла."
-  (when (file-exists-p filename)
-    (load-file filename)))
-
-(defun set-minor-mode (minor-mode-name modes-list)
-  "Выполняет установку minor-mode-name для списка режимов `modes-list'.
-
-  MINOR-MODE-NAME — имя минорного режима.
-  MODES-LIST — список основных режимов, при которых должен активироваться указанный дополнительный."
-  (dolist (mode-name modes-list)
-    (add-hook
-      (derived-mode-hook-name mode-name) ; Эта функция позвращает имя хука, вызываемого при активации режима mode-name.
-      minor-mode-name t)))
-
 (defconst emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.")
-(defconst autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
-(defconst backups-dir (concat emacs-config-dir "backups") "Директория для резервных копий.")
-(defconst is-gui-mode (display-graphic-p) "EMACS запущен в графическом режиме.")
-(defconst default-font-height 15 "Размер шрифта по умолчанию.")
+(defconst emacs-autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
+(defconst emacs-custom-file (expand-file-name "custom.el" emacs-config-dir))
+(defconst emacs-default-font-height 15 "Размер шрифта по умолчанию.")
+(defconst emacs-package-user-dir (expand-file-name "elpa" user-emacs-directory))
+(defconst emacs-save-place-file (expand-file-name ".emacs-places" emacs-config-dir))
 
 ;; Создание каталогов для резервных копий и файлов автосохранения
-(unless (file-directory-p autosave-dir)
-  (make-directory autosave-dir)
+(unless (file-directory-p emacs-autosave-dir)
+  (make-directory emacs-autosave-dir)
   (message "Создана директория для файлов автосохранения."))
+
+(setq custom-file (expand-file-name "custom.el" emacs-config-dir))
 
 ;; -> Стандартные настройки
 (setq-default
   abbrev-mode t ; Включить поддержку аббревиатур глобально
-  auto-save-file-name-transforms `((".*" , autosave-dir) t)
+  auto-save-file-name-transforms `((".*" , emacs-autosave-dir) t)
   blink-matching-paren t                         ;; Мигать, когда скобки парные
   calendar-week-start-day 1                      ;; Начнём неделю с понедельника
   create-lockfiles nil                           ;; Не надо создавать lock-файлы, от них одни проблемы
   cursor-type 'bar                               ;; Курсор в виде вертикальной черты
+  custom-file emacs-custom-file                  ;; Файл для сохранения пользовательских настроек, сделанных в customize
   delete-old-versions t                          ;; Удалять старые версии файлов
   gc-cons-threshold (* 50 1000 1000)             ;; Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
   indent-line-function (quote insert-tab)        ;;
@@ -63,32 +50,32 @@
   initial-scratch-message nil                    ;; В новых буферах не нужно ничего писать
   large-file-warning-threshold (* 100 1024 1024) ;; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
   load-prefer-newer t                            ;; Если есть файл elc, но el новее, загрузить el-файл
-  make-backup-files nil                 ;; Резервные копии не нужны, у нас есть undo-tree
-  overwrite-mode-binary nil             ;; Выключить режим перезаписи текста под курсором для бинарных файлов
-  overwrite-mode-textual nil            ;; Выключить режим перезаписи текста под курсором для текстовых файлов
-  package-user-dir (expand-file-name "elpa" user-emacs-directory) ; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
-  require-final-newline t               ;; Автоматически вставлять в конец файла пустую строку, если её там нет
-  ring-bell-function #'ignore           ;; Заблокировать пищание
-  save-abbrevs 'silently                ;; Сохранять аббревиатуры без лишних вопросов
-  save-place-file (expand-file-name ".emacs-places" emacs-config-dir) ; Хранить данные о позициях в открытых файлах в .emacs-places
-  save-place-forget-unreadable-files 1  ;; Если файл нельзя открыть, то и помнить о нём ничего не надо
-  scroll-conservatively 100000          ;; TODO: проверить, что это такое
-  scroll-margin 5                       ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
-  scroll-preserve-screen-position 1     ;; TODO: проверить, что это такое
-  show-trailing-whitespace t                    ;; Показывать висячие пробелы
-  source-directory "/usr/share/emacs/27.1/src/" ;; Путь к исходному коду EMACS
-  suggest-key-bindings t               ;; Показывать подсказку клавиатурной комбинации для команды
-  tab-always-indent 'complete          ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
-  tab-width 4                          ;; Обменный курс на TAB — 4 SPACES
-  text-scale-mode-step 1.1             ;; Шаг увеличения масштаба
-  truncate-lines 1                     ;; Обрезать длинные строки
-  uniquify-buffer-name-style 'forward  ;; Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)
-  uniquify-separator "/"               ;; Разделять буферы с похожими именами, используя /
-  use-dialog-box nil                   ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
-  user-full-name "Dunaevsky Maxim"
-  visible-bell t                       ;; Заблокировать пищание
-  window-divider-default-places 't     ;; Разделители окон со всех сторон (по умолчанию только справа)
-  window-divider-default-right-width 3 ;; Ширина в пикселях для линии-разделителя окон
+  make-backup-files nil                          ;; Резервные копии не нужны, у нас есть undo-tree
+  overwrite-mode-binary nil                      ;; Выключить режим перезаписи текста под курсором для бинарных файлов
+  overwrite-mode-textual nil                     ;; Выключить режим перезаписи текста под курсором для текстовых файлов
+  package-user-dir emacs-package-user-dir        ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
+  require-final-newline t                        ;; Автоматически вставлять в конец файла пустую строку, если её там нет
+  ring-bell-function #'ignore                    ;; Заблокировать пищание
+  save-abbrevs 'silently                         ;; Сохранять аббревиатуры без лишних вопросов
+  save-place-file emacs-save-place-file          ;; Хранить данные о позициях в открытых файлах в .emacs-places
+  save-place-forget-unreadable-files 1           ;; Если файл нельзя открыть, то и помнить о нём ничего не надо
+  scroll-conservatively 100000                   ;; TODO: проверить, что это такое
+  scroll-margin 5                                ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
+  scroll-preserve-screen-position 1              ;; TODO: проверить, что это такое
+  show-trailing-whitespace t                     ;; Показывать висячие пробелы
+  source-directory "/usr/share/emacs/27.1/src/"  ;; Путь к исходному коду EMACS
+  suggest-key-bindings t                         ;; Показывать подсказку клавиатурной комбинации для команды
+  tab-always-indent 'complete                    ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
+  tab-width 4                                    ;; Обменный курс на TAB — 4 SPACES
+  text-scale-mode-step 1.1                       ;; Шаг увеличения масштаба
+  truncate-lines 1                               ;; Обрезать длинные строки
+  uniquify-buffer-name-style 'forward            ;; Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)
+  uniquify-separator "/"                         ;; Разделять буферы с похожими именами, используя /
+  use-dialog-box nil                             ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
+  user-full-name "Dunaevsky Maxim"               ;; Имя пользователя
+  visible-bell t                                 ;; Заблокировать пищание
+  window-divider-default-places 't               ;; Разделители окон со всех сторон (по умолчанию только справа)
+  window-divider-default-right-width 3           ;; Ширина в пикселях для линии-разделителя окон
   x-underline-at-descent-line t)
 
 ;; -> Стандартные режимы
@@ -110,16 +97,16 @@
 
 ;; -> КОДИРОВКИ
 ;; Везде насаждаем UTF-8
-(prefer-coding-system 'utf-8)               ;; При попытке определить кодировку файла начинать перебор с UTF-8
-(set-default-coding-systems 'utf-8)         ;; Кодировка по умолчанию
-(set-keyboard-coding-system 'utf-8)         ;; Кодировка символов при вводе текста в терминале
-(set-language-environment 'utf-8)           ;; Кодировка языка по умолчанию
-(set-selection-coding-system 'utf-8)        ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
-(set-terminal-coding-system 'utf-8)         ;; Кодировка символов для вывода команд, запущенных в терминале
-(setq-default locale-coding-system 'utf-8)  ;; UTF-8 по умолчанию
+(prefer-coding-system 'utf-8)              ;; При попытке определить кодировку файла начинать перебор с UTF-8
+(set-default-coding-systems 'utf-8)        ;; Кодировка по умолчанию
+(set-keyboard-coding-system 'utf-8)        ;; Кодировка символов при вводе текста в терминале
+(set-language-environment 'utf-8)          ;; Кодировка языка по умолчанию
+(set-selection-coding-system 'utf-8)       ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
+(set-terminal-coding-system 'utf-8)        ;; Кодировка символов для вывода команд, запущенных в терминале
+(setq-default locale-coding-system 'utf-8) ;; UTF-8 по умолчанию
 
 
-;; -> Настройка пакетов
+;; -> ПАКЕТЫ
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -132,7 +119,7 @@
      all-the-icons            ;;
      all-the-icons-dired      ;; https://github.com/wyuenho/all-the-icons-dired
      all-the-icons-ibuffer    ;; https://github.com/seagle0128/all-the-icons-ibuffer
-     anaconda-mode            ;;
+     anaconda-mode            ;; https://github.com/pythonic-emacs/anaconda-mode
      ansible                  ;;
      apache-mode              ;;
      apt-sources-list         ;; https://git.korewanetadesu.com/apt-sources-list.git
@@ -316,11 +303,11 @@ Version 2017-11-01"
 
     (when default-font-family
       (message "Выбран шрифт по умолчанию.")
-      (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family default-font-height) nil t)
+      (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family emacs-default-font-height) nil t)
       (set-face-attribute 'default nil :family default-font-family)
       )
 
-    (set-face-attribute 'default nil :height (* default-font-height 10))
+    (set-face-attribute 'default nil :height (* emacs-default-font-height 10))
 
     ;; Настройка иконочных шрифров и немножко GUI.
     (require 'all-the-icons)
@@ -677,12 +664,6 @@ Version 2017-11-01"
 ;;(set-face-background 'highlight-indentation-face "#e3e3d3")
 (set-face-background 'highlight-indentation-face "#4d4d4d")
 (set-face-background 'highlight-indentation-current-column-face "#c3b3b3")
-(set-minor-mode
-  'highlight-indentation-mode
-  '(
-     python-mode
-     terraform-mode
-     ))
 
 ;; -> HL-TODO
 ;; https://github.com/tarsius/hl-todo
@@ -725,7 +706,6 @@ Version 2017-11-01"
        ("Python"
          (or
            (mode . python-mode)
-           (mode . elpy-mode)
            (mode . anaconda-mode)))
        ("SSH keys" (or (name . "^\\*.pub$")))
        ("Shell-script"
@@ -1033,11 +1013,14 @@ Version 2017-11-01"
   ;; py-electric-comment-p t
   ;; py-pylint-command-args "--max-line-length 120"
   py-virtualenv-workon-home "~/.virtualenvs"
-  python-shell-interpreter "python3")
+  python-indent-offse 4
+  python-shell-interpreter "python3"  )
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
+  (anaconda-eldoc-mode 1)
   (anaconda-mode 1)
+  (highlight-indentation-mode 1)
   (lsp-mode 1)
   (pyvenv-mode 1)
   (rainbow-delimiters-mode 1)
@@ -1086,7 +1069,7 @@ Version 2017-11-01"
 
 ;; -> RUBY-MODE
 ;; Это встроенный пакет
-;;Поддержка Ruby on Rails
+;; Поддержка Ruby on Rails
 (require 'ruby-mode)
 (defun setup-ruby-mode ()
   "Настройки для `ruby-mode'."
@@ -1177,6 +1160,7 @@ Version 2017-11-01"
   "Настройка `terraform-mode'."
   (setq-default flycheck-checker 'terraform)
   (flycheck-mode 1)
+  (highlight-indentation-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -1352,12 +1336,10 @@ Version 2017-11-01"
 
 (setup-gui-settings (selected-frame))
 
-
-;; Загрузка CUSTOM FILE
-(setq custom-file (expand-file-name "custom.el" emacs-config-dir))
+;; -> CUSTOM FILE
+;; Пользовательские настройки, сделанные через CUSTOMIZE
 (when (file-exists-p custom-file)
   (load custom-file))
-
 
 (provide 'init.el)
 ;;; init.el ends here

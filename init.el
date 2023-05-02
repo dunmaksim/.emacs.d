@@ -595,16 +595,15 @@ Version 2017-11-01"
 (require 'flycheck)
 (require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
 (setq-default
-  flycheck-check-syntax-automatically '(mode-enabled save new-line)
-  flycheck-locate-config-file-functions '(
-                                           flycheck-locate-config-file-by-path
-                                           flycheck-locate-config-file-ancestor-directories
-                                           flycheck-locate-config-file-home)
-  flycheck-highlighting-mode 'lines
-  flycheck-indication-mode 'left-fringe
-  flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
+ flycheck-check-syntax-automatically '(mode-enabled save new-line)
+ flycheck-locate-config-file-functions '(
+                                         flycheck-locate-config-file-by-path
+                                         flycheck-locate-config-file-ancestor-directories
+                                         flycheck-locate-config-file-home)
+ flycheck-highlighting-mode 'lines
+ flycheck-indication-mode 'left-fringe
+ flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 (add-hook 'flycheck-mode-hook #'flycheck-color-mode-line-mode)
-(global-flycheck-mode 1)
 
 
 ;; -> FLYCHECK-PACKAGE
@@ -961,16 +960,6 @@ Version 2017-11-01"
   (pixel-scroll-precision-mode t))
 
 
-;; -> PROG-MODE
-;; Фундаментальный режим, на основе которого сделаны все режимы программирования.
-(require 'prog-mode)
-(add-hook 'prog-mode-hook #'company-mode)
-(add-hook 'prog-mode-hook #'flycheck-mode)
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-(add-hook 'prog-mode-hook #'whitespace-mode)
-(add-hook 'prog-mode-hook #'ws-butler-mode)
-
-
 ;; -> PROJECTILE
 ;; https://docs.projectile.mx/projectile/installation.html
 ;; Управление проектами. Чтобы каталог считался проектом, он должен быть
@@ -1166,17 +1155,6 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.tf$" 'terraform-mode))
 (add-hook 'terraform-mode-hook #'setup-terraform-mode)
-
-
-;; -> TEXT-MODE
-;; Фундаментальный режим, активный во всех буферах с "простым" текстом.
-(require 'text-mode)
-(defun setup-text-mode ()
-  "Настройки для всех режимов на базе `text-mode'."
-  (ispell-minor-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
-(add-hook 'text-mode-hook #'setup-text-mode)
 
 
 ;; -> TOOLBAR-MODE

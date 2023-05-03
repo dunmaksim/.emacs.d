@@ -1224,13 +1224,13 @@ Version 2017-11-01"
 ;; https://web-mode.org/
 (require 'web-mode)
 (setq-default
-  initial-major-mode 'web-mode
-  web-mode-attr-indent-offset 4
-  web-mode-css-indent-offset 2 ;; CSS
-  web-mode-enable-block-face t
-  web-mode-enable-css-colorization t ;; Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета
-  web-mode-enable-current-element-highlight t
-  web-mode-markup-indent-offset 2)
+  initial-major-mode 'web-mode                ;; Необязательно
+  web-mode-attr-indent-offset 4               ;; Отступ в атрибутов — 4 пробела
+  web-mode-css-indent-offset 2                ;; При редактировании CSS отступ будет 2 пробела
+  web-mode-enable-block-face t                ;; Отображение
+  web-mode-enable-css-colorization t          ;; Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета
+  web-mode-enable-current-element-highlight t ;; Подсветка активного элемента разметки
+  web-mode-markup-indent-offset 2)            ;; Отступ при вёрстке HTML — 2 пробела
 (defun setup-web-mode ()
   "Настройки `web-mode'."
   (highlight-indentation-mode 1)

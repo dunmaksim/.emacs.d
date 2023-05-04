@@ -123,15 +123,14 @@
      ansible                  ;;
      apache-mode              ;;
      apt-sources-list         ;; https://git.korewanetadesu.com/apt-sources-list.git
-     avy
-     catppuccin-theme
+     avy                      ;;
+     catppuccin-theme         ;;
      centaur-tabs             ;; https://github.com/ema2159/centaur-tabs
      checkdoc                 ;;
      company                  ;;
      company-box              ;;
      compat                   ;; https://github.com/emacs-compat/compat
      counsel                  ;;
-     csharp-mode              ;; https://github.com/emacs-csharp/csharp-mode
      dash                     ;;
      dashboard                ;; https://github.com/emacs-dashboard/emacs-dashboard
      demap                    ;; https://gitlab.com/sawyerjgardner/demap.el
@@ -322,7 +321,7 @@ Version 2017-11-01"
     (require 'all-the-icons-ibuffer)
     (setq-default
       all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
-      all-the-icons-ibuffer-icon t                ;;
+      all-the-icons-ibuffer-icon t                ;; Показывать иконки файлов в ibuffer
       dashboard-set-file-icons t                  ;; Иконки типов файлов в графическом режиме
       dashboard-set-heading-icons t               ;; Иконка EMACS в графическом режиме
       )
@@ -541,7 +540,7 @@ Version 2017-11-01"
   doom-modeline-env-enable-go t            ;; Показывать версию Golang
   doom-modeline-env-enable-python t        ;; Показывать версию Python
   doom-modeline-env-enable-ruby t          ;; Показывать версию Ruby
-  doom-modeline-hud t                      ;;
+  doom-modeline-hud t                      ;; Использовать HUD вместо прямоугольника по умолчанию
   doom-modeline-icon t                     ;; Показывать иконки
   doom-modeline-indent-info t              ;; Информация об отступах
   doom-modeline-lsp t                      ;; Показывать статус LSP
@@ -790,21 +789,6 @@ Version 2017-11-01"
 (global-set-key (kbd "<f2>") 'ibuffer)
 
 
-;; -> JAVA-MODE
-;; Встроенный режим из пакета `cc-mode'.
-(require 'cc-mode)
-(defun setup-java-mode ()
-  "Настройки для `java-mode'."
-  (aggressive-indent-mode 1)
-  (company-mode 1)
-  (flycheck-mode 1)
-  (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
-(add-hook 'java-mode-hook #'setup-java-mode)
-
-
-
 ;; -> JS2-MODE
 ;; https://github.com/mooz/js2-mode
 (require 'js2-mode)
@@ -1023,7 +1007,6 @@ Version 2017-11-01"
 ;; -> PYTHON-MODE
 (require 'python)
 (setq-default
-  doom-modeline-env-enable-python t              ;;
   py-company-pycomplete-p t                      ;;
   py-electric-comment-p t                        ;;
   py-pylint-command-args "--max-line-length 120" ;;
@@ -1085,35 +1068,6 @@ Version 2017-11-01"
 (add-hook 'rst-mode-hook #'setup-rst-mode)
 
 
-;; -> RUBY-MODE
-;; Это встроенный пакет
-;; Поддержка Ruby on Rails
-(require 'ruby-mode)
-(defun setup-ruby-mode ()
-  "Настройки для `ruby-mode'."
-  (highlight-indentation-mode 1)
-  (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
-(add-hook 'ruby-mode-hook #'setup-ruby-mode)
-(add-to-list 'auto-mode-alist '("\\.rb$" .ruby-mode))
-
-
-;; -> SCALA MODE
-;; https://github.com/hvesalai/emacs-scala-mode
-(require 'scala-mode)
-(defun setup-scala-mode ()
-  "Настройки `scala-mode'."
-  (aggressive-indent-mode 1)
-  (flycheck-mode 1)
-  (rainbow-delimiters-mode 1)
-  (whitespace-mode 1)
-  (ws-butler-mode 1))
-(add-to-list 'auto-mode-alist '("\\.scala$" . scala-mode))
-(add-to-list 'auto-mode-alist '("\\.sc$" . scala-mode))
-(add-hook 'scala-mode-hook #'setup-scala-mode)
-
-
 ;; -> SHELL-SCRIPT-MODE
 (require 'sh-script)
 (defun setup-shell-script-mode ()
@@ -1151,7 +1105,7 @@ Version 2017-11-01"
 ;; оно сработало правильно, нужно добавить команду swiper-mc в список mc/cmds-to-run-once.
 (require 'swiper)
 (add-to-list 'mc/cmds-to-run-once 'swiper-mc)
-(global-set-key (kbd "C-s") 'swiper-isearch)
+(global-set-key (kbd "C-s") 'swiper-isearch) ;; Заменить стандартный isearch на swiper
 
 
 ;; -> TEMPEL
@@ -1211,9 +1165,9 @@ Version 2017-11-01"
 (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
 (define-key treemacs-mode-map (kbd "f") 'projectile-grep)
 (global-set-key (kbd "<f8>") 'treemacs)
-(treemacs-follow-mode 1)
-(treemacs-git-mode 'simple)
-(treemacs-filewatch-mode 1)
+(treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
+(treemacs-git-mode 'simple) ;; Простой режим
+(treemacs-filewatch-mode 1) ;; Отслеживание изменений в ФС на лету
 
 
 ;; -> TREEMACS-ICONS-DIRED
@@ -1226,7 +1180,7 @@ Version 2017-11-01"
 ;; Не только предоставляет привычное поведение при отмене команд, но и даёт мощные возможности по
 ;; ведению дерева правок.
 (require 'undo-tree)
-(setq undo-tree-auto-save-history nil) ; Отключить создание резервных копий файлов
+(setq undo-tree-auto-save-history nil) ;; Отключить создание резервных копий файлов
 (global-undo-tree-mode 1)
 
 
@@ -1248,7 +1202,7 @@ Version 2017-11-01"
 ;; https://web-mode.org/
 (require 'web-mode)
 (setq-default
-  initial-major-mode 'web-mode                ;; Необязательно
+  initial-major-mode 'web-mode                ;; Необязательно, но теперь это режим по умолчанию
   web-mode-attr-indent-offset 4               ;; Отступ в атрибутов — 4 пробела
   web-mode-css-indent-offset 2                ;; При редактировании CSS отступ будет 2 пробела
   web-mode-enable-block-face t                ;; Отображение
@@ -1257,6 +1211,7 @@ Version 2017-11-01"
   web-mode-markup-indent-offset 2)            ;; Отступ при вёрстке HTML — 2 пробела
 (defun setup-web-mode ()
   "Настройки `web-mode'."
+  (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)
   (rainbow-delimiters-mode 1)
@@ -1269,11 +1224,11 @@ Version 2017-11-01"
 
 ;; -> WHICH-KEY MODE
 ;; https://github.com/justbur/emacs-which-key
-;; Показывает подсказки к командам.
+;; Показывает подсказки к сочетаниям клавиш.
 (require 'which-key)
 (setq-default
-	which-key-idle-delay 2
-	which-key-idle-secondary-delay 0.05)
+  which-key-idle-delay 2               ;; Задержка появления подсказки
+  which-key-idle-secondary-delay 0.05) ;; Ещё одна задержка появления подсказки
 (which-key-setup-side-window-right) ;; Показывать подсказки справа
 (which-key-mode 1)
 
@@ -1282,14 +1237,14 @@ Version 2017-11-01"
 ;; Встроенный пакет для отображения невидимых символов.
 (require 'whitespace)
 (setq-default
-  whitespace-display-mappings
+  whitespace-display-mappings ;; Отображение нечитаемых символов
   '(
      (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
      (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
      (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
      (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
      )
-  whitespace-line-column 1000 ;; По умолчанию подсвечиваются длинные строки
+  whitespace-line-column 1000 ;; По умолчанию подсвечиваются длинные строки. Не надо этого делать.
   )
 
 

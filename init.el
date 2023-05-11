@@ -65,7 +65,7 @@
   show-trailing-whitespace t                     ;; Показывать висячие пробелы
   source-directory "/usr/share/emacs/27.1/src/"  ;; Путь к исходному коду EMACS
   suggest-key-bindings t                         ;; Показывать подсказку клавиатурной комбинации для команды
-  tab-always-indent 'complete                    ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
+  ;; tab-always-indent 'complete                    ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
   tab-width 4                                    ;; Обменный курс на TAB — 4 SPACES
   text-scale-mode-step 1.1                       ;; Шаг увеличения масштаба
   truncate-lines 1                               ;; Обрезать длинные строки
@@ -73,7 +73,7 @@
   uniquify-separator "/"                         ;; Разделять буферы с похожими именами, используя /
   use-dialog-box nil                             ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
   user-full-name "Dunaevsky Maxim"               ;; Имя пользователя
-  visible-bell t                                 ;; Заблокировать пищание
+  visible-bell t                                 ;; Эффект мигания при переходе в буфер
   window-divider-default-places 't               ;; Разделители окон со всех сторон (по умолчанию только справа)
   window-divider-default-right-width 3           ;; Ширина в пикселях для линии-разделителя окон
   x-underline-at-descent-line t)
@@ -142,12 +142,10 @@
      edit-indirect            ;;
      editorconfig             ;; https://github.com/editorconfig/editorconfig-emacs
      eglot                    ;; https://github.com/joaotavora/eglot
-     elsa                     ;; https://github.com/emacs-elsa/Elsa
      embark                   ;; https://github.com/oantolin/embark
      flycheck                 ;; https://flycheck.org
      flycheck-clang-tidy      ;;
      flycheck-color-mode-line ;;
-     flycheck-elsa            ;; https://github.com/emacs-elsa/flycheck-elsa
      flycheck-indicator       ;;
      flycheck-package         ;; https://github.com/purcell/flycheck-package
      format-all               ;; https://github.com/lassik/emacs-format-all-the-code
@@ -309,27 +307,18 @@ Version 2017-11-01"
 
     (when default-font-family
       (message "Выбран шрифт по умолчанию.")
+      ;; Это формат  X Logical Font Description Conventions, XLFD
+      ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
       (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family emacs-default-font-height) nil t)
       (set-face-attribute 'default nil :family default-font-family)
       )
 
     (set-face-attribute 'default nil :height (* emacs-default-font-height 10))
 
-    ;; Настройка иконочных шрифров и немножко GUI.
-    (require 'all-the-icons)
-    (require 'all-the-icons-dired)
-    (require 'all-the-icons-ibuffer)
-    (setq-default
-      all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
-      all-the-icons-ibuffer-icon t                ;; Показывать иконки файлов в ibuffer
-      dashboard-set-file-icons t                  ;; Иконки типов файлов в графическом режиме
-      dashboard-set-heading-icons t               ;; Иконка EMACS в графическом режиме
-      )
-
     ;; Если режим графический, между вкладками следует переходить по Ctrl+PgUp и Ctrl+PgDn
-    (when (fboundp 'centaur-tabs)
-      (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
-      (global-set-key (kbd "C-<next>") 'centaur-tabs-forward))
+
+    (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
+    (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
 
     ;; Если режим графический, для расстановки курсоров MultipleCursors можно использовать Alt+Click
     (when (fboundp 'multiple-cursors)
@@ -376,6 +365,17 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
 (add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
 (add-hook 'adoc-mode-hook #'setup-adoc-mode)
+
+
+;; -> ALL-THE-ICONS
+;; Настройка иконочных шрифров и немножко GUI.
+(require 'all-the-icons)
+(require 'all-the-icons-dired)
+(require 'all-the-icons-ibuffer)
+(setq-default
+  all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
+  all-the-icons-ibuffer-icon t                ;; Показывать иконки файлов в ibuffer
+  )
 
 
 ;; -> APT SOURCES LIST MODE
@@ -429,19 +429,21 @@ Version 2017-11-01"
 
 
 ;; -> CONF MODE
-;; Встроенный пакет. Основной режим для редактирования конфигурационных файлов.
+;; Встроенный пакет. Основной режим для редактирования конфигурационных файлов INI/CONF
 (require 'conf-mode)
 (defun setup-conf-mode ()
   "Настройки `conf-mode'."
+  (aggressive-indent-mode 1)
   (flycheck-mode 1)
   (rainbow-delimiter-mode 1)
   (ws-butler-mode 1)
   (whitespace-mode 1))
-(add-to-list 'auto-mode-alist '("\\.env$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.flake8$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.ini$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.pylintrc$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.terraformrc$" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.editorconfig\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.terraformrc\\'" . conf-mode))
 (add-hook 'conf-mode-hook #'setup-conf-mode)
 
 
@@ -465,17 +467,19 @@ Version 2017-11-01"
 ;; Отображает дашборд при запуске EMACS
 (require 'dashboard)
 (setq-default
-  dashboard-items
+  dashboard-display-icons-p t        ;; Включить отображение иконок
+  dashboard-icon-type 'all-the-icons ;; Использовать иконки из пакета `all-the-icons'.
+  dashboard-items                    ;; Элементы дашборда
   '(
-     (recents . 15)             ;; Последние открытые файлы
-     (bookmarks . 10)           ;; Последние закладки
-     (projects . 10)            ;; Последние проекты
-     (agenda . 0)               ;; Агенда
-     (registers . 0))           ;; Регистры
-  dashboard-set-file-icons t    ;; Показывать иконки рядом с элементами списков
-  dashboard-set-footer nil      ;; Скрыть "весёлые" надписи в нижней части дашборда
-  dashboard-set-heading-icons t ;; Показывать иконки в заголовках разделов
+     (recents . 15)                  ;; Последние открытые файлы
+     (bookmarks . 10)                ;; Последние закладки
+     (projects . 10)                 ;; Последние проекты
+     (agenda . 0)                    ;; Агенда
+     (registers . 0))                ;; Регистры
+  dashboard-set-footer nil           ;; Скрыть "весёлые" надписи в нижней части дашборда
+  dashboard-set-file-icons t         ;; Показывать иконки рядом с элементами списков
   )
+(setq initital-buffer-choice (lambda ()(get-bufer-create "*dashboard*"))) ;; Исправляет проблему с emacsclient -c
 (dashboard-setup-startup-hook)
 
 
@@ -596,7 +600,6 @@ Version 2017-11-01"
   (checkdoc-minor-mode 1)
   (electric-indent-mode 1)
   (flymake-mode 1)
-  (flycheck-elsa-setup)
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)
   (rainbow-delimiters-mode 1)
@@ -814,6 +817,9 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1))
 (add-hook 'json-mode-hook #'setup-json-mode)
+(add-to-list 'auto-mode-alist '("\\.json" . json-mode))
+
+
 
 ;; -> LSP
 ;; https://emacs-lsp.github.io/lsp-mode/
@@ -871,15 +877,16 @@ Version 2017-11-01"
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (require 'markdown-mode)
-(setq
+(setq-default
   markdown-fontify-code-blocks-natively t ;; Подсвечивать синтаксис в примерах кода
   markdown-header-scaling-values
   '(1.0 1.0 1.0 1.0 1.0 1.0)              ;; Все заголовки одной высоты
   markdown-list-indent-width 4            ;; Размер отступа для выравнивания вложенных списков
-  word-wrap t                             ;; Перенос по словам
   )
 (defun setup-markdown-mode()
   "Настройки `markdown-mode'."
+  (setq-local
+    word-wrap t) ;; Перенос по словам
   (flyspell-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
@@ -1057,6 +1064,10 @@ Version 2017-11-01"
 (require 'rst)
 (defun setup-rst-mode ()
   "Настройки для `rst-mode'."
+  (setq-local
+    tab-width 3 ;; Ширина TAB'а
+    word-wrap t ;; Перенос по словам
+    )
   (aggressive-indent-mode 1)
   (company-mode 1)
   (flycheck-mode 1)

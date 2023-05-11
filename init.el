@@ -160,6 +160,7 @@
      magit                    ;; https://magit.org/
      markdown-mode            ;; https://github.com/jrblevin/markdown-mode
      multiple-cursors         ;; https://github.com/magnars/multiple-cursors.el
+     nerd-icons               ;; https://github.com/rainstormstudio/nerd-icons.el
      org                      ;;
      package-lint             ;; https://github.com/purcell/package-lint
      php-mode                 ;;
@@ -276,9 +277,14 @@ Version 2017-11-01"
   (cond
     ((equal system-type "gnu-linux")
       (unless (file-directory-p "~/.local/share/fonts/")
-        (all-the-icons-install-fonts)))
+        (make-directory "~/.local/share/fonts/")
+        (all-the-icons-install-fonts)
+        (nerd-icons-install-fonts)
+        (message "Рекомендуется скопировать шрифты из каталога \n
+                  ~/.local/share/fonts/ в /usr/local/share/fonts/")))
     ((equal system-type "windows-nt")
-      (message "Скачайте шрифты с помощью команды all-the-icons-install-fonts.\nУстановите их и перезапустите EMACS."))))
+      (message "Скачайте шрифты с помощью команд all-the-icons-install-fonts\n
+                и nerd-icons-install-fonts.\nУстановите их и перезапустите EMACS."))))
 
 
 ;; -> Настройки, специфичные для графического режима
@@ -435,7 +441,7 @@ Version 2017-11-01"
   "Настройки `conf-mode'."
   (aggressive-indent-mode 1)
   (flycheck-mode 1)
-  (rainbow-delimiter-mode 1)
+  (rainbow-delimiters-mode 1)
   (ws-butler-mode 1)
   (whitespace-mode 1))
 (add-to-list 'auto-mode-alist '("\\.editorconfig\\'" . conf-mode))
@@ -534,7 +540,8 @@ Version 2017-11-01"
 
 ;; -> DOOM-MODELINE
 ;; https://github.com/seagle0128/doom-modeline
-;; Красивая и многофункциональная статусная панель
+;; Красивая и многофункциональная статусная панель. Для корректной работы требуется
+;; пакет `nerd-icons' и установленные шрифты.
 (require 'doom-modeline)
 (setq-default
   doom-modeline-buffer-encoding t          ;; Показывать кодировку
@@ -914,6 +921,14 @@ Version 2017-11-01"
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 
+;; -> NERD-ICONS
+;; https://github.com/rainstormstudio/nerd-icons.el
+;; Требуется для корректной работы `doom-modeline'. Начиная с версии 4.0.0
+;; пакет `all-the-icons' не поддерживается. После установки пакета необходимо
+;; установить шрифты: `nerd-icons-install-fonts'.
+(require 'nerd-icons)
+
+
 ;; -> NXML-MODE
 ;; Встроенный пакет
 ;; Почти как xml-mode, только лучше и новее
@@ -1265,7 +1280,6 @@ Version 2017-11-01"
 (require 'yaml-mode)
 (defun setup-yaml-mode ()
   "Настройки для `yaml-mode'."
-  (aggressive-indent-mode 1)
   (flycheck-mode 1)
   (highlight-indentation-mode 1)
   (rainbow-delimiters-mode 1)

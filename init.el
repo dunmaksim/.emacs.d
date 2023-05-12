@@ -268,24 +268,6 @@ Version 2017-11-01"
 (global-unset-key (kbd "<insert>")) ;; Запретить нажатие клавиши Insert (переключает режим перезаписи)
 (global-unset-key (kbd "M-,"))      ;; Disable M-, as markers
 
-;; -> Установка шрифтов
-(defun install-required-fonts ()
-  "Выполняет установку шрифтов или говорит, как это сделать."
-  ;; В Linux автоматически вызывается функция (all-the-icons-install-fonts).
-  ;; В Windows такое не будет работать, поэтому пользователя просят установить шрифты,
-  ;; скачав их с помощью этой же функции.
-  (cond
-    ((equal system-type "gnu-linux")
-      (unless (file-directory-p "~/.local/share/fonts/")
-        (make-directory "~/.local/share/fonts/")
-        (all-the-icons-install-fonts)
-        (nerd-icons-install-fonts)
-        (message "Рекомендуется скопировать шрифты из каталога \n
-                  ~/.local/share/fonts/ в /usr/local/share/fonts/")))
-    ((equal system-type "windows-nt")
-      (message "Скачайте шрифты с помощью команд all-the-icons-install-fonts\n
-                и nerd-icons-install-fonts.\nУстановите их и перезапустите EMACS."))))
-
 
 ;; -> Настройки, специфичные для графического режима
 (defun setup-gui-settings (frame-name)
@@ -374,7 +356,10 @@ Version 2017-11-01"
 
 
 ;; -> ALL-THE-ICONS
-;; Настройка иконочных шрифров и немножко GUI.
+;; Настройка иконочных шрифтов и немножко GUI.
+;; Для установки самих шрифтов следует использовать команду `all-the-icons-install-fonts'.
+;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
+;; скопировать их в `/usr/local/share/fonts/'.
 (require 'all-the-icons)
 (require 'all-the-icons-dired)
 (require 'all-the-icons-ibuffer)
@@ -474,7 +459,7 @@ Version 2017-11-01"
 (require 'dashboard)
 (setq-default
   dashboard-display-icons-p t        ;; Включить отображение иконок
-  dashboard-icon-type 'all-the-icons ;; Использовать иконки из пакета `all-the-icons'.
+  dashboard-icon-type 'nerd-icons    ;; Использовать иконки из пакета `nerd-icons'.
   dashboard-items                    ;; Элементы дашборда
   '(
      (recents . 15)                  ;; Последние открытые файлы
@@ -543,7 +528,7 @@ Version 2017-11-01"
 ;; Красивая и многофункциональная статусная панель. Для корректной работы требуется
 ;; пакет `nerd-icons' и установленные шрифты.
 (require 'doom-modeline)
-(setq-default
+(setq
   doom-modeline-buffer-encoding t          ;; Показывать кодировку
   doom-modeline-buffer-modification-icon t ;; Показывать наличие изменений в буфере
   doom-modeline-buffer-name t              ;; Показывать имя буфера
@@ -551,14 +536,16 @@ Version 2017-11-01"
   doom-modeline-env-enable-go t            ;; Показывать версию Golang
   doom-modeline-env-enable-python t        ;; Показывать версию Python
   doom-modeline-env-enable-ruby t          ;; Показывать версию Ruby
-  doom-modeline-hud t                      ;; Использовать HUD вместо прямоугольника по умолчанию
+  doom-modeline-hud nil                    ;; Использовать HUD. Лучше выключить, т. к. иначе строка отображается некорректно.
   doom-modeline-icon t                     ;; Показывать иконки
   doom-modeline-indent-info t              ;; Информация об отступах
   doom-modeline-lsp t                      ;; Показывать статус LSP
   doom-modeline-major-mode-color-icon t    ;; Иконка основного режима вместо текста
   doom-modeline-major-mode-icon t          ;; Показывать иконку основного режима
   doom-modeline-project-detection 'auto    ;; Определение того, что идёт работа с проектом
-  doom-modeline-vcs-max-length 0)          ;;
+  doom-modeline-vcs-max-length 12          ;; Ограничение на длину имени активной ветки VCS
+  doom-modeline-window-width-limit nil     ;; Нет ограничений на ширину окна
+  )
 (doom-modeline-mode 1)
 
 
@@ -624,14 +611,14 @@ Version 2017-11-01"
 (require 'flycheck)
 (require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
 (setq-default
- flycheck-check-syntax-automatically '(mode-enabled save new-line)
- flycheck-locate-config-file-functions '(
-                                         flycheck-locate-config-file-by-path
-                                         flycheck-locate-config-file-ancestor-directories
-                                         flycheck-locate-config-file-home)
- flycheck-highlighting-mode 'lines
- flycheck-indication-mode 'left-fringe
- flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
+  flycheck-check-syntax-automatically '(mode-enabled save new-line)
+  flycheck-locate-config-file-functions '(
+                                           flycheck-locate-config-file-by-path
+                                           flycheck-locate-config-file-ancestor-directories
+                                           flycheck-locate-config-file-home)
+  flycheck-highlighting-mode 'lines
+  flycheck-indication-mode 'left-fringe
+  flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 (add-hook 'flycheck-mode-hook #'flycheck-color-mode-line-mode)
 
 
@@ -721,6 +708,11 @@ Version 2017-11-01"
        ("AsciiDoc" (mode . adoc-mode))
        ("ReStructured Text" (mode . rst-mode))
        ("EMACS Lisp" (mode . emacs-lisp-mode))
+       ("CONF / INI"
+         (mode . conf-mode)
+         (name . "\\.editorconfig\\'")
+         (name . "\\.ini\\'")
+         (name . "\\.conf\\'"))
        ("XML"
          (or
            (mode . xml-mode)
@@ -924,8 +916,10 @@ Version 2017-11-01"
 ;; -> NERD-ICONS
 ;; https://github.com/rainstormstudio/nerd-icons.el
 ;; Требуется для корректной работы `doom-modeline'. Начиная с версии 4.0.0
-;; пакет `all-the-icons' не поддерживается. После установки пакета необходимо
-;; установить шрифты: `nerd-icons-install-fonts'.
+;; пакет `all-the-icons' не поддерживается.
+;; Для установки самих шрифтов следует использовать команду `nerd-icons-install-fonts'.
+;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
+;; скопировать их в `/usr/local/share/fonts/'.
 (require 'nerd-icons)
 
 

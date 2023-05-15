@@ -155,6 +155,7 @@
      highlight-indentation    ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
      hl-todo                  ;; https://github.com/tarsius/hl-todo
      js2-mode                 ;; https://github.com/mooz/js2-mode
+     json-mode                ;; GNU
      lsp-mode                 ;; https://github.com/emacs-lsp
      lsp-ui                   ;; https://github.com/emacs-lsp/lsp-ui
      magit                    ;; https://magit.org/
@@ -611,13 +612,14 @@ Version 2017-11-01"
 (require 'flycheck)
 (require 'flycheck-color-mode-line) ;; https://github.com/flycheck/flycheck-color-mode-line
 (setq-default
+  flycheck-textlint-config ".textlintrc.yaml" ;; Файл настроек Textlint
   flycheck-check-syntax-automatically '(mode-enabled save new-line)
   flycheck-locate-config-file-functions '(
                                            flycheck-locate-config-file-by-path
                                            flycheck-locate-config-file-ancestor-directories
                                            flycheck-locate-config-file-home)
-  flycheck-highlighting-mode 'lines
-  flycheck-indication-mode 'left-fringe
+  flycheck-highlighting-mode 'lines       ;; Стиль отображения проблемных мест — вся строка
+  flycheck-indication-mode 'left-fringe   ;; Место размещения маркера ошибки — левая граница
   flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
 (add-hook 'flycheck-mode-hook #'flycheck-color-mode-line-mode)
 
@@ -816,7 +818,7 @@ Version 2017-11-01"
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1))
 (add-hook 'json-mode-hook #'setup-json-mode)
-(add-to-list 'auto-mode-alist '("\\.json" . json-mode))
+(add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
 
 
 

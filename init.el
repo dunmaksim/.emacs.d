@@ -18,19 +18,23 @@
 
 (fset 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (скоращает объём вводимого текста для подтверждения команд)
 
-(defconst emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.")
-(defconst emacs-autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.")
-(defconst emacs-custom-file (expand-file-name "custom.el" emacs-config-dir))
+(defconst emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.") ;; ~/.emacs.d/
+(defconst emacs-autosave-dir (concat emacs-config-dir "saves") "Директория для файлов автосохранения.") ;; ~/.emacs.d/saves/
+(defconst emacs-package-user-dir (expand-file-name "elpa" user-emacs-directory) "Пользовательский каталог с пакетами.") ;; ~/.emacs.d/elpa/
+(defconst emacs-save-place-file (expand-file-name ".emacs-places" emacs-config-dir) "Имя файла с историей посещенных файлов.") ;; ~/.emacs.d/.emacs-places
+(defconst emacs-custom-file (expand-file-name "custom.el" emacs-config-dir) "Путь к файлу пользовательских настроек.") ;; ~/.emacs.d/custom.el
+
+;; Если нужного каталога не существует, его следует создать
+(dolist (emacs-directory
+          (list
+            emacs-config-dir
+            emacs-autosave-dir
+            emacs-package-user-dir))
+  (unless (file-directory-p emacs-directory)
+    (make-directory emacs-directory)
+    (message (format "Создана директория %s" emacs-directory))))
+
 (defconst emacs-default-font-height 15 "Размер шрифта по умолчанию.")
-(defconst emacs-package-user-dir (expand-file-name "elpa" user-emacs-directory))
-(defconst emacs-save-place-file (expand-file-name ".emacs-places" emacs-config-dir))
-
-;; Создание каталогов для резервных копий и файлов автосохранения
-(unless (file-directory-p emacs-autosave-dir)
-  (make-directory emacs-autosave-dir)
-  (message "Создана директория для файлов автосохранения."))
-
-(setq custom-file (expand-file-name "custom.el" emacs-config-dir))
 
 ;; -> Стандартные настройки
 (setq-default
@@ -41,7 +45,7 @@
   create-lockfiles nil                           ;; Не надо создавать lock-файлы, от них одни проблемы
   cursor-type 'bar                               ;; Курсор в виде вертикальной черты
   custom-file emacs-custom-file                  ;; Файл для сохранения пользовательских настроек, сделанных в customize
-  delete-old-versions t                          ;; Удалять старые версии файлов
+  delete-old-versions t                          ;; Удалять старые резервные копии файлов без лишних вопросов
   gc-cons-threshold (* 50 1000 1000)             ;; Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
   indent-line-function (quote insert-tab)        ;;
   indent-tabs-mode nil                           ;; Использовать для выравнивания по нажатию TAB пробелы вместо табуляций
@@ -91,7 +95,6 @@
 (size-indication-mode 1)    ;; Отображать размер буфера в строке статуса
 (show-paren-mode 1)         ;; Подсвечивать парные скобки и текст между ними. Это глобальный режим.
 (tooltip-mode 0)            ;; Не надо показывать подсказки в GUI, используй мини-буфер.
-(tool-bar-mode 0)           ;; Выключить тулбар с кнопками
 (window-divider-mode t)     ;; Визуально разделять окна EMACS
 
 
@@ -122,9 +125,9 @@
      anaconda-mode            ;; https://github.com/pythonic-emacs/anaconda-mode
      ansible                  ;;
      apache-mode              ;;
+     apheleia                 ;; https://github.com/radian-software/apheleia
      apt-sources-list         ;; https://git.korewanetadesu.com/apt-sources-list.git
      avy                      ;;
-     catppuccin-theme         ;;
      centaur-tabs             ;; https://github.com/ema2159/centaur-tabs
      checkdoc                 ;;
      company                  ;;
@@ -135,16 +138,14 @@
      dashboard                ;; https://github.com/emacs-dashboard/emacs-dashboard
      demap                    ;; https://gitlab.com/sawyerjgardner/demap.el
      diff-hl                  ;; https://github.com/dgutov/diff-hl
-     dockerfile-mode          ;;
+     dockerfile-mode          ;; https://github.com/spotify/dockerfile-mode
      doom-modeline            ;; https://github.com/seagle0128/doom-modeline
      doom-themes              ;; https://github.com/doomemacs/themes
      easy-kill                ;; https://github.com/leoliu/easy-kill
      edit-indirect            ;;
      editorconfig             ;; https://github.com/editorconfig/editorconfig-emacs
      eglot                    ;; https://github.com/joaotavora/eglot
-     embark                   ;; https://github.com/oantolin/embark
      flycheck                 ;; https://flycheck.org
-     flycheck-clang-tidy      ;;
      flycheck-color-mode-line ;;
      flycheck-indicator       ;;
      flycheck-package         ;; https://github.com/purcell/flycheck-package
@@ -370,6 +371,12 @@ Version 2017-11-01"
   )
 
 
+;; -> APHELEIA
+;; https://github.com/radian-software/apheleia
+(require 'apheleia)
+(apheleia-global-mode 1)
+
+
 ;; -> APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
 ;; Режим для редактирования файлов настройки репозиториев APT
@@ -425,7 +432,6 @@ Version 2017-11-01"
 (require 'conf-mode)
 (defun setup-conf-mode ()
   "Настройки `conf-mode'."
-  (aggressive-indent-mode 1)
   (flycheck-mode 1)
   (rainbow-delimiters-mode 1)
   (ws-butler-mode 1)
@@ -520,8 +526,16 @@ Version 2017-11-01"
 
 
 ;; -> DOCKERFILE-MODE
+;; https://github.com/spotify/dockerfile-mode
 (require 'dockerfile-mode)
-(add-to-list 'auto-mode-alist '("^Dockerfile$" . dockerfile-mode))
+(defun setup-dockerfile-mode ()
+  "Настройки для `dockerfile-mode'."
+  (company-mode 1)
+  (flycheck-mode 1)
+  (whitespace-mode 1)
+  (ws-butler-mode 1))
+(add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
+(add-to-list 'auto-mode-alist '("\\Dockerfile\\'" . dockerfile-mode))
 
 
 ;; -> DOOM-MODELINE
@@ -553,8 +567,6 @@ Version 2017-11-01"
 ;; -> LOAD THEME
 (require 'doom-themes)
 (load-theme 'doom-monokai-classic t)
-;; (require 'gruvbox)
-;; (load-theme 'gruvbox t)
 (doom-themes-org-config)
 (doom-themes-visual-bell-config)
 
@@ -1303,7 +1315,7 @@ Version 2017-11-01"
 ;; Предоставляет функциональность сниппетов — блоков кода, в которые всего-лишь нужно подставить значения.
 (require 'yasnippet)
 ;; Если директории для сниппектов нет, её нужно создать.
-(defvar yas-snippet-root-dir (concat emacs-config-dir "snippets"))
+(defconst yas-snippet-root-dir (expand-file-name emacs-config-dir "snippets"))
 (unless (file-directory-p yas-snippet-root-dir)
   (mkdir yas-snippet-root-dir))
 (yas-global-mode 1)

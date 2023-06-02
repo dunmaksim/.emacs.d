@@ -332,7 +332,7 @@ Version 2017-11-01"
 
 ;; -> ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
-;; Быстрое переключение между окнами
+;; Быстрое переключение между окнами по Alt+O
 (require 'ace-window)
 (global-set-key (kbd "M-o") 'ace-window)
 
@@ -346,12 +346,12 @@ Version 2017-11-01"
   "Настройки для `adoc-mode'."
   (setq-local completion-at-point-functions (cons #'tempel-expand completion-at-point-functions))
 	(setq-local adoc-fontify-code-blocks-natively 10000)
-  (buffer-face-mode t)
   (flycheck-mode 1)
   (flyspell-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
-  (ws-butler-mode 1)  )
+  (ws-butler-mode 1)
+  )
 (add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
 (add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
 (add-hook 'adoc-mode-hook #'setup-adoc-mode)
@@ -605,7 +605,7 @@ Version 2017-11-01"
   "Настройки для `emacs-lisp-mode'."
   (aggressive-indent-mode 1)
   (checkdoc-minor-mode 1)
-  (electric-indent-mode 1)
+  (electric-indent-local-mode 1)
   (flymake-mode 1)
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)

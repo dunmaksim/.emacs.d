@@ -8,8 +8,6 @@
 (require 'cyrillic)
 (require 'derived)
 (require 'face-remap)
-(require 'ibuf-ext)
-(require 'ibuffer)
 (require 'ispell)
 (require 'paren)
 (require 'quail)
@@ -25,11 +23,12 @@
 (defconst emacs-custom-file (expand-file-name "custom.el" emacs-config-dir) "Путь к файлу пользовательских настроек.") ;; ~/.emacs.d/custom.el
 
 ;; Если нужного каталога не существует, его следует создать
-(dolist (emacs-directory
-          (list
-            emacs-config-dir
-            emacs-autosave-dir
-            emacs-package-user-dir))
+(dolist
+  (emacs-directory
+    (list
+      emacs-config-dir
+      emacs-autosave-dir
+      emacs-package-user-dir))
   (unless (file-directory-p emacs-directory)
     (make-directory emacs-directory)
     (message (format "Создана директория %s" emacs-directory))))
@@ -133,7 +132,6 @@
      company                  ;;
      company-box              ;;
      compat                   ;; https://github.com/emacs-compat/compat
-     counsel                  ;;
      dash                     ;;
      dashboard                ;; https://github.com/emacs-dashboard/emacs-dashboard
      demap                    ;; https://gitlab.com/sawyerjgardner/demap.el
@@ -145,6 +143,7 @@
      edit-indirect            ;;
      editorconfig             ;; https://github.com/editorconfig/editorconfig-emacs
      eglot                    ;; https://github.com/joaotavora/eglot
+     elpy                     ;; https://elpy.readthedocs.io/en/latest/index.html
      flycheck                 ;; https://flycheck.org
      flycheck-color-mode-line ;;
      flycheck-indicator       ;;
@@ -345,7 +344,7 @@ Version 2017-11-01"
 (defun setup-adoc-mode()
   "Настройки для `adoc-mode'."
   (setq-local completion-at-point-functions (cons #'tempel-expand completion-at-point-functions))
-	(setq-local adoc-fontify-code-blocks-natively 10000)
+  (setq-local adoc-fontify-code-blocks-natively 10000)
   (flycheck-mode 1)
   (flyspell-mode 1)
   (rainbow-delimiters-mode 1)
@@ -597,8 +596,20 @@ Version 2017-11-01"
 (add-to-list 'electric-pair-pairs '(?“ . ”?))
 (electric-pair-mode t) ;; Глобальный режим
 
+;; -> ELECTRIC-INDENT MODE
+;; Автоматический отступ. В основном только мешает, лучше выключить.
+(electric-indent-mode -1)
 
-;; -> EMACS LISP MODE
+;; -> ELPY
+;; Python IDE
+;; https://elpy.readthedocs.io/en/latest/index.html
+;; Краткая справка по использованию:
+;; Проверка состояния: `elpy-config'.
+;; Активация окружения: `pyenv-activate', указать путь к каталогу с окружением.
+(require 'elpy)
+
+
+;; -> EMACS-LISP MODE
 ;; IT IS NOT A ELISP-MODE!
 ;; Встроенный пакет для EMACS Lisp
 (defun setup-emacs-lisp-mode ()
@@ -705,6 +716,8 @@ Version 2017-11-01"
 ;; -> IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 ;; По нажатию F2 выводит список открытых буферов.
+(require 'ibuffer)
+(require 'ibuf-ext)
 (defalias 'list-buffers 'ibuffer)
 (setq-default
   ibuffer-expert 1                                        ;; Расширенный  режим для ibuffer
@@ -717,11 +730,11 @@ Version 2017-11-01"
   '(
      ("default"
        ("Dired" (mode . dired-mode))
+       ("EMACS Lisp" (mode . emacs-lisp-mode))
        ("Org" (mode . org-mode))
        ("Markdown" (mode . markdown-mode))
        ("AsciiDoc" (mode . adoc-mode))
        ("ReStructured Text" (mode . rst-mode))
-       ("EMACS Lisp" (mode . emacs-lisp-mode))
        ("CONF / INI"
          (mode . conf-mode)
          (name . "\\.editorconfig\\'")
@@ -1046,8 +1059,9 @@ Version 2017-11-01"
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
-  (anaconda-eldoc-mode 1)
-  (anaconda-mode 1)
+  ;; (anaconda-eldoc-mode 1)
+  ;; (anaconda-mode 1)
+  (elpy-mode 1)
   (highlight-indentation-mode 1)
   (lsp-mode 1)
   (pyvenv-mode 1)
@@ -1091,8 +1105,8 @@ Version 2017-11-01"
     tab-width 3 ;; Ширина TAB'а
     word-wrap t ;; Перенос по словам
     )
-  (aggressive-indent-mode 1)
   (company-mode 1)
+  (electric-pair-mode 1)
   (flycheck-mode 1)
   (flyspell-mode 1)
   (rainbow-delimiters-mode 1)
@@ -1197,7 +1211,7 @@ Version 2017-11-01"
     (string-equal filename ".emacs.desktop.lock")
     (string-equal filename "__pycache__")))
 (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
-(define-key treemacs-mode-map (kbd "f") 'projectile-grep)
+(define-key treemacs-mode-map (kbd "f") 'find-grep)
 (global-set-key (kbd "<f8>") 'treemacs)
 (treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
 (treemacs-git-mode 'simple) ;; Простой режим

@@ -410,13 +410,6 @@ Version 2017-11-01"
 (add-hook 'apt-sources-list-mode-hook #'setup-apt-sources-list-mode)
 
 
-;; -> BEACON-MODE
-;; Аналог PULSAR для старых версий EMACS
-(when (package-installed-p 'beacon)
-  (require 'beacon)
-  (beacon-mode 1))
-
-
 ;; -> CENTAUR-TABS
 ;; https://github.com/ema2159/centaur-tabs
 ;; Вкладки с иконками и прочими удобствами

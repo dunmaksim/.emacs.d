@@ -200,31 +200,28 @@
      ))
 
 
+;; Установка пакетов для поддерживаемых версий
 (when (and
-        (> emacs-major-version 26)
-        (> emacs-minor-version 3))
+        (>= emacs-major-version 26)
+        (>= emacs-minor-version 3))
   (add-to-list 'package-selected-packages 'eglot)    ;; https://github.com/joaotavora/eglot
   (add-to-list 'package-selected-packages 'lsp-mode)
   (add-to-list 'package-selected-packages 'lsp-ui)
   (add-to-list 'package-selected-packages 'pyvenv-auto) ;; https://github.com/nryotaro/pyvenv-auto
   )
 
-(if (and
-      (> emacs-major-version 27)
-      (> emacs-minor-version 1))
+(when (and
+        (>= emacs-major-version 27)
+        (>= emacs-minor-version 1))
   (progn
     (add-to-list 'package-selected-packages 'pulsar) ;; https://github.com/protesilaos/pulsar
     (add-to-list 'package-selected-packages 'tempel) ;; https://github.com/minad/tempel)
-    (add-to-list 'package-selected-packages 'vertico)) ;; https://github.com/minad/vertico
+    (add-to-list 'package-selected-packages 'vertico))) ;; https://github.com/minad/vertico
 
-  ;; Для старых версий EMACS пусть будет этот пакет
-  (progn
-    (add-to-list 'package-selected-packages 'beacon)
-    ))
 
 
 ;; Проверка наличия индекса пакетов
-(unless package-archive-contents (package-refresh-contents))
+  (unless package-archive-contents (package-refresh-contents))
 
 ;; Установка необходимых пакетов
 (when (cl-find-if-not #'package-installed-p package-selected-packages)

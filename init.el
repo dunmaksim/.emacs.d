@@ -208,7 +208,7 @@
   (add-to-list 'package-selected-packages 'eglot)    ;; https://github.com/joaotavora/eglot
   (add-to-list 'package-selected-packages 'lsp-mode)
   (add-to-list 'package-selected-packages 'lsp-ui)
-  (add-to-list 'package-selected-packages 'pyenv-auto) ;; https://github.com/nryotaro/pyvenv-auto
+  (add-to-list 'package-selected-packages 'pyvenv-auto) ;; https://github.com/nryotaro/pyvenv-auto
   )
 
 (if (and
@@ -1097,7 +1097,8 @@ Version 2017-11-01"
   (highlight-indentation-mode 1)
   (when (fboundp 'lsp-mode)
     (lsp-mode 1))
-  (pyvenv-mode 1)
+  (when (fboundp 'pyvenv-mode)
+    (pyvenv-mode 1))
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1)
@@ -1108,7 +1109,8 @@ Version 2017-11-01"
   (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names))
 (add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
 (add-hook 'python-mode-hook #'setup-python-mode)
-(add-hook 'python-mode-hook #'pyvenv-mode)
+(when (package-installed-p 'pyvenv-auto)
+  (add-hook 'python-mode-hook #'pyvenv-mode))
 
 
 ;; -> RUSSIAN-TECHWRITER

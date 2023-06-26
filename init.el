@@ -68,7 +68,6 @@
   show-trailing-whitespace t                     ;; Показывать висячие пробелы
   source-directory "/usr/share/emacs/27.1/src/"  ;; Путь к исходному коду EMACS
   suggest-key-bindings t                         ;; Показывать подсказку клавиатурной комбинации для команды
-  ;; tab-always-indent 'complete                    ;; Невыровненную строку — выровнять, в противном случае — предложить автозавершение
   tab-width 4                                    ;; Обменный курс на TAB — 4 SPACES
   text-scale-mode-step 1.1                       ;; Шаг увеличения масштаба
   truncate-lines 1                               ;; Обрезать длинные строки
@@ -80,6 +79,14 @@
   window-divider-default-places 't               ;; Разделители окон со всех сторон (по умолчанию только справа)
   window-divider-default-right-width 3           ;; Ширина в пикселях для линии-разделителя окон
   x-underline-at-descent-line t)
+
+
+;; Если используется старая версия EMACS, нужно указать параметры протокола TLS.
+;; В противном случае будут проблемы при загрузке архива пакетов.
+(when (< emacs-major-version 27)
+  (require 'gnutls)
+  (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
+
 
 ;; -> Стандартные режимы
 (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
@@ -98,17 +105,22 @@
 
 
 ;; -> КОДИРОВКИ
-;; Везде насаждаем UTF-8
-(prefer-coding-system 'utf-8)              ;; При попытке определить кодировку файла начинать перебор с UTF-8
-(set-default-coding-systems 'utf-8)        ;; Кодировка по умолчанию
-(set-keyboard-coding-system 'utf-8)        ;; Кодировка символов при вводе текста в терминале
-(set-language-environment 'utf-8)          ;; Кодировка языка по умолчанию
-(set-selection-coding-system 'utf-8)       ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
-(set-terminal-coding-system 'utf-8)        ;; Кодировка символов для вывода команд, запущенных в терминале
-(setq-default locale-coding-system 'utf-8) ;; UTF-8 по умолчанию
+(defvar default-coding 'utf-8 "Кодировка по умолчанию.")
+(when (string-equal system-type "windows-nt")
+  (setq default-coding 'cp-1251))
+(prefer-coding-system default-coding)              ;; При попытке определить кодировку файла начинать перебор с UTF-8
+(set-default-coding-systems default-coding)        ;; Кодировка по умолчанию
+(set-keyboard-coding-system default-coding)        ;; Кодировка символов при вводе текста в терминале
+(set-language-environment default-coding)          ;; Кодировка языка по умолчанию
+(set-selection-coding-system default-coding)       ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
+(set-terminal-coding-system default-coding)        ;; Кодировка символов для вывода команд, запущенных в терминале
+(setq-default locale-coding-system default-coding) ;; UTF-8 по умолчанию
 
 
 ;; -> ПАКЕТЫ
+
+(when (equal emacs-version ""))
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -185,7 +197,6 @@
      treemacs-icons-dired     ;;
      treemacs-magit           ;;
      undo-tree                ;; https://gitlab.com/tsc25/undo-tree
-     vagrant                  ;; https://github.com/ottbot/vagrant.el
      vertico                  ;; https://github.com/minad/vertico
      web-mode                 ;;
      wgrep                    ;; https://github.com/mhayashi1120/Emacs-wgrep
@@ -225,6 +236,7 @@ Version 2017-11-01"
     (funcall initial-major-mode)
     (setq buffer-offer-save t)
     $buf))
+
 
 ;; -> Сочетания клавиш
 ;; Изменение размеров окон
@@ -317,10 +329,6 @@ Version 2017-11-01"
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
-
-;; Удалить буфер *scratch* после запуска EMACS.
-(when (get-buffer "*scratch*") (kill-buffer "*scratch*"))
-
 
 ;; -> ABBREV-MODE
 ;; Встроенный режим
@@ -616,7 +624,9 @@ Version 2017-11-01"
   "Настройки для `emacs-lisp-mode'."
   (aggressive-indent-mode 1)
   (checkdoc-minor-mode 1)
+  (company-mode 1)
   (electric-indent-local-mode 1)
+  (flycheck-mode 1)
   (flymake-mode 1)
   (highlight-indentation-mode 1)
   (highlight-indentation-set-offset 2)
@@ -1116,6 +1126,20 @@ Version 2017-11-01"
 (add-hook 'rst-mode-hook #'setup-rst-mode)
 
 
+
+;; -> RUBY-MODE
+;; Встроенный пакет
+(require 'ruby-mode)
+(defun setup-ruby-mode ()
+  "Настройки для `ruby-mode'."
+  (company-mode 1)
+  (flycheck-mode 1)
+  (whitespace-mode 1))
+(add-hook 'ruby-mode-hook #'setup-ruby-mode)
+(add-to-list 'auto-mode-alist '("\\Vagrantfile$" . ruby-mode))
+
+
+
 ;; -> SHELL-SCRIPT-MODE
 (require 'sh-script)
 (defun setup-shell-script-mode ()
@@ -1230,13 +1254,6 @@ Version 2017-11-01"
 (require 'undo-tree)
 (setq undo-tree-auto-save-history nil) ;; Отключить создание резервных копий файлов
 (global-undo-tree-mode 1)
-
-
-;; -> VAGRANT MODE
-;; Работа с файлами Vagrant
-;; https://github.com/ottbot/vagrant.el
-(require 'vagrant)
-(add-to-list 'auto-mode-alist (cons "Vagrantfile$\\'" 'vagrant-mode))
 
 
 ;; -> VERTICO

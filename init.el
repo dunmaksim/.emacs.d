@@ -182,7 +182,6 @@
      russian-techwriter       ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
      scala-mode               ;;
      swiper                   ;; https://github.com/abo-abo/swiper
-     tempel                   ;; https://github.com/minad/tempel
      terraform-mode           ;;
      treemacs                 ;;
      treemacs-all-the-icons   ;;
@@ -214,8 +213,14 @@
 (if (and
       (> emacs-major-version 27)
       (> emacs-minor-version 1))
-  (add-to-list 'package-selected-packages 'pulsar) ;; https://github.com/protesilaos/pulsar
-  (add-to-list 'package-selected-packages 'beacon))
+  (progn
+    (add-to-list 'package-selected-packages 'pulsar) ;; https://github.com/protesilaos/pulsar
+    (add-to-list 'package-selected-packages 'tempel)) ;; https://github.com/minad/tempel)
+
+  ;; Для старых версий EMACS пусть будет этот пакет
+  (progn
+    (add-to-list 'package-selected-packages 'beacon)
+    ))
 
 
 ;; Проверка наличия индекса пакетов
@@ -360,7 +365,8 @@ Version 2017-11-01"
 (require 'adoc-mode "~/repo/adoc-mode/adoc-mode.el")
 (defun setup-adoc-mode()
   "Настройки для `adoc-mode'."
-  (setq-local completion-at-point-functions (cons #'tempel-expand completion-at-point-functions))
+  (when (package-installed-p 'tempel)
+    (setq-local completion-at-point-functions (cons #'tempel-expand completion-at-point-functions)))
   (setq-local adoc-fontify-code-blocks-natively 10000)
   (flycheck-mode 1)
   (flyspell-mode 1)
@@ -1212,9 +1218,10 @@ Version 2017-11-01"
 ;; * `tempel-complete' — завершить ввод шаблона и раскрыть его
 ;; * `tempel-expand' — раскрыть введенный шаблон
 ;; * `tempel-insert' — выбрать шаблон из списка и вставить в позицию под курсором
-(require 'tempel)
-(global-set-key (kbd "M-+") #'tempel-complete)
-(global-set-key (kbd "M-*") #'tempel-insert)
+(when (package-installed-p 'tempel)
+  (require 'tempel)
+  (global-set-key (kbd "M-+") #'tempel-complete)
+  (global-set-key (kbd "M-*") #'tempel-insert))
 
 
 ;; -> TERRAFORM-MODE

@@ -164,8 +164,6 @@
      hl-todo                  ;; https://github.com/tarsius/hl-todo
      js2-mode                 ;; https://github.com/mooz/js2-mode
      json-mode                ;; GNU
-     lsp-mode                 ;; https://github.com/emacs-lsp
-     lsp-ui                   ;; https://github.com/emacs-lsp/lsp-ui
      magit                    ;; https://magit.org/
      markdown-mode            ;; https://github.com/jrblevin/markdown-mode
      multiple-cursors         ;; https://github.com/magnars/multiple-cursors.el
@@ -209,10 +207,9 @@
 (when (and
         (> emacs-major-version 26)
         (> emacs-minor-version 3))
-  (add-to-list
-    'package-selected-packages '(
-                                  eglot                    ;; https://github.com/joaotavora/eglot
-                                  )))
+  (add-to-list 'package-selected-packages 'eglot)    ;; https://github.com/joaotavora/eglot
+  (add-to-list 'package-selected-packages 'lsp-mode)
+  (add-to-list 'package-selected-packages 'lsp-ui))
 
 
 
@@ -695,7 +692,8 @@ Version 2017-11-01"
 (require 'go-mode)
 (defun setup-go-mode ()
   "Настройки `go-mode'."
-  (lsp-mode 1)
+  (when (fboundp 'lsp-mode)
+    (lsp-mode 1))
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))
@@ -867,6 +865,7 @@ Version 2017-11-01"
 ;; -> LSP
 ;; https://emacs-lsp.github.io/lsp-mode/
 ;; Базовый пакет, необходимый для работы LSP
+;; Требуется EMACS версии 26.3 или новее.
 ;;
 ;; Полный список поддерживаемых языков и технологий:
 ;; https://emacs-lsp.github.io/lsp-mode/page/lsp-dockerfile/
@@ -885,15 +884,18 @@ Version 2017-11-01"
 ;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
 ;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
 ;; YAML: npm install -g yaml-language-server
-(require 'lsp-mode)
-(require 'lsp-ui)
-(setq-default
-  lsp-headerline-breadcrumb-enable t ;; Показывать "хлебные крошки" в заголовке
-  lsp-modeline-diagnostics-enable t  ;; Показывать ошибки LSP в статусной строке
-  lsp-ui-doc-enable t                ;; Показывать документацию в LSP-UI
-  lsp-ui-peek-always-show t          ;; TODO: ???
-  lsp-ui-peek-enable t               ;; TODO: ???
-  lsp-ui-sideline-enable t)          ;; TODO: ???
+(when (and
+        (package-installed-p 'lsp-mode)
+        (package-installed-p 'lsp-ui))
+  (require 'lsp-mode)
+  (require 'lsp-ui)
+  (setq-default
+    lsp-headerline-breadcrumb-enable t ;; Показывать "хлебные крошки" в заголовке
+    lsp-modeline-diagnostics-enable t  ;; Показывать ошибки LSP в статусной строке
+    lsp-ui-doc-enable t                ;; Показывать документацию в LSP-UI
+    lsp-ui-peek-always-show t          ;; TODO: ???
+    lsp-ui-peek-enable t               ;; TODO: ???
+    lsp-ui-sideline-enable t))          ;; TODO: ???
 
 
 ;; -> MAGIT
@@ -1080,7 +1082,8 @@ Version 2017-11-01"
   ;; (anaconda-mode 1)
   (elpy-mode 1)
   (highlight-indentation-mode 1)
-  (lsp-mode 1)
+  (when (fboundp 'lsp-mode)
+    (lsp-mode 1))
   (pyvenv-mode 1)
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
@@ -1169,7 +1172,8 @@ Version 2017-11-01"
   "Настройки `sql-mode'."
   (aggressive-indent-mode 1)
   (flycheck-mode 1)
-  (lsp-mode 1)
+  (when (fboundp 'lsp-mode)
+    (lsp-mode 1))
   (rainbow-delimiters-mode 1)
   (whitespace-mode 1)
   (ws-butler-mode 1))

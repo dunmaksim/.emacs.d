@@ -118,9 +118,6 @@
 
 
 ;; -> ПАКЕТЫ
-
-(when (equal emacs-version ""))
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -154,7 +151,6 @@
      easy-kill                ;; https://github.com/leoliu/easy-kill
      edit-indirect            ;;
      editorconfig             ;; https://github.com/editorconfig/editorconfig-emacs
-     eglot                    ;; https://github.com/joaotavora/eglot
      elpy                     ;; https://elpy.readthedocs.io/en/latest/index.html
      flycheck                 ;; https://flycheck.org
      flycheck-color-mode-line ;;
@@ -208,6 +204,17 @@
      yasnippet-snippets       ;; https://github.com/AndreaCrotti/yasnippet-snippets
      zenburn-theme
      ))
+
+
+(when (and
+        (> emacs-major-version 26)
+        (> emacs-minor-version 3))
+  (add-to-list
+    'package-selected-packages '(
+                                  eglot                    ;; https://github.com/joaotavora/eglot
+                                  )))
+
+
 
 ;; Проверка наличия индекса пакетов
 (unless package-archive-contents (package-refresh-contents))

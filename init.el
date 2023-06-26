@@ -176,7 +176,6 @@
      pyenv-mode               ;; https://github.com/pythonic-emacs/pyenv-mode
      python                   ;;
      python-mode              ;;
-     pyvenv-auto              ;; https://github.com/nryotaro/pyvenv-auto
      rainbow-delimiters       ;; https://github.com/Fanael/rainbow-delimiters
      rainbow-mode             ;; https://elpa.gnu.org/packages/rainbow-mode.html
      reverse-im               ;; https://github.com/a13/reverse-im.el
@@ -208,7 +207,9 @@
         (> emacs-minor-version 3))
   (add-to-list 'package-selected-packages 'eglot)    ;; https://github.com/joaotavora/eglot
   (add-to-list 'package-selected-packages 'lsp-mode)
-  (add-to-list 'package-selected-packages 'lsp-ui))
+  (add-to-list 'package-selected-packages 'lsp-ui)
+  (add-to-list 'package-selected-packages 'pyenv-auto) ;; https://github.com/nryotaro/pyvenv-auto
+  )
 
 (if (and
       (> emacs-major-version 27)

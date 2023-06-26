@@ -125,7 +125,7 @@
 (setq package-selected-packages
   '(
      airline-themes           ;; https://github.com/AnthonyDiGirolamo/airline-themes
-     ;; adoc-mode                ;; https://github.com/bbatsov/adoc-mode
+     adoc-mode                ;; https://github.com/bbatsov/adoc-mode
      aggressive-indent        ;;
      all-the-icons            ;;
      all-the-icons-dired      ;; https://github.com/wyuenho/all-the-icons-dired
@@ -361,8 +361,9 @@ Version 2017-11-01"
 ;; -> ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
-(add-to-list 'load-path "~/repo/adoc-mode/")
-(require 'adoc-mode "~/repo/adoc-mode/adoc-mode.el")
+;; (add-to-list 'load-path "~/repo/adoc-mode/")
+;; (require 'adoc-mode "~/repo/adoc-mode/adoc-mode.el")
+(require 'adoc-mode)
 (defun setup-adoc-mode()
   "Настройки для `adoc-mode'."
   (when (package-installed-p 'tempel)

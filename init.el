@@ -188,7 +188,6 @@
      treemacs-icons-dired     ;;
      treemacs-magit           ;;
      undo-tree                ;; https://gitlab.com/tsc25/undo-tree
-     vertico                  ;; https://github.com/minad/vertico
      web-mode                 ;;
      wgrep                    ;; https://github.com/mhayashi1120/Emacs-wgrep
      which-key                ;; https://github.com/justbur/emacs-which-key
@@ -215,7 +214,8 @@
       (> emacs-minor-version 1))
   (progn
     (add-to-list 'package-selected-packages 'pulsar) ;; https://github.com/protesilaos/pulsar
-    (add-to-list 'package-selected-packages 'tempel)) ;; https://github.com/minad/tempel)
+    (add-to-list 'package-selected-packages 'tempel) ;; https://github.com/minad/tempel)
+    (add-to-list 'package-selected-packages 'vertico)) ;; https://github.com/minad/vertico
 
   ;; Для старых версий EMACS пусть будет этот пакет
   (progn
@@ -1292,8 +1292,9 @@ Version 2017-11-01"
 ;; -> VERTICO
 ;; https://github.com/minad/vertico
 ;; Автодополнение на основе встроенной функциональности EMACS
-(require 'vertico)
-(vertico-mode 1)
+(when (package-installed-p 'vertico)
+  (require 'vertico)
+  (vertico-mode 1))
 
 
 ;; -> WEB-MODE

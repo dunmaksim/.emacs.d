@@ -173,7 +173,6 @@
      php-mode                 ;;
      projectile               ;; https://docs.projectile.mx/projectile/installation.html
      protobuf-mode            ;;
-     pulsar                   ;; https://github.com/protesilaos/pulsar
      pyenv-mode               ;; https://github.com/pythonic-emacs/pyenv-mode
      python                   ;;
      python-mode              ;;
@@ -211,6 +210,11 @@
   (add-to-list 'package-selected-packages 'lsp-mode)
   (add-to-list 'package-selected-packages 'lsp-ui))
 
+(if (and
+      (> emacs-major-version 27)
+      (> emacs-minor-version 1))
+  (add-to-list 'package-selected-packages 'pulsar) ;; https://github.com/protesilaos/pulsar
+  (add-to-list 'package-selected-packages 'beacon))
 
 
 ;; Проверка наличия индекса пакетов
@@ -399,6 +403,13 @@ Version 2017-11-01"
   (ws-butler-mode 1))
 (add-to-list 'auto-mode-alist (cons "\\.list$" 'apt-sources-list-mode))
 (add-hook 'apt-sources-list-mode-hook #'setup-apt-sources-list-mode)
+
+
+;; -> BEACON-MODE
+;; Аналог PULSAR для старых версий EMACS
+(when (package-installed-p 'beacon)
+  (require 'beacon)
+  (beacon-mode 1))
 
 
 ;; -> CENTAUR-TABS
@@ -1060,10 +1071,11 @@ Version 2017-11-01"
 ;; -> PULSAR-MODE
 ;; https://github.com/protesilaos/pulsar
 ;; Подсвечивать курсор при его перемещении на несколько строк
-(require 'pulsar)
-(setq pulsar-pulse t)
-(add-hook 'next-error-hook #'pulsar-pulse-line)
-(pulsar-global-mode 1)
+(when (package-installed-p 'pulsar)
+  (require 'pulsar)
+  (setq pulsar-pulse t)
+  (add-hook 'next-error-hook #'pulsar-pulse-line)
+  (pulsar-global-mode 1))
 
 
 ;; -> PYTHON-MODE

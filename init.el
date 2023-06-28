@@ -207,8 +207,8 @@
   (add-to-list 'package-selected-packages 'eglot)    ;; https://github.com/joaotavora/eglot
   (add-to-list 'package-selected-packages 'lsp-mode)
   (add-to-list 'package-selected-packages 'lsp-ui)
-  (add-to-list 'package-selected-packages 'pyvenv-auto) ;; https://github.com/nryotaro/pyvenv-auto
-  )
+  (add-to-list 'package-selected-packages 'pyvenv-auto)) ;; https://github.com/nryotaro/pyvenv-auto
+
 
 (when (and
         (>= emacs-major-version 27)
@@ -1070,10 +1070,11 @@ Version 2017-11-01"
 ;; https://github.com/protesilaos/pulsar
 ;; Подсвечивать курсор при его перемещении на несколько строк
 (when (package-installed-p 'pulsar)
-  (require 'pulsar)
-  (setq pulsar-pulse t)
-  (add-hook 'next-error-hook #'pulsar-pulse-line)
-  (pulsar-global-mode 1))
+  (progn
+    (require 'pulsar)
+    (setq-default pulsar-pulse t)
+    (add-hook 'next-error-hook #'pulsar-pulse-line)
+    (pulsar-global-mode 1)))
 
 
 ;; -> PYTHON-MODE

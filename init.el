@@ -351,8 +351,9 @@ Version 2017-11-01"
 ;; -> ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами по Alt+O
-(require 'ace-window)
-(global-set-key (kbd "M-o") 'ace-window)
+(when (package-installed-p 'ace-window)
+  (require 'ace-window)
+  (global-set-key (kbd "M-o") 'ace-window))
 
 
 ;; -> ADOC-MODE
@@ -393,6 +394,8 @@ Version 2017-11-01"
 
 ;; -> APHELEIA
 ;; https://github.com/radian-software/apheleia
+;; Форматирование содержимого буфера. Почти как `format-all-buffer', только
+;; немного другое.
 (require 'apheleia)
 (apheleia-global-mode 1)
 

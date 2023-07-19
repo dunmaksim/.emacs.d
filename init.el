@@ -220,7 +220,6 @@
 (defun add-packages-for-27-1-and-greater ()
   "Функция добавляет в список пакеты, если версия EMACS ≥ 27.1."
   (add-to-list 'package-selected-packages 'pulsar) ;; https://github.com/protesilaos/pulsar
-  (add-to-list 'package-selected-packages 'tempel) ;; https://github.com/minad/tempel)
   (add-to-list 'package-selected-packages 'vertico)) ;; https://github.com/minad/vertico
 
 (if (= emacs-major-version 27)
@@ -372,18 +371,28 @@ Version 2017-11-01"
 ;; -> ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
-;; (add-to-list 'load-path "~/repo/adoc-mode/")
-;; (require 'adoc-mode "~/repo/adoc-mode/adoc-mode.el")
-(require 'adoc-mode)
-(defun setup-adoc-mode()
-  "Настройки для `adoc-mode'."
-  (when (package-installed-p 'tempel)
-    (setq-local completion-at-point-functions (cons #'tempel-expand completion-at-point-functions)))
-  (setq-local adoc-fontify-code-blocks-natively 10000)
-  (flyspell-mode 1))
-(add-to-list 'auto-mode-alist (cons "\\.adoc\\'" 'adoc-mode))
-(add-to-list 'auto-mode-alist (cons "\\.txt\\'" 'adoc-mode))
-(add-hook 'adoc-mode-hook #'setup-adoc-mode)
+(use-package adoc-mode
+  :init
+  (setq adoc-fontify-code-blocks-natively 10000)
+  :mode
+  ("\\.adoc\\'" . adoc-mode)
+  ("\\.txt\\'" . adoc-mode))
+
+
+;; -> AGGRESSIVE-INDENT
+;; Принудительное выравнивание кода
+(use-package aggressive-indent
+  :hook
+  ((
+     emacs-lisp-mode
+     js2-mode
+     json-mode
+     nxml-mode
+     php-mode
+     protobuf-mode
+     sh-mode
+     sql-mode
+     ) . aggressive-indent-mode))
 
 
 ;; -> ALL-THE-ICONS
@@ -449,7 +458,18 @@ Version 2017-11-01"
     company-minimum-prefix-length 2     ;; Минимум 2 знака, чтобы company начала работать
     company-show-quick-access t         ;; Показывать номера возле потенциальных кандидатов
     company-tooltip-align-annotations t ;;
-    company-tooltip-limit 10))            ;; Ограничение на число подсказок)
+    company-tooltip-limit 10)            ;; Ограничение на число подсказок)
+  :hook
+  ((
+     css-mode
+     dockerfile-mode
+     emacs-lisp-mode
+     js2-mode
+     nxml-mode
+     php-mode
+     rst-mode
+     ruby-mode
+     ) . company-mode))
 
 
 ;; -> COMPANY-DABBREV
@@ -476,14 +496,10 @@ Version 2017-11-01"
 
 ;; -> CSS-MODE
 ;; Встроенный режим
-(require 'css-mode)
-(setq-default css-indent-offset 2)
-(defun setup-css-mode ()
-  "Настройки `css-mode'."
-  (company-mode 1)
-  (display-line-numbers-mode 1))
+(use-package css-mode
+  :init
+  (setq css-indent-offset 2))
 (add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
-(add-hook 'css-mode-hook #'setup-css-mode)
 
 
 ;; -> DASHBOARD
@@ -506,7 +522,6 @@ Version 2017-11-01"
     )
   :config
   (dashboard-setup-startup-hook))
-(setq initital-buffer-choice (lambda ()(get-bufer-create "*dashboard*"))) ;; Исправляет проблему с emacsclient -c))
 
 
 ;; -> DESKTOP-SAVE-MODE
@@ -517,6 +532,7 @@ Version 2017-11-01"
   (setq
     desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode) ; А вот эти не сохранять
     desktop-save t) ; Сохранять список открытых буферов, файлов и т. д. без лишних вопросов
+  (add-hook 'server-after-make-frame-hook #'desktop-read)
   :config
   (desktop-save-mode t))
 
@@ -553,10 +569,6 @@ Version 2017-11-01"
 ;; -> DOCKERFILE-MODE
 ;; https://github.com/spotify/dockerfile-mode
 (require 'dockerfile-mode)
-(defun setup-dockerfile-mode ()
-  "Настройки для `dockerfile-mode'."
-  (company-mode 1))
-(add-hook 'dockerfile-mode-hook #'setup-dockerfile-mode)
 (add-to-list 'auto-mode-alist '("\\Dockerfile\\'" . dockerfile-mode))
 
 
@@ -644,15 +656,13 @@ Version 2017-11-01"
 ;; Встроенный пакет для EMACS Lisp
 (defun setup-emacs-lisp-mode ()
   "Настройки для `emacs-lisp-mode'."
-  (aggressive-indent-mode 1)
   (checkdoc-minor-mode 1)
-  (company-mode 1)
   (electric-indent-local-mode 1)
   (flymake-mode 1)
   (highlight-indentation-set-offset 2)
   (rainbow-mode 1)  )
-(add-to-list 'auto-mode-alist '("\\.el$'" . emacs-lisp-mode))
-(add-to-list 'auto-mode-alist '("\\abbrev_defs$" . emacs-lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
+(add-to-list 'auto-mode-alist '("\\abbrev_defs\\'" . emacs-lisp-mode))
 (add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
 
 
@@ -715,7 +725,13 @@ Version 2017-11-01"
         (file-exists-p "/usr/bin/aspell")      ;; Надо убедиться, что программа установлена в ОС
         )
   :init
-  (setq ispell-program-name "/usr/bin/aspell"))
+  (setq ispell-program-name "/usr/bin/aspell")
+  :hook
+  ((
+     adoc-mode
+     markdown-mode
+     rst-mode
+     ) . flyspell-mode))
 
 
 ;; -> FORMAT-ALL
@@ -728,13 +744,15 @@ Version 2017-11-01"
 ;; -> GO-MODE
 ;; https://github.com/dominikh/go-mode.el
 ;; Поддержка Golang
-(require 'go-mode)
-(defun setup-go-mode ()
-  "Настройки `go-mode'."
-  (when (fboundp 'lsp-mode)
-    (lsp-mode 1)))
-(add-to-list 'auto-mode-alist '("\\.go$'" . go-mode))
-(add-hook 'go-mode-hook #'setup-go-mode)
+(use-package go-mode
+  :config
+  (defun setup-go-mode ()
+    "Настройки `go-mode'."
+    (when (fboundp 'lsp-mode)
+      (lsp-mode 1)))
+  (add-hook 'go-mode-hook #'setup-go-mode)
+  :mode
+  ("\\.go\\'" . go-mode))
 
 
 ;; -> HELM
@@ -886,24 +904,16 @@ Version 2017-11-01"
 
 ;; -> JS2-MODE
 ;; https://github.com/mooz/js2-mode
-(use-package js2-mode)
-(defun setup-js2-mode ()
-  "Настройки для `js2-mode'."
-  (aggressive-indent-mode 1)
-  (company-mode 1))
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-(add-hook 'js2-mode-hook #'setup-js2-mode)
+(use-package js2-mode
+	:mode
+	("\\.js\\'" . js2-mode))
 
 
 ;; -> JSON-MODE
 ;; Встроенный пакет
-(require 'json)
-(defun setup-json-mode ()
-  "Настройки для `json-mode'."
-  (aggressive-indent-mode 1))
-(add-hook 'json-mode-hook #'setup-json-mode)
-(add-to-list 'auto-mode-alist '("\\.json\\'" . json-mode))
-
+(use-package json-mode
+  :mode
+  ("\\.json\\'" . json-mode))
 
 
 ;; -> LSP
@@ -931,23 +941,30 @@ Version 2017-11-01"
 (when (and
         (package-installed-p 'lsp-mode)
         (package-installed-p 'lsp-ui))
-  (require 'lsp-mode)
-  (require 'lsp-ui)
-  (setq-default
-    lsp-headerline-breadcrumb-enable t ;; Показывать "хлебные крошки" в заголовке
-    lsp-modeline-diagnostics-enable t  ;; Показывать ошибки LSP в статусной строке
-    lsp-ui-doc-enable t                ;; Показывать документацию в LSP-UI
-    lsp-ui-peek-always-show t          ;; TODO: ???
-    lsp-ui-peek-enable t               ;; TODO: ???
-    lsp-ui-sideline-enable t))          ;; TODO: ???
+  (use-package lsp-mode
+    :init
+    (setq
+      lsp-headerline-breadcrumb-enable t  ;; Показывать "хлебные крошки" в заголовке
+      lsp-modeline-diagnostics-enable t)) ;; Показывать ошибки LSP в статусной строке
+
+  (use-package lsp-ui
+    :init
+    (setq
+      lsp-ui-doc-enable t       ;; Показывать документацию в LSP-UI
+      lsp-ui-peek-always-show t ;; TODO: ???
+      lsp-ui-peek-enable t      ;; TODO: ???
+      lsp-ui-sideline-enable t) ;; TODO ???
+    :mode
+    (lsp-mode . lsp-ui-mode)))
 
 
 ;; -> MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
-(require 'magit)
-(global-set-key (kbd "<f5>") 'magit-status)
-(global-set-key (kbd "<f6>") 'magit-checkout)
+(use-package magit
+  :bind
+  ("<f5>" . magit-status)
+  ("<f6>" . magit-checkout))
 
 
 ;; -> MAKEFILE
@@ -963,20 +980,22 @@ Version 2017-11-01"
 ;; -> MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
-(require 'markdown-mode)
-(setq-default
-  markdown-fontify-code-blocks-natively t ;; Подсвечивать синтаксис в примерах кода
-  markdown-header-scaling-values
-  '(1.0 1.0 1.0 1.0 1.0 1.0)              ;; Все заголовки одной высоты
-  markdown-list-indent-width 4            ;; Размер отступа для выравнивания вложенных списков
-  )
+(use-package markdown-mode
+  :init
+  (setq
+    markdown-fontify-code-blocks-natively t ;; Подсвечивать синтаксис в примерах кода
+    markdown-header-scaling-values
+    '(1.0 1.0 1.0 1.0 1.0 1.0)              ;; Все заголовки одной высоты
+    markdown-list-indent-width 4            ;; Размер отступа для выравнивания вложенных списков
+    )
+  :mode
+  ("\\.md\\'" . markdown-mode))
 (defun setup-markdown-mode()
   "Настройки `markdown-mode'."
   (setq-local
-    word-wrap t) ;; Перенос по словам
-  (flyspell-mode 1)  )
+    word-wrap t) ;; Перенос по словам  )
+  )
 (define-key markdown-mode-map (kbd "M-.") 'markdown-follow-thing-at-point)
-(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
 (add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
@@ -989,11 +1008,12 @@ Version 2017-11-01"
 ;; -> MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
-(require 'multiple-cursors)
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(use-package multiple-cursors
+  :bind
+  ("C-S-c C-S-c" . mc/edit-lines)
+  ("C->" . mc/mark-next-like-this)
+  ("C-<" . mc/mark-previous-like-this)
+  ("C-c C-<" . mc/mark-all-like-this))
 
 
 ;; -> NERD-ICONS
@@ -1003,7 +1023,7 @@ Version 2017-11-01"
 ;; Для установки самих шрифтов следует использовать команду `nerd-icons-install-fonts'.
 ;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
 ;; скопировать их в `/usr/local/share/fonts/'.
-(require 'nerd-icons)
+(use-package nerd-icons)
 
 
 ;; -> NXML-MODE
@@ -1017,13 +1037,9 @@ Version 2017-11-01"
     nxml-bind-meta-tab-to-complete-flag t     ;; Использовать TAB для завершения ввода
     nxml-child-indent 4                       ;; Выравнивание дочерних элементов
     nxml-slash-auto-complete-flag t)          ;; Закрывать теги по вводу /
-  :config
-  (aggressive-indent-mode 1)
-  (company-mode 1)
-  )
-(add-hook 'nxml-mode-hook #'setup-nxml-mode)
-(add-to-list 'auto-mode-alist '("\\.xml$'" . nxml-mode))
-(add-to-list 'auto-mode-alist '("\\.pom$'" . nxml-mode))
+  :mode
+  ("\\.xml\\'" . nxml-mode)
+  ("\\.pom\\'" . nxml-mode))
 
 
 ;; -> ORG-MODE
@@ -1047,20 +1063,9 @@ Version 2017-11-01"
 
 
 ;; -> PHP-MODE
-(require 'php)
-(defun setup-php-mode ()
-  "Настройки для `php-mode'."
-  (aggressive-indent-mode 1)
-  (company-mode 1)
-  )
-(add-to-list 'auto-mode-alist '("\\.php$" . php-mode))
-(add-hook 'php-mode-hook #'setup-php-mode)
-
-
-;; -> PIXEL-SCROLL-PRECISION-MODE
-;; TODO: что это?
-(when (fboundp 'pixel-scroll-precision-mode)
-  (pixel-scroll-precision-mode t))
+(use-package php-mode
+  :mode
+  ("\\.php\\'" . php-mode))
 
 
 ;; -> PROJECTILE
@@ -1069,30 +1074,27 @@ Version 2017-11-01"
 ;; под контролем любой системы версионирования, либо содержать специальные
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
-(require 'projectile)
+(use-package projectile)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
 
 ;; -> PROTOBUF-MODE
 ;; https://github.com/emacsmirror/protobuf-mode
 ;; Работа с файлами Protobuf: подсветка синтаксиса, переход по ссылками и т. д.
-(require 'protobuf-mode)
-(defun setup-protobuf-mode ()
-  "Настройки `protobuf-mode'."
-  (aggressive-indent-mode 1)
-  )
-(add-to-list 'auto-mode-alist '("\\.proto$" . protobuf-mode))
-(add-hook 'protobuf-mode-hook #'setup-protobuf-mode)
+(use-package protobuf-mode
+  :mode
+  ("\\.proto\\'" . protobuf-mode))
 
 
 ;; -> PULSAR-MODE
 ;; https://github.com/protesilaos/pulsar
 ;; Подсвечивать курсор при его перемещении на несколько строк
 (when (package-installed-p 'pulsar)
-  (progn
-    (require 'pulsar)
-    (setq-default pulsar-pulse t)
+  (use-package pulsar
+    :init
+    (setq pulsar-pulse t)
     (add-hook 'next-error-hook #'pulsar-pulse-line)
+    :config
     (pulsar-global-mode 1)))
 
 
@@ -1159,68 +1161,56 @@ Version 2017-11-01"
 ;; -> RUSSIAN-TECHWRITER
 ;; Метод ввода для технических писателей
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
-(require 'russian-techwriter)
-(setq-default default-input-method 'russian-techwriter)
+(use-package russian-techwriter
+  :init
+  (setq default-input-method 'russian-techwriter))
 
 
 ;; -> REVERSE-IM
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
-(require 'reverse-im)
-(setq-default reverse-im-input-methods '(
-                                          "russian-computer"
-                                          "russian-techwriter"))
-(reverse-im-mode t)
+(use-package reverse-im
+  :init
+  (setq reverse-im-input-methods '(
+                                    "russian-computer"
+                                    "russian-techwriter"))
+  :config
+  (reverse-im-mode t))
 
 
 ;; -> RST-MODE
 ;; Основной режим для редактирования reStructutedText
 ;; Больше здесь: https://www.writethedocs.org/guide/writing/reStructuredText/
-(require 'rst)
-(defun setup-rst-mode ()
-  "Настройки для `rst-mode'."
+(use-package rst
+  :config
   (setq-local
     tab-width 3 ;; Ширина TAB'а
-    word-wrap t ;; Перенос по словам
-    )
-  (company-mode 1)
-  (electric-pair-mode 1)
-  (flyspell-mode 1)
-  )
-(add-to-list 'auto-mode-alist '("\\.rst$" . rst-mode))
-(add-hook 'rst-mode-hook #'setup-rst-mode)
-
+    word-wrap t) ;; Перенос по словам)
+  :mode
+  ("\\.rst\\'" . rst-mode))
 
 
 ;; -> RUBY-MODE
 ;; Встроенный пакет
-(require 'ruby-mode)
-(defun setup-ruby-mode ()
-  "Настройки для `ruby-mode'."
-  (company-mode 1))
-(add-hook 'ruby-mode-hook #'setup-ruby-mode)
-(add-to-list 'auto-mode-alist '("\\Vagrantfile$" . ruby-mode))
-
+(use-package ruby-mode
+  :mode
+  ("\\Vagrantfile\\'" . ruby-mode))
 
 
 ;; -> SHELL-SCRIPT-MODE
-(require 'sh-script)
-(defun setup-shell-script-mode ()
-  "Настройки для `sh-script'."
-  (aggressive-indent-mode 1)
-  )
-(add-to-list 'auto-mode-alist '("\\.bashrc$" . shell-script-mode))
-(add-to-list 'auto-mode-alist '("\\.profile$" . shell-script-mode))
-(add-to-list 'auto-mode-alist '("\\.sh$" . shell-script-mode))
-(add-hook 'sh-mode-hook #'setup-shell-script-mode)
+;; Встроенный пакет
+(use-package sh-script
+  :mode
+  ("\\.bashrc\\'" . shell-script-mode)
+  ("\\.profile\\'" . shell-script-mode)
+  ("\\.sh\\'" . shell-script-mode))
 
 
 ;; -> SQL MODE
-;; Это встроенный режим
+;; Это встроенный пакет
 (require 'sql)
 (defun setup-sql-mode ()
   "Настройки `sql-mode'."
-  (aggressive-indent-mode 1)
   (when (fboundp 'lsp-mode)
     (lsp-mode 1))
   )
@@ -1233,33 +1223,19 @@ Version 2017-11-01"
 ;; Пакет для быстрого поиска.
 ;; По кажатию C-7 можно выполнить быстрое редактирование найденных фрагментов, но чтобы
 ;; оно сработало правильно, нужно добавить команду swiper-mc в список mc/cmds-to-run-once.
-(require 'swiper)
-(add-to-list 'mc/cmds-to-run-once 'swiper-mc)
-(global-set-key (kbd "C-s") 'swiper-isearch) ;; Заменить стандартный isearch на swiper
-
-
-;; -> TEMPEL
-;; https://github.com/minad/tempel
-;; Система шаблонов, более новая, чем `tempo.el'. Основные функции:
-;; * `tempel-complete' — завершить ввод шаблона и раскрыть его
-;; * `tempel-expand' — раскрыть введенный шаблон
-;; * `tempel-insert' — выбрать шаблон из списка и вставить в позицию под курсором
-(when (package-installed-p 'tempel)
-  (require 'tempel)
-  (global-set-key (kbd "M-+") #'tempel-complete)
-  (global-set-key (kbd "M-*") #'tempel-insert))
+(use-package swiper
+  :bind
+  ("C-s" . swiper-isearch)) ;; Заменить стандартный isearch на swiper
 
 
 ;; -> TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
-(require 'terraform-mode)
-(defun setup-terraform-mode ()
-  "Настройка `terraform-mode'."
-  (setq-default flycheck-checker 'terraform)
-  )
-(add-hook 'terraform-mode-hook #'setup-terraform-mode)
-(add-to-list 'auto-mode-alist (cons "\\.tf$" 'terraform-mode))
+(use-package terraform-mode
+  :init
+  (setq flycheck-checker 'terraform)
+  :mode
+  ("\\.tf\\'" . terraform-mode))
 
 
 ;; -> TOOLBAR-MODE

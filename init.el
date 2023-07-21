@@ -122,125 +122,14 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(setq package-selected-packages
-  '(
-     airline-themes           ;; https://github.com/AnthonyDiGirolamo/airline-themes
-     adoc-mode                ;; https://github.com/bbatsov/adoc-mode
-     aggressive-indent        ;;
-     all-the-icons            ;;
-     all-the-icons-dired      ;; https://github.com/wyuenho/all-the-icons-dired
-     all-the-icons-ibuffer    ;; https://github.com/seagle0128/all-the-icons-ibuffer
-     anaconda-mode            ;; https://github.com/pythonic-emacs/anaconda-mode
-     ansible                  ;;
-     apache-mode              ;;
-     apheleia                 ;; https://github.com/radian-software/apheleia
-     apt-sources-list         ;; https://git.korewanetadesu.com/apt-sources-list.git
-     avy                      ;;
-     centaur-tabs             ;; https://github.com/ema2159/centaur-tabs
-     checkdoc                 ;;
-     company                  ;;
-     company-box              ;;
-     compat                   ;; https://github.com/emacs-compat/compat
-     dash                     ;;
-     dashboard                ;; https://github.com/emacs-dashboard/emacs-dashboard
-     demap                    ;; https://gitlab.com/sawyerjgardner/demap.el
-     diff-hl                  ;; https://github.com/dgutov/diff-hl
-     dockerfile-mode          ;; https://github.com/spotify/dockerfile-mode
-     doom-modeline            ;; https://github.com/seagle0128/doom-modeline
-     doom-themes              ;; https://github.com/doomemacs/themes
-     easy-kill                ;; https://github.com/leoliu/easy-kill
-     edit-indirect            ;;
-     editorconfig             ;; https://github.com/editorconfig/editorconfig-emacs
-     elpy                     ;; https://elpy.readthedocs.io/en/latest/index.html
-     flycheck                 ;; https://flycheck.org
-     flycheck-color-mode-line ;;
-     flycheck-indicator       ;;
-     flycheck-package         ;; https://github.com/purcell/flycheck-package
-     format-all               ;; https://github.com/lassik/emacs-format-all-the-code
-     go-mode                  ;; https://github.com/dominikh/go-mode.el
-     gruvbox-theme
-     helm                     ;; https://github.com/emacs-helm/helm
-     highlight-indentation    ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
-     hl-todo                  ;; https://github.com/tarsius/hl-todo
-     js2-mode                 ;; https://github.com/mooz/js2-mode
-     json-mode                ;; GNU
-     magit                    ;; https://magit.org/
-     markdown-mode            ;; https://github.com/jrblevin/markdown-mode
-     multiple-cursors         ;; https://github.com/magnars/multiple-cursors.el
-     nerd-icons               ;; https://github.com/rainstormstudio/nerd-icons.el
-     org                      ;;
-     package-lint             ;; https://github.com/purcell/package-lint
-     php-mode                 ;;
-     projectile               ;; https://docs.projectile.mx/projectile/installation.html
-     protobuf-mode            ;;
-     pyenv-mode               ;; https://github.com/pythonic-emacs/pyenv-mode
-     python                   ;;
-     python-mode              ;;
-     rainbow-delimiters       ;; https://github.com/Fanael/rainbow-delimiters
-     rainbow-mode             ;; https://elpa.gnu.org/packages/rainbow-mode.html
-     reverse-im               ;; https://github.com/a13/reverse-im.el
-     russian-techwriter       ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
-     scala-mode               ;;
-     swiper                   ;; https://github.com/abo-abo/swiper
-     terraform-mode           ;;
-     treemacs                 ;;
-     treemacs-all-the-icons   ;;
-     treemacs-icons-dired     ;;
-     treemacs-magit           ;;
-     undo-tree                ;; https://gitlab.com/tsc25/undo-tree
-     web-mode                 ;;
-     wgrep                    ;; https://github.com/mhayashi1120/Emacs-wgrep
-     which-key                ;; https://github.com/justbur/emacs-which-key
-     ws-butler                ;; https://github.com/lewang/ws-butler
-     yaml-mode                ;;
-     yascroll                 ;; https://github.com/emacsorphanage/yascroll
-     yasnippet                ;; https://github.com/joaotavora/yasnippet
-     yasnippet-snippets       ;; https://github.com/AndreaCrotti/yasnippet-snippets
-     zenburn-theme
-     ))
-
-
-;; Установка пакетов для поддерживаемых версий
-(defun add-packages-for-26-3-and-greater ()
-  "Функция добавляет в список пакеты, если версия EMACS ≥ 26.3."
-  (add-to-list 'package-selected-packages 'eglot)    ;; https://github.com/joaotavora/eglot
-  (add-to-list 'package-selected-packages 'lsp-mode)
-  (add-to-list 'package-selected-packages 'lsp-ui)
-  (add-to-list 'package-selected-packages 'pyvenv-auto)) ;; https://github.com/nryotaro/pyvenv-auto
-
-(if (= emacs-major-version 26)
-  ;; Если EMACS 26
-  (when (>= emacs-minor-version 3)
-    ;; Если EMACS 26.3 или новее
-    (add-packages-for-26-3-and-greater))
-  ;; EMACS > 26
-  (when (> emacs-major-version 26)
-    (add-packages-for-26-3-and-greater)))
-
-(defun add-packages-for-27-1-and-greater ()
-  "Функция добавляет в список пакеты, если версия EMACS ≥ 27.1."
-  (add-to-list 'package-selected-packages 'pulsar) ;; https://github.com/protesilaos/pulsar
-  (add-to-list 'package-selected-packages 'vertico)) ;; https://github.com/minad/vertico
-
-(if (= emacs-major-version 27)
-  (when (>= emacs-minor-version 1)
-    (add-packages-for-27-1-and-greater))
-  (when (> emacs-major-version 27)
-    (add-packages-for-27-1-and-greater)))
-
 
 ;; Проверка наличия индекса пакетов
-(unless package-archive-contents (package-refresh-contents))
 (unless (package-installed-p 'use-package)
+  (package-refresh-contents)
   (package-install 'use-package t))
 
-;; Установка необходимых пакетов
-(when (cl-find-if-not #'package-installed-p package-selected-packages)
-  (package-refresh-contents) ; Надо обновить: вдруг имеющаяся версия протухла?
-  (dolist (pkg-name package-selected-packages)
-    (unless (package-installed-p pkg-name)
-      (message (format "Install package %s" pkg-name))
-      (package-install pkg-name t))))
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
 
 
 ;; -> Создание пустого буфера
@@ -355,9 +244,8 @@ Version 2017-11-01"
 ;; -> ABBREV-MODE
 ;; Встроенный режим
 ;; Аббревиатуры — это фрагменты текста, которые по нажатию [C-x, '] превращаются в другие конструкции
-(use-package abbrev
-  :init
-  (setq save-abbrevs 'silently)) ;; Сохранять добавленные аббревиатуры без лишних вопросов
+(require 'abbrev)
+(setq save-abbrevs 'silently) ;; Сохранять добавленные аббревиатуры без лишних вопросов
 
 
 ;; -> ACE-WINDOW
@@ -395,18 +283,35 @@ Version 2017-11-01"
      ) . aggressive-indent-mode))
 
 
+;; -> AIRLINE-THEMES
+;; https://github.com/AnthonyDiGirolamo/airline-themes
+;; Темы для панели информации
+(use-package airline-themes)
+
+
 ;; -> ALL-THE-ICONS
 ;; Настройка иконочных шрифтов и немножко GUI.
 ;; Для установки самих шрифтов следует использовать команду `all-the-icons-install-fonts'.
 ;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
 ;; скопировать их в `/usr/local/share/fonts/'.
 (use-package all-the-icons)
+
+;; -> ALL-THE-ICONS-DIRED
+;; https://github.com/wyuenho/all-the-icons-dired
 (use-package all-the-icons-dired)
+
+;; -> ALL-THE-ICONS-IBUFFER
+;; https://github.com/seagle0128/all-the-icons-ibuffer
 (use-package all-the-icons-ibuffer
   :init
   (setq
     all-the-icons-ibuffer-human-readable-size t ;; Показывать размер файлов в ibuffer в человекочитаемом виде
     all-the-icons-ibuffer-icon t))              ;; Показывать иконки файлов в ibuffer
+
+
+;; -> ANSIBLE
+;; TODO: URI
+(use-package ansible)
 
 
 
@@ -422,8 +327,15 @@ Version 2017-11-01"
 ;; -> APT SOURCES LIST MODE
 ;; https://git.korewanetadesu.com/apt-sources-list.git
 ;; Режим для редактирования файлов настройки репозиториев APT
-(require 'apt-sources-list)
-(add-to-list 'auto-mode-alist (cons "\\.list$" 'apt-sources-list-mode))
+(use-package apt-sources-list
+  :mode
+  ("\\.list\\'" . apt-sources-list-mode))
+
+
+;; -> AVY
+;; TODO: URL
+;; TODO: Зачем?
+(use-package avy)
 
 
 ;; -> CENTAUR-TABS
@@ -444,8 +356,15 @@ Version 2017-11-01"
   :config
   (centaur-tabs-mode 1)
   :hook
-  (dashboard-mode . centaur-tabs-local-mode)
-  (dired-mode . centaur-tabs-local-mode))
+  ((
+     dashboard-mode
+     dired-mode) . centaur-tabs-local-mode))
+
+
+;; -> CHECKDOC
+;; TODO: URI
+;; TODO: Описание
+(use-package checkdoc)
 
 
 ;; -> COMPANY-MODE
@@ -472,34 +391,36 @@ Version 2017-11-01"
      ) . company-mode))
 
 
-;; -> COMPANY-DABBREV
-;; TODO: Что этот пакет делает? Он мне точно нужен?
-(use-package company-dabbrev
-  :init
-  (setq
-    company-dabbrev-downcase nil    ;;
-    company-dabbrev-ignore-case nil ;;
-    company-dabbrev-ignore-case nil ;;
-    ))
+;; -> COMPANY-BOX
+;; https://github.com/sebastiencs/company-box
+;; Красивости для `company-mode':
+;; - разные цвета для разных бэкендов
+;; - иконки
+;; - вывод документации для кандидатов
+;; - нет ограничений
+(use-package company-box
+  :hook (company-mode . company-box-mode))
 
 
 ;; -> CONF MODE
 ;; Встроенный пакет. Основной режим для редактирования конфигурационных файлов INI/CONF
-(require 'conf-mode)
-(add-to-list 'auto-mode-alist '("\\.editorconfig\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.terraformrc\\'" . conf-mode))
+(use-package conf-mode
+  :mode
+  ("\\.editorconfig\\'" . conf-mode)
+  ("\\.env\\'" . conf-mode)
+  ("\\.flake8\\'" . conf-mode)
+  ("\\.ini\\'" . conf-mode)
+  ("\\.pylintrc\\'" . conf-mode)
+  ("\\.terraformrc\\'" . conf-mode))
 
 
 ;; -> CSS-MODE
 ;; Встроенный режим
 (use-package css-mode
   :init
-  (setq css-indent-offset 2))
-(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
+  (setq css-indent-offset 2)
+  :mode
+  ("\\.css\\'" . css-mode))
 
 
 ;; -> DASHBOARD
@@ -522,6 +443,12 @@ Version 2017-11-01"
     )
   :config
   (dashboard-setup-startup-hook))
+
+
+;; -> DEMAP
+;; https://gitlab.com/sawyerjgardner/demap.el
+;; TODO: Описание
+(use-package demap)
 
 
 ;; -> DESKTOP-SAVE-MODE
@@ -568,8 +495,10 @@ Version 2017-11-01"
 
 ;; -> DOCKERFILE-MODE
 ;; https://github.com/spotify/dockerfile-mode
-(require 'dockerfile-mode)
-(add-to-list 'auto-mode-alist '("\\Dockerfile\\'" . dockerfile-mode))
+;; Работа с файлами `Dockerfile'.
+(use-package dockerfile-mode
+  :mode
+  ("\\Dockerfile\\'" . dockerfile-mode))
 
 
 ;; -> DOOM-MODELINE
@@ -601,6 +530,8 @@ Version 2017-11-01"
 
 
 ;; -> LOAD THEME
+;; https://github.com/doomemacs/themes
+;; Темы из DOOM Emacs
 (use-package doom-themes
   :config
   (load-theme 'doom-monokai-classic t)
@@ -611,8 +542,15 @@ Version 2017-11-01"
 ;; -> EASY KILL
 ;; https://github.com/leoliu/easy-kill
 ;; Удобнее работать с удалением текстовых блоков
-(require 'easy-kill)
-(global-set-key [remap kill-ring-save] 'easy-kill)
+(use-package easy-kill
+  :config
+  (global-set-key [remap kill-ring-save] 'easy-kill))
+
+
+;; -> EDIT-INDIRECT
+;; TODO: URI
+;; TODO: Описание
+(use-package edit-indirect)
 
 
 ;; -> EDITORCONFIG EMACS
@@ -660,7 +598,7 @@ Version 2017-11-01"
   (electric-indent-local-mode 1)
   (flymake-mode 1)
   (highlight-indentation-set-offset 2)
-  (rainbow-mode 1)  )
+  )
 (add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("\\abbrev_defs\\'" . emacs-lisp-mode))
 (add-hook 'emacs-lisp-mode-hook #'setup-emacs-lisp-mode)
@@ -707,6 +645,12 @@ Version 2017-11-01"
 (use-package flycheck-color-mode-line
   :hook
   (flycheck-mode . flycheck-color-mode-line-mode))
+
+
+;; -> FLYCHECK-INDICATOR
+;; TODO: URI
+;; TODO: Описание
+(use-package flycheck-indicator)
 
 
 ;; -> FLYCHECK-PACKAGE
@@ -938,24 +882,33 @@ Version 2017-11-01"
 ;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
 ;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
 ;; YAML: npm install -g yaml-language-server
-(when (and
-        (package-installed-p 'lsp-mode)
-        (package-installed-p 'lsp-ui))
-  (use-package lsp-mode
-    :init
-    (setq
-      lsp-headerline-breadcrumb-enable t  ;; Показывать "хлебные крошки" в заголовке
-      lsp-modeline-diagnostics-enable t)) ;; Показывать ошибки LSP в статусной строке
 
-  (use-package lsp-ui
-    :init
-    (setq
-      lsp-ui-doc-enable t       ;; Показывать документацию в LSP-UI
-      lsp-ui-peek-always-show t ;; TODO: ???
-      lsp-ui-peek-enable t      ;; TODO: ???
-      lsp-ui-sideline-enable t) ;; TODO ???
-    :mode
-    (lsp-mode . lsp-ui-mode)))
+(use-package lsp-mode
+  :if (or
+        (and
+          (= emacs-major-version 26)
+          (>= emacs-minor-version 3))
+        (> emacs-major-version 26))
+  :init
+  (setq
+    lsp-headerline-breadcrumb-enable t  ;; Показывать "хлебные крошки" в заголовке
+    lsp-modeline-diagnostics-enable t)) ;; Показывать ошибки LSP в статусной строке
+
+(use-package lsp-ui
+  :if (or
+        (and
+          (= emacs-major-version 26)
+          (>= emacs-minor-version 3))
+        (> emacs-major-version 26))
+  :init
+  (setq
+    lsp-ui-doc-enable t       ;; Показывать документацию в LSP-UI
+    lsp-ui-peek-always-show t ;; TODO: ???
+    lsp-ui-peek-enable t      ;; TODO: ???
+    lsp-ui-sideline-enable t) ;; TODO ???
+  :after (lsp-mode)
+  :hook
+  (lsp-mode-hook . lsp-ui-mode))
 
 
 ;; -> MAGIT
@@ -988,15 +941,11 @@ Version 2017-11-01"
     '(1.0 1.0 1.0 1.0 1.0 1.0)              ;; Все заголовки одной высоты
     markdown-list-indent-width 4            ;; Размер отступа для выравнивания вложенных списков
     )
+  :config
+  (setq word-wrap t)
   :mode
   ("\\.md\\'" . markdown-mode))
-(defun setup-markdown-mode()
-  "Настройки `markdown-mode'."
-  (setq-local
-    word-wrap t) ;; Перенос по словам  )
-  )
 (define-key markdown-mode-map (kbd "M-.") 'markdown-follow-thing-at-point)
-(add-hook 'markdown-mode-hook #'setup-markdown-mode)
 
 
 ;; -> MENU-BAR-MODE
@@ -1029,23 +978,23 @@ Version 2017-11-01"
 ;; -> NXML-MODE
 ;; Встроенный пакет
 ;; Почти как xml-mode, только лучше и новее
-(use-package nxml-mode
-  :init
-  (setq
-    nxml-attribute-indent 4                   ;; Выравнивание атрибутов
-    nxml-auto-insert-xml-declaration-flag nil ;; Не вставлять декларацию
-    nxml-bind-meta-tab-to-complete-flag t     ;; Использовать TAB для завершения ввода
-    nxml-child-indent 4                       ;; Выравнивание дочерних элементов
-    nxml-slash-auto-complete-flag t)          ;; Закрывать теги по вводу /
-  :mode
-  ("\\.xml\\'" . nxml-mode)
-  ("\\.pom\\'" . nxml-mode))
+;; (use-package nxml-mode
+;;   :init
+;;   (setq
+;;     nxml-attribute-indent 4                   ;; Выравнивание атрибутов
+;;     nxml-auto-insert-xml-declaration-flag nil ;; Не вставлять декларацию
+;;     nxml-bind-meta-tab-to-complete-flag t     ;; Использовать TAB для завершения ввода
+;;     nxml-child-indent 4                       ;; Выравнивание дочерних элементов
+;;     nxml-slash-auto-complete-flag t)          ;; Закрывать теги по вводу /
+;;   :mode
+;;   ("\\.xml\\'" . nxml-mode)
+;;   ("\\.pom\\'" . nxml-mode))
 
 
 ;; -> ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, и не только
-(require 'org)
+(use-package org)
 (defun setup-org-mode ()
   "Настройки для `org-mode'."
   (setq
@@ -1062,7 +1011,15 @@ Version 2017-11-01"
 (add-to-list 'auto-mode-alist '("\\.org$'" . org-mode))
 
 
+;; -> PACKAGE-LINT
+;; https://github.com/purcell/package-lint
+;; Проверка пакетов Emacs
+(use-package package-lint)
+
+
 ;; -> PHP-MODE
+;; TODO: URI
+;; Поддержка PHP.
 (use-package php-mode
   :mode
   ("\\.php\\'" . php-mode))
@@ -1089,24 +1046,35 @@ Version 2017-11-01"
 ;; -> PULSAR-MODE
 ;; https://github.com/protesilaos/pulsar
 ;; Подсвечивать курсор при его перемещении на несколько строк
-(when (package-installed-p 'pulsar)
-  (use-package pulsar
-    :init
-    (setq pulsar-pulse t)
-    (add-hook 'next-error-hook #'pulsar-pulse-line)
-    :config
-    (pulsar-global-mode 1)))
+(use-package pulsar
+  :if (or
+        (and
+          (= emacs-major-version 27)
+          (>= emacs-minor-version 1))
+        (> emacs-major-version 27))
+  :init
+  (setq pulsar-pulse t)
+  (add-hook 'next-error-hook #'pulsar-pulse-line)
+  :config
+  (pulsar-global-mode 1))
+
+
+;; -> PYENV-MODE
+;; https://github.com/pythonic-emacs/pyenv-mode
+;; Поддержка PyEnv
+(use-package pyenv-mode)
 
 
 ;; -> PYTHON-MODE
-(require 'python)
-(setq-default
-  py-company-pycomplete-p t                      ;;
-  py-electric-comment-p t                        ;;
-  py-pylint-command-args "--max-line-length 120" ;;
-  py-virtualenv-workon-home "~/.virtualenvs"     ;;
-  python-indent-offset 4                         ;;
-  python-shell-interpreter "python3")            ;;
+(use-package python
+  :init
+  (setq
+    py-company-pycomplete-p t                      ;;
+    py-electric-comment-p t                        ;;
+    py-pylint-command-args "--max-line-length 120" ;;
+    py-virtualenv-workon-home "~/.virtualenvs"     ;;
+    python-indent-offset 4                         ;;
+    python-shell-interpreter "python3"))            ;;
 (defun setup-python-mode ()
   "Settings for 'python-mode'."
   (interactive)
@@ -1156,6 +1124,19 @@ Version 2017-11-01"
      web-mode
      yaml-mode
      ) . rainbow-delimiters-mode))
+
+
+;; => RAINBOW-MODE
+;; https://elpa.gnu.org/packages/rainbow-mode.html
+;; Подсветка строк с цветами нужным цветом, например #153415, #223956
+(use-package rainbow-mode
+  :hook
+  ((
+     css-mode
+     emacs-lisp-mode
+     web-mode
+     ) . rainbow-mode))
+
 
 
 ;; -> RUSSIAN-TECHWRITER
@@ -1255,64 +1236,79 @@ Version 2017-11-01"
 ;; -> TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Дерево файлов и каталогов
-(require 'treemacs)
-(setq-default treemacs-width 35)
-(defun treemacs-get-ignore-files (filename absolute-path)
-  "Не показывать в дереве имена указанных файлов и каталогов.
+(use-package treemacs
+  :init
+  (setq-default treemacs-width 35)
+  :bind
+  ("<f8>" . treemacs)
+  :config
+  (treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
+  (treemacs-git-mode 'simple) ;; Простой режим
+  (treemacs-filewatch-mode 1) ;; Отслеживание изменений в ФС на лету
+  (define-key treemacs-mode-map (kbd "f") 'find-grep)
+  (defun treemacs-get-ignore-files (filename absolute-path)
+    "Не показывать в дереве имена указанных файлов и каталогов.
 
   FILENAME — имя файла.
   ABSOLUTE-PATH — абсолютный путь."
-  (or
-    (string-equal filename ".emacs.desktop.lock")
-    (string-equal filename "__pycache__")))
-(add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
-(define-key treemacs-mode-map (kbd "f") 'find-grep)
-(global-set-key (kbd "<f8>") 'treemacs)
-(treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
-(treemacs-git-mode 'simple) ;; Простой режим
-(treemacs-filewatch-mode 1) ;; Отслеживание изменений в ФС на лету
+    (or
+      (string-equal filename ".emacs.desktop.lock")
+      (string-equal filename "__pycache__")))
+  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
+  )
+
+;; -> TREEMACS-ALL-THE-ICONS
+;; TODO: URI
+(use-package treemacs-all-the-icons)
 
 
 ;; -> TREEMACS-ICONS-DIRED
 ;; Отображать иконки файлов из  TreeMacs в dired-mode
-(require 'treemacs-icons)
-(add-hook 'dired-mode-hook 'treemacs-icons-dired-enable-once)
+(use-package treemacs-icons-dired
+  :hook
+  (dired-mode . treemacs-icons-dired-enable-once))
 
 
 ;; -> UNDO-TREE
+;; https://gitlab.com/tsc25/undo-tree
 ;; Не только предоставляет привычное поведение при отмене команд, но и даёт мощные возможности по
 ;; ведению дерева правок.
-(require 'undo-tree)
-(setq undo-tree-auto-save-history nil) ;; Отключить создание резервных копий файлов
-(global-undo-tree-mode 1)
+(use-package undo-tree
+  :init
+  (setq undo-tree-auto-save-history nil) ;; Отключить создание резервных копий файлов
+  :config
+  (global-undo-tree-mode 1))
 
 
 ;; -> VERTICO
 ;; https://github.com/minad/vertico
 ;; Автодополнение на основе встроенной функциональности EMACS
-(when (package-installed-p 'vertico)
-  (require 'vertico)
+(use-package vertico
+  :if (or
+        (and
+          (= emacs-major-version 27)
+          (>= emacs-minor-version 1))
+        (> emacs-major-version 27))
+  :config
   (vertico-mode 1))
 
 
 ;; -> WEB-MODE
 ;; https://web-mode.org/
-(require 'web-mode)
-(setq-default
-  initial-major-mode 'web-mode                ;; Необязательно, но теперь это режим по умолчанию
-  web-mode-attr-indent-offset 4               ;; Отступ в атрибутов — 4 пробела
-  web-mode-css-indent-offset 2                ;; При редактировании CSS отступ будет 2 пробела
-  web-mode-enable-block-face t                ;; Отображение
-  web-mode-enable-css-colorization t          ;; Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета
-  web-mode-enable-current-element-highlight t ;; Подсветка активного элемента разметки
-  web-mode-markup-indent-offset 2)            ;; Отступ при вёрстке HTML — 2 пробела
-(defun setup-web-mode ()
-  "Настройки `web-mode'."
+(use-package web-mode
+  :init
+  (setq
+    initial-major-mode 'web-mode                ;; Необязательно, но теперь это режим по умолчанию
+    web-mode-attr-indent-offset 4               ;; Отступ в атрибутов — 4 пробела
+    web-mode-css-indent-offset 2                ;; При редактировании CSS отступ будет 2 пробела
+    web-mode-enable-block-face t                ;; Отображение
+    web-mode-enable-css-colorization t          ;; Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета
+    web-mode-enable-current-element-highlight t ;; Подсветка активного элемента разметки
+    web-mode-markup-indent-offset 2)            ;; Отступ при вёрстке HTML — 2 пробела
+  :config
   (highlight-indentation-set-offset 2)
-  (rainbow-mode 1)
-  )
-(add-hook 'web-mode-hook #'setup-web-mode)
-(add-to-list 'auto-mode-alist '("\\.html$" . web-mode))
+  :mode
+  ("\\.html\\'" . web-mode))
 
 
 ;; -> WHICH-KEY MODE
@@ -1398,32 +1394,39 @@ Version 2017-11-01"
 ;; -> YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
-(require 'yaml-mode)
-(add-to-list 'auto-mode-alist '("\\.ansible\\-lint" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.pre\\-commit\\-config\\.yaml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yamllint$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yamllint\\-config\\.yaml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yfm$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-
+(use-package yaml-mode
+  :mode
+  ("\\.ansible\\-lint\\'" . yaml-mode)
+  ("\\.pre\\-commit\\-config\\.yaml\\'" . yaml-mode)
+  ("\\.yaml\\'" . yaml-mode)
+  ("\\.yamllint\\'" . yaml-mode)
+  ("\\.yamllint\\-config\\.yaml\\'" . yaml-mode)
+  ("\\.yfm\\'" . yaml-mode)
+  ("\\.yml\\'" . yaml-mode))
 
 ;; -> YASCROLL-MODE
 ;; https://github.com/emacsorphanage/yascroll
 ;; Альтернативная полоса прокрутки
-(require 'yascroll)
-(global-yascroll-bar-mode 1)
+(use-package yascroll
+  :config
+  (global-yascroll-bar-mode 1))
 
 
 ;; -> YASNIPPET
 ;; http://github.com/joaotavora/yasnippet
 ;; Предоставляет функциональность сниппетов — блоков кода, в которые всего-лишь нужно подставить значения.
-(require 'yasnippet)
-;; Если директории для сниппектов нет, её нужно создать.
-(defconst yas-snippet-root-dir (expand-file-name emacs-config-dir "snippets"))
-(unless (file-directory-p yas-snippet-root-dir)
-  (mkdir yas-snippet-root-dir))
-(yas-global-mode 1)
+(use-package yasnippet
+  ;; Если директории для сниппектов нет, её нужно создать.
+  :config
+  (defconst yas-snippet-root-dir (expand-file-name emacs-config-dir "snippets"))
+  (unless (file-directory-p yas-snippet-root-dir)
+    (mkdir yas-snippet-root-dir))
+  (yas-global-mode 1))
+
+
+;; -> YASNIPPET-SNIPPETS
+;; https://github.com/AndreaCrotti/yasnippet-snippets
+(use-package yasnippet-snippets)
 
 
 (put 'downcase-region 'disabled nil)

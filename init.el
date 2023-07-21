@@ -586,7 +586,9 @@ Version 2017-11-01"
 ;; Краткая справка по использованию:
 ;; Проверка состояния: `elpy-config'.
 ;; Активация окружения: `pyenv-activate', указать путь к каталогу с окружением.
-(use-package elpy)
+(use-package elpy
+  :hook
+  (python-mode . elpy-mode))
 
 
 ;; -> EMACS-LISP MODE
@@ -891,8 +893,11 @@ Version 2017-11-01"
         (> emacs-major-version 26))
   :init
   (setq
-    lsp-headerline-breadcrumb-enable t  ;; Показывать "хлебные крошки" в заголовке
-    lsp-modeline-diagnostics-enable t)) ;; Показывать ошибки LSP в статусной строке
+    lsp-headerline-breadcrumb-enable t ;; Показывать "хлебные крошки" в заголовке
+    lsp-modeline-diagnostics-enable t) ;; Показывать ошибки LSP в статусной строке
+  :hook
+  (python-mode . lsp-mode)
+  )
 
 (use-package lsp-ui
   :if (or
@@ -1066,34 +1071,31 @@ Version 2017-11-01"
 
 
 ;; -> PYTHON-MODE
-(use-package python
+(use-package python-mode
   :init
   (setq
     py-company-pycomplete-p t                      ;;
     py-electric-comment-p t                        ;;
     py-pylint-command-args "--max-line-length 120" ;;
     py-virtualenv-workon-home "~/.virtualenvs"     ;;
-    python-indent-offset 4                         ;;
-    python-shell-interpreter "python3"))            ;;
-(defun setup-python-mode ()
-  "Settings for 'python-mode'."
-  (interactive)
-  ;; (anaconda-eldoc-mode 1)
-  ;; (anaconda-mode 1)
-  (elpy-mode 1)
-  (when (fboundp 'lsp-mode)
-    (lsp-mode 1))
-  (when (fboundp 'pyvenv-mode)
-    (pyvenv-mode 1))
-  (setq-local python-indent-offset 4)
-  (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
-  (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
-  (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
-  (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names))
-(add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
-(add-hook 'python-mode-hook #'setup-python-mode)
-(when (package-installed-p 'pyvenv-auto)
-  (add-hook 'python-mode-hook #'pyvenv-mode))
+    )
+  :mode
+  ("\\.py\\'" . python-mode)
+  :bind
+  (:map python-mode-map
+    (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
+    (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
+    (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
+    (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names))
+  )
+
+
+;; -> PYVENV
+;; TODO: URI
+;; Позволяет активировать виртуальные окружения из Emacs
+(use-package pyvenv
+  :mode
+  (python-mode . pyvenv-mode))
 
 
 ;; -> RAINBOW-DELIMITERS-MODE

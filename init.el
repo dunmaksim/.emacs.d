@@ -949,8 +949,11 @@ Version 2017-11-01"
   :config
   (setq word-wrap t)
   :mode
-  ("\\.md\\'" . markdown-mode))
-(define-key markdown-mode-map (kbd "M-.") 'markdown-follow-thing-at-point)
+  ("\\.md\\'" . markdown-mode)
+  :bind
+  (:map
+    markdow-mode-map
+    ("M-." . markdown-follow-thing-at-point)))
 
 
 ;; -> MENU-BAR-MODE
@@ -1083,11 +1086,10 @@ Version 2017-11-01"
   ("\\.py\\'" . python-mode)
   :bind
   (:map python-mode-map
-    (define-key python-mode-map (kbd "M-.") 'jedi:goto-definition)
-    (define-key python-mode-map (kbd "M-,") 'jedi:goto-definition-pop-marker)
-    (define-key python-mode-map (kbd "M-/") 'jedi:show-doc)
-    (define-key python-mode-map (kbd "M-?") 'helm-jedi-related-names))
-  )
+    ("M-." . 'jedi:goto-definition)
+    ("M-," . 'jedi:goto-definition-pop-marker)
+    ("M-/" . 'jedi:show-doc)
+    ("M-?" . 'helm-jedi-related-names)))
 
 
 ;; -> PYVENV

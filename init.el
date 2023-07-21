@@ -557,6 +557,7 @@ Version 2017-11-01"
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
+  :after (ws-butler)
   :init
   (setq editorconfig-trim-whitespaces-mode 'ws-butler-mode)
   :config
@@ -952,7 +953,7 @@ Version 2017-11-01"
   ("\\.md\\'" . markdown-mode)
   :bind
   (:map
-    markdow-mode-map
+    markdown-mode-map
     ("M-." . markdown-follow-thing-at-point)))
 
 

@@ -1071,9 +1071,10 @@ Version 2017-11-01"
       :config
       (pulsar-global-mode 1))
   ;; EMACS более старый, чем 27.1
-  (use-package beacon
-    :config
-    (beacon-mode 1)))
+  (when (fboundp 'after-focus-change-function)
+    (use-package beacon
+      :config
+      (beacon-mode 1))))
 
 
 ;; -> PYTHON-MODE

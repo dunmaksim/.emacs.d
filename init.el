@@ -886,35 +886,37 @@ Version 2017-11-01"
 ;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
 ;; YAML: npm install -g yaml-language-server
 
-(use-package lsp-mode
-  :if (or
-        (and
-          (= emacs-major-version 26)
-          (>= emacs-minor-version 3))
-        (> emacs-major-version 26))
-  :init
-  (setq
-    lsp-headerline-breadcrumb-enable t ;; Показывать "хлебные крошки" в заголовке
-    lsp-modeline-diagnostics-enable t) ;; Показывать ошибки LSP в статусной строке
-  :hook
-  (python-mode . lsp-mode)
-  )
+(when
+    (or
+     (and
+      (= emacs-major-version 26)
+      (>= emacs-minor-version 3))
+     (> emacs-major-version 26))
 
-(use-package lsp-ui
-  :if (or
-        (and
+  (use-package lsp-mode
+    :init
+    (setq
+     lsp-headerline-breadcrumb-enable t ;; Показывать "хлебные крошки" в заголовке
+     lsp-modeline-diagnostics-enable t) ;; Показывать ошибки LSP в статусной строке
+    :hook
+    (python-mode . lsp-mode)
+    )
+
+  (use-package lsp-ui
+    :if (or
+         (and
           (= emacs-major-version 26)
           (>= emacs-minor-version 3))
-        (> emacs-major-version 26))
-  :init
-  (setq
-    lsp-ui-doc-enable t       ;; Показывать документацию в LSP-UI
-    lsp-ui-peek-always-show t ;; TODO: ???
-    lsp-ui-peek-enable t      ;; TODO: ???
-    lsp-ui-sideline-enable t) ;; TODO ???
-  :after (lsp-mode)
-  :hook
-  (lsp-mode-hook . lsp-ui-mode))
+         (> emacs-major-version 26))
+    :init
+    (setq
+     lsp-ui-doc-enable t       ;; Показывать документацию в LSP-UI
+     lsp-ui-peek-always-show t ;; TODO: ???
+     lsp-ui-peek-enable t      ;; TODO: ???
+     lsp-ui-sideline-enable t) ;; TODO ???
+    :after (lsp-mode)
+    :hook
+    (lsp-mode-hook . lsp-ui-mode)))
 
 
 ;; -> MAGIT
@@ -1052,45 +1054,38 @@ Version 2017-11-01"
   ("\\.proto\\'" . protobuf-mode))
 
 
-;; -> PULSAR-MODE
-;; https://github.com/protesilaos/pulsar
 ;; Подсвечивать курсор при его перемещении на несколько строк
-(use-package pulsar
-  :if (or
-        (and
-          (= emacs-major-version 27)
-          (>= emacs-minor-version 1))
-        (> emacs-major-version 27))
-  :init
-  (setq pulsar-pulse t)
-  (add-hook 'next-error-hook #'pulsar-pulse-line)
-  :config
-  (pulsar-global-mode 1))
-
-
-;; -> PYENV-MODE
-;; https://github.com/pythonic-emacs/pyenv-mode
-;; Поддержка PyEnv
-(use-package pyenv-mode)
+(if
+    ;; EMACS 27.1 или более новый
+    ;; -> PULSAR-MODE
+    ;; https://github.com/protesilaos/pulsar
+    (or
+     (and
+      (= emacs-major-version 27)
+      (>= emacs-minor-version 1))
+     (> emacs-major-version 27))
+    (use-package pulsar
+      :init
+      (setq pulsar-pulse t)
+      (add-hook 'next-error-hook #'pulsar-pulse-line)
+      :config
+      (pulsar-global-mode 1))
+  ;; EMACS более старый, чем 27.1
+  (use-package beacon
+    :config
+    (beacon-global-mode 1)))
 
 
 ;; -> PYTHON-MODE
 (use-package python-mode
   :init
   (setq
-    py-company-pycomplete-p t                      ;;
-    py-electric-comment-p t                        ;;
-    py-pylint-command-args "--max-line-length 120" ;;
-    py-virtualenv-workon-home "~/.virtualenvs"     ;;
-    )
+   py-company-pycomplete-p t                      ;;
+   py-electric-comment-p t                        ;;
+   py-pylint-command-args "--max-line-length 120" ;;
+   )
   :mode
-  ("\\.py\\'" . python-mode)
-  :bind
-  (:map python-mode-map
-    ("M-." . 'jedi:goto-definition)
-    ("M-," . 'jedi:goto-definition-pop-marker)
-    ("M-/" . 'jedi:show-doc)
-    ("M-?" . 'helm-jedi-related-names)))
+  ("\\.py\\'" . python-mode))
 
 
 ;; -> PYVENV
@@ -1098,7 +1093,8 @@ Version 2017-11-01"
 ;; Позволяет активировать виртуальные окружения из Emacs
 (use-package pyvenv
   :mode
-  (python-mode . pyvenv-mode))
+  (python-mode . pyvenv-mode)
+  :after (python-mode))
 
 
 ;; -> RAINBOW-DELIMITERS-MODE
@@ -1288,14 +1284,15 @@ Version 2017-11-01"
 ;; -> VERTICO
 ;; https://github.com/minad/vertico
 ;; Автодополнение на основе встроенной функциональности EMACS
-(use-package vertico
-  :if (or
-        (and
-          (= emacs-major-version 27)
-          (>= emacs-minor-version 1))
-        (> emacs-major-version 27))
-  :config
-  (vertico-mode 1))
+(when
+    (or
+     (and
+      (= emacs-major-version 27)
+      (>= emacs-minor-version 1))
+     (> emacs-major-version 27))
+  (use-package vertico
+    :config
+    (vertico-mode 1)))
 
 
 ;; -> WEB-MODE
@@ -1303,13 +1300,13 @@ Version 2017-11-01"
 (use-package web-mode
   :init
   (setq
-    initial-major-mode 'web-mode                ;; Необязательно, но теперь это режим по умолчанию
-    web-mode-attr-indent-offset 4               ;; Отступ в атрибутов — 4 пробела
-    web-mode-css-indent-offset 2                ;; При редактировании CSS отступ будет 2 пробела
-    web-mode-enable-block-face t                ;; Отображение
-    web-mode-enable-css-colorization t          ;; Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета
-    web-mode-enable-current-element-highlight t ;; Подсветка активного элемента разметки
-    web-mode-markup-indent-offset 2)            ;; Отступ при вёрстке HTML — 2 пробела
+   initial-major-mode 'web-mode                ;; Необязательно, но теперь это режим по умолчанию
+   web-mode-attr-indent-offset 4               ;; Отступ в атрибутов — 4 пробела
+   web-mode-css-indent-offset 2                ;; При редактировании CSS отступ будет 2 пробела
+   web-mode-enable-block-face t                ;; Отображение
+   web-mode-enable-css-colorization t          ;; Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета
+   web-mode-enable-current-element-highlight t ;; Подсветка активного элемента разметки
+   web-mode-markup-indent-offset 2)            ;; Отступ при вёрстке HTML — 2 пробела
   :config
   (highlight-indentation-set-offset 2)
   :mode

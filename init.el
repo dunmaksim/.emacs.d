@@ -1073,7 +1073,7 @@ Version 2017-11-01"
   ;; EMACS более старый, чем 27.1
   (use-package beacon
     :config
-    (beacon-global-mode 1)))
+    (beacon-mode 1)))
 
 
 ;; -> PYTHON-MODE
@@ -1092,9 +1092,9 @@ Version 2017-11-01"
 ;; TODO: URI
 ;; Позволяет активировать виртуальные окружения из Emacs
 (use-package pyvenv
-  :mode
-  (python-mode . pyvenv-mode)
-  :after (python-mode))
+  :after (python-mode)
+  :hook
+  (python-mode . pyvenv-mode))
 
 
 ;; -> RAINBOW-DELIMITERS-MODE

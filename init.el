@@ -119,7 +119,7 @@
 
 ;; -> ПАКЕТЫ
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(push '("melpa" . "https://melpa.org/packages/") package-archives)
 (package-initialize)
 
 
@@ -310,9 +310,9 @@ Version 2017-11-01"
 
 
 ;; -> ANSIBLE
-;; TODO: URI
+;; https://github.com/k1LoW/emacs-ansible
+;; Дополнительные возможности при работе с YAML-файлами Ansible
 (use-package ansible)
-
 
 
 ;; -> APHELEIA
@@ -330,12 +330,6 @@ Version 2017-11-01"
 (use-package apt-sources-list
   :mode
   ("\\.list\\'" . apt-sources-list-mode))
-
-
-;; -> AVY
-;; TODO: URL
-;; TODO: Зачем?
-(use-package avy)
 
 
 ;; -> CENTAUR-TABS
@@ -362,9 +356,10 @@ Version 2017-11-01"
 
 
 ;; -> CHECKDOC
-;; TODO: URI
-;; TODO: Описание
-(use-package checkdoc)
+;; Встроенный пакет для проверки строк документации.
+(use-package checkdoc
+  :hook
+  (emacs-lisp-mode . checkdoc-minor-mode))
 
 
 ;; -> COMPANY-MODE
@@ -388,7 +383,9 @@ Version 2017-11-01"
      php-mode
      rst-mode
      ruby-mode
-     ) . company-mode))
+     ) . company-mode)
+  :bind
+  ("<tab>" . company-indent-or-complete-common))
 
 
 ;; -> COMPANY-BOX
@@ -443,12 +440,6 @@ Version 2017-11-01"
     )
   :config
   (dashboard-setup-startup-hook))
-
-
-;; -> DEMAP
-;; https://gitlab.com/sawyerjgardner/demap.el
-;; TODO: Описание
-(use-package demap)
 
 
 ;; -> DESKTOP-SAVE-MODE
@@ -529,7 +520,7 @@ Version 2017-11-01"
   (doom-modeline-mode 1))
 
 
-;; -> LOAD THEME
+;; -> DOOM-THEMES
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
 (use-package doom-themes
@@ -548,8 +539,10 @@ Version 2017-11-01"
 
 
 ;; -> EDIT-INDIRECT
-;; TODO: URI
-;; TODO: Описание
+;; https://github.com/Fanael/edit-indirect
+;; Позволяет редактировать выделенный регион в отдельном буфере.
+;; Это может быть полезно в том случае, когда, например, нужно
+;; отредактировать код программы, вставленный как пример в документацию.
 (use-package edit-indirect)
 
 
@@ -570,11 +563,11 @@ Version 2017-11-01"
 ;; выделен регион, то в скобки обрамляется он.
 (use-package elec-pair
   :config
-  (add-to-list 'electric-pair-pairs '(?« . ?»))
-  (add-to-list 'electric-pair-pairs '(?{ . ?}))
-  (add-to-list 'electric-pair-pairs '(?‘ . ’?))
-  (add-to-list 'electric-pair-pairs '(?“ . ”?))
-  (add-to-list 'electric-pair-pairs '(?‚ . ‘?))
+  (push '(?« . ?») electric-pair-pairs)
+  (push '(?{ . ?}) electric-pair-pairs)
+  (push '(?‘ . ’?) electric-pair-pairs)
+  (push '(?“ . ”?) electric-pair-pairs)
+  (push '(?‚ . ‘?) electric-pair-pairs)
   (electric-pair-mode t)) ;; Глобальный режим
 
 ;; -> ELECTRIC-INDENT MODE
@@ -650,35 +643,23 @@ Version 2017-11-01"
   (flycheck-mode . flycheck-color-mode-line-mode))
 
 
-;; -> FLYCHECK-INDICATOR
-;; TODO: URI
-;; TODO: Описание
-(use-package flycheck-indicator)
-
-
-;; -> FLYCHECK-PACKAGE
-;; https://github.com/purcell/flycheck-package
-;; Проверка пакетов с помощью Flycheck
-(use-package flycheck-package
-  :hook
-  (flycheck-mode . flycheck-package-setup))
-
-
 ;; -> FLYSPELL-MODE
 ;; Проверка орфографии с помощью словарей
-(use-package flyspell
-  :if (and
-        (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
-        (file-exists-p "/usr/bin/aspell")      ;; Надо убедиться, что программа установлена в ОС
-        )
-  :init
-  (setq ispell-program-name "/usr/bin/aspell")
-  :hook
-  ((
-     adoc-mode
-     markdown-mode
-     rst-mode
-     ) . flyspell-mode))
+(when
+  ;; Использовать пакет только в том случае, когда дело происходит в Linux и
+  ;; Aspell доступен
+  (and
+    (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
+    (file-exists-p "/usr/bin/aspell"))      ;; Надо убедиться, что программа установлена в ОС
+  (use-package flyspell
+    :init
+    (setq ispell-program-name "/usr/bin/aspell")
+    :hook
+    ((
+       adoc-mode
+       markdown-mode
+       rst-mode
+       ) . flyspell-mode)))
 
 
 ;; -> FORMAT-ALL
@@ -714,6 +695,14 @@ Version 2017-11-01"
           ("C-x b" . helm-buffers-list))
   :config
   (helm-mode 1))
+
+
+;; -> HELM-PROJECTILE
+;; https://github.com/bbatsov/helm-projectile
+;; Интеграция Helm с Projectile
+(use-package helm-projectile
+  :after (helm projectile)
+  :config (helm-projectile-on))
 
 
 ;; -> HIGHLIGHT-INDENTATION-MODE
@@ -886,34 +875,29 @@ Version 2017-11-01"
 ;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
 ;; YAML: npm install -g yaml-language-server
 
-(when
-    (or
-     (and
+(when ;; Нужна версия Emacs 26.3 или выше
+  (or
+    (and
       (= emacs-major-version 26)
       (>= emacs-minor-version 3))
-     (> emacs-major-version 26))
+    (> emacs-major-version 26))
 
   (use-package lsp-mode
     :init
     (setq
-     lsp-headerline-breadcrumb-enable t ;; Показывать "хлебные крошки" в заголовке
-     lsp-modeline-diagnostics-enable t) ;; Показывать ошибки LSP в статусной строке
+      lsp-headerline-breadcrumb-enable t ;; Показывать "хлебные крошки" в заголовке
+      lsp-modeline-diagnostics-enable t) ;; Показывать ошибки LSP в статусной строке
     :hook
     (python-mode . lsp-mode)
     )
 
   (use-package lsp-ui
-    :if (or
-         (and
-          (= emacs-major-version 26)
-          (>= emacs-minor-version 3))
-         (> emacs-major-version 26))
     :init
     (setq
-     lsp-ui-doc-enable t       ;; Показывать документацию в LSP-UI
-     lsp-ui-peek-always-show t ;; TODO: ???
-     lsp-ui-peek-enable t      ;; TODO: ???
-     lsp-ui-sideline-enable t) ;; TODO ???
+      lsp-ui-doc-enable t       ;; Показывать документацию в LSP-UI
+      lsp-ui-peek-always-show t ;; TODO: ???
+      lsp-ui-peek-enable t      ;; TODO: ???
+      lsp-ui-sideline-enable t) ;; TODO ???
     :after (lsp-mode)
     :hook
     (lsp-mode-hook . lsp-ui-mode)))
@@ -1029,7 +1013,7 @@ Version 2017-11-01"
 
 
 ;; -> PHP-MODE
-;; TODO: URI
+;; https://github.com/emacs-php/php-mode
 ;; Поддержка PHP.
 (use-package php-mode
   :mode
@@ -1042,8 +1026,9 @@ Version 2017-11-01"
 ;; под контролем любой системы версионирования, либо содержать специальные
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
-(use-package projectile)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(use-package projectile
+  :config
+  (projectile-global-mode 1))
 
 
 ;; -> PROTOBUF-MODE
@@ -1056,20 +1041,19 @@ Version 2017-11-01"
 
 ;; Подсвечивать курсор при его перемещении на несколько строк
 (if
-    ;; EMACS 27.1 или более новый
-    ;; -> PULSAR-MODE
-    ;; https://github.com/protesilaos/pulsar
-    (or
-     (and
+  ;; -> PULSAR-MODE
+  ;; https://github.com/protesilaos/pulsar
+  (or ;; Нужна версия Emacs 27.1 или выше
+    (and
       (= emacs-major-version 27)
       (>= emacs-minor-version 1))
-     (> emacs-major-version 27))
-    (use-package pulsar
-      :init
-      (setq pulsar-pulse t)
-      (add-hook 'next-error-hook #'pulsar-pulse-line)
-      :config
-      (pulsar-global-mode 1))
+    (> emacs-major-version 27))
+  (use-package pulsar
+    :init
+    (setq pulsar-pulse t)
+    (add-hook 'next-error-hook #'pulsar-pulse-line)
+    :config
+    (pulsar-global-mode 1))
   ;; EMACS более старый, чем 27.1
   (when (fboundp 'after-focus-change-function)
     (use-package beacon
@@ -1260,8 +1244,10 @@ Version 2017-11-01"
   )
 
 ;; -> TREEMACS-ALL-THE-ICONS
-;; TODO: URI
-(use-package treemacs-all-the-icons)
+;; https://github.com/Alexander-Miller/treemacs
+;; Поддержка иконок all-the-icons.
+(use-package treemacs-all-the-icons
+  :after treemacs)
 
 
 ;; -> TREEMACS-ICONS-DIRED
@@ -1285,12 +1271,12 @@ Version 2017-11-01"
 ;; -> VERTICO
 ;; https://github.com/minad/vertico
 ;; Автодополнение на основе встроенной функциональности EMACS
-(when
-    (or
-     (and
+(when ;; Версия Emacs 27.1 или выше
+  (or
+    (and
       (= emacs-major-version 27)
       (>= emacs-minor-version 1))
-     (> emacs-major-version 27))
+    (> emacs-major-version 27))
   (use-package vertico
     :config
     (vertico-mode 1)))
@@ -1391,7 +1377,6 @@ Version 2017-11-01"
      web-mode
      yaml-mode
      ) . ws-butler-mode))
-
 
 
 ;; -> YAML-MODE

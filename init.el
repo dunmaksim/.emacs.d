@@ -235,12 +235,6 @@ Version 2017-11-01"
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
 
-;; -> ABBREV-MODE
-;; Встроенный режим
-;; Аббревиатуры — это фрагменты текста, которые по нажатию [C-x, '] превращаются в другие конструкции
-(require 'abbrev)
-(setq save-abbrevs 'silently) ;; Сохранять добавленные аббревиатуры без лишних вопросов
-
 
 ;; -> ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
@@ -300,8 +294,9 @@ Version 2017-11-01"
   :custom
   (all-the-icons-ibuffer-human-readable-size t "Показывать размер файлов в ibuffer в человекочитаемом виде")
   (all-the-icons-ibuffer-icon t "Показывать иконки файлов в ibuffer")
-  :hook
-  (ibuffer-mode . all-the-icons-ibuffer-mode))
+  :after (ibuffer)
+  :hook ibuffer-mode)
+
 
 ;; -> ANSIBLE
 ;; https://github.com/k1LoW/emacs-ansible
@@ -355,9 +350,7 @@ Version 2017-11-01"
 
 ;; -> CHECKDOC
 ;; Встроенный пакет для проверки строк документации.
-(use-package checkdoc
-  :hook
-  (emacs-lisp-mode . checkdoc-minor-mode))
+(use-package checkdoc)
 
 
 ;; -> COMPANY-MODE
@@ -393,7 +386,7 @@ Version 2017-11-01"
 ;; - вывод документации для кандидатов
 ;; - нет ограничений
 (use-package company-box
-  :hook (company-mode . company-box-mode))
+  :hook company-mode)
 
 
 ;; -> CONF MODE
@@ -491,20 +484,20 @@ Version 2017-11-01"
   :custom
   (doom-modeline-buffer-encoding t "Показывать кодировку")
   (doom-modeline-buffer-modification-icon t "Показывать наличие изменений в буфере")
- (doom-modeline-buffer-name t "Показывать имя буфера")
- (doom-modeline-buffer-state-icon t "Показывать состояние буфера")
- (doom-modeline-env-enable-go t "Показывать версию Golang")
- (doom-modeline-env-enable-python t "Показывать версию Python")
- (doom-modeline-env-enable-ruby t "Показывать версию Ruby")
- (doom-modeline-hud nil "Использовать HUD. Лучше выключить, т. к. иначе строка отображается некорректно.")
- (doom-modeline-icon t "Показывать иконки")
- (doom-modeline-indent-info t "Информация об отступах")
- (doom-modeline-lsp t "Показывать статус LSP")
- (doom-modeline-major-mode-color-icon t "Иконка основного режима вместо текста")
- (doom-modeline-major-mode-icon t "Показывать иконку основного режима")
- (doom-modeline-project-detection 'auto "Определение того, что идёт работа с проектом")
- (doom-modeline-vcs-max-length 12 "Ограничение на длину имени активной ветки VCS")
- (doom-modeline-window-width-limit nil "Нет ограничений на ширину окна")
+  (doom-modeline-buffer-name t "Показывать имя буфера")
+  (doom-modeline-buffer-state-icon t "Показывать состояние буфера")
+  (doom-modeline-env-enable-go t "Показывать версию Golang")
+  (doom-modeline-env-enable-python t "Показывать версию Python")
+  (doom-modeline-env-enable-ruby t "Показывать версию Ruby")
+  (doom-modeline-hud nil "Использовать HUD. Лучше выключить, т. к. иначе строка отображается некорректно.")
+  (doom-modeline-icon t "Показывать иконки")
+  (doom-modeline-indent-info t "Информация об отступах")
+  (doom-modeline-lsp t "Показывать статус LSP")
+  (doom-modeline-major-mode-color-icon t "Иконка основного режима вместо текста")
+  (doom-modeline-major-mode-icon t "Показывать иконку основного режима")
+  (doom-modeline-project-detection 'auto "Определение того, что идёт работа с проектом")
+  (doom-modeline-vcs-max-length 12 "Ограничение на длину имени активной ветки VCS")
+  (doom-modeline-window-width-limit nil "Нет ограничений на ширину окна")
   :config
   (doom-modeline-mode 1))
 
@@ -581,8 +574,7 @@ Version 2017-11-01"
 (use-package elpy
   :after
   (python-mode)
-  :hook
-  (python-mode . elpy-mode))
+  :hook python-mode)
 
 
 ;; -> EMACS-LISP MODE
@@ -637,8 +629,7 @@ Version 2017-11-01"
 ;; -> FLYCHECK-COLOR-MODE-LINE
 ;; https://github.com/flycheck/flycheck-color-mode-line
 (use-package flycheck-color-mode-line
-  :hook
-  (flycheck-mode . flycheck-color-mode-line-mode))
+  :hook flycheck-mode)
 
 
 ;; -> FLYSPELL-MODE
@@ -670,13 +661,7 @@ Version 2017-11-01"
 ;; -> GO-MODE
 ;; https://github.com/dominikh/go-mode.el
 ;; Поддержка Golang
-(use-package go-mode
-  :config
-  (defun setup-go-mode ()
-    "Настройки `go-mode'."
-    (when (fboundp 'lsp-mode)
-      (lsp-mode 1)))
-  (add-hook 'go-mode-hook #'setup-go-mode))
+(use-package go-mode)
 
 
 ;; -> HELM
@@ -684,7 +669,7 @@ Version 2017-11-01"
 ;; Подсказки в минибуфере, и не только
 (use-package helm
   :custom
-  (completion-styles '(flex))
+  (helm-completion-style 'flex)
   :bind (
           ("C-S-p" . helm-M-x)
           ("M-x" . helm-M-x)
@@ -762,37 +747,37 @@ Version 2017-11-01"
          ("Protobuf" (mode . protobuf-mode))
          ("Golang" (mode . go-mode))
          ("Python" (mode . python-mode))
-         ("SSH keys" (or (name . "^\\*.pub$")))
+         ("SSH keys" (name . "^\\*.pub$"))
          ("Shell-script"
            (or
              (mode . shell-script-mode)
-             (mode . sh-mode)))
-         ("Terraform" (mode . terraform-mode))
-         ("SQL" (mode . sql-mode))
-         ("Web"
-           (or
-             (mode . javascript-mode)
-             (mode . js-mode)
-             (mode . js2-mode)
-             (mode . web-mode)))
-         ("Magit"
-           (or
-             (mode . magit-status-mode)
-             (mode . magit-log-mode)
-             (name . "^\\*magit")
-             (name . "git-monitor")))
-         ("Commands"
-           (or
-             (mode . compilation-mode)
-             (mode . eshell-mode)
-             (mode . shell-mode)
-             (mode . term-mode)))
-         ("Emacs"
-           (or
-             (name . "^\\*scratch\\*$")
-             (name . "^\\*Messages\\*$")
-             (name . "^\\*\\(Customize\\|Help\\)")
-             (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+						 (mode . sh-mode)))
+				 ("Terraform" (mode . terraform-mode))
+				 ("SQL" (mode . sql-mode))
+				 ("Web"
+					 (or
+						 (mode . javascript-mode)
+						 (mode . js-mode)
+						 (mode . js2-mode)
+						 (mode . web-mode)))
+				 ("Magit"
+					 (or
+						 (mode . magit-status-mode)
+						 (mode . magit-log-mode)
+						 (name . "^\\*magit")
+						 (name . "git-monitor")))
+				 ("Commands"
+					 (or
+						 (mode . compilation-mode)
+						 (mode . eshell-mode)
+						 (mode . shell-mode)
+						 (mode . term-mode)))
+				 ("Emacs"
+					 (or
+						 (name . "^\\*scratch\\*$")
+						 (name . "^\\*Messages\\*$")
+						 (name . "^\\*\\(Customize\\|Help\\)")
+						 (name . "\\*\\(Echo\\|Minibuf\\)"))))))
   (ibuffer-formats ;; Форматирование вывода
     '(
        (
@@ -814,7 +799,8 @@ Version 2017-11-01"
          filename)))  ;; Имя файла
   :config
   (ibuffer-auto-mode 1)
-  (ibuffer-switch-to-saved-filter-groups "default"))
+  ;; (ibuffer-switch-to-saved-filter-groups "default")
+  )
 
 
 ;; -> JS2-MODE
@@ -863,8 +849,10 @@ Version 2017-11-01"
     :custom
     (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
     (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
-    :hook
-    (python-mode . lsp-mode))
+    :hook (
+            (ansible . lsp)
+            (go-mode . lsp)
+            (python-mode . lsp)))
 
   (use-package lsp-ui
     :custom
@@ -873,8 +861,7 @@ Version 2017-11-01"
     (lsp-ui-peek-enable t "TODO")
     (lsp-ui-sideline-enable t "TODO")
     :after (lsp-mode)
-    :hook
-    (lsp-mode-hook . lsp-ui-mode)))
+    :hook lsp-mode))
 
 
 ;; -> MAGIT
@@ -1018,7 +1005,7 @@ Version 2017-11-01"
     (pulsar-pulse t)
     :config
     (pulsar-global-mode 1)
-  (add-hook 'next-error-hook #'pulsar-pulse-line))
+		(add-hook 'next-error-hook #'pulsar-pulse-line))
   ;; EMACS более старый, чем 27.1
   (when (fboundp 'after-focus-change-function)
     (use-package beacon
@@ -1027,22 +1014,20 @@ Version 2017-11-01"
 
 
 ;; -> PYTHON-MODE
-;; https://github.com/fgallina/python.el
-;; Один из лучших режимов для Python
+;; Встроенный пакет для работы с Python
 (use-package python-mode
   :custom
   (py-company-pycomplete-p t "TODO")
   (py-electric-comment-p t "TODO")
- (py-pylint-command-args "--max-line-length 120" "TODO"))
+	(py-pylint-command-args "--max-line-length 120" "TODO"))
 
 
 ;; -> PYVENV
-;; TODO: URI
+;; http://github.com/jorgenschaefer/pyvenv
 ;; Позволяет активировать виртуальные окружения из Emacs
 (use-package pyvenv
   :after (python-mode)
-  :hook
-  (python-mode . pyvenv-mode))
+  :hook python-mode)
 
 
 ;; -> RAINBOW-DELIMITERS-MODE
@@ -1213,8 +1198,7 @@ Version 2017-11-01"
 ;; -> TREEMACS-ICONS-DIRED
 ;; Отображать иконки файлов из  TreeMacs в dired-mode
 (use-package treemacs-icons-dired
-  :hook
-  (dired-mode . treemacs-icons-dired-enable-once))
+  :hook dired-mode)
 
 
 ;; -> UNDO-TREE

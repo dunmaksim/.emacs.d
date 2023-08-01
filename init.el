@@ -286,7 +286,9 @@ Version 2017-11-01"
 
 ;; -> ALL-THE-ICONS-DIRED
 ;; https://github.com/wyuenho/all-the-icons-dired
-(use-package all-the-icons-dired)
+(use-package all-the-icons-dired
+:after (all-the-icons dired)
+:hook (dired-mode . all-the-icons-dired-mode))
 
 ;; -> ALL-THE-ICONS-IBUFFER
 ;; https://github.com/seagle0128/all-the-icons-ibuffer
@@ -294,8 +296,8 @@ Version 2017-11-01"
   :custom
   (all-the-icons-ibuffer-human-readable-size t "Показывать размер файлов в ibuffer в человекочитаемом виде")
   (all-the-icons-ibuffer-icon t "Показывать иконки файлов в ibuffer")
-  :after (ibuffer)
-  :hook ibuffer-mode)
+  :after (all-the-icons ibuffer)
+  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 
 ;; -> ANSIBLE
@@ -386,7 +388,8 @@ Version 2017-11-01"
 ;; - вывод документации для кандидатов
 ;; - нет ограничений
 (use-package company-box
-  :hook company-mode)
+  :after (company)
+  :hook (company-mode . company-box-mode))
 
 
 ;; -> CONF MODE
@@ -629,7 +632,7 @@ Version 2017-11-01"
 ;; -> FLYCHECK-COLOR-MODE-LINE
 ;; https://github.com/flycheck/flycheck-color-mode-line
 (use-package flycheck-color-mode-line
-  :hook flycheck-mode)
+  :hook (flycheck-mode . flycheck-color-mode-line-mode))
 
 
 ;; -> FLYSPELL-MODE
@@ -664,28 +667,6 @@ Version 2017-11-01"
 (use-package go-mode)
 
 
-;; -> HELM
-;; https://github.com/emacs-helm/helm
-;; Подсказки в минибуфере, и не только
-(use-package helm
-  :custom
-  (helm-completion-style 'flex)
-  :bind (
-          ("C-S-p" . helm-M-x)
-          ("M-x" . helm-M-x)
-          ("C-x b" . helm-buffers-list))
-  :config
-  (helm-mode 1))
-
-
-;; -> HELM-PROJECTILE
-;; https://github.com/bbatsov/helm-projectile
-;; Интеграция Helm с Projectile
-(use-package helm-projectile
-  :after (helm projectile)
-  :config (helm-projectile-on))
-
-
 ;; -> HIGHLIGHT-INDENTATION-MODE
 ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
 ;; Показывает направляющие для отступов
@@ -717,90 +698,114 @@ Version 2017-11-01"
 ;; -> IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 ;; По нажатию F2 выводит список открытых буферов.
-(use-package ibuffer
-  :bind (
-          ("C-x C-b" . ibuffer)
-          ("<f2>" . ibuffer))
-  :custom
-  (ibuffer-expert 1 "Расширенный  режим для ibuffer")
-  (ibuffer-hidden-filter-groups (list "Helm" "*Internal*")) ;; Не показывать эти буферы
-  (ibuffer-show-empty-filter-groups nil)                    ;; Если группа пустая, ibuffer не должен её отображать.
-  (ibuffer-sorting-mode 'filename/process)                  ;; Сортировать файлы в ibuffer по имени / процессу.
-  (ibuffer-truncate-lines nil)                              ;; Не обкусывать строки в ibuffer
-  (ibuffer-use-other-window nil)                            ;; Не надо открывать ibuffer в другом окне, пусть открывается в текущем
-  (ibuffer-saved-filter-groups                             ;; Группы по умолчанию
-    '(
-       ("default"
-         ("Dired" (mode . dired-mode))
-         ("EMACS Lisp" (mode . emacs-lisp-mode))
-         ("Org" (mode . org-mode))
-         ("Markdown" (mode . markdown-mode))
-         ("AsciiDoc" (mode . adoc-mode))
-         ("ReStructured Text" (mode . rst-mode))
-         ("CONF / INI" (mode . conf-mode))
-         ("XML"
-           (or
-             (mode . xml-mode)
-             (mode . nxml-mode)))
-         ("YAML" (mode . yaml-mode))
-         ("Makefile" (mode . makefile-mode))
-         ("Protobuf" (mode . protobuf-mode))
-         ("Golang" (mode . go-mode))
-         ("Python" (mode . python-mode))
-         ("SSH keys" (name . "^\\*.pub$"))
-         ("Shell-script"
-           (or
-             (mode . shell-script-mode)
-						 (mode . sh-mode)))
-				 ("Terraform" (mode . terraform-mode))
-				 ("SQL" (mode . sql-mode))
-				 ("Web"
-					 (or
-						 (mode . javascript-mode)
-						 (mode . js-mode)
-						 (mode . js2-mode)
-						 (mode . web-mode)))
-				 ("Magit"
-					 (or
-						 (mode . magit-status-mode)
-						 (mode . magit-log-mode)
-						 (name . "^\\*magit")
-						 (name . "git-monitor")))
-				 ("Commands"
-					 (or
-						 (mode . compilation-mode)
-						 (mode . eshell-mode)
-						 (mode . shell-mode)
-						 (mode . term-mode)))
-				 ("Emacs"
-					 (or
-						 (name . "^\\*scratch\\*$")
-						 (name . "^\\*Messages\\*$")
-						 (name . "^\\*\\(Customize\\|Help\\)")
-						 (name . "\\*\\(Echo\\|Minibuf\\)"))))))
-  (ibuffer-formats ;; Форматирование вывода
-    '(
-       (
-         mark                      ;; Отметка
-         modified                  ;; Буфер изменён?
-         read-only                 ;; Только чтение?
-         locked                    ;; Заблокирован?
-         " "
-         (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
-         " "
-         (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
-         " "
-         filename-and-process)     ;; Имя файла и процесс
-       ( ;; Если отображать особо нечего, использовать сокращённый формат
-         mark         ;; Отметка?
-         " "
-         (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
-         " "
-         filename)))  ;; Имя файла
-  :config
+(require 'ibuffer)
+(require 'ibuf-ext)
+(defalias 'list-buffers 'ibuffer)
+(setq
+ ibuffer-expert 1                                        ;; Расширенный  режим для ibuffer
+ ibuffer-hidden-filter-groups (list "Helm" "*Internal*") ;; Не показывать эти буферы
+ ibuffer-show-empty-filter-groups nil                    ;; Если группа пустая, ibuffer не должен её отображать.
+ ibuffer-sorting-mode 'filename/process                  ;; Сортировать файлы в ibuffer по имени / процессу.
+ ibuffer-truncate-lines nil                              ;; Не обкусывать строки в ibuffer
+ ibuffer-use-other-window nil                            ;; Не надо открывать ibuffer в другом окне, пусть открывается в текущем
+ ibuffer-saved-filter-groups                             ;; Группы по умолчанию
+ '(
+   ("default"
+    ("Dired" (mode . dired-mode))
+    ("EMACS Lisp" (mode . emacs-lisp-mode))
+    ("Org" (mode . org-mode))
+    ("Markdown" (mode . markdown-mode))
+    ("AsciiDoc" (mode . adoc-mode))
+    ("ReStructured Text" (mode . rst-mode))
+    ("CONF / INI"
+     (mode . conf-mode)
+     (name . "\\.editorconfig\\'")
+     (name . "\\.ini\\'")
+     (name . "\\.conf\\'"))
+    ("XML"
+     (or
+      (mode . xml-mode)
+      (mode . nxml-mode)))
+    ("YAML" (mode . yaml-mode))
+    ("Makefile"
+     (or
+      (mode . makefile-mode)
+      (name  . "^Makefile$")))
+    ("Protobuf" (mode . protobuf-mode))
+    ("Golang" (mode . go-mode))
+    ("Python"
+     (or
+      (mode . python-mode)
+      (mode . anaconda-mode)))
+    ("SSH keys" (or (name . "^\\*.pub$")))
+    ("Shell-script"
+     (or
+      (mode . shell-script-mode)
+      (mode . sh-mode)))
+    ("Terraform"
+     (or
+      (mode . terraform-mode)
+      (name . "^\\*.tf$")))
+    ("SQL" (mode . sql-mode))
+    ("Web"
+     (or
+      (mode . javascript-mode)
+      (mode . js-mode)
+      (mode . js2-mode)
+      (mode . web-mode)
+      (name . "^\\*.js$")))
+    ("Magit"
+     (or
+      (mode . magit-status-mode)
+      (mode . magit-log-mode)
+      (name . "^\\*magit")
+      (name . "git-monitor")))
+    ("Commands"
+     (or
+      (mode . compilation-mode)
+      (mode . eshell-mode)
+      (mode . shell-mode)
+      (mode . term-mode)))
+    ("Emacs"
+     (or
+      (name . "^\\*scratch\\*$")
+      (name . "^\\*Messages\\*$")
+      (name . "^\\*\\(Customize\\|Help\\)")
+      (name . "\\*\\(Echo\\|Minibuf\\)")))))
+ ibuffer-formats ;; Форматирование вывода
+ '(
+   (
+    mark                      ;; Отметка
+    modified                  ;; Буфер изменён?
+    read-only                 ;; Только чтение?
+    locked                    ;; Заблокирован?
+    " "
+    (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
+    " "
+    (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
+    " "
+    filename-and-process)     ;; Имя файла и процесс
+   ( ;; Если отображать особо нечего, использовать сокращённый формат
+    mark         ;; Отметка?
+    " "
+    (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
+    " "
+    filename)))  ;; Имя файла
+(defun setup-ibuffer-mode ()
+  "Настройки `ibuffer-mode'."
   (ibuffer-auto-mode 1)
-  ;; (ibuffer-switch-to-saved-filter-groups "default")
-  )
+  (ibuffer-switch-to-saved-filter-groups "default"))
+(add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
+(global-set-key (kbd "<f2>") 'ibuffer)
+
+
+;; -> ICOMPLETE-MODE
+;; Встроенный пакет
+;; Подсказки в минибуфере
+(use-package icomplete
+  :config
+  (icomplete-mode 1)
+  (icomplete-vertical-mode 1))
 
 
 ;; -> JS2-MODE
@@ -839,20 +844,20 @@ Version 2017-11-01"
 ;; YAML: npm install -g yaml-language-server
 
 (when ;; Нужна версия Emacs 26.3 или выше
-  (or
-    (and
+	(or
+     (and
       (= emacs-major-version 26)
       (>= emacs-minor-version 3))
-    (> emacs-major-version 26))
+     (> emacs-major-version 26))
 
   (use-package lsp-mode
     :custom
     (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
     (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
     :hook (
-            (ansible . lsp)
-            (go-mode . lsp)
-            (python-mode . lsp)))
+           (ansible . lsp)
+           (go-mode . lsp)
+           (python-mode . lsp)))
 
   (use-package lsp-ui
     :custom
@@ -1017,7 +1022,6 @@ Version 2017-11-01"
 ;; Встроенный пакет для работы с Python
 (use-package python-mode
   :custom
-  (py-company-pycomplete-p t "TODO")
   (py-electric-comment-p t "TODO")
 	(py-pylint-command-args "--max-line-length 120" "TODO"))
 
@@ -1197,8 +1201,7 @@ Version 2017-11-01"
 
 ;; -> TREEMACS-ICONS-DIRED
 ;; Отображать иконки файлов из  TreeMacs в dired-mode
-(use-package treemacs-icons-dired
-  :hook dired-mode)
+(use-package treemacs-icons-dired)
 
 
 ;; -> UNDO-TREE
@@ -1364,6 +1367,11 @@ Version 2017-11-01"
 (put 'upcase-region 'disabled nil)
 
 (setup-gui-settings (selected-frame))
+
+;; -> CUSTOM FILE
+;; Пользовательские настройки, сделанные через CUSTOMIZE
+(when (file-exists-p custom-file)
+  (load custom-file))
 
 (provide 'init.el)
 ;;; init.el ends here

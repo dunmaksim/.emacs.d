@@ -88,7 +88,6 @@
 (delete-selection-mode t)   ;; Если регион выделен, удалить его, а не последний символ.
 (global-font-lock-mode t)   ;; Отображать шрифты красиво, используя Font Face's
 (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
-(global-hl-line-mode 1)     ;; Подсветить активные строки во всех открытых буферах
 (global-visual-line-mode 1) ;; Подсвечивать текущую строку
 (line-number-mode t)        ;; Показывать номер строки в статусной строке
 (save-place-mode 1)         ;; Помнить позицию курсора в открытых когда-либо файлах.
@@ -113,6 +112,7 @@
 ;; -> ПАКЕТЫ
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (package-initialize)
 
 
@@ -352,7 +352,8 @@ Version 2017-11-01"
 
 ;; -> CHECKDOC
 ;; Встроенный пакет для проверки строк документации.
-(use-package checkdoc)
+(use-package checkdoc
+  :hook (emacs-lisp-mode . checkdoc-minor-mode))
 
 
 ;; -> COMPANY-MODE
@@ -377,7 +378,7 @@ Version 2017-11-01"
      ruby-mode
      ) . company-mode)
   :bind
-  ("<tab>" . company-indent-or-complete-common))
+  ([tab] . company-indent-or-complete-common))
 
 
 ;; -> COMPANY-BOX
@@ -458,9 +459,8 @@ Version 2017-11-01"
 ;; Встроенный пакет для работы с файлами и каталогами.
 (require 'dired)
 (when (string-equal system-type "gnu/linux")
- ;; Это может не работать в Windows, надо проверить
- (setq dired-listing-switches "-lahX --group-directories-first"))
-
+  ;; Это может не работать в Windows, надо проверить
+  (setq dired-listing-switches "-lahX --group-directories-first"))
 (global-set-key (kbd "C-o") 'dired)
 (add-hook 'dired-mode-hook #'auto-revert-mode)
 
@@ -564,9 +564,16 @@ Version 2017-11-01"
   (add-to-list 'electric-pair-pairs '(?‚ . ‘?))
   (electric-pair-mode t)) ;; Глобальный режим
 
+
 ;; -> ELECTRIC-INDENT MODE
 ;; Автоматический отступ. В основном только мешает, лучше выключить.
-(electric-indent-mode -1)
+(use-package electric
+  :config
+  (electric-indent-mode -1)
+  :hook
+  (emacs-lisp-mode . electric-indent-mode)
+  (rst-mode . electric-indent-mode))
+
 
 ;; -> ELPY
 ;; Python IDE
@@ -585,9 +592,6 @@ Version 2017-11-01"
 ;; Встроенный пакет для EMACS Lisp
 (defun setup-emacs-lisp-mode ()
   "Настройки для `emacs-lisp-mode'."
-  (checkdoc-minor-mode 1)
-  (electric-indent-local-mode 1)
-  (flymake-mode 1)
   (highlight-indentation-set-offset 2)
   )
 (add-to-list 'auto-mode-alist '("\\abbrev_defs\\'" . emacs-lisp-mode))
@@ -599,14 +603,14 @@ Version 2017-11-01"
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
   :custom
- (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
+  (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-locate-config-file-functions '(
-                      flycheck-locate-config-file-by-path
-                      flycheck-locate-config-file-ancestor-directories
-                      flycheck-locate-config-file-home))
-  (flycheck-highlighting-mode 'lines        "Стиль отображения проблемных мест — вся строка")
-  (flycheck-indication-mode 'left-fringe    "Место размещения маркера ошибки — левая граница")
+                                            flycheck-locate-config-file-by-path
+                                            flycheck-locate-config-file-ancestor-directories
+                                            flycheck-locate-config-file-home))
+  (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
+  (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
   :hook
   ((
@@ -654,11 +658,18 @@ Version 2017-11-01"
        ) . flyspell-mode)))
 
 
+;; -> FLYMAKE
+;; Встроенный пакет
+(use-package flymake
+  :hook (emacs-lisp-mode . flymake-mode))
+
+
+
 ;; -> FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода по нажатию [F12]
 (use-package format-all
-  :bind (("<f12>" . format-all-buffer)))
+  :bind (([f12] . format-all-buffer)))
 
 
 ;; -> GO-MODE
@@ -667,13 +678,20 @@ Version 2017-11-01"
 (use-package go-mode)
 
 
+;; -> HELM
+;; Подсказки при вводе текста в минибуфере и не только
+;; https://helm.io/
+(use-package helm
+  :bind
+  ("M-x" . helm-M-x)
+  :config
+  (helm-mode 1))
+
+
 ;; -> HIGHLIGHT-INDENTATION-MODE
 ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
 ;; Показывает направляющие для отступов
 (use-package highlight-indentation
-  :config
-  (set-face-background 'highlight-indentation-face "#4d4d4d")
-  (set-face-background 'highlight-indentation-current-column-face "#c3b3b3")
   :hook
   ((
      makefile-mode
@@ -681,6 +699,7 @@ Version 2017-11-01"
      emacs-lisp-mode
      markdown-mode
      python-mode
+     rst-mode
      terraform-mode
      web-mode
      yaml-mode
@@ -802,10 +821,9 @@ Version 2017-11-01"
 ;; -> ICOMPLETE-MODE
 ;; Встроенный пакет
 ;; Подсказки в минибуфере
-(use-package icomplete
-  :config
-  (icomplete-mode 1)
-  (icomplete-vertical-mode 1))
+;; (use-package icomplete
+;;   :config
+;;   (icomplete-vertical-mode 1))
 
 
 ;; -> JS2-MODE
@@ -818,6 +836,13 @@ Version 2017-11-01"
 ;; -> JSON-MODE
 ;; Встроенный пакет
 (use-package json-mode)
+
+
+;; -> LEUVEN-THEME
+;; Тема оформления
+;; (use-package leuven-theme
+;;   :config
+;;   (load-theme 'leuven-dark t))
 
 
 ;; -> LSP
@@ -845,19 +870,19 @@ Version 2017-11-01"
 
 (when ;; Нужна версия Emacs 26.3 или выше
 	(or
-     (and
+    (and
       (= emacs-major-version 26)
       (>= emacs-minor-version 3))
-     (> emacs-major-version 26))
+    (> emacs-major-version 26))
 
   (use-package lsp-mode
     :custom
     (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
     (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
     :hook (
-           (ansible . lsp)
-           (go-mode . lsp)
-           (python-mode . lsp)))
+            (ansible . lsp)
+            (go-mode . lsp)
+            (python-mode . lsp)))
 
   (use-package lsp-ui
     :custom
@@ -874,8 +899,8 @@ Version 2017-11-01"
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (use-package magit
   :bind
-  ("<f5>" . magit-status)
-  ("<f6>" . magit-checkout))
+  ([f5] . magit-status)
+  ([f6] . magit-checkout))
 
 
 ;; -> MAKEFILE
@@ -930,23 +955,24 @@ Version 2017-11-01"
 ;; -> NXML-MODE
 ;; Встроенный пакет
 ;; Почти как xml-mode, только лучше и новее
-(use-package nxml
-  :custom
-  (nxml-attribute-indent 4 "Выравнивание атрибутов")
-  (nxml-auto-insert-xml-declaration-flag nil "Не вставлять декларацию")
- (nxml-bind-meta-tab-to-complete-flag t "Использовать TAB для завершения ввода")
- (nxml-child-indent 4 "Выравнивание дочерних элементов")
- (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
-  :mode
-  ("\\.xml\\'" . nxml-mode)
-  ("\\.pom\\'" . nxml-mode))
+(with-eval-after-load 'nxml-mode
+  (setq
+    nxml-attribute-indent 4                   ;; Выравнивание атрибутов
+    nxml-auto-insert-xml-declaration-flag nil ;; Не вставлять декларацию
+    nxml-bind-meta-tab-to-complete-flag t     ;; Использовать TAB для завершения ввода
+    nxml-child-indent 4                       ;; Выравнивание дочерних элементов
+    nxml-slash-auto-complete-flag t)          ;; "Закрывать теги по вводу /"
+  (setq-local
+    tab-width 2) ;; Ширина TAB'а будет 2 пробела
+  (add-to-list 'auto-mode-alist '("\\.pom\\'" . nxml-mode))
+  (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode)))
 
 
 ;; -> ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, и не только
 (use-package org
- :config
+  :config
   (setq-local
     truncate-lines nil    ;; Не обрезать строки
     left-margin-width 4   ;; Отступ слева
@@ -984,6 +1010,9 @@ Version 2017-11-01"
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (use-package projectile
+  :bind
+  (:map projectile-mode-map
+    ("M-p" . projectile-command-map))
   :config
   (projectile-global-mode 1))
 
@@ -1101,13 +1130,12 @@ Version 2017-11-01"
 ;; -> RST-MODE
 ;; Основной режим для редактирования reStructutedText
 ;; Больше здесь: https://www.writethedocs.org/guide/writing/reStructuredText/
-(use-package rst
-  :config
-  (setq-local
-    tab-width 3 ;; Ширина TAB'а
-    word-wrap t) ;; Перенос по словам)
-  :mode
-  ("\\.rst\\'" . rst-mode))
+(require 'rst)
+(defun setup-rst-mode()
+  "Настройки для `rst-mode'."
+  (highlight-indentation-set-offset 3))
+(add-hook 'rst-mode-hook #'setup-rst-mode)
+(add-to-list 'auto-mode-alist '("\\.rst\\'" . rst-mode))
 
 
 ;; -> RUBY-MODE
@@ -1172,25 +1200,19 @@ Version 2017-11-01"
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Дерево файлов и каталогов
 (use-package treemacs
+  :pin "melpa-stable"
   :custom
   (treemacs-width 35 "Ширина окна Treemacs")
   :bind
-  ("<f8>" . treemacs)
+  ([f8] . treemacs)
+  (:map treemacs-mode-map
+    ("f" . find-grep))
   :config
   (treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
   (treemacs-git-mode 'simple) ;; Простой режим
   (treemacs-filewatch-mode 1) ;; Отслеживание изменений в ФС на лету
-  (define-key treemacs-mode-map (kbd "f") 'find-grep)
-  (defun treemacs-get-ignore-files (filename absolute-path)
-    "Не показывать в дереве имена указанных файлов и каталогов.
+  (define-key treemacs-mode-map (kbd "f") 'find-grep))
 
-  FILENAME — имя файла.
-  ABSOLUTE-PATH — абсолютный путь."
-    (or
-      (string-equal filename ".emacs.desktop.lock")
-      (string-equal filename "__pycache__")))
-  (add-to-list 'treemacs-ignored-file-predicates #'treemacs-get-ignore-files)
-  )
 
 ;; -> TREEMACS-ALL-THE-ICONS
 ;; https://github.com/Alexander-Miller/treemacs
@@ -1200,7 +1222,7 @@ Version 2017-11-01"
 
 
 ;; -> TREEMACS-ICONS-DIRED
-;; Отображать иконки файлов из  TreeMacs в dired-mode
+;; Отображать иконки файлов из TreeMacs в `dired-mode'
 (use-package treemacs-icons-dired)
 
 
@@ -1215,26 +1237,9 @@ Version 2017-11-01"
   (global-undo-tree-mode 1))
 
 
-;; -> VERTICO
-;; https://github.com/minad/vertico
-;; Автодополнение на основе встроенной функциональности EMACS
-(when ;; Версия Emacs 27.1 или выше
-  (or
-    (and
-      (= emacs-major-version 27)
-      (>= emacs-minor-version 1))
-    (> emacs-major-version 27))
-  (use-package vertico
-    :config
-    (vertico-mode 1)))
-
-
 ;; -> WEB-MODE
 ;; https://web-mode.org/
 (use-package web-mode
-  :config
-  (setq
-    initial-major-mode 'web-mode)                ;; Необязательно, но теперь это режим по умолчанию)
   :custom
   (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
   (web-mode-css-indent-offset 2 "При редактировании CSS отступ будет 2 пробела")

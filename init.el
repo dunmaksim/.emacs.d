@@ -82,7 +82,6 @@
   (require 'gnutls)
   (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
-
 ;; -> Стандартные режимы
 (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
 (delete-selection-mode t)   ;; Если регион выделен, удалить его, а не последний символ.
@@ -111,9 +110,21 @@
 
 ;; -> ПАКЕТЫ
 (require 'package)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
+
+(setq
+  package-archive-priorites '( ;; Порядок использования архивов. Чем выше приоритет, тем важнее архив
+    ("nongnu" . 50)
+    ("gnu" . 40)
+    ("melpa-stable" . 30)
+    ("melpa" . 20)
+  )
+  package-install-upgrade-built-in t) ;; Обновлять в том числе встроенные пакеты
+
 
 
 ;; Проверка наличия индекса пакетов
@@ -123,7 +134,9 @@
 
 (require 'use-package)
 (require 'use-package-ensure)
-(setq use-package-always-ensure t)
+(setq
+  use-package-always-ensure t ;; Автоматическая установка отсутствующих пакетов
+  use-package-always-pin "nongnu") ;; ПО умолчанию использовать версию из nongnu
 
 
 ;; -> Создание пустого буфера
@@ -682,8 +695,8 @@ Version 2017-11-01"
 ;; Подсказки при вводе текста в минибуфере и не только
 ;; https://helm.io/
 (use-package helm
-  :bind
-  ("M-x" . helm-M-x)
+;;  :bind
+;;  ("M-x" . helm-M-x)
   :config
   (helm-mode 1))
 
@@ -1169,9 +1182,9 @@ Version 2017-11-01"
 ;; Пакет для быстрого поиска.
 ;; По кажатию C-7 можно выполнить быстрое редактирование найденных фрагментов, но чтобы
 ;; оно сработало правильно, нужно добавить команду swiper-mc в список mc/cmds-to-run-once.
-(use-package swiper
-  :bind
-  ("C-s" . swiper-isearch)) ;; Заменить стандартный isearch на swiper
+;;(use-package swiper
+;;  :bind
+;;   ("C-s" . swiper-isearch)) ;; Заменить стандартный isearch на swiper
 
 
 ;; -> TERRAFORM-MODE
@@ -1200,7 +1213,6 @@ Version 2017-11-01"
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Дерево файлов и каталогов
 (use-package treemacs
-  :pin "melpa-stable"
   :custom
   (treemacs-width 35 "Ширина окна Treemacs")
   :bind

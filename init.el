@@ -116,14 +116,14 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-(setq
-  package-archive-priorites '( ;; Порядок использования архивов. Чем выше приоритет, тем важнее архив
-    ("nongnu" . 50)
-    ("gnu" . 40)
-    ("melpa-stable" . 30)
-    ("melpa" . 20)
-  )
-  package-install-upgrade-built-in t) ;; Обновлять в том числе встроенные пакеты
+;; (setq
+;;   package-archive-priorites '( ;; Порядок использования архивов. Чем выше приоритет, тем важнее архив
+;;     ("nongnu" . 50)
+;;     ("gnu" . 40)
+;;     ("melpa-stable" . 30)
+;;     ("melpa" . 20)
+;;   )
+;;   package-install-upgrade-built-in t) ;; Обновлять в том числе встроенные пакеты
 
 
 

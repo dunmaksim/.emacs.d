@@ -116,14 +116,14 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-;; (setq
-;;   package-archive-priorites '( ;; Порядок использования архивов. Чем выше приоритет, тем важнее архив
-;;     ("nongnu" . 50)
-;;     ("gnu" . 40)
-;;     ("melpa-stable" . 30)
-;;     ("melpa" . 20)
-;;   )
-;;   package-install-upgrade-built-in t) ;; Обновлять в том числе встроенные пакеты
+(setq
+  package-archive-priorites '( ;; Порядок использования архивов. Чем выше приоритет, тем важнее архив
+    ("nongnu" . 50)
+    ("gnu" . 40)
+    ("melpa-stable" . 30)
+    ("melpa" . 20)
+  )
+  package-install-upgrade-built-in t) ;; Обновлять в том числе встроенные пакеты
 
 
 
@@ -135,8 +135,8 @@
 (require 'use-package)
 (require 'use-package-ensure)
 (setq
-  use-package-always-ensure t ;; Автоматическая установка отсутствующих пакетов
-  use-package-always-pin "nongnu") ;; ПО умолчанию использовать версию из nongnu
+  use-package-always-ensure t) ;; Автоматическая установка отсутствующих пакетов
+;;  use-package-always-pin "nongnu") ;; ПО умолчанию использовать версию из nongnu
 
 
 ;; -> Создание пустого буфера
@@ -328,14 +328,6 @@ Version 2017-11-01"
   (apheleia-global-mode 1))
 
 
-;; -> APT SOURCES LIST MODE
-;; https://git.korewanetadesu.com/apt-sources-list.git
-;; Режим для редактирования файлов настройки репозиториев APT
-(use-package apt-sources-list
-  :mode
-  ("\\.list\\'" . apt-sources-list-mode))
-
-
 ;; -> CALENDAR
 (use-package calendar
   :custom
@@ -378,7 +370,7 @@ Version 2017-11-01"
   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
   (company-tooltip-align-annotations t "TODO")
-  (company-tooltip-limit 10 "Ограничение на число подсказок")
+  (company-tooltip-limit 15 "Ограничение на число подсказок")
   :hook
   ((
      css-mode
@@ -401,9 +393,9 @@ Version 2017-11-01"
 ;; - иконки
 ;; - вывод документации для кандидатов
 ;; - нет ограничений
-(use-package company-box
-  :after (company)
-  :hook (company-mode . company-box-mode))
+;; (use-package company-box
+;;   :after (company)
+;;   :hook (company-mode . company-box-mode))
 
 
 ;; -> CONF MODE
@@ -416,6 +408,15 @@ Version 2017-11-01"
   ("\\.ini\\'" . conf-mode)
   ("\\.pylintrc\\'" . conf-mode)
   ("\\.terraformrc\\'" . conf-mode))
+
+
+;; -> COUNSEL
+;; https://github.com/emacsmirror/ivy
+;; Немного расширенные команды Emacs
+(use-package counsel
+  :bind
+  ("M-x" . counsel-M-x))
+
 
 
 ;; -> CSS-MODE
@@ -523,9 +524,7 @@ Version 2017-11-01"
 ;; Темы из DOOM Emacs
 (use-package doom-themes
   :config
-  (load-theme 'doom-monokai-classic t)
-  (doom-themes-org-config)
-  (doom-themes-visual-bell-config))
+  (load-theme 'doom-monokai-classic t))
 
 
 ;; -> EASY KILL
@@ -685,22 +684,6 @@ Version 2017-11-01"
   :bind (([f12] . format-all-buffer)))
 
 
-;; -> GO-MODE
-;; https://github.com/dominikh/go-mode.el
-;; Поддержка Golang
-(use-package go-mode)
-
-
-;; -> HELM
-;; Подсказки при вводе текста в минибуфере и не только
-;; https://helm.io/
-(use-package helm
-;;  :bind
-;;  ("M-x" . helm-M-x)
-  :config
-  (helm-mode 1))
-
-
 ;; -> HIGHLIGHT-INDENTATION-MODE
 ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
 ;; Показывает направляющие для отступов
@@ -829,6 +812,17 @@ Version 2017-11-01"
   (ibuffer-switch-to-saved-filter-groups "default"))
 (add-hook 'ibuffer-mode-hook #'setup-ibuffer-mode)
 (global-set-key (kbd "<f2>") 'ibuffer)
+
+
+;; -> IVY
+;; https://github.com/emacsmirror/ivy
+;; Нативный автокомплит для Emacs.
+(use-package ivy
+  :custom
+  (ivy-use-virtual-buffers t "Какие-то виртуальные буферы")
+  :config
+  (ivy-mode))
+
 
 
 ;; -> ICOMPLETE-MODE
@@ -1010,11 +1004,6 @@ Version 2017-11-01"
 (use-package paren
   :config (show-paren-mode 1))
 
-;; -> PHP-MODE
-;; https://github.com/emacs-php/php-mode
-;; Поддержка PHP.
-(use-package php-mode)
-
 
 ;; -> PROJECTILE
 ;; https://docs.projectile.mx/projectile/installation.html
@@ -1025,34 +1014,26 @@ Version 2017-11-01"
 (use-package projectile
   :bind
   (:map projectile-mode-map
-    ("M-p" . projectile-command-map))
+        ("M-p" . projectile-command-map))
   :config
   (projectile-global-mode 1))
 
 
-;; -> PROTOBUF-MODE
-;; https://github.com/emacsmirror/protobuf-mode
-;; Работа с файлами Protobuf: подсветка синтаксиса, переход по ссылками и т. д.
-(use-package protobuf-mode
-  :mode
-  ("\\.proto\\'" . protobuf-mode))
-
-
 ;; Подсвечивать курсор при его перемещении на несколько строк
 (if
-  ;; -> PULSAR-MODE
-  ;; https://github.com/protesilaos/pulsar
-  (or ;; Нужна версия Emacs 27.1 или выше
-    (and
+    ;; -> PULSAR-MODE
+    ;; https://github.com/protesilaos/pulsar
+    (or ;; Нужна версия Emacs 27.1 или выше
+     (and
       (= emacs-major-version 27)
       (>= emacs-minor-version 1))
-    (> emacs-major-version 27))
-  (use-package pulsar
-    :custom
-    (pulsar-pulse t)
-    :config
-    (pulsar-global-mode 1)
-		(add-hook 'next-error-hook #'pulsar-pulse-line))
+     (> emacs-major-version 27))
+    (use-package pulsar
+      :custom
+      (pulsar-pulse t)
+      :config
+      (pulsar-global-mode 1)
+		  (add-hook 'next-error-hook #'pulsar-pulse-line))
   ;; EMACS более старый, чем 27.1
   (when (fboundp 'after-focus-change-function)
     (use-package beacon
@@ -1182,9 +1163,9 @@ Version 2017-11-01"
 ;; Пакет для быстрого поиска.
 ;; По кажатию C-7 можно выполнить быстрое редактирование найденных фрагментов, но чтобы
 ;; оно сработало правильно, нужно добавить команду swiper-mc в список mc/cmds-to-run-once.
-;;(use-package swiper
-;;  :bind
-;;   ("C-s" . swiper-isearch)) ;; Заменить стандартный isearch на swiper
+(use-package swiper
+ :bind
+  ("C-s" . swiper-isearch)) ;; Заменить стандартный isearch на swiper
 
 
 ;; -> TERRAFORM-MODE
@@ -1213,29 +1194,55 @@ Version 2017-11-01"
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Дерево файлов и каталогов
 (use-package treemacs
+  :defer t
   :custom
   (treemacs-width 35 "Ширина окна Treemacs")
+	(message "Custom TREEMACS")
   :bind
-  ([f8] . treemacs)
-  (:map treemacs-mode-map
-    ("f" . find-grep))
+  (:map global-map
+		("M-0" . treemacs-select-window)
+		("C-x t 1" . treemacs-delete-orher-windows)
+		("C-x t t" . treemacs)
+		("C-x t d" . treemacs-select-directory)
+		("C-x t B" . treemacs-bookmark)
+		("C-x t C-t" . treemacs-find-file)
+		("C-x t M-t" . treemacs-find-tag))
   :config
-  (treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
-  (treemacs-git-mode 'simple) ;; Простой режим
-  (treemacs-filewatch-mode 1) ;; Отслеживание изменений в ФС на лету
+  (progn
+		(setq
+			treemacs-indentation 2
+			treemacs-position 'left
+			treemacs-follow-after-init t
+			treemacs-widht 70
+			treemacs-eldoc-display 'simple)
+		(treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
+		(treemacs-git-mode 'simple) ;; Простой режим
+		(treemacs-filewatch-mode 1)
+		(message "CONFIG TREEMACS")		) ;; Отслеживание изменений в ФС на лету
   (define-key treemacs-mode-map (kbd "f") 'find-grep))
 
 
 ;; -> TREEMACS-ALL-THE-ICONS
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Поддержка иконок all-the-icons.
-(use-package treemacs-all-the-icons
-  :after treemacs)
+;; (use-package treemacs-all-the-icons
+;;   :after (treemacs))
 
 
 ;; -> TREEMACS-ICONS-DIRED
 ;; Отображать иконки файлов из TreeMacs в `dired-mode'
-(use-package treemacs-icons-dired)
+;; (use-package treemacs-icons-dired
+;;   :after (treemacs)
+;;   :hook (dired-mode . treemacs-icons-dired-enable-once))
+
+
+;; -> TREEMACS-MAGIT
+(use-package treemacs-magit
+  :after (treemacs magit))
+
+;; -> TREEMACS-PROJECTILE
+(use-package treemacs-projectile
+  :after (treemacs projectile))
 
 
 ;; -> UNDO-TREE

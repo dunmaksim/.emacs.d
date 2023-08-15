@@ -49,6 +49,7 @@
   large-file-warning-threshold (* 100 1024 1024) ;; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
   load-prefer-newer t                            ;; Если есть файл elc, но el новее, загрузить el-файл
   make-backup-files nil                          ;; Резервные копии не нужны, у нас есть undo-tree
+  menu-bar-mode nil                              ;; Отключить меню в верхней части окна
   overwrite-mode-binary nil                      ;; Выключить режим перезаписи текста под курсором для бинарных файлов
   overwrite-mode-textual nil                     ;; Выключить режим перезаписи текста под курсором для текстовых файлов
   package-user-dir emacs-package-user-dir        ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
@@ -57,6 +58,7 @@
   save-abbrevs 'silently                         ;; Сохранять аббревиатуры без лишних вопросов
   save-place-file emacs-save-place-file          ;; Хранить данные о позициях в открытых файлах в .emacs-places
   save-place-forget-unreadable-files 1           ;; Если файл нельзя открыть, то и помнить о нём ничего не надо
+  scroll-bar-mode nil                            ;; Отключить полосы прокрутки
   scroll-conservatively 100000                   ;; TODO: проверить, что это такое
   scroll-margin 5                                ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
   scroll-preserve-screen-position 1              ;; TODO: проверить, что это такое
@@ -64,6 +66,8 @@
   source-directory "/usr/share/emacs/27.1/src/"  ;; Путь к исходному коду EMACS
   suggest-key-bindings t                         ;; Показывать подсказку клавиатурной комбинации для команды
   tab-width 4                                    ;; Обменный курс на TAB — 4 SPACES
+  tooltip-mode nil                               ;; Отключить всплывающие подсказки, вся информация должна выводиться в мини-буфере
+  tool-bar-mode nil                              ;; Отключить отображение панели инструментов
   text-scale-mode-step 1.1                       ;; Шаг увеличения масштаба
   truncate-lines 1                               ;; Обрезать длинные строки
   uniquify-buffer-name-style 'forward            ;; Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)
@@ -389,6 +393,7 @@ Version 2017-11-01"
 ;; -> COMPANY-BOX
 ;; https://github.com/sebastiencs/company-box
 ;; Красивости для `company-mode':
+;; Несовместим со стабильной версией `company-mode'. Пока блокирую.
 ;; - разные цвета для разных бэкендов
 ;; - иконки
 ;; - вывод документации для кандидатов
@@ -622,8 +627,17 @@ Version 2017-11-01"
                                             flycheck-locate-config-file-ancestor-directories
                                             flycheck-locate-config-file-home))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
-  (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
+  (flycheck-indication-mode 'right-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
+  :init
+  (progn
+    (message "Flycheck init.")
+    (setq-default
+      flycheck-indication-mode 'right-fringe
+      ))
+  :config
+  (setq-default
+    flycheck-indication-mode 'right-fringe)
   :hook
   ((
      adoc-mode
@@ -932,12 +946,6 @@ Version 2017-11-01"
           ("M-." . markdown-follow-thing-at-point)))
 
 
-;; -> MENU-BAR-MODE
-;; Отключить меню за ненадобностью.
-(when (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
-
-
 ;; -> MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
@@ -1174,20 +1182,6 @@ Version 2017-11-01"
 (use-package terraform-mode
   :init
   (setq flycheck-checker 'terraform))
-
-
-;; -> TOOLBAR-MODE
-;; Встроенная панель с кнопками. Не нужна. В EMACS NOX вовсе отсутствует.
-;; Перед отключением нужно проверить, что такая функциональность поддерживается.
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-
-
-;; -> TOOLTIP-MODE
-;; Встроенный режим. Показывает подсказки, используя возможности GUI.
-;; Не нужен, поэтому лучше выключить (всё будет отображаться в мини-буфере).
-(when (fboundp 'tooltip-mode)
-  (tooltip-mode nil))
 
 
 ;; -> TREEMACS — awesome file manager (instead NeoTree)

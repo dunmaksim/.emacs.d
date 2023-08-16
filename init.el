@@ -121,12 +121,13 @@
 (package-initialize)
 
 (setq
-  package-archive-priorites '( ;; Порядок использования архивов. Чем выше приоритет, тем важнее архив
-    ("nongnu" . 50)
-    ("gnu" . 40)
-    ("melpa-stable" . 30)
-    ("melpa" . 20)
-  )
+  package-archive-priorities
+  '( ;; Порядок использования архивов. Чем выше приоритет, тем важнее архив
+     ("nongnu" . 50)
+     ("gnu" . 40)
+     ("melpa-stable" . 30)
+     ("melpa" . 20)
+     )
   package-install-upgrade-built-in t) ;; Обновлять в том числе встроенные пакеты
 
 
@@ -286,12 +287,6 @@ Version 2017-11-01"
      sh-mode
      sql-mode
      ) . aggressive-indent-mode))
-
-
-;; -> AIRLINE-THEMES
-;; https://github.com/AnthonyDiGirolamo/airline-themes
-;; Темы для панели информации
-(use-package airline-themes)
 
 
 ;; -> ALL-THE-ICONS
@@ -588,8 +583,9 @@ Version 2017-11-01"
   :config
   (electric-indent-mode -1)
   :hook
-  (emacs-lisp-mode . electric-indent-mode)
-  (rst-mode . electric-indent-mode))
+  ((
+     emacs-lisp-mode
+     rst-mode) . electric-indent-local-mode))
 
 
 ;; -> ELPY
@@ -627,17 +623,8 @@ Version 2017-11-01"
                                             flycheck-locate-config-file-ancestor-directories
                                             flycheck-locate-config-file-home))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
-  (flycheck-indication-mode 'right-fringe "Место размещения маркера ошибки — левая граница")
+  (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
-  :init
-  (progn
-    (message "Flycheck init.")
-    (setq-default
-      flycheck-indication-mode 'right-fringe
-      ))
-  :config
-  (setq-default
-    flycheck-indication-mode 'right-fringe)
   :hook
   ((
      adoc-mode
@@ -682,12 +669,6 @@ Version 2017-11-01"
        markdown-mode
        rst-mode
        ) . flyspell-mode)))
-
-
-;; -> FLYMAKE
-;; Встроенный пакет
-(use-package flymake
-  :hook (emacs-lisp-mode . flymake-mode))
 
 
 

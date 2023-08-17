@@ -130,7 +130,7 @@
      )
   package-install-upgrade-built-in t) ;; Обновлять в том числе встроенные пакеты
 
-
+(add-to-list 'package-pinned-packages '("use-package" . "gnu"))
 
 ;; Проверка наличия индекса пакетов
 (unless (package-installed-p 'use-package)
@@ -258,6 +258,7 @@ Version 2017-11-01"
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами по Alt+O
 (use-package ace-window
+  :pin "gnu"
   :bind
   ("M-o" . ace-window))
 
@@ -266,6 +267,7 @@ Version 2017-11-01"
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
 (use-package adoc-mode
+  :pin "melpa"
   :custom
   (adoc-fontify-code-blocks-natively 10000)
   :mode
@@ -276,6 +278,7 @@ Version 2017-11-01"
 ;; -> AGGRESSIVE-INDENT
 ;; Принудительное выравнивание кода
 (use-package aggressive-indent
+  :pin "gnu"
   :hook
   ((
      emacs-lisp-mode
@@ -299,8 +302,8 @@ Version 2017-11-01"
 ;; -> ALL-THE-ICONS-DIRED
 ;; https://github.com/wyuenho/all-the-icons-dired
 (use-package all-the-icons-dired
-:after (all-the-icons dired)
-:hook (dired-mode . all-the-icons-dired-mode))
+  :after (all-the-icons dired)
+  :hook (dired-mode . all-the-icons-dired-mode))
 
 ;; -> ALL-THE-ICONS-IBUFFER
 ;; https://github.com/seagle0128/all-the-icons-ibuffer
@@ -318,13 +321,12 @@ Version 2017-11-01"
 (use-package ansible)
 
 
-;; -> APHELEIA
-;; https://github.com/radian-software/apheleia
-;; Форматирование содержимого буфера. Почти как `format-all-buffer', только
-;; немного другое.
-(use-package apheleia
-  :config
-  (apheleia-global-mode 1))
+;; -> AVY
+;; https://github.com/abo-abo/avy
+;; Перемещение по буферу путем ввода символов
+;; Зависимость одного из пакетов
+(use-package avy
+  :pin "gnu")
 
 
 ;; -> CALENDAR
@@ -364,6 +366,7 @@ Version 2017-11-01"
 ;; https://company-mode.github.io/
 ;; Автодополнение
 (use-package company
+  :pin "gnu"
   :custom
   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
@@ -414,6 +417,7 @@ Version 2017-11-01"
 ;; https://github.com/emacsmirror/ivy
 ;; Немного расширенные команды Emacs
 (use-package counsel
+  :pin "gnu"
   :bind
   ("M-x" . counsel-M-x))
 
@@ -432,6 +436,7 @@ Version 2017-11-01"
 ;; https://github.com/emacs-dashboard/emacs-dashboard
 ;; Отображает дашборд при запуске EMACS
 (use-package dashboard
+  :pin "melpa-stable"
   :custom
   (dashboard-display-icons-p t "Включить отображение иконок")
   (dashboard-icon-type 'nerd-icons "Использовать иконки из пакета `nerd-icons'")
@@ -465,6 +470,7 @@ Version 2017-11-01"
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
+  :pin "gnu"
   :config
   (global-diff-hl-mode 1))
 
@@ -475,7 +481,6 @@ Version 2017-11-01"
 (when (string-equal system-type "gnu/linux")
   ;; Это может не работать в Windows, надо проверить
   (setq dired-listing-switches "-lahX --group-directories-first"))
-(global-set-key (kbd "C-o") 'dired)
 (add-hook 'dired-mode-hook #'auto-revert-mode)
 
 
@@ -490,7 +495,8 @@ Version 2017-11-01"
 ;; -> DOCKERFILE-MODE
 ;; https://github.com/spotify/dockerfile-mode
 ;; Работа с файлами `Dockerfile'.
-(use-package dockerfile-mode)
+(use-package dockerfile-mode
+  :pin "nongnu")
 
 
 ;; -> DOOM-MODELINE
@@ -498,6 +504,7 @@ Version 2017-11-01"
 ;; Красивая и многофункциональная статусная панель. Для корректной работы требуется
 ;; пакет `nerd-icons' и установленные шрифты.
 (use-package doom-modeline
+  :pin "melpa-stable"
   :custom
   (doom-modeline-buffer-encoding t "Показывать кодировку")
   (doom-modeline-buffer-modification-icon t "Показывать наличие изменений в буфере")
@@ -523,6 +530,7 @@ Version 2017-11-01"
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
 (use-package doom-themes
+  :pin "melpa-stable"
   :config
   (load-theme 'doom-monokai-classic t))
 
@@ -532,6 +540,7 @@ Version 2017-11-01"
 ;; Удобнее работать с удалением текстовых блоков
 ;; TODO: в каком смысле "удобнее"?
 (use-package easy-kill
+  :pin "gnu"
   :config
   (global-set-key [remap kill-ring-save] 'easy-kill))
 
@@ -548,6 +557,7 @@ Version 2017-11-01"
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
+  :pin "nongnu"
   :bind
   ("C-c '" . edit-indirect-region))
 
@@ -556,6 +566,7 @@ Version 2017-11-01"
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
+  :pin "nongnu"
   :after (ws-butler)
   :custom
   (editorconfig-trim-whitespaces-mode 'ws-butler-mode "Очистка лишних пробелов методом `ws-butler'.")
@@ -578,6 +589,7 @@ Version 2017-11-01"
 
 
 ;; -> ELECTRIC-INDENT MODE
+;; Встроренный пакет.
 ;; Автоматический отступ. В основном только мешает, лучше выключить.
 (use-package electric
   :config
@@ -595,6 +607,7 @@ Version 2017-11-01"
 ;; Проверка состояния: `elpy-config'.
 ;; Активация окружения: `pyenv-activate', указать путь к каталогу с окружением.
 (use-package elpy
+  :pin "melpa-stable"
   :after
   (python-mode)
   :hook python-mode)
@@ -615,6 +628,7 @@ Version 2017-11-01"
 ;; https://flycheck.org
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
+  :pin "melpa-stable"
   :custom
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
@@ -649,6 +663,7 @@ Version 2017-11-01"
 ;; -> FLYCHECK-COLOR-MODE-LINE
 ;; https://github.com/flycheck/flycheck-color-mode-line
 (use-package flycheck-color-mode-line
+  :pin "melpa-stable"
   :hook (flycheck-mode . flycheck-color-mode-line-mode))
 
 
@@ -676,6 +691,7 @@ Version 2017-11-01"
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода по нажатию [F12]
 (use-package format-all
+  :pin "melpa-stable"
   :bind (([f12] . format-all-buffer)))
 
 
@@ -683,6 +699,7 @@ Version 2017-11-01"
 ;; https://github.com/antonj/Highlight-Indentation-for-Emacs
 ;; Показывает направляющие для отступов
 (use-package highlight-indentation
+  :pin "melpa-stable"
   :hook
   ((
      makefile-mode
@@ -701,6 +718,7 @@ Version 2017-11-01"
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
 (use-package hl-todo
+  :pin "melpa-stable"
   :config
   (global-hl-todo-mode t))
 
@@ -712,95 +730,95 @@ Version 2017-11-01"
 (require 'ibuf-ext)
 (defalias 'list-buffers 'ibuffer)
 (setq
- ibuffer-expert 1                                        ;; Расширенный  режим для ibuffer
- ibuffer-hidden-filter-groups (list "Helm" "*Internal*") ;; Не показывать эти буферы
- ibuffer-show-empty-filter-groups nil                    ;; Если группа пустая, ibuffer не должен её отображать.
- ibuffer-sorting-mode 'filename/process                  ;; Сортировать файлы в ibuffer по имени / процессу.
- ibuffer-truncate-lines nil                              ;; Не обкусывать строки в ibuffer
- ibuffer-use-other-window nil                            ;; Не надо открывать ibuffer в другом окне, пусть открывается в текущем
- ibuffer-saved-filter-groups                             ;; Группы по умолчанию
- '(
-   ("default"
-    ("Dired" (mode . dired-mode))
-    ("EMACS Lisp" (mode . emacs-lisp-mode))
-    ("Org" (mode . org-mode))
-    ("Markdown" (mode . markdown-mode))
-    ("AsciiDoc" (mode . adoc-mode))
-    ("ReStructured Text" (mode . rst-mode))
-    ("CONF / INI"
-     (mode . conf-mode)
-     (name . "\\.editorconfig\\'")
-     (name . "\\.ini\\'")
-     (name . "\\.conf\\'"))
-    ("XML"
-     (or
-      (mode . xml-mode)
-      (mode . nxml-mode)))
-    ("YAML" (mode . yaml-mode))
-    ("Makefile"
-     (or
-      (mode . makefile-mode)
-      (name  . "^Makefile$")))
-    ("Protobuf" (mode . protobuf-mode))
-    ("Golang" (mode . go-mode))
-    ("Python"
-     (or
-      (mode . python-mode)
-      (mode . anaconda-mode)))
-    ("SSH keys" (or (name . "^\\*.pub$")))
-    ("Shell-script"
-     (or
-      (mode . shell-script-mode)
-      (mode . sh-mode)))
-    ("Terraform"
-     (or
-      (mode . terraform-mode)
-      (name . "^\\*.tf$")))
-    ("SQL" (mode . sql-mode))
-    ("Web"
-     (or
-      (mode . javascript-mode)
-      (mode . js-mode)
-      (mode . js2-mode)
-      (mode . web-mode)
-      (name . "^\\*.js$")))
-    ("Magit"
-     (or
-      (mode . magit-status-mode)
-      (mode . magit-log-mode)
-      (name . "^\\*magit")
-      (name . "git-monitor")))
-    ("Commands"
-     (or
-      (mode . compilation-mode)
-      (mode . eshell-mode)
-      (mode . shell-mode)
-      (mode . term-mode)))
-    ("Emacs"
-     (or
-      (name . "^\\*scratch\\*$")
-      (name . "^\\*Messages\\*$")
-      (name . "^\\*\\(Customize\\|Help\\)")
-      (name . "\\*\\(Echo\\|Minibuf\\)")))))
- ibuffer-formats ;; Форматирование вывода
- '(
-   (
-    mark                      ;; Отметка
-    modified                  ;; Буфер изменён?
-    read-only                 ;; Только чтение?
-    locked                    ;; Заблокирован?
-    " "
-    (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
-    " "
-    (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
-    " "
-    filename-and-process)     ;; Имя файла и процесс
-   ( ;; Если отображать особо нечего, использовать сокращённый формат
-    mark         ;; Отметка?
-    " "
-    (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
-    " "
-    filename)))  ;; Имя файла
+  ibuffer-expert 1                                        ;; Расширенный  режим для ibuffer
+  ibuffer-hidden-filter-groups (list "Helm" "*Internal*") ;; Не показывать эти буферы
+  ibuffer-show-empty-filter-groups nil                    ;; Если группа пустая, ibuffer не должен её отображать.
+  ibuffer-sorting-mode 'filename/process                  ;; Сортировать файлы в ibuffer по имени / процессу.
+  ibuffer-truncate-lines nil                              ;; Не обкусывать строки в ibuffer
+  ibuffer-use-other-window nil                            ;; Не надо открывать ibuffer в другом окне, пусть открывается в текущем
+  ibuffer-saved-filter-groups                             ;; Группы по умолчанию
+  '(
+     ("default"
+       ("Dired" (mode . dired-mode))
+       ("EMACS Lisp" (mode . emacs-lisp-mode))
+       ("Org" (mode . org-mode))
+       ("Markdown" (mode . markdown-mode))
+       ("AsciiDoc" (mode . adoc-mode))
+       ("ReStructured Text" (mode . rst-mode))
+       ("CONF / INI"
+         (mode . conf-mode)
+         (name . "\\.editorconfig\\'")
+         (name . "\\.ini\\'")
+         (name . "\\.conf\\'"))
+       ("XML"
+         (or
+           (mode . xml-mode)
+           (mode . nxml-mode)))
+       ("YAML" (mode . yaml-mode))
+       ("Makefile"
+         (or
+           (mode . makefile-mode)
+           (name  . "^Makefile$")))
+       ("Protobuf" (mode . protobuf-mode))
+       ("Golang" (mode . go-mode))
+       ("Python"
+         (or
+           (mode . python-mode)
+           (mode . anaconda-mode)))
+       ("SSH keys" (or (name . "^\\*.pub$")))
+       ("Shell-script"
+         (or
+           (mode . shell-script-mode)
+           (mode . sh-mode)))
+       ("Terraform"
+         (or
+           (mode . terraform-mode)
+           (name . "^\\*.tf$")))
+       ("SQL" (mode . sql-mode))
+       ("Web"
+         (or
+           (mode . javascript-mode)
+           (mode . js-mode)
+           (mode . js2-mode)
+           (mode . web-mode)
+           (name . "^\\*.js$")))
+       ("Magit"
+         (or
+           (mode . magit-status-mode)
+           (mode . magit-log-mode)
+           (name . "^\\*magit")
+           (name . "git-monitor")))
+       ("Commands"
+         (or
+           (mode . compilation-mode)
+           (mode . eshell-mode)
+           (mode . shell-mode)
+           (mode . term-mode)))
+       ("Emacs"
+         (or
+           (name . "^\\*scratch\\*$")
+           (name . "^\\*Messages\\*$")
+           (name . "^\\*\\(Customize\\|Help\\)")
+           (name . "\\*\\(Echo\\|Minibuf\\)")))))
+  ibuffer-formats ;; Форматирование вывода
+  '(
+     (
+       mark                      ;; Отметка
+       modified                  ;; Буфер изменён?
+       read-only                 ;; Только чтение?
+       locked                    ;; Заблокирован?
+       " "
+       (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
+       " "
+       (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
+       " "
+       filename-and-process)     ;; Имя файла и процесс
+     ( ;; Если отображать особо нечего, использовать сокращённый формат
+       mark         ;; Отметка?
+       " "
+       (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
+       " "
+       filename)))  ;; Имя файла
 (defun setup-ibuffer-mode ()
   "Настройки `ibuffer-mode'."
   (ibuffer-auto-mode 1)
@@ -813,38 +831,25 @@ Version 2017-11-01"
 ;; https://github.com/emacsmirror/ivy
 ;; Нативный автокомплит для Emacs.
 (use-package ivy
+  :pin "gnu"
   :custom
   (ivy-use-virtual-buffers t "Какие-то виртуальные буферы")
   :config
   (ivy-mode))
 
 
-
-;; -> ICOMPLETE-MODE
-;; Встроенный пакет
-;; Подсказки в минибуфере
-;; (use-package icomplete
-;;   :config
-;;   (icomplete-vertical-mode 1))
-
-
 ;; -> JS2-MODE
 ;; https://github.com/mooz/js2-mode
 (use-package js2-mode
+  :pin "gnu"
   :mode
   ("\\.js\\'" . js2-mode))
 
 
 ;; -> JSON-MODE
 ;; Встроенный пакет
-(use-package json-mode)
-
-
-;; -> LEUVEN-THEME
-;; Тема оформления
-;; (use-package leuven-theme
-;;   :config
-;;   (load-theme 'leuven-dark t))
+(use-package json-mode
+  :pin "melpa-stable")
 
 
 ;; -> LSP
@@ -878,6 +883,7 @@ Version 2017-11-01"
     (> emacs-major-version 26))
 
   (use-package lsp-mode
+    :pin "melpa-stable"
     :custom
     (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
     (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
@@ -887,6 +893,7 @@ Version 2017-11-01"
             (python-mode . lsp)))
 
   (use-package lsp-ui
+    :pin "melpa-stable"
     :custom
     (lsp-ui-doc-enable t "Показывать документацию в LSP-UI")
     (lsp-ui-peek-always-show t "TODO")
@@ -900,6 +907,7 @@ Version 2017-11-01"
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (use-package magit
+  :pin "nongnu"
   :bind
   ([f5] . magit-status)
   ([f6] . magit-checkout))
@@ -916,6 +924,7 @@ Version 2017-11-01"
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (use-package markdown-mode
+  :pin "nongnu"
   :custom
   (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
   (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
@@ -931,6 +940,7 @@ Version 2017-11-01"
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (use-package multiple-cursors
+  :pin "nongnu"
   :bind
   ("C-S-c C-S-c" . mc/edit-lines)
   ("C->" . mc/mark-next-like-this)
@@ -968,6 +978,7 @@ Version 2017-11-01"
 ;; https://orgmode.org/
 ;; Органайзер, и не только
 (use-package org
+  :pin "gnu"
   :config
   (setq-local
     truncate-lines nil    ;; Не обрезать строки
@@ -984,7 +995,8 @@ Version 2017-11-01"
 ;; -> PACKAGE-LINT
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
-(use-package package-lint)
+(use-package package-lint
+  :pin "melpa-stable")
 
 
 ;; -> PAREN
@@ -1001,31 +1013,34 @@ Version 2017-11-01"
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (use-package projectile
+  :pin "nongnu"
   :bind
   (:map projectile-mode-map
-        ("M-p" . projectile-command-map))
+    ("M-p" . projectile-command-map))
   :config
   (projectile-global-mode 1))
 
 
 ;; Подсвечивать курсор при его перемещении на несколько строк
 (if
-    ;; -> PULSAR-MODE
-    ;; https://github.com/protesilaos/pulsar
-    (or ;; Нужна версия Emacs 27.1 или выше
-     (and
+  ;; -> PULSAR-MODE
+  ;; https://github.com/protesilaos/pulsar
+  (or ;; Нужна версия Emacs 27.1 или выше
+    (and
       (= emacs-major-version 27)
       (>= emacs-minor-version 1))
-     (> emacs-major-version 27))
-    (use-package pulsar
-      :custom
-      (pulsar-pulse t)
-      :config
-      (pulsar-global-mode 1)
-		  (add-hook 'next-error-hook #'pulsar-pulse-line))
+    (> emacs-major-version 27))
+  (use-package pulsar
+    :pin "gnu"
+    :custom
+    (pulsar-pulse t)
+    :config
+    (pulsar-global-mode 1)
+		(add-hook 'next-error-hook #'pulsar-pulse-line))
   ;; EMACS более старый, чем 27.1
   (when (fboundp 'after-focus-change-function)
     (use-package beacon
+      :pin "gnu"
       :config
       (beacon-mode 1))))
 
@@ -1033,6 +1048,7 @@ Version 2017-11-01"
 ;; -> PYTHON-MODE
 ;; Встроенный пакет для работы с Python
 (use-package python-mode
+  :pin "melpa-stable"
   :custom
   (py-electric-comment-p t "TODO")
 	(py-pylint-command-args "--max-line-length 120" "TODO"))
@@ -1042,6 +1058,7 @@ Version 2017-11-01"
 ;; http://github.com/jorgenschaefer/pyvenv
 ;; Позволяет активировать виртуальные окружения из Emacs
 (use-package pyvenv
+  :pin "melpa-stable"
   :after (python-mode)
   :hook python-mode)
 
@@ -1050,6 +1067,7 @@ Version 2017-11-01"
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
 (use-package rainbow-delimiters
+  :pin "nongnu"
   :hook
   ((
      adoc-mode
@@ -1081,6 +1099,7 @@ Version 2017-11-01"
 ;; https://elpa.gnu.org/packages/rainbow-mode.html
 ;; Подсветка строк с цветами нужным цветом, например #153415, #223956
 (use-package rainbow-mode
+  :pin "gnu"
   :hook
   ((
      css-mode
@@ -1102,6 +1121,7 @@ Version 2017-11-01"
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
 (use-package reverse-im
+  :pin "melpa-stable"
   :custom
   (reverse-im-input-methods '(
                                "russian-computer"
@@ -1153,7 +1173,8 @@ Version 2017-11-01"
 ;; По кажатию C-7 можно выполнить быстрое редактирование найденных фрагментов, но чтобы
 ;; оно сработало правильно, нужно добавить команду swiper-mc в список mc/cmds-to-run-once.
 (use-package swiper
- :bind
+  :pin "gnu"
+  :bind
   ("C-s" . swiper-isearch)) ;; Заменить стандартный isearch на swiper
 
 
@@ -1161,6 +1182,7 @@ Version 2017-11-01"
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
 (use-package terraform-mode
+  :pin "melpa-stable"
   :init
   (setq flycheck-checker 'terraform))
 
@@ -1169,6 +1191,7 @@ Version 2017-11-01"
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Дерево файлов и каталогов
 (use-package treemacs
+  :pin "melpa-stable"
   :defer t
   :custom
   (treemacs-width 35 "Ширина окна Treemacs")
@@ -1213,10 +1236,12 @@ Version 2017-11-01"
 
 ;; -> TREEMACS-MAGIT
 (use-package treemacs-magit
+  :pin "melpa-stable"
   :after (treemacs magit))
 
 ;; -> TREEMACS-PROJECTILE
 (use-package treemacs-projectile
+  :pin "melpa-stable"
   :after (treemacs projectile))
 
 
@@ -1225,6 +1250,7 @@ Version 2017-11-01"
 ;; Не только предоставляет привычное поведение при отмене команд, но и даёт мощные возможности по
 ;; ведению дерева правок.
 (use-package undo-tree
+  :pin "gnu"
   :custom
   (undo-tree-auto-save-history nil "Отключить создание резервных копий файлов")
   :config
@@ -1234,6 +1260,7 @@ Version 2017-11-01"
 ;; -> WEB-MODE
 ;; https://web-mode.org/
 (use-package web-mode
+  :pin "nongnu"
   :custom
   (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
   (web-mode-css-indent-offset 2 "При редактировании CSS отступ будет 2 пробела")
@@ -1251,11 +1278,13 @@ Version 2017-11-01"
 ;; https://github.com/justbur/emacs-which-key
 ;; Показывает подсказки к сочетаниям клавиш.
 (use-package which-key
+  :pin "gnu"
   :custom
   (which-key-idle-delay 2 "Задержка появления подсказки")
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")
   :config
   (which-key-setup-side-window-right) ;; Показывать подсказки справа
+  (which-key-setup-minibuffer)
   (which-key-mode 1))
 
 
@@ -1300,6 +1329,7 @@ Version 2017-11-01"
 
 ;; -> WS-BUTLER
 (use-package ws-butler
+  :pin "nongnu"
   :hook
   ((
      adoc-mode

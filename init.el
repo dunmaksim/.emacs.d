@@ -94,6 +94,7 @@
 (global-visual-line-mode 1) ;; Подсвечивать текущую строку
 (line-number-mode t)        ;; Показывать номер строки в статусной строке
 (save-place-mode 1)         ;; Помнить позицию курсора в открытых когда-либо файлах.
+(savehist-mode t)           ;; Сохранение истории команд между сессиями
 (scroll-bar-mode -1)        ;; Отключить полосы прокрутки
 (size-indication-mode 1)    ;; Отображать размер буфера в строке статуса
 (window-divider-mode t)     ;; Визуально разделять окна EMACS
@@ -216,18 +217,10 @@ Version 2017-11-01"
 
     ;; Перебор шрифтов
     (cond
-      (
-        (member "Fira Code" availiable-fonts)
-        (setq default-font-family "Fira Code"))
-      (
-        (member "DejaVu Sans Mono" availiable-fonts)
-        (setq default-font-family "DejaVu Sans Mono"))
-      (
-        (member "Source Code Pro" availiable-fonts)
-        (setq default-font-family "Source Code Pro"))
-      (
-        (member "Consolas" availiable-fonts)
-        (setq default-font-family "Consolas")))
+      ((member "Fira Code" availiable-fonts) (setq default-font-family "Fira Code"))
+      ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font-family "DejaVu Sans Mono"))
+      ((member "Source Code Pro" availiable-fonts) (setq default-font-family "Source Code Pro"))
+      ((member "Consolas" availiable-fonts) (setq default-font-family "Consolas")))
 
     (when default-font-family
       (message "Выбран шрифт по умолчанию.")
@@ -237,17 +230,7 @@ Version 2017-11-01"
       (set-face-attribute 'default nil :family default-font-family)
       )
 
-    (set-face-attribute 'default nil :height (* emacs-default-font-height 10))
-
-    ;; Если режим графический, между вкладками следует переходить по Ctrl+PgUp и Ctrl+PgDn
-
-    (global-set-key (kbd "C-<prior>") 'centaur-tabs-backward)
-    (global-set-key (kbd "C-<next>") 'centaur-tabs-forward)
-
-    ;; Если режим графический, для расстановки курсоров MultipleCursors можно использовать Alt+Click
-    (when (fboundp 'multiple-cursors)
-      (global-unset-key (kbd "M-<down-mouse-1>"))
-      (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))))
+    (set-face-attribute 'default nil :height (* emacs-default-font-height 10))))
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
@@ -271,8 +254,7 @@ Version 2017-11-01"
   :custom
   (adoc-fontify-code-blocks-natively 10000)
   :mode
-  ("\\.adoc\\'" . adoc-mode)
-  ("\\.txt\\'" . adoc-mode))
+  ("\\.adoc\\'" . adoc-mode))
 
 
 ;; -> AGGRESSIVE-INDENT
@@ -305,15 +287,6 @@ Version 2017-11-01"
   :after (all-the-icons dired)
   :hook (dired-mode . all-the-icons-dired-mode))
 
-;; -> ALL-THE-ICONS-IBUFFER
-;; https://github.com/seagle0128/all-the-icons-ibuffer
-(use-package all-the-icons-ibuffer
-  :custom
-  (all-the-icons-ibuffer-human-readable-size t "Показывать размер файлов в ibuffer в человекочитаемом виде")
-  (all-the-icons-ibuffer-icon t "Показывать иконки файлов в ibuffer")
-  :after (all-the-icons ibuffer)
-  :hook (ibuffer-mode . all-the-icons-ibuffer-mode))
-
 
 ;; -> ANSIBLE
 ;; https://github.com/k1LoW/emacs-ansible
@@ -338,22 +311,31 @@ Version 2017-11-01"
 ;; -> CENTAUR-TABS
 ;; https://github.com/ema2159/centaur-tabs
 ;; Вкладки с иконками и прочими удобствами
-(use-package centaur-tabs
-  :custom
-  (centaur-tabs-close-button "×" "Будем использовать вот этот символ вместо X")
-  (centaur-tabs-enable-key-bindings t "Включить комбинации клавиш из `centaur-tabs'.")
-  (centaur-tabs-height 36 "Высота вкладок")
-  (centaur-tabs-modified-marker t "Показывать маркер, если содержимое вкладки изменилось")
-  (centaur-tabs-set-bar 'under "Доступные значения: over, under")
-  (centaur-tabs-set-icons t "Включить иконки. если это графический режим")
-  (centaur-tabs-style "slant" "Также доступны: bar, alternate, box, chamfer, rounded, slant, wawe, zigzag")
-  :config
-  (centaur-tabs-mode 1)
-  (setq x-underline-at-descent-line t) ;; "Если пакет используется вне Spacemacs, необходимо включить это, чтобы подчёркивание отображалось корректно"
-  :hook
-  ((
-     dashboard-mode
-     dired-mode) . centaur-tabs-local-mode))
+;; (use-package centaur-tabs
+;;   :custom
+;;   (centaur-tabs-close-button "×" "Будем использовать вот этот символ вместо X")
+;;   (centaur-tabs-enable-key-bindings t "Включить комбинации клавиш из `centaur-tabs'.")
+;;   (centaur-tabs-height 36 "Высота вкладок")
+;;   (centaur-tabs-modified-marker t "Показывать маркер, если содержимое вкладки изменилось")
+;;   (centaur-tabs-set-bar 'under "Доступные значения: over, under")
+;;   (centaur-tabs-set-icons t "Включить иконки. если это графический режим")
+;;   (centaur-tabs-style "slant" "Также доступны: bar, alternate, box, chamfer, rounded, slant, wawe, zigzag")
+;;   :config
+;;   (centaur-tabs-mode 1)
+;;   (setq x-underline-at-descent-line t) ;; "Если пакет используется вне Spacemacs, необходимо включить это, чтобы подчёркивание отображалось корректно"
+;;   (add-to-list 'after-make-frame-functions
+;;     (lambda ()
+;;       ;; Если режим графический, между вкладками следует переходить по Ctrl+PgUp и Ctrl+PgDn
+;;       (when (display-graphic-p)
+;;         (progn
+;;           (global-set-key (kbd "C-<prior>") #'centaur-tabs-backward)
+;;           (global-set-key (kbd "C-<next>") #'centaur-tabs-forward)
+;;           ))))
+;;   :hook
+;;   ((
+;;      dashboard-mode
+;;      dired-mode
+;;      ) . centaur-tabs-local-mode))
 
 
 ;; -> CHECKDOC
@@ -409,8 +391,7 @@ Version 2017-11-01"
   ("\\.env\\'" . conf-mode)
   ("\\.flake8\\'" . conf-mode)
   ("\\.ini\\'" . conf-mode)
-  ("\\.pylintrc\\'" . conf-mode)
-  ("\\.terraformrc\\'" . conf-mode))
+  ("\\.pylintrc\\'" . conf-mode))
 
 
 ;; -> COUNSEL
@@ -458,10 +439,11 @@ Version 2017-11-01"
 ;; Позволяет сохранять состояние EMACS между сессиями
 (use-package desktop
   :custom
+  (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован")
   (desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode)) ; А вот эти не сохранять
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов")
   :config
-  (desktop-save-mode t)
+  (desktop-save-mode 1)
   (add-hook 'server-after-make-frame-hook #'desktop-read))
 
 
@@ -595,9 +577,7 @@ Version 2017-11-01"
   :config
   (electric-indent-mode -1)
   :hook
-  ((
-     emacs-lisp-mode
-     rst-mode) . electric-indent-local-mode))
+  (emacs-lisp-mode . electric-indent-local-mode))
 
 
 ;; -> ELPY
@@ -610,6 +590,8 @@ Version 2017-11-01"
   :pin "melpa-stable"
   :after
   (python-mode)
+  :config
+  (elpy-enable)
   :hook python-mode)
 
 
@@ -630,15 +612,15 @@ Version 2017-11-01"
 (use-package flycheck
   :pin "melpa-stable"
   :custom
-  (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
+  (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
+  (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-locate-config-file-functions '(
                                             flycheck-locate-config-file-by-path
                                             flycheck-locate-config-file-ancestor-directories
                                             flycheck-locate-config-file-home))
-  (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
-  (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
+  (flycheck-textlint-config "\\.textlintrc.yaml\\'" "Файл настроек Textlint")
   :hook
   ((
      adoc-mode
@@ -652,6 +634,7 @@ Version 2017-11-01"
      nxml-mode
      php-mode
      protobuf-mode
+     python-mode
      rst-mode
      ruby-mode
      sh-mode
@@ -931,9 +914,10 @@ Version 2017-11-01"
   (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
   :config
   (setq-local word-wrap t)
-  :bind (
-          :map markdown-mode-map
-          ("M-." . markdown-follow-thing-at-point)))
+  :bind
+  (
+    :map markdown-mode-map
+    ("M-." . markdown-follow-thing-at-point)))
 
 
 ;; -> MULTIPLE CURSORS
@@ -945,7 +929,16 @@ Version 2017-11-01"
   ("C-S-c C-S-c" . mc/edit-lines)
   ("C->" . mc/mark-next-like-this)
   ("C-<" . mc/mark-previous-like-this)
-  ("C-c C-<" . mc/mark-all-like-this))
+  ("C-c C-<" . mc/mark-all-like-this)
+  :config
+  (add-to-list 'after-make-frame-functions
+    (lambda ()
+      (when (display-graphic-p)
+          ;; Если режим графический, то курсоры можно расставлять с помощью Alt+Click
+        (progn
+          (global-unset-key (kbd "M-<down-mouse-1>"))
+          (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
+          )))))
 
 
 ;; -> NERD-ICONS
@@ -958,20 +951,28 @@ Version 2017-11-01"
 (use-package nerd-icons)
 
 
+;; -> NERD-ICONS-IBUFFER
+;;
+;; Отображение иконок в ibuffer
+(use-package nerd-icons-ibuffer
+  :pin "melpa-stable"
+  :after (ibuffer nerd-icons)
+  :ensure t
+  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
+
+
 ;; -> NXML-MODE
 ;; Встроенный пакет
 ;; Почти как xml-mode, только лучше и новее
-(with-eval-after-load 'nxml-mode
-  (setq
-    nxml-attribute-indent 4                   ;; Выравнивание атрибутов
-    nxml-auto-insert-xml-declaration-flag nil ;; Не вставлять декларацию
-    nxml-bind-meta-tab-to-complete-flag t     ;; Использовать TAB для завершения ввода
-    nxml-child-indent 4                       ;; Выравнивание дочерних элементов
-    nxml-slash-auto-complete-flag t)          ;; "Закрывать теги по вводу /"
-  (setq-local
-    tab-width 2) ;; Ширина TAB'а будет 2 пробела
-  (add-to-list 'auto-mode-alist '("\\.pom\\'" . nxml-mode))
-  (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode)))
+(require 'nxml-mode)
+(setq
+  nxml-attribute-indent 4                   ;; Выравнивание атрибутов
+  nxml-auto-insert-xml-declaration-flag nil ;; Не вставлять декларацию
+  nxml-bind-meta-tab-to-complete-flag t     ;; Использовать TAB для завершения ввода
+  nxml-child-indent 4                       ;; Выравнивание дочерних элементов
+  nxml-slash-auto-complete-flag t)          ;; "Закрывать теги по вводу /"
+(add-to-list 'auto-mode-alist '("\\.pom\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
 
 
 ;; -> ORG-MODE
@@ -1018,7 +1019,7 @@ Version 2017-11-01"
   (:map projectile-mode-map
     ("M-p" . projectile-command-map))
   :config
-  (projectile-global-mode 1))
+  (projectile-mode 1))
 
 
 ;; Подсвечивать курсор при его перемещении на несколько строк
@@ -1036,7 +1037,7 @@ Version 2017-11-01"
     (pulsar-pulse t)
     :config
     (pulsar-global-mode 1)
-		(add-hook 'next-error-hook #'pulsar-pulse-line))
+    (add-hook 'next-error-hook #'pulsar-pulse-line))
   ;; EMACS более старый, чем 27.1
   (when (fboundp 'after-focus-change-function)
     (use-package beacon
@@ -1113,6 +1114,7 @@ Version 2017-11-01"
 ;; Метод ввода для технических писателей
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
+  :pin "melpa-stable"
   :init
   (setq default-input-method 'russian-techwriter))
 
@@ -1122,6 +1124,7 @@ Version 2017-11-01"
 ;; Чтобы сочетания клавиш работали в любой раскладке.
 (use-package reverse-im
   :pin "melpa-stable"
+  :after (russian-techwriter)
   :custom
   (reverse-im-input-methods '(
                                "russian-computer"
@@ -1133,12 +1136,13 @@ Version 2017-11-01"
 ;; -> RST-MODE
 ;; Основной режим для редактирования reStructutedText
 ;; Больше здесь: https://www.writethedocs.org/guide/writing/reStructuredText/
-(require 'rst)
-(defun setup-rst-mode()
-  "Настройки для `rst-mode'."
-  (highlight-indentation-set-offset 3))
-(add-hook 'rst-mode-hook #'setup-rst-mode)
-(add-to-list 'auto-mode-alist '("\\.rst\\'" . rst-mode))
+(use-package rst
+  :config
+  (highlight-indentation-set-offset 3) ;; Выравнивание по трём пробелам
+  :mode
+  ("\\.rest\\'" . rst-mode)
+  ("\\.rst\\'" . rst-mode)
+  ("\\.txt\\'" . rst-mode))
 
 
 ;; -> RUBY-MODE
@@ -1183,8 +1187,8 @@ Version 2017-11-01"
 ;; Работа с файлами конфигурации Terraform
 (use-package terraform-mode
   :pin "melpa-stable"
-  :init
-  (setq flycheck-checker 'terraform))
+  :mode
+  ("\\.terraformrc\\'" . terraform-mode))
 
 
 ;; -> TREEMACS — awesome file manager (instead NeoTree)
@@ -1195,43 +1199,29 @@ Version 2017-11-01"
   :defer t
   :custom
   (treemacs-width 35 "Ширина окна Treemacs")
-	(message "Custom TREEMACS")
+  (message "Custom TREEMACS")
   :bind
   (:map global-map
-		("M-0" . treemacs-select-window)
-		("C-x t 1" . treemacs-delete-orher-windows)
-		("C-x t t" . treemacs)
-		("C-x t d" . treemacs-select-directory)
-		("C-x t B" . treemacs-bookmark)
-		("C-x t C-t" . treemacs-find-file)
-		("C-x t M-t" . treemacs-find-tag))
+    ("M-0" . treemacs-select-window)
+    ("C-x t 1" . treemacs-delete-orher-windows)
+    ("C-x t t" . treemacs)
+    ("C-x t d" . treemacs-select-directory)
+    ("C-x t B" . treemacs-bookmark)
+    ("C-x t C-t" . treemacs-find-file)
+    ("C-x t M-t" . treemacs-find-tag))
   :config
   (progn
-		(setq
-			treemacs-indentation 2
-			treemacs-position 'left
-			treemacs-follow-after-init t
-			treemacs-widht 70
-			treemacs-eldoc-display 'simple)
-		(treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
-		(treemacs-git-mode 'simple) ;; Простой режим
-		(treemacs-filewatch-mode 1)
-		(message "CONFIG TREEMACS")		) ;; Отслеживание изменений в ФС на лету
+    (setq
+      treemacs-indentation 2
+      treemacs-position 'left
+      treemacs-follow-after-init t
+      treemacs-widht 70
+      treemacs-eldoc-display 'simple)
+    (treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
+    (treemacs-git-mode 'simple) ;; Простой режим
+    (treemacs-filewatch-mode 1)
+    (message "CONFIG TREEMACS")		) ;; Отслеживание изменений в ФС на лету
   (define-key treemacs-mode-map (kbd "f") 'find-grep))
-
-
-;; -> TREEMACS-ALL-THE-ICONS
-;; https://github.com/Alexander-Miller/treemacs
-;; Поддержка иконок all-the-icons.
-;; (use-package treemacs-all-the-icons
-;;   :after (treemacs))
-
-
-;; -> TREEMACS-ICONS-DIRED
-;; Отображать иконки файлов из TreeMacs в `dired-mode'
-;; (use-package treemacs-icons-dired
-;;   :after (treemacs)
-;;   :hook (dired-mode . treemacs-icons-dired-enable-once))
 
 
 ;; -> TREEMACS-MAGIT

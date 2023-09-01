@@ -630,6 +630,7 @@ Version 2017-11-01"
      emacs-lisp-mode
      js2-mode
      json-mode
+     makefile-mode
      markdown-mode
      nxml-mode
      php-mode
@@ -1056,7 +1057,7 @@ Version 2017-11-01"
 
 
 ;; -> PYVENV
-;; http://github.com/jorgenschaefer/pyvenv
+;; https://github.com/jorgenschaefer/pyvenv
 ;; Позволяет активировать виртуальные окружения из Emacs
 (use-package pyvenv
   :pin "melpa-stable"
@@ -1187,6 +1188,8 @@ Version 2017-11-01"
 ;; Работа с файлами конфигурации Terraform
 (use-package terraform-mode
   :pin "melpa-stable"
+  :config
+  (highlight-indentation-set-offset 2) ;; Выравнивание по трём пробелам)
   :mode
   ("\\.terraformrc\\'" . terraform-mode))
 

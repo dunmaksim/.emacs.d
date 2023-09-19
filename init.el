@@ -158,15 +158,16 @@
   :pin "gnu"
   :hook
   ((
-     emacs-lisp-mode
-     js2-mode
-     json-mode
-     nxml-mode
-     php-mode
-     protobuf-mode
-     sh-mode
-     sql-mode
-     ) . aggressive-indent-mode))
+    emacs-lisp-mode
+    js2-mode
+    json-mode
+    lisp-data-mode
+    nxml-mode
+    php-mode
+    protobuf-mode
+    sh-mode
+    sql-mode
+    ) . aggressive-indent-mode))
 
 
 ;; -> ALL-THE-ICONS
@@ -263,6 +264,7 @@
     dockerfile-mode
     emacs-lisp-mode
     js2-mode
+		lisp-data-mode
     nxml-mode
     php-mode
     rst-mode
@@ -493,6 +495,7 @@
   (python-mode)
   :config
   (elpy-enable)
+  (defalias 'workon 'pyvenv-workon)
   :hook python-mode)
 
 
@@ -511,8 +514,7 @@
  large-file-warning-threshold (* 100 1024 1024) ;; Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)
  make-backup-files nil    ;; Резервные копии не нужны, у нас есть undo-tree)
  require-final-newline t ;; Пусть в конце всех файлов будет пустая строка
- save-abbrevs 'silently                         ;; Сохранять аббревиатуры без лишних вопросов
- )
+ save-abbrevs 'silently)                         ;; Сохранять аббревиатуры без лишних вопросов
 
 
 ;; -> FRAME
@@ -550,6 +552,7 @@
     emacs-lisp-mode
     js2-mode
     json-mode
+		lisp-data-mode
     makefile-mode
     markdown-mode
     nxml-mode
@@ -607,16 +610,17 @@
   :pin "melpa-stable"
   :hook
   ((
-     makefile-mode
-     makefile-gmake-mode
-     emacs-lisp-mode
-     markdown-mode
-     python-mode
-     rst-mode
-     terraform-mode
-     web-mode
-     yaml-mode
-     ) . highlight-indentation-mode))
+		lisp-data-mode
+    emacs-lisp-mode
+    makefile-gmake-mode
+    makefile-mode
+    markdown-mode
+    python-mode
+    rst-mode
+    terraform-mode
+    web-mode
+    yaml-mode
+    ) . highlight-indentation-mode))
 
 
 ;; -> HL-TODO
@@ -635,95 +639,97 @@
 (require 'ibuf-ext)
 (defalias 'list-buffers 'ibuffer)
 (setq
-  ibuffer-expert 1                                        ;; Расширенный  режим для ibuffer
-  ibuffer-hidden-filter-groups (list "Helm" "*Internal*") ;; Не показывать эти буферы
-  ibuffer-show-empty-filter-groups nil                    ;; Если группа пустая, ibuffer не должен её отображать.
-  ibuffer-sorting-mode 'filename/process                  ;; Сортировать файлы в ibuffer по имени / процессу.
-  ibuffer-truncate-lines nil                              ;; Не обкусывать строки в ibuffer
-  ibuffer-use-other-window nil                            ;; Не надо открывать ibuffer в другом окне, пусть открывается в текущем
-  ibuffer-saved-filter-groups                             ;; Группы по умолчанию
-  '(
-     ("default"
-       ("Dired" (mode . dired-mode))
-       ("EMACS Lisp" (mode . emacs-lisp-mode))
-       ("Org" (mode . org-mode))
-       ("Markdown" (mode . markdown-mode))
-       ("AsciiDoc" (mode . adoc-mode))
-       ("ReStructured Text" (mode . rst-mode))
-       ("CONF / INI"
-         (mode . conf-mode)
-         (name . "\\.editorconfig\\'")
-         (name . "\\.ini\\'")
-         (name . "\\.conf\\'"))
-       ("XML"
-         (or
-           (mode . xml-mode)
-           (mode . nxml-mode)))
-       ("YAML" (mode . yaml-mode))
-       ("Makefile"
-         (or
-           (mode . makefile-mode)
-           (name  . "^Makefile$")))
-       ("Protobuf" (mode . protobuf-mode))
-       ("Golang" (mode . go-mode))
-       ("Python"
-         (or
-           (mode . python-mode)
-           (mode . anaconda-mode)))
-       ("SSH keys" (or (name . "^\\*.pub$")))
-       ("Shell-script"
-         (or
-           (mode . shell-script-mode)
-           (mode . sh-mode)))
-       ("Terraform"
-         (or
-           (mode . terraform-mode)
-           (name . "^\\*.tf$")))
-       ("SQL" (mode . sql-mode))
-       ("Web"
-         (or
-           (mode . javascript-mode)
-           (mode . js-mode)
-           (mode . js2-mode)
-           (mode . web-mode)
-           (name . "^\\*.js$")))
-       ("Magit"
-         (or
-           (mode . magit-status-mode)
-           (mode . magit-log-mode)
-           (name . "^\\*magit")
-           (name . "git-monitor")))
-       ("Commands"
-         (or
-           (mode . compilation-mode)
-           (mode . eshell-mode)
-           (mode . shell-mode)
-           (mode . term-mode)))
-       ("Emacs"
-         (or
-           (name . "^\\*scratch\\*$")
-           (name . "^\\*Messages\\*$")
-           (name . "^\\*\\(Customize\\|Help\\)")
-           (name . "\\*\\(Echo\\|Minibuf\\)")))))
-  ibuffer-formats ;; Форматирование вывода
-  '(
-     (
-       mark                      ;; Отметка
-       modified                  ;; Буфер изменён?
-       read-only                 ;; Только чтение?
-       locked                    ;; Заблокирован?
-       " "
-       (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
-       " "
-       (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
-       " "
-       filename-and-process)     ;; Имя файла и процесс
-     ( ;; Если отображать особо нечего, использовать сокращённый формат
-       mark         ;; Отметка?
-       " "
-       (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
-       " "
-       filename)))  ;; Имя файла
+ ibuffer-expert 1                                        ;; Расширенный  режим для ibuffer
+ ibuffer-hidden-filter-groups (list "Helm" "*Internal*") ;; Не показывать эти буферы
+ ibuffer-show-empty-filter-groups nil                    ;; Если группа пустая, ibuffer не должен её отображать.
+ ibuffer-sorting-mode 'filename/process                  ;; Сортировать файлы в ibuffer по имени / процессу.
+ ibuffer-truncate-lines nil                              ;; Не обкусывать строки в ibuffer
+ ibuffer-use-other-window nil                            ;; Не надо открывать ibuffer в другом окне, пусть открывается в текущем
+ ibuffer-saved-filter-groups                             ;; Группы по умолчанию
+ '(
+   ("default"
+    ("Dired" (mode . dired-mode))
+    ("EMACS Lisp"
+     (mode . emacs-lisp-mode)
+     (mode . lisp-data-mode))
+    ("Org" (mode . org-mode))
+    ("Markdown" (mode . markdown-mode))
+    ("AsciiDoc" (mode . adoc-mode))
+    ("ReStructured Text" (mode . rst-mode))
+    ("CONF / INI"
+     (mode . conf-mode)
+     (name . "\\.editorconfig\\'")
+     (name . "\\.ini\\'")
+     (name . "\\.conf\\'"))
+    ("XML"
+     (or
+      (mode . xml-mode)
+      (mode . nxml-mode)))
+    ("YAML" (mode . yaml-mode))
+    ("Makefile"
+     (or
+      (mode . makefile-mode)
+      (name  . "^Makefile$")))
+    ("Protobuf" (mode . protobuf-mode))
+    ("Golang" (mode . go-mode))
+    ("Python"
+     (or
+      (mode . python-mode)
+      (mode . anaconda-mode)))
+    ("SSH keys" (or (name . "^\\*.pub$")))
+    ("Shell-script"
+     (or
+      (mode . shell-script-mode)
+      (mode . sh-mode)))
+    ("Terraform"
+     (or
+      (mode . terraform-mode)
+      (name . "^\\*.tf$")))
+    ("SQL" (mode . sql-mode))
+    ("Web"
+     (or
+      (mode . javascript-mode)
+      (mode . js-mode)
+      (mode . js2-mode)
+      (mode . web-mode)
+      (name . "^\\*.js$")))
+    ("Magit"
+     (or
+      (mode . magit-status-mode)
+      (mode . magit-log-mode)
+      (name . "^\\*magit")
+      (name . "git-monitor")))
+    ("Commands"
+     (or
+      (mode . compilation-mode)
+      (mode . eshell-mode)
+      (mode . shell-mode)
+      (mode . term-mode)))
+    ("Emacs"
+     (or
+      (name . "^\\*scratch\\*$")
+      (name . "^\\*Messages\\*$")
+      (name . "^\\*\\(Customize\\|Help\\)")
+      (name . "\\*\\(Echo\\|Minibuf\\)")))))
+ ibuffer-formats ;; Форматирование вывода
+ '(
+   (
+    mark                      ;; Отметка
+    modified                  ;; Буфер изменён?
+    read-only                 ;; Только чтение?
+    locked                    ;; Заблокирован?
+    " "
+    (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
+    " "
+    (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
+    " "
+    filename-and-process)     ;; Имя файла и процесс
+   ( ;; Если отображать особо нечего, использовать сокращённый формат
+    mark         ;; Отметка?
+    " "
+    (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
+    " "
+    filename)))  ;; Имя файла
 (defun setup-ibuffer-mode ()
   "Настройки `ibuffer-mode'."
   (ibuffer-auto-mode 1)
@@ -805,7 +811,12 @@
     (lsp-ui-peek-enable t "TODO")
     (lsp-ui-sideline-enable t "TODO")
     :after (lsp-mode)
-    :hook lsp-mode))
+    :hook lsp-mode)
+
+  (use-package lsp-treemacs
+    :pin "melpa-stable"
+    :after (lsp-mode)
+    :config (lsp-treemacs-sync-mode 1)))
 
 
 ;; -> MAGIT
@@ -850,8 +861,7 @@
 
 
 ;; -> MULE
-;; Встроенный пакет
-;; Кодировки
+;; Встроенный пакет для работы с кодировками
 (require 'mule)
 (prefer-coding-system 'utf-8)              ;; При попытке определить кодировку файла начинать перебор с UTF-8
 (set-default-coding-systems 'utf-8)        ;; Кодировка по умолчанию
@@ -904,14 +914,13 @@
 
 
 ;; -> NEWCOMMENT
-;; Это встроенный пакет, отвечающий за комментарии
+;; Встроенный пакет, отвечающий за комментарии
 (require 'newcomment)
 (global-set-key (kbd "M-'") 'comment-or-uncomment-region) ;; Закомментировать/раскомментировать область
 
 
 ;; -> NXML-MODE
-;; Встроенный пакет
-;; Почти как xml-mode, только лучше и новее
+;; Встроенный пакет, почти как `xml-mode', только лучше и новее
 (require 'nxml-mode)
 (setq
   nxml-attribute-indent 4                   ;; Выравнивание атрибутов
@@ -997,16 +1006,7 @@
   :pin "melpa-stable"
   :custom
   (py-electric-comment-p t "TODO")
-	(py-pylint-command-args "--max-line-length 120" "TODO"))
-
-
-;; -> PYVENV
-;; https://github.com/jorgenschaefer/pyvenv
-;; Позволяет активировать виртуальные окружения из Emacs
-(use-package pyvenv
-  :pin "melpa-stable"
-  :after (python-mode)
-  :hook python-mode)
+  (py-pylint-command-args "--max-line-length 120" "TODO"))
 
 
 ;; -> RAINBOW-DELIMITERS-MODE
@@ -1016,29 +1016,30 @@
   :pin "nongnu"
   :hook
   ((
-     adoc-mode
-     apt-sources-list-mode
-     conf-mode
-     css-mode
-     emacs-lisp-mode
-     go-mode
-     js2-mode
-     json-mode
-     makefile-mode
-     makefile-gmake-mode
-     markdown-mode
-     nxml-mode
-     org-mode
-     php-mode
-     protobuf-mode
-     python-mode
-     rst-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode
-     ) . rainbow-delimiters-mode))
+    adoc-mode
+    apt-sources-list-mode
+    conf-mode
+    css-mode
+    emacs-lisp-mode
+    go-mode
+    js2-mode
+    json-mode
+    lisp-data-mode
+    makefile-mode
+    makefile-gmake-mode
+    markdown-mode
+    nxml-mode
+    org-mode
+    php-mode
+    protobuf-mode
+    python-mode
+    rst-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode
+    ) . rainbow-delimiters-mode))
 
 
 ;; => RAINBOW-MODE
@@ -1279,7 +1280,6 @@
   :pin "nongnu"
   :custom
   (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
-  (web-mode-css-indent-offset 2 "При редактировании CSS отступ будет 2 пробела")
   (web-mode-enable-block-face t "Отображение")
   (web-mode-enable-css-colorization t "Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета")
   (web-mode-enable-current-element-highlight t "Подсветка активного элемента разметки")
@@ -1309,38 +1309,39 @@
 (use-package whitespace
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
-    '(
-       (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
-       (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
-       (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
-       (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
-       ))
+   '(
+     (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
+     (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
+     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
+     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
+     ))
   (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
   :hook
   ((
-     adoc-mode
-     apt-sources-list-mode
-     conf-mode
-     css-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     go-mode
-     js2-mode
-     json-mode
-     makefile-mode
-     makefile-gmake-mode
-     markdown-mode
-     nxml-mode
-     php-mode
-     protobuf-mode
-     python-mode
-     rst-mode
-     ruby-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode) . whitespace-mode))
+    adoc-mode
+    apt-sources-list-mode
+    conf-mode
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    go-mode
+    js2-mode
+    json-mode
+		lisp-data-mode
+    makefile-mode
+    makefile-gmake-mode
+    markdown-mode
+    nxml-mode
+    php-mode
+    protobuf-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode) . whitespace-mode))
 
 
 ;; -> WINDMOVE
@@ -1432,6 +1433,7 @@
 ;; -> YASNIPPET-SNIPPETS
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
 (use-package yasnippet-snippets)
+
 
 
 (put 'downcase-region 'disabled nil)

@@ -218,10 +218,6 @@ company
 
     Работа с REST API путем отправки HTTP-запросов к нужным эндпоинтам. Конфигурация пишется в org-файлах. Возможно, лучше использовать специализированное решение типа [Insomnia](https://insomnia.rest).
 
-* [vertico](https://github.com/minad/vertico)
-
-    Аналог `company-mode`. Пока не разобрался, действительно ли мне нужен этот пакет.
-
 * [web-mode](https://web-mode.org)
 
     Режим работы с Web-файлами: HTML, CSS.

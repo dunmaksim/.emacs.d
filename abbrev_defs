@@ -1,6 +1,6 @@
 ;;-*-coding: utf-8;-*-
 (define-abbrev-table 'global-abbrev-table
   '(
-    (" --- " " — " nil :count 0)
+    ("tf" "Terraform" nil :count 14)
    ))
 

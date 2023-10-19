@@ -116,18 +116,17 @@
 (use-package abbrev
   :ensure nil
   :defer t
-  :custom
-  (abbrev-mode t "Включить поддержку аббревиатур глобально"))
+  :custom (abbrev-mode t "Включить поддержку аббревиатур глобально"))
 
 
 ;; -> ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами по Alt+O
+;; От этого пакета зависит `treemacs'.
 (use-package ace-window
   :pin "GNU"
   :ensure t
-  :bind
-  ("M-o" . ace-window))
+  :bind ("M-o" . ace-window))
 
 
 ;; -> ADOC-MODE
@@ -181,7 +180,7 @@
 
 
 ;; -> BIND-KEY
-;;
+;; https://github.com/jwiegley/use-package
 ;; Позволяет настраивать привязки клавиш более простым и наглядным способом чем
 ;; тот, что предоставляет Emacs
 (use-package bind-key
@@ -346,11 +345,15 @@
   :hook
   ((
     adoc-mode
+    emacs-lisp-mode
+    lisp-data-mode
     makefile-mode
     markdown-mode
     rst-mode
     shell-script-mode
+    terraform-mode
     web-mode
+    yaml-mode
     ) . display-line-numbers-mode))
 
 
@@ -402,7 +405,7 @@
   :pin "MELPA-STABLE"
   :ensure t
   :config
-  (load-theme 'doom-monokai-classic t))
+  (load-theme 'doom-acario-dark t))
 
 
 ;; -> EDIT-INDIRECT
@@ -539,41 +542,41 @@
   (window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон")
 
   :config
+  (column-number-mode 1) ;; Показывать номер колонки в статусной строке
   (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
+  (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
+  (global-visual-line-mode 1) ;; Подсвечивать текущую строку
+  (indent-tabs-mode nil) ;; Отключить вставку табуляции при нажатии на [TAB].
+  (line-number-mode t) ;; Показывать номер строки в статусной строке
   (menu-bar-mode 0) ;; Отключить показ меню
+  (overwrite-mode 0) ;; Отключить режим перезаписи
   (prefer-coding-system 'utf-8)        ;; При попытке определить кодировку файла начинать перебор с UTF-8)
   (save-place-mode 1) ;; Помнить позицию курсора в открытых файлах
   (savehist-mode t) ;; Запоминать историю введенных в минибуфере команд
+  (scroll-bar-mode 0) ;; Не показывать полосы прокрутки
   (set-default-coding-systems 'utf-8)  ;; Кодировка по умолчанию
   (set-keyboard-coding-system 'utf-8)  ;; Кодировка символов при вводе текста в терминале
   (set-language-environment 'utf-8)    ;; Кодировка языка по умолчанию
   (set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
   (set-terminal-coding-system 'utf-8) ;; Кодировка символов для вывода команд, запущенных в терминале
   (show-paren-mode 1) ;; Подсвечивать парные сбоки
-  (scroll-bar-mode 0) ;; Не показывать полосы прокрутки
-  (window-divider-mode t) ;; Отображать разделитель между окнами
-  (column-number-mode 1) ;; Показывать номер колонки в статусной строке
-  (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
-  (global-visual-line-mode 1) ;; Подсвечивать текущую строку
-  (indent-tabs-mode nil) ;; Отключить вставку табуляции при нажатии на [TAB].
-  (line-number-mode t) ;; Показывать номер строки в статусной строке
-  (overwrite-mode 0) ;; Отключить режим перезаписи
   (size-indication-mode 1) ;; Отображать размер буфера в строке статуса
   (tool-bar-mode 0) ;; Отключить отображение панели инструментов
   (tooltip-mode -1) ;; Отключить показ подсказок с помощью GUI
+  (window-divider-mode t) ;; Отображать разделитель между окнами
 
   :bind
-  (:map global-map
-				("<escape>" . keyboard-quit) ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-				("C-v" . yank)            ;; Вставить текст из временного буфера
-				("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
-				("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
-				("C-z" . undo)               ;; Отмена
-				("M-'" . comment-or-uncomment-region) ;; Закомментировать/раскомментировать область)
-				("S-<SPC>" . just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
-				([f3] . replace-string) ;; Замена строки
-				([f9] . sort-lines))) ;; Отсортировать выделенные строки
-
+  (:map
+   global-map
+   ("<escape>" . keyboard-quit) ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+   ("C-v" . yank)            ;; Вставить текст из временного буфера
+   ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
+   ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
+   ("C-z" . undo)               ;; Отмена
+   ("M-'" . comment-or-uncomment-region) ;; Закомментировать/раскомментировать область)
+   ("S-<SPC>" . just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+   ([f3] . replace-string) ;; Замена строки
+   ([f9] . sort-lines))) ;; Отсортировать выделенные строки
 
 
 ;; -> FACE-REMAP
@@ -609,34 +612,36 @@
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
   (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-locate-config-file-functions '(
-                                            flycheck-locate-config-file-by-path
-                                            flycheck-locate-config-file-ancestor-directories
-                                            flycheck-locate-config-file-home))
+                                           flycheck-locate-config-file-by-path
+                                           flycheck-locate-config-file-ancestor-directories
+                                           flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
-  (flycheck-textlint-config "\\.textlintrc.yaml\\'" "Файл настроек Textlint")
+  (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
+  :config
+  (add-to-list 'flycheck-disabled-checkers '("textlint"))
   :hook
   ((
-     adoc-mode
-     conf-mode
-     css-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     js2-mode
-     json-mode
-     lisp-data-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode
-     php-mode
-     protobuf-mode
-     python-mode
-     rst-mode
-     ruby-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode) . flycheck-mode))
+    adoc-mode
+    conf-mode
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    js2-mode
+    json-mode
+    lisp-data-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    php-mode
+    protobuf-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode) . flycheck-mode))
 
 
 ;; -> FLYCHECK-COLOR-MODE-LINE
@@ -849,7 +854,7 @@
   :ensure t
   :when (or
          (> emacs-major-version 26)
-         (or
+         (and
           (= emacs-major-version 26)
           (>= emacs-minor-version 1)))
   :defer t
@@ -864,12 +869,30 @@
     ) . lsp))
 
 
+;; -> LSP-PYRIGHT
+;; https://github.com/emacs-lsp/lsp-pyright
+;; Поддержка LSP PyRight от Microsoft
+(use-package lsp-pyright
+  :pin "MELPA-STABLE"
+  :ensure t
+  :when (or
+         (> emacs-major-version 26)
+         (and
+          (= emacs-major-version 26)
+          (>= emacs-minor-version 1)))
+  :defer t
+  :requires lsp-mode
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))
+
+
 (use-package lsp-ui
   :pin "MELPA-STABLE"
   :ensure t
   :when (or
          (> emacs-major-version 26)
-         (or
+         (and
           (= emacs-major-version 26)
           (>= emacs-minor-version 1)))
   :defer t
@@ -888,7 +911,7 @@
   :ensure t
   :when (or
           (> emacs-major-version 26)
-          (or
+          (and
             (= emacs-major-version 26)
             (>= emacs-minor-version 1)))
   :defer t
@@ -926,7 +949,7 @@
   :defer t
   :when (or ;; Emacs version ≥ 27.1
           (> emacs-major-version 27)
-          (or
+          (and
             (= emacs-major-version 27)
             (>= emacs-minor-version 1)))
   :custom
@@ -1049,18 +1072,31 @@
   :ensure t
   :defer t
   :bind (
-          :map projectile-mode-map
-          ("M-p" . projectile-command-map))
-  :config (projectile-mode 1))
+         :map projectile-mode-map
+         ("M-p" . projectile-command-map))
+  :config
+  (projectile-mode 1)
+  (projectile-register-project-type 'sphinx '("Makefile" "source" "source/conf.py")
+                                    :project-file "Makefile"
+                                    :install "pip3 install -r requirements.txt -U"
+                                    :compile "make dirhtml"
+                                    :src-dir "source/"
+                                    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080")
+  )
 
 
+
+;; -> PULSAR
+;; Вспыхивание строки, к которой переместился курсор
+;; https://git.sr.ht/~protesilaos/pulsar
 (use-package pulsar
   :pin "GNU"
   :ensure t
   :when (or ;; Emacs version ≥ 27.1
-          (> emacs-major-version 27)
-          (and (= emacs-major-version 27)
-            (>= emacs-minor-version 1)))
+         (> emacs-major-version 27)
+         (and
+          (= emacs-major-version 27)
+          (>= emacs-minor-version 1)))
   :custom (pulsar-pulse t)
   :hook (next-error . pulsar-pulse-line)
   :config (pulsar-global-mode 1))

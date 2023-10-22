@@ -350,6 +350,8 @@
     makefile-mode
     markdown-mode
     rst-mode
+    ruby-mode
+    sh-mode
     shell-script-mode
     terraform-mode
     web-mode

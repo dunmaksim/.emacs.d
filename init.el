@@ -21,7 +21,7 @@
     (make-directory emacs-directory)
     (message (format "Создана директория %s" emacs-directory))))
 
-(defconst emacs-default-font-height 15 "Размер шрифта по умолчанию.")
+(defconst emacs-default-font-height 12 "Размер шрифта по умолчанию.")
 
 ;; Если используется старая версия EMACS, нужно указать параметры протокола TLS.
 ;; В противном случае будут проблемы при загрузке архива пакетов.
@@ -88,10 +88,10 @@
 
     ;; Перебор шрифтов
     (cond
-      ((member "Fira Code" availiable-fonts) (setq default-font-family "Fira Code"))
-      ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font-family "DejaVu Sans Mono"))
-      ((member "Source Code Pro" availiable-fonts) (setq default-font-family "Source Code Pro"))
-      ((member "Consolas" availiable-fonts) (setq default-font-family "Consolas")))
+     ((member "Fira Code" availiable-fonts) (setq default-font-family "Fira Code"))
+     ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font-family "DejaVu Sans Mono"))
+     ((member "Source Code Pro" availiable-fonts) (setq default-font-family "Source Code Pro"))
+     ((member "Consolas" availiable-fonts) (setq default-font-family "Consolas")))
 
     (when default-font-family
       ;; Это формат  X Logical Font Description Conventions, XLFD

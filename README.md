@@ -4,9 +4,13 @@
 
 В этой конфигурации используются (в алфавитном порядке):
 
-* [airline-themes](https://github.com/AnthonyDiGirolamo/airline-themes)
+* `abbrev-mode`
 
-    Темы для строки статуса.
+    Встроенный пакет для использования аббревиатур — последовательностей, автоматически заменяемых на более длинные слова и предложения.
+
+* [ace-window](https://github.com/abo-abo/ace-window)
+
+    Пакет для управления окнами Emacs.
 
 * [adoc-mode](https://github.com/bbatsov/adoc-mode)
 
@@ -14,69 +18,53 @@
 
     Предоставляет поддержку [AsciiDoc](https://docs.asciidoctor.org/asciidoc/).
 
-* [all-the-icons](https://github.com/domtronn/all-the-icons.el)
+* [aggressive-indent](https://github.com/Malabarba/aggressive-indent-mode)
 
-    Отображает иконки, где это возможно.
-
-* [all-the-icons-dired](https://github.com/wyuenho/all-the-icons-dired)
-
-    Показывает иконки при использовании `dired-mode`.
-
-* [all-the-icons-ibuffer](https://github.com/seagle0128/all-the-icons-ibuffer)
-
-    Показывает иконки в `ibuffer`. Для управления большим количеством буферов удобно использовать встроенный пакет.
-
-* [anaconda-mode](https://github.com/proofit404/anaconda-mode)
-
-Python IDE.
+    Принудительное выравнивание кода. Особенно полезен этот пакет для работы с `init.el`.
 
 * [ansible](https://github.com/k1LoW/emacs-ansible)
 
     Поддержка синтаксиса для конфигураций Ansible. Дополнительный режим, расширяющий возможности `yaml-mode`.
 
-apache-mode
+* [bind-key](https://github.com/jwiegley/use-package)
 
-Режим для редактирования конфигурационных файлов Apache.
+    Обёртки над функциями Emacs, используемыми для привязки клавиш.
 
-* [apt-sources-list](https://git.korewanetadesu.com/apt-sources-list.git)
+* `checkdoc`
 
-    Режим для редактирования конфигурационных файлов менеджера пакетов `apt`.
+    Встроенный пакет, используемый для проверки документации пакетов Emacs Lisp.
 
-* [centaur-tabs](https://github.com/ema2159/centaur-tabs)
+* [company](https://company-mode.github.io/)
 
-    Красивые вкладки. Выглядят лучше, чем встроенный режим `tab-bar-mode`.
+    Автодополнение. Используется в основном при работе с текстами программ.
 
-company
+* `conf-mode`
 
-Автодополнение. Используется в основном при работе с текстами программ.
+    Встроенный пакет для работы с конфигурационными файлами формата INI.
 
-* [company-anaconda](https://github.com/proofit404/anaconda-mode)
+* `css-mode`
 
-    Автодополнение для `anaconda-mode`.
-
-* [company-box](https://github.com/sebastiencs/company-box)
-
-    Отображает иконки в списке автодополнения `company-mode`.
-
-* [company-terraform](https://github.com/rafalcieslak/emacs-company-terraform)
-
-    Автодополнение при работе с конфигурационными файлами Terraform.
-
-* [company-web](https://github.com/osv/company-web)
-
-    Автодополнение для `web-mode`.
-
-* [csharp-mode](https://github.com/emacs-csharp/csharp-mode)
-
-    Поддержка языка программирования C#.
+    Встроенный пакет для работы с файлами CSS.
 
 * [dashboard](https://github.com/emacs-dashboard/emacs-dashboard)
 
     "Рабочий стол" со списком закладок, последних и закрепленных файлов и проектов.
 
+* `desktop`
+
+    Сохранение состояния Emacs между сессиями.
+
 * [diff-hl](https://github.com/dgutov/diff-hl)
 
     Подсветка незафиксированных изменений.
+
+* `dired`
+
+    Встроенный пакет для управления файлами.
+
+* `display-line-numbers`
+
+    Встроенный пакет для отображения номеров строк.
 
 * [dockerfile-mode](https://github.com/spotify/dockerfile-mode)
 
@@ -90,14 +78,6 @@ company
 
     Темы из проекта [DooM EMACS](https://github.com/doomemacs/doomemacs). Мне больше всего нравится `monokai-pro`.
 
-* [easy-hugo](https://github.com/masasam/emacs-easy-hugo)
-
-    Поддержка команд генератора статических сайтов [Hugo](https://gohugo.io/).
-
-* [easy-kill](https://github.com/leoliu/easy-kill)
-
-    Расширяет поведение `kill-ring` (аналог буфера обмена в EMACS).
-
 * [edit-indirect](https://github.com/Fanael/edit-indirect)
 
     Позволяет открыть буфер с фрагментом кода и нужным основным режимом во время работы с другим буфером. Например, код на Python, вставленный в Markdown-файл, откроется с основным режимом `anaconda-mode` и всеми его преимуществами: автодополнение, подсветка синтаксиса и т. д. Чтобы открыть фрагмент кода в другом буфере, нужно нажать **[C-c ']**, чтобы сохранить изменения — **[C-c C-c]**, закрыть буфер без сохранения изменений — **[C-c C-k]**.
@@ -105,6 +85,10 @@ company
 * [editorconfig](https://github.com/editorconfig/editorconfig-emacs#readme)
 
     Поддержка [EditoConfig](https://editorconfig.org). Использование этой штуки задаёт правила форматирования текста на уровне проекта: TAB vs SPACES, типы концов строк и т. д.
+
+* `elec-pair`
+
+    Автоматическая вставка парной скобки.
 
 * [flycheck](https://www.flycheck.org)
 

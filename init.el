@@ -21,7 +21,7 @@
     (make-directory emacs-directory)
     (message (format "Создана директория %s" emacs-directory))))
 
-(defconst emacs-default-font-height 12 "Размер шрифта по умолчанию.")
+(defconst emacs-default-font-height 14 "Размер шрифта по умолчанию.")
 
 ;; Если используется старая версия EMACS, нужно указать параметры протокола TLS.
 ;; В противном случае будут проблемы при загрузке архива пакетов.
@@ -150,16 +150,17 @@
   :defer t
   :hook
   ((
-     emacs-lisp-mode
-     js2-mode
-     json-mode
-     lisp-data-mode
-     nxml-mode
-     php-mode
-     protobuf-mode
-     sh-mode
-     sql-mode
-     ) . aggressive-indent-mode))
+    emacs-lisp-mode
+    js2-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    nxml-mode
+    php-mode
+    protobuf-mode
+    sh-mode
+    sql-mode
+    ) . aggressive-indent-mode))
 
 
 ;; -> ANSIBLE
@@ -168,15 +169,6 @@
 (use-package ansible
   :ensure t
   :defer t)
-
-
-;; -> AVY
-;; https://github.com/abo-abo/avy
-;; Перемещение по буферу путем ввода символов
-;; Зависимость одного из пакетов
-(use-package avy
-  :ensure t
-  :pin "GNU")
 
 
 ;; -> BIND-KEY
@@ -213,8 +205,10 @@
      dockerfile-mode
      emacs-lisp-mode
      js2-mode
+     latex-mode
      lisp-data-mode
      nxml-mode
+     org-mode
      php-mode
      rst-mode
      ruby-mode
@@ -223,7 +217,7 @@
   ([tab] . company-indent-or-complete-common))
 
 
-;; -> CONF MODE
+;; -> CONF-MODE
 ;; Встроенный пакет. Основной режим для редактирования конфигурационных файлов INI/CONF
 (use-package conf-mode
   :ensure nil
@@ -234,15 +228,6 @@
           "\\.flake8\\'"
           "\\.ini\\'"
           "\\.pylintrc\\'"))
-
-
-;; -> COUNSEL
-;; https://github.com/emacsmirror/ivy
-;; Немного расширенные команды Emacs
-(use-package counsel
-  :pin "GNU"
-  :ensure t
-  :bind ("M-x" . counsel-M-x))
 
 
 ;; -> CSS-MODE
@@ -263,18 +248,10 @@
   :ensure nil
   :custom
   (custom-file
-    (expand-file-name
-      "custom.el"
-      init-emacs-config-dir)
-    "Файл для сохранения пользовательских настроек, сделанных в customize"))
-
-
-;; -> CUSTOM
-;; Встроенный пакет для управления настройками через customize
-(use-package custom
-  :ensure nil
-  :custom
-  (custom-safe-themes t "Считать все темы безопасными"))
+   (expand-file-name
+    "custom.el"
+    init-emacs-config-dir)
+   "Файл для сохранения пользовательских настроек, сделанных в customize"))
 
 
 ;; -> DASHBOARD
@@ -286,25 +263,18 @@
   :custom
   (dashboard-display-icons-p t "Включить отображение иконок")
   (dashboard-icon-type 'nerd-icons "Использовать иконки из пакета `nerd-icons'")
-  (dashboard-items              ;; Элементы дашборда
-    '(
-       (recents . 15)            ;; Последние открытые файлы
-       (bookmarks . 10)           ;; Последние закладки
-       (projects . 10)            ;; Последние проекты
-       (agenda . 0)              ;; Агенда
-       (registers . 0)))           ;; Регистры
+  (dashboard-items             ;; Элементы дашборда
+   '(
+     (recents . 15)            ;; Последние открытые файлы
+     (bookmarks . 10)          ;; Последние закладки
+     (projects . 10)           ;; Последние проекты
+     (agenda . 10)             ;; Агенда
+     (registers . 10)))        ;; Регистры
   (dashboard-set-footer nil "Скрыть \"весёлые\" надписи в нижней части дашборда")
   (dashboard-set-file-icons t "Показывать иконки рядом с элементами списков")
   :config
-  (dashboard-setup-startup-hook))
-
-
-;; -> DELSEL
-;; Встроенный пакет
-;; Пусть при вставке нового текста выделенный фрагмент очищается.
-(use-package delsel
-  :ensure nil
-  :config (delete-selection-mode t))
+  (dashboard-setup-startup-hook)
+  (setq initial-buffer-choice (lambda ()(get-buffer "*dashboard*")))) ;; Теперь Dashboard будет буфером по умолчанию после запуска
 
 
 ;; -> DESKTOP-SAVE-MODE
@@ -345,10 +315,15 @@
   :hook
   ((
     adoc-mode
+    conf-mode
+    dockerfile-mode
     emacs-lisp-mode
+    latex-mode
     lisp-data-mode
     makefile-mode
     markdown-mode
+    nxml-mode
+    python-mode
     rst-mode
     ruby-mode
     sh-mode
@@ -510,6 +485,7 @@
   (calendar-week-start-day 1 "Начнём неделю с понедельника")
   (create-lockfiles nil "Не надо создавать lock-файлы")
   (cursor-type 'bar "Курсор в виде вертикальной черты")
+  (custom-safe-themes t "Считать все темы безопасными")
   (delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
   (gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
   (indent-tabs-mode nil "Выключить выравнивание с помощью [TAB]")
@@ -545,6 +521,7 @@
 
   :config
   (column-number-mode 1) ;; Показывать номер колонки в статусной строке
+  (delete-selection-mode t) ;; Удалять выделенный фрагмент при вводе текста
   (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
   (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
   (global-visual-line-mode 1) ;; Подсвечивать текущую строку
@@ -569,16 +546,16 @@
 
   :bind
   (:map
-   global-map
-   ("<escape>" . keyboard-quit) ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-   ("C-v" . yank)            ;; Вставить текст из временного буфера
-   ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
-   ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
-   ("C-z" . undo)               ;; Отмена
-   ("M-'" . comment-or-uncomment-region) ;; Закомментировать/раскомментировать область)
-   ("S-<SPC>" . just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
-   ([f3] . replace-string) ;; Замена строки
-   ([f9] . sort-lines))) ;; Отсортировать выделенные строки
+    global-map
+    ("<escape>" . keyboard-quit) ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+    ("C-v" . yank)            ;; Вставить текст из временного буфера
+    ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
+    ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
+    ("C-z" . undo)               ;; Отмена
+    ("M-'" . comment-or-uncomment-region) ;; Закомментировать/раскомментировать область)
+    ("S-<SPC>" . just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+    ([f3] . replace-string) ;; Замена строки
+    ([f9] . sort-lines))) ;; Отсортировать выделенные строки
 
 
 ;; -> FACE-REMAP
@@ -598,7 +575,7 @@
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
-  (require-final-newline t "Пусть в конце всех файлов будет пустая строка")
+  ;; (require-final-newline t "Пусть в конце всех файлов будет пустая строка")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
 
 
@@ -614,36 +591,37 @@
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
   (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-locate-config-file-functions '(
-                                           flycheck-locate-config-file-by-path
-                                           flycheck-locate-config-file-ancestor-directories
-                                           flycheck-locate-config-file-home))
+                                            flycheck-locate-config-file-by-path
+                                            flycheck-locate-config-file-ancestor-directories
+                                            flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :config
   (add-to-list 'flycheck-disabled-checkers '("textlint"))
   :hook
   ((
-    adoc-mode
-    conf-mode
-    css-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    js2-mode
-    json-mode
-    lisp-data-mode
-    makefile-mode
-    markdown-mode
-    nxml-mode
-    php-mode
-    protobuf-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    sh-mode
-    sql-mode
-    terraform-mode
-    web-mode
-    yaml-mode) . flycheck-mode))
+     adoc-mode
+     conf-mode
+     css-mode
+     dockerfile-mode
+     emacs-lisp-mode
+     js2-mode
+     json-mode
+     latex-mode
+     lisp-data-mode
+     makefile-mode
+     markdown-mode
+     nxml-mode
+     php-mode
+     protobuf-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     sh-mode
+     sql-mode
+     terraform-mode
+     web-mode
+     yaml-mode) . flycheck-mode))
 
 
 ;; -> FLYCHECK-COLOR-MODE-LINE
@@ -1074,16 +1052,16 @@
   :ensure t
   :defer t
   :bind (
-         :map projectile-mode-map
-         ("M-p" . projectile-command-map))
+          :map projectile-mode-map
+          ("M-p" . projectile-command-map))
   :config
   (projectile-mode 1)
   (projectile-register-project-type 'sphinx '("Makefile" "source" "source/conf.py")
-                                    :project-file "Makefile"
-                                    :install "pip3 install -r requirements.txt -U"
-                                    :compile "make dirhtml"
-                                    :src-dir "source/"
-                                    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080")
+    :project-file "Makefile"
+    :install "pip3 install -r requirements.txt -U"
+    :compile "make dirhtml"
+    :src-dir "source/"
+    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080")
   )
 
 
@@ -1132,30 +1110,29 @@
   :ensure t
   :hook
   ((
-     adoc-mode
-     apt-sources-list-mode
-     conf-mode
-     css-mode
-     emacs-lisp-mode
-     go-mode
-     js2-mode
-     json-mode
-     lisp-data-mode
-     makefile-gmake-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode
-     org-mode
-     php-mode
-     protobuf-mode
-     python-mode
-     rst-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode
-     ) . rainbow-delimiters-mode))
+    adoc-mode
+    conf-mode
+    css-mode
+    emacs-lisp-mode
+    go-mode
+    js2-mode
+    json-mode
+    lisp-data-mode
+    makefile-gmake-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    org-mode
+    php-mode
+    protobuf-mode
+    python-mode
+    rst-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode
+    ) . rainbow-delimiters-mode))
 
 
 ;; => RAINBOW-MODE
@@ -1240,16 +1217,13 @@
   ("\\.sh\\'" . shell-script-mode))
 
 
-;; -> SWIPER MODE
-;; https://github.com/abo-abo/swiper
-;; Пакет для быстрого поиска.
-;; По кажатию C-7 можно выполнить быстрое редактирование найденных фрагментов, но чтобы
-;; оно сработало правильно, нужно добавить команду swiper-mc в список mc/cmds-to-run-once.
-(use-package swiper
-  :pin "GNU"
+;; -> SMEX
+;; https://github.com/nonsequitur/smex/
+;; Расширенные возможности автодополнения, например, сортировка команд по частоте использования
+(use-package smex
+  :pin "MELPA-STABLE"
   :ensure t
-  :defer t
-  :bind ("C-s" . swiper-isearch)) ;; Заменить стандартный isearch на swiper
+  :defer t)
 
 
 ;; -> TERRAFORM-MODE
@@ -1359,40 +1333,40 @@
 (use-package whitespace
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
-    '(
-       (space-mark  ?\    [?\xB7]     [?.])      ;; Пробел
-       (space-mark  ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
-       (newline-mark ?\n  [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
-       (tab-mark    ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
-       ))
+   '(
+     (space-mark  ?\    [?\xB7]     [?.])      ;; Пробел
+     (space-mark  ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
+     (newline-mark ?\n  [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
+     (tab-mark    ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
+     ))
   (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
   :hook
   ((
-     adoc-mode
-     apt-sources-list-mode
-     conf-mode
-     css-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     go-mode
-     js2-mode
-     json-mode
-     lisp-data-mode
-     makefile-mode
-     makefile-gmake-mode
-     markdown-mode
-     nxml-mode
-     org-mode
-     php-mode
-     protobuf-mode
-     python-mode
-     rst-mode
-     ruby-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode) . whitespace-mode))
+    adoc-mode
+    conf-mode
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    go-mode
+    js2-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    makefile-mode
+    makefile-gmake-mode
+    markdown-mode
+    nxml-mode
+    org-mode
+    php-mode
+    protobuf-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode) . whitespace-mode))
 
 
 ;; -> WINDMOVE
@@ -1401,9 +1375,7 @@
   :bind
   (:map global-map
     ("C-x <up>" . windmove-up)
-    ("C-x <down>" . windmove-down)
-    ("C-x <right>" . windmove-right)
-    ("C-x <left>" . windmove-left)))
+    ("C-x <down>" . windmove-down)))
 
 
 ;; -> WINDOW
@@ -1422,11 +1394,13 @@
     ("S-C-<right>" . enlarge-window-horizontally) ;; Увеличить размер окна по ширине
     ("S-C-<down>" . enlarge-window)               ;; Увеличить размер окна по ширине
     ("S-C-<up>" . shrink-window)                  ;; Уменьшить размер окна по высоте
-    ([C-tab] . next-buffer)                     ;; Следующий буфер
-    ([C-S-iso-lefttab] . previous-buffer)))               ;; Предыдущий буфер)
+    ([C-tab] . next-buffer)                       ;; Следующий буфер
+    ([C-S-iso-lefttab] . previous-buffer)))       ;; Предыдущий буфер)
 
 
 ;; -> WS-BUTLER
+;; https://github.com/lewang/ws-butler
+;; Удаляет висячие пробелы только из изменённых строк.
 (use-package ws-butler
   :pin "NONGNU"
   :ensure t
@@ -1434,12 +1408,12 @@
   :hook
   ((
      adoc-mode
-     apt-sources-list-mode
      conf-mode
      dockerfile-mode
      emacs-lisp-mode
      go-mode
      js2-mode
+     latex-mode
      markdown-mode
      nxml-mode
      php-mode

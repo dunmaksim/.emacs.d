@@ -65,9 +65,9 @@
 ;; Настройки отладочного режима
 (when init-file-debug
   (setq use-package-verbose t
-    use-package-expand-minimally t
-    use-package-compute-statistics t
-    debug-on-error t))
+        use-package-compute-statistics t
+        use-package-expand-minimally t
+        debug-on-error t))
 
 ;; -> Сочетания клавиш
 
@@ -201,18 +201,18 @@
   (company-tooltip-limit 15 "Ограничение на число подсказок")
   :hook
   ((
-     css-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     js2-mode
-     latex-mode
-     lisp-data-mode
-     nxml-mode
-     org-mode
-     php-mode
-     rst-mode
-     ruby-mode
-     ) . company-mode)
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    js2-mode
+    latex-mode
+    lisp-data-mode
+    nxml-mode
+    org-mode
+    php-mode
+    rst-mode
+    ruby-mode
+    ) . company-mode)
   :bind
   ([tab] . company-indent-or-complete-common))
 
@@ -366,11 +366,10 @@
   (doom-modeline-lsp t "Показывать статус LSP.")
   (doom-modeline-major-mode-color-icon t "Иконка должна быть цветной.")
   (doom-modeline-major-mode-icon t "Показывать иконку основного режима.")
-  ;; (doom-modeline-minor-modes t "Отображать сведения о минорных режимах.")
   (doom-modeline-project-detection 'auto "Определение того, что идёт работа с проектом.")
+  (doom-modeline-vcs-max-length 24 "Ограничение на длину имени активной ветки VCS.")
   (doom-modeline-window-width-limit nil "Нет ограничений на ширину окна.")
   (doom-modeline-workspace-name t "Отображать имя рабочего пространства. TODO: а что такое workspace?")
-  (doom-modeline-vcs-max-length 24 "Ограничение на длину имени активной ветки VCS.")
   :config
   (doom-modeline-mode 1))
 
@@ -546,16 +545,16 @@
 
   :bind
   (:map
-    global-map
-    ("<escape>" . keyboard-quit) ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-    ("C-v" . yank)            ;; Вставить текст из временного буфера
-    ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
-    ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
-    ("C-z" . undo)               ;; Отмена
-    ("M-'" . comment-or-uncomment-region) ;; Закомментировать/раскомментировать область)
-    ("S-<SPC>" . just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
-    ([f3] . replace-string) ;; Замена строки
-    ([f9] . sort-lines))) ;; Отсортировать выделенные строки
+   global-map
+   ("<escape>" . keyboard-quit) ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+   ("C-v" . yank)            ;; Вставить текст из временного буфера
+   ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
+   ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
+   ("C-z" . undo)               ;; Отмена
+   ("M-'" . comment-or-uncomment-region) ;; Закомментировать/раскомментировать область)
+   ("S-<SPC>" . just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+   ([f3] . replace-string) ;; Замена строки
+   ([f9] . sort-lines))) ;; Отсортировать выделенные строки
 
 
 ;; -> FACE-REMAP
@@ -591,37 +590,38 @@
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
   (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-locate-config-file-functions '(
-                                            flycheck-locate-config-file-by-path
-                                            flycheck-locate-config-file-ancestor-directories
-                                            flycheck-locate-config-file-home))
+                                           flycheck-locate-config-file-by-path
+                                           flycheck-locate-config-file-ancestor-directories
+                                           flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :config
   (add-to-list 'flycheck-disabled-checkers '("textlint"))
   :hook
   ((
-     adoc-mode
-     conf-mode
-     css-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     js2-mode
-     json-mode
-     latex-mode
-     lisp-data-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode
-     php-mode
-     protobuf-mode
-     python-mode
-     rst-mode
-     ruby-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode) . flycheck-mode))
+    adoc-mode
+    conf-mode
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    js2-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    php-mode
+    protobuf-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode
+    ) . flycheck-mode))
 
 
 ;; -> FLYCHECK-COLOR-MODE-LINE
@@ -1010,8 +1010,8 @@
   (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
   :mode
   (
-    ("\\.pom\\'" . nxml-mode)
-    ("\\.xml\\'" . nxml-mode)))
+   ("\\.pom\\'" . nxml-mode)
+   ("\\.xml\\'" . nxml-mode)))
 
 
 ;; -> ORG-MODE
@@ -1182,15 +1182,15 @@
   :defer t
   :custom
   (rst-default-indent 3)
-  (rst-toc-indent 3)
-  (rst-indent-width 3)
+  (rst-indent-comment 3)
   (rst-indent-field 3)
   (rst-indent-literal-minimized 3)
-  (rst-indent-comment 3)
+  (rst-indent-width 3)
+  (rst-toc-indent 3)
   :mode
   (("\\.rest\\'" . rst-mode)
-    ("\\.rst\\'" . rst-mode)
-    ("\\.txt\\'" . rst-mode)))
+   ("\\.rst\\'" . rst-mode)
+   ("\\.txt\\'" . rst-mode)))
 
 
 ;; -> RUBY-MODE
@@ -1244,26 +1244,24 @@
   :ensure t
   :defer t
   :custom
+  (treemacs-eldoc-display 'simple)
+  (treemacs-follow-after-init t)
+  (treemacs-indentation 2)
+  (treemacs-position 'left)
   (treemacs-width 35 "Ширина окна Treemacs")
   :bind
   (:map global-map
-    ("M-0" . treemacs-select-window)
-    ("C-x t 1" . treemacs-delete-orher-windows)
-    ("C-x t t" . treemacs)
-    ("C-x t d" . treemacs-select-directory)
-    ("C-x t B" . treemacs-bookmark)
-    ("C-x t C-t" . treemacs-find-file)
-    ("C-x t M-t" . treemacs-find-tag))
+        ("M-0" . treemacs-select-window)
+        ("C-x t 1" . treemacs-delete-orher-windows)
+        ("C-x t t" . treemacs)
+        ("C-x t d" . treemacs-select-directory)
+        ("C-x t B" . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag))
   :config
   (progn
-    (setq
-      treemacs-indentation 2
-      treemacs-position 'left
-      treemacs-follow-after-init t
-      treemacs-widht 70
-      treemacs-eldoc-display 'simple)
-    (treemacs-follow-mode 1) ;; При смене буфера TreeMacs сменит позицию в дереве
-    (treemacs-git-mode 'simple) ;; Простой режим
+    (treemacs-follow-mode 1)     ;; При смене буфера TreeMacs сменит позицию в дереве
+    (treemacs-git-mode 'simple)  ;; Простой режим
     (treemacs-filewatch-mode 1)) ;; Отслеживание изменений в ФС на лету
   (define-key treemacs-mode-map (kbd "f") 'find-grep))
 
@@ -1352,8 +1350,8 @@
     json-mode
     latex-mode
     lisp-data-mode
-    makefile-mode
     makefile-gmake-mode
+    makefile-mode
     markdown-mode
     nxml-mode
     org-mode
@@ -1390,12 +1388,12 @@
 (use-package window
   :bind
   (:map global-map
-    ("S-C-<left>" . shrink-window-horizontally)   ;; Уменьшить размер окна по ширине
-    ("S-C-<right>" . enlarge-window-horizontally) ;; Увеличить размер окна по ширине
-    ("S-C-<down>" . enlarge-window)               ;; Увеличить размер окна по ширине
-    ("S-C-<up>" . shrink-window)                  ;; Уменьшить размер окна по высоте
-    ([C-tab] . next-buffer)                       ;; Следующий буфер
-    ([C-S-iso-lefttab] . previous-buffer)))       ;; Предыдущий буфер)
+				("S-C-<left>" . shrink-window-horizontally)   ;; [Ctrl+Shift+←]   Уменьшить размер окна по ширине
+				("S-C-<right>" . enlarge-window-horizontally) ;; [Ctrl+Shift+→]   Увеличить размер окна по ширине
+				("S-C-<down>" . enlarge-window)               ;; [Ctrl+Shift+↓]   Увеличить размер окна по ширине
+				("S-C-<up>" . shrink-window)                  ;; [Ctrl+Shift+↑]   Уменьшить размер окна по высоте
+				([C-tab] . next-buffer)                       ;; [Ctrl+Tab]       Следующий буфер
+				([C-S-iso-lefttab] . previous-buffer)))       ;; [Ctrl+Shift+Tab] Предыдущий буфер)
 
 
 ;; -> WS-BUTLER

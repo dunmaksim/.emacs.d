@@ -265,11 +265,11 @@
   (dashboard-icon-type 'nerd-icons "Использовать иконки из пакета `nerd-icons'")
   (dashboard-items             ;; Элементы дашборда
    '(
-     (recents . 15)            ;; Последние открытые файлы
-     (bookmarks . 10)          ;; Последние закладки
-     (projects . 10)           ;; Последние проекты
-     (agenda . 10)             ;; Агенда
-     (registers . 10)))        ;; Регистры
+     (recents . 15)           ;; Последние открытые файлы
+     (bookmarks . 10)         ;; Последние закладки
+     (projects . 10)          ;; Последние проекты
+     (agenda . 10)            ;; Агенда
+     (registers . 0)))        ;; Регистры
   (dashboard-set-footer nil "Скрыть \"весёлые\" надписи в нижней части дашборда")
   (dashboard-set-file-icons t "Показывать иконки рядом с элементами списков")
   :config
@@ -1217,15 +1217,6 @@
   ("\\.sh\\'" . shell-script-mode))
 
 
-;; -> SMEX
-;; https://github.com/nonsequitur/smex/
-;; Расширенные возможности автодополнения, например, сортировка команд по частоте использования
-(use-package smex
-  :pin "MELPA-STABLE"
-  :ensure t
-  :defer t)
-
-
 ;; -> TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
@@ -1388,12 +1379,12 @@
 (use-package window
   :bind
   (:map global-map
-				("S-C-<left>" . shrink-window-horizontally)   ;; [Ctrl+Shift+←]   Уменьшить размер окна по ширине
-				("S-C-<right>" . enlarge-window-horizontally) ;; [Ctrl+Shift+→]   Увеличить размер окна по ширине
-				("S-C-<down>" . enlarge-window)               ;; [Ctrl+Shift+↓]   Увеличить размер окна по ширине
-				("S-C-<up>" . shrink-window)                  ;; [Ctrl+Shift+↑]   Уменьшить размер окна по высоте
-				([C-tab] . next-buffer)                       ;; [Ctrl+Tab]       Следующий буфер
-				([C-S-iso-lefttab] . previous-buffer)))       ;; [Ctrl+Shift+Tab] Предыдущий буфер)
+        ("S-C-<left>" . shrink-window-horizontally)   ;; [Ctrl+Shift+←]   Уменьшить размер окна по ширине
+        ("S-C-<right>" . enlarge-window-horizontally) ;; [Ctrl+Shift+→]   Увеличить размер окна по ширине
+        ("S-C-<down>" . enlarge-window)               ;; [Ctrl+Shift+↓]   Увеличить размер окна по ширине
+        ("S-C-<up>" . shrink-window)                  ;; [Ctrl+Shift+↑]   Уменьшить размер окна по высоте
+        ([C-tab] . next-buffer)                       ;; [Ctrl+Tab]       Следующий буфер
+        ([C-S-iso-lefttab] . previous-buffer)))       ;; [Ctrl+Shift+Tab] Предыдущий буфер)
 
 
 ;; -> WS-BUTLER

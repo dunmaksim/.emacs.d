@@ -88,7 +88,9 @@
 
     ;; Перебор шрифтов
     (cond
+     ((member "Fire Code Nerd" availiable-fonts)(setq default-font-family "Fira Code Nerd"))
      ((member "Fira Code" availiable-fonts) (setq default-font-family "Fira Code"))
+     ((member "DejaVu Sans Mono Nerd" availiable-fonts) (setq default-font-family "DejaVu Sans Mono Nerd"))
      ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font-family "DejaVu Sans Mono"))
      ((member "Source Code Pro" availiable-fonts) (setq default-font-family "Source Code Pro"))
      ((member "Consolas" availiable-fonts) (setq default-font-family "Consolas")))
@@ -97,8 +99,7 @@
       ;; Это формат  X Logical Font Description Conventions, XLFD
       ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
       (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family emacs-default-font-height) nil t)
-      (set-face-attribute 'default nil :family default-font-family)
-      )
+      (set-face-attribute 'default nil :family default-font-family))
 
     (set-face-attribute 'default nil :height (* emacs-default-font-height 10))))
 
@@ -207,6 +208,7 @@
     js2-mode
     latex-mode
     lisp-data-mode
+    minibuffer-mode
     nxml-mode
     org-mode
     php-mode
@@ -223,11 +225,11 @@
   :ensure nil
   :defer t
   :mode (
-          "\\.editorconfig\\'"
-          "\\.env\\'"
-          "\\.flake8\\'"
-          "\\.ini\\'"
-          "\\.pylintrc\\'"))
+         "\\.editorconfig\\'"
+         "\\.env\\'"
+         "\\.flake8\\'"
+         "\\.ini\\'"
+         "\\.pylintrc\\'"))
 
 
 ;; -> CSS-MODE
@@ -679,93 +681,93 @@
 (use-package ibuffer
   :custom
   (ibuffer-formats ;; Форматирование вывода
-    '(
-       (;; Полный формат
-         mark      ;; Отметка
-         modified  ;; Буфер изменён?
-         read-only ;; Только чтение?
-         locked    ;; Заблокирован?
-         " "
-         (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
-         " "
-         (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
-         " "
-         filename-and-process)     ;; Имя файла и процесс
-       ( ;; Сокращённый формат
-         mark      ;; Отметка?
-         " "
-         (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
-         " "
-         filename)))  ;; Имя файла)
+   '(
+     (;; Полный формат
+      mark      ;; Отметка
+      modified  ;; Буфер изменён?
+      read-only ;; Только чтение?
+      locked    ;; Заблокирован?
+      " "
+      (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
+      " "
+      (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
+      " "
+      filename-and-process)     ;; Имя файла и процесс
+     ( ;; Сокращённый формат
+      mark      ;; Отметка?
+      " "
+      (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
+      " "
+      filename)))  ;; Имя файла)
   (ibuffer-expert 1 "Не запрашивать подтверждение для опасных операций")
   (ibuffer-hidden-filter-groups (list "*Internal*" ) "Не показывать эти буферы")
   (ibuffer-saved-filter-groups                    ;; Группы по умолчанию
-    '(
-       ("default"
-         ("Dired" (mode . dired-mode))
-         ("EMACS Lisp"
-           (or
-             (mode . emacs-lisp-mode)
-             (mode . lisp-data-mode)))
-         ("Org" (mode . org-mode))
-         ("Markdown" (mode . markdown-mode))
-         ("AsciiDoc" (mode . adoc-mode))
-         ("ReStructured Text" (mode . rst-mode))
-         ("CONF / INI"
-           (or
-             (mode . conf-mode)
-             (name . "\\.conf\\'")
-             (name . "\\.editorconfig\\'")
-             (name . "\\.ini\\'")))
-         ("XML"
-           (or
-             (mode . nxml-mode)
-             (mode . xml-mode)))
-         ("YAML" (mode . yaml-mode))
-         ("Makefile"
-           (or
-             (mode . makefile-mode)
-             (name  . "^Makefile$")))
-         ("Protobuf" (mode . protobuf-mode))
-         ("Golang" (mode . go-mode))
-         ("Python"
-           (or
-             (mode . anaconda-mode)
-             (mode . python-mode)))
-         ("SSH keys" (or (name . "^\\*.pub$")))
-         ("Shell-script"
-           (or
-             (mode . shell-script-mode)
-             (mode . sh-mode)))
-         ("Terraform"
-           (or
-             (mode . terraform-mode)
-             (name . "^\\*.tf$")))
-         ("SQL" (mode . sql-mode))
-         ("Web"
-           (or
-             (mode . javascript-mode)
-             (mode . js-mode)
-             (mode . js2-mode)
-             (mode . web-mode)))
-         ("Magit"
-           (or
-             (mode . magit-status-mode)
-             (mode . magit-log-mode)
-             (name . "^\\*magit")
-             (name . "git-monitor")))
-         ("Commands"
-           (or
-             (mode . compilation-mode)
-             (mode . eshell-mode)
-             (mode . shell-mode)
-             (mode . term-mode)))
-         ("Emacs"
-           (or
-             (name . "^\\*scratch\\*$")
-             (name . "^\\*Messages\\*$")
-             (name . "^\\*\\(Customize\\|Help\\)")
-             (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+   '(
+     ("default"
+      ("Dired" (mode . dired-mode))
+      ("EMACS Lisp"
+       (or
+        (mode . emacs-lisp-mode)
+        (mode . lisp-data-mode)))
+      ("Org" (mode . org-mode))
+      ("Markdown" (mode . markdown-mode))
+      ("AsciiDoc" (mode . adoc-mode))
+      ("ReStructured Text" (mode . rst-mode))
+      ("CONF / INI"
+       (or
+        (mode . conf-mode)
+        (name . "\\.conf\\'")
+        (name . "\\.editorconfig\\'")
+        (name . "\\.ini\\'")))
+      ("XML"
+       (or
+        (mode . nxml-mode)
+        (mode . xml-mode)))
+      ("YAML" (mode . yaml-mode))
+      ("Makefile"
+       (or
+        (mode . makefile-mode)
+        (name  . "^Makefile$")))
+      ("Protobuf" (mode . protobuf-mode))
+      ("Golang" (mode . go-mode))
+      ("Python"
+       (or
+        (mode . anaconda-mode)
+        (mode . python-mode)))
+      ("SSH keys" (or (name . "^\\*.pub$")))
+      ("Shell-script"
+       (or
+        (mode . shell-script-mode)
+        (mode . sh-mode)))
+      ("Terraform"
+       (or
+        (mode . terraform-mode)
+        (name . "^\\*.tf$")))
+      ("SQL" (mode . sql-mode))
+      ("Web"
+       (or
+        (mode . javascript-mode)
+        (mode . js-mode)
+        (mode . js2-mode)
+        (mode . web-mode)))
+      ("Magit"
+       (or
+        (mode . magit-status-mode)
+        (mode . magit-log-mode)
+        (name . "^\\*magit")
+        (name . "git-monitor")))
+      ("Commands"
+       (or
+        (mode . compilation-mode)
+        (mode . eshell-mode)
+        (mode . shell-mode)
+        (mode . term-mode)))
+      ("Emacs"
+       (or
+        (name . "^\\*scratch\\*$")
+        (name . "^\\*Messages\\*$")
+        (name . "^\\*\\(Customize\\|Help\\)")
+        (name . "\\*\\(Echo\\|Minibuf\\)"))))))
   (ibuffer-show-empty-filter-groups nil "Не показывать пустые группы")
   (ibuffer-sorting-mode 'filename/process "Сортировать файлы по имени / процессу")
   (ibuffer-truncate-lines nil "Не обкусывать длинные строки")
@@ -777,17 +779,6 @@
                                    (ibuffer-switch-to-saved-filter-groups "default")))
   :bind
   ([f2] . ibuffer))
-
-
-
-;; -> IVY
-;; https://github.com/emacsmirror/ivy
-;; Нативный автокомплит для Emacs.
-(use-package ivy
-  :pin "GNU"
-  :ensure t
-  :custom (ivy-use-virtual-buffers t "Какие-то виртуальные буферы")
-  :config (ivy-mode))
 
 
 ;; -> JS2-MODE

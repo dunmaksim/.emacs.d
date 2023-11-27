@@ -29,9 +29,6 @@
   (require 'gnutls)
   (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
-;; -> Стандартные режимы
-(global-font-lock-mode t)  ;; Отображать шрифты красиво, используя Font Face's
-
 ;; -> PACKAGE
 (require 'package)
 (add-to-list 'package-archives '("GNU" . "https://elpa.gnu.org/packages/") t)
@@ -83,6 +80,8 @@
 
   FRAME-NAME — имя фрейма, который настраивается."
   (when (display-graphic-p frame-name)
+    (global-font-lock-mode t)  ;; Отображать шрифты красиво, используя Font Face's
+
     (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
     (defvar default-font-family nil "Шрифт по умолчанию.")
 
@@ -190,33 +189,30 @@
 ;; -> COMPANY-MODE
 ;; https://company-mode.github.io/
 ;; Автодополнение
-(use-package company
-  :pin "GNU"
-  :ensure t
-  :defer t
-  :custom
-  (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
-  (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
-  (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
-  (company-tooltip-align-annotations t "TODO")
-  (company-tooltip-limit 15 "Ограничение на число подсказок")
-  :hook
-  ((
-    css-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    js2-mode
-    latex-mode
-    lisp-data-mode
-    minibuffer-mode
-    nxml-mode
-    org-mode
-    php-mode
-    rst-mode
-    ruby-mode
-    ) . company-mode)
-  :bind
-  ([tab] . company-indent-or-complete-common))
+;; (use-package company
+;;   :pin "GNU"
+;;   :ensure t
+;;   :defer t
+;;   :custom
+;;   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
+;;   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
+;;   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
+;;   (company-tooltip-align-annotations t "TODO")
+;;   (company-tooltip-limit 15 "Ограничение на число подсказок")
+;;   :hook
+;;   ((
+;;     css-mode
+;;     dockerfile-mode
+;;     emacs-lisp-mode
+;;     js2-mode
+;;     latex-mode
+;;     lisp-data-mode
+;;     nxml-mode
+;;     org-mode
+;;     php-mode
+;;     rst-mode
+;;     ruby-mode
+;;     ) . company-mode))
 
 
 ;; -> CONF-MODE
@@ -548,15 +544,15 @@
   :bind
   (:map
    global-map
-   ("<escape>" . keyboard-quit) ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-   ("C-v" . yank)            ;; Вставить текст из временного буфера
+   ("<escape>" . keyboard-quit)           ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+   ("C-v" . yank)                         ;; Вставить текст из временного буфера
    ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
    ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
-   ("C-z" . undo)               ;; Отмена
-   ("M-'" . comment-or-uncomment-region) ;; Закомментировать/раскомментировать область)
-   ("S-<SPC>" . just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
-   ([f3] . replace-string) ;; Замена строки
-   ([f9] . sort-lines))) ;; Отсортировать выделенные строки
+   ("C-z" . undo)                         ;; Отмена
+   ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
+   ("S-<SPC>" . just-one-space)           ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+   ([f3] . replace-string)                ;; Замена строки
+   ([f9] . sort-lines)))                  ;; Отсортировать выделенные строки
 
 
 ;; -> FACE-REMAP
@@ -595,10 +591,8 @@
                                            flycheck-locate-config-file-by-path
                                            flycheck-locate-config-file-ancestor-directories
                                            flycheck-locate-config-file-home))
-  (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc")
+  (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
-  :config
-  (add-to-list 'flycheck-disabled-checkers '("textlint"))
   :hook
   ((
     adoc-mode
@@ -816,6 +810,7 @@
 ;; MAKEFILE: sudo pip3 install cmake-language-server
 ;; MARKDOWN: npm install -g remark-language-server remark
 ;; NXML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
+;; PYTHON: pip3 install TODO
 ;; SQL: go install github.com/lighttiger2505/sqls@latest
 ;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
 ;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK

@@ -341,37 +341,6 @@
   :pin "NONGNU")
 
 
-;; -> DOOM-MODELINE
-;; https://github.com/seagle0128/doom-modeline
-;; Красивая и многофункциональная статусная панель. Для корректной работы требуется
-;; пакет `nerd-icons' и установленные шрифты.
-(use-package doom-modeline
-  :pin "MELPA-STABLE"
-  :ensure t
-  :custom
-  (doom-modeilne-modification-icon t "Показывать, что буфер изменен.")
-  (doom-modeline-buffer-encoding t "Показывать кодировку.")
-  (doom-modeline-buffer-modification-icon t "Показывать наличие изменений в буфере.")
-  (doom-modeline-buffer-name t "Показывать имя буфера.")
-  (doom-modeline-buffer-state-icon t "Показывать состояние буфера.")
-  (doom-modeline-env-enable-go t "Показывать версию Golang.")
-  (doom-modeline-env-enable-python t "Показывать версию Python.")
-  (doom-modeline-env-enable-ruby t "Показывать версию Ruby.")
-  (doom-modeline-hightlight-modified-buffer-name t "Подсвечивать имя буфера, если его содержимое изменено.")
-  (doom-modeline-hud nil "Использовать HUD. Лучше выключить, т. к. иначе строка отображается некорректно.")
-  (doom-modeline-icon t "Показывать иконки.")
-  (doom-modeline-indent-info t "Информация об отступах.")
-  (doom-modeline-lsp t "Показывать статус LSP.")
-  (doom-modeline-major-mode-color-icon t "Иконка должна быть цветной.")
-  (doom-modeline-major-mode-icon t "Показывать иконку основного режима.")
-  (doom-modeline-project-detection 'auto "Определение того, что идёт работа с проектом.")
-  (doom-modeline-vcs-max-length 24 "Ограничение на длину имени активной ветки VCS.")
-  (doom-modeline-window-width-limit nil "Нет ограничений на ширину окна.")
-  (doom-modeline-workspace-name t "Отображать имя рабочего пространства. TODO: а что такое workspace?")
-  :config
-  (doom-modeline-mode 1))
-
-
 ;; -> DOOM-THEMES
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
@@ -416,7 +385,7 @@
 
 ;; -> ELEC-PAIR MODE
 ;; Встроенный пакет.
-;; Автоматически вставляет при вводе одной скобки парную ей. Если
+;; Автоматически вставляет при вводе одной скобки или кавычки парную ей. Если
 ;; выделен регион, то в скобки обрамляется он.
 (use-package elec-pair
   :ensure nil
@@ -572,7 +541,6 @@
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
-  ;; (require-final-newline t "Пусть в конце всех файлов будет пустая строка")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
 
 
@@ -620,13 +588,19 @@
     ) . flycheck-mode))
 
 
-;; -> FLYCHECK-COLOR-MODE-LINE
-;; https://github.com/flycheck/flycheck-color-mode-line
-(use-package flycheck-color-mode-line
-  :pin "MELPA-STABLE"
+;; -> FLYMAKE
+;; Более свежая версия встроенного пакета из репозитория GNU
+;; Используется для проверки `init.el'.
+;; https://elpa.gnu.org/packages/flymake.html
+(use-package flymake
+  :pin "GNU"
   :ensure t
-  :defer t
-  :hook (flycheck-mode . flycheck-color-mode-line-mode))
+  :hook
+  ((
+    emacs-lisp-mode
+    lisp-data-mode
+    rst-mode
+    ) . flymake-mode))
 
 
 ;; -> FLYSPELL-MODE
@@ -636,16 +610,16 @@
 (use-package flyspell
   ;; :ensure nil
   :when (and
-          (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
-          (file-exists-p "/usr/bin/aspell"))    ;; Надо убедиться, что программа установлена в ОС
+         (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
+         (file-exists-p "/usr/bin/aspell"))    ;; Надо убедиться, что программа установлена в ОС
   :custom
   (ispell-program-name "/usr/bin/aspell")
   :hook
   ((
-     adoc-mode
-     markdown-mode
-     rst-mode
-     ) . flyspell-mode))
+    adoc-mode
+    markdown-mode
+    rst-mode
+    ) . flyspell-mode))
 
 
 ;; -> FORMAT-ALL
@@ -790,100 +764,6 @@
   :pin "MELPA-STABLE"
   :ensure t
   :defer t)
-
-
-;; -> LSP
-;; https://emacs-lsp.github.io/lsp-mode/
-;; Базовый пакет, необходимый для работы LSP
-;; Требуется EMACS версии 26.1 или новее.
-;;
-;; Полный список поддерживаемых языков и технологий:
-;; https://emacs-lsp.github.io/lsp-mode/page/lsp-dockerfile/
-;;
-;; Чтобы LSP "видел" директорию, её нужно добавить с помощью `lsp-workspace-folder-add'
-;;
-;; Для работы пакета нужны дополнительные средства:
-;;
-;; DOCKERFILE: npm install -g dockerfile-language-server-nodejs
-;; GOLANG: go install golang.org/x/tools/gopls@latest
-;; JSON: npm install -g vscode-json-languageserver
-;; MAKEFILE: sudo pip3 install cmake-language-server
-;; MARKDOWN: npm install -g remark-language-server remark
-;; NXML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
-;; PYTHON: pip3 install TODO
-;; SQL: go install github.com/lighttiger2505/sqls@latest
-;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
-;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
-;; YAML: npm install -g yaml-language-server
-(use-package lsp-mode
-  :pin "MELPA-STABLE"
-  :ensure t
-  :when (or
-         (> emacs-major-version 26)
-         (and
-          (= emacs-major-version 26)
-          (>= emacs-minor-version 1)))
-  :defer t
-  :custom
-  (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
-  (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
-  :hook
-  ((
-    ansible
-    go-mode
-    python-mode
-    ) . lsp))
-
-
-;; -> LSP-PYRIGHT
-;; https://github.com/emacs-lsp/lsp-pyright
-;; Поддержка LSP PyRight от Microsoft
-(use-package lsp-pyright
-  :pin "MELPA-STABLE"
-  :ensure t
-  :when (or
-         (> emacs-major-version 26)
-         (and
-          (= emacs-major-version 26)
-          (>= emacs-minor-version 1)))
-  :defer t
-  :requires lsp-mode
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp))))
-
-
-(use-package lsp-ui
-  :pin "MELPA-STABLE"
-  :ensure t
-  :when (or
-         (> emacs-major-version 26)
-         (and
-          (= emacs-major-version 26)
-          (>= emacs-minor-version 1)))
-  :defer t
-  :requires lsp-mode
-  :custom
-  (lsp-ui-doc-enable t "Показывать документацию в LSP-UI")
-  (lsp-ui-peek-always-show t "TODO")
-  (lsp-ui-peek-enable t "TODO")
-  (lsp-ui-sideline-enable t "TODO")
-  :after (lsp-mode)
-  :hook lsp-mode)
-
-
-(use-package lsp-treemacs
-  :pin "MELPA-STABLE"
-  :ensure t
-  :when (or
-          (> emacs-major-version 26)
-          (and
-            (= emacs-major-version 26)
-            (>= emacs-minor-version 1)))
-  :defer t
-  :requires (lsp-mode treemacs)
-  :after (lsp-mode treemacs)
-  :config (lsp-treemacs-sync-mode 1))
 
 
 ;; -> MAGIT

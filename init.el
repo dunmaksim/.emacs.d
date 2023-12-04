@@ -58,7 +58,6 @@
 
 (require 'use-package)
 
-
 ;; Настройки отладочного режима
 (when init-file-debug
   (setq use-package-verbose t
@@ -156,8 +155,6 @@
     latex-mode
     lisp-data-mode
     nxml-mode
-    php-mode
-    protobuf-mode
     sh-mode
     sql-mode
     ) . aggressive-indent-mode))
@@ -189,30 +186,34 @@
 ;; -> COMPANY-MODE
 ;; https://company-mode.github.io/
 ;; Автодополнение
-;; (use-package company
-;;   :pin "GNU"
-;;   :ensure t
-;;   :defer t
-;;   :custom
-;;   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
-;;   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
-;;   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
-;;   (company-tooltip-align-annotations t "TODO")
-;;   (company-tooltip-limit 15 "Ограничение на число подсказок")
-;;   :hook
-;;   ((
-;;     css-mode
-;;     dockerfile-mode
-;;     emacs-lisp-mode
-;;     js2-mode
-;;     latex-mode
-;;     lisp-data-mode
-;;     nxml-mode
-;;     org-mode
-;;     php-mode
-;;     rst-mode
-;;     ruby-mode
-;;     ) . company-mode))
+(use-package company
+  :pin "GNU"
+  :ensure t
+  :defer t
+  :custom
+  (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
+  (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
+  (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
+  (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
+  (company-tooltip-limit 15 "Ограничение на число подсказок")
+  :hook
+  ((
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    js2-mode
+    latex-mode
+    lisp-data-mode
+    minibufer-mode
+    nxml-mode
+    org-mode
+    ruby-mode
+    ) . company-mode)
+  :bind
+  (:map company-active-map
+        ("TAB" . company-complete-common-or-cycle)
+        ("M-/" . company-complete)
+        ("M-." . company-show-location)))
 
 
 ;; -> CONF-MODE
@@ -341,9 +342,9 @@
   :pin "NONGNU")
 
 
-;; -> DOOM-THEMES
-;; https://github.com/doomemacs/themes
-;; Темы из DOOM Emacs
+;; ;; -> DOOM-THEMES
+;; ;; https://github.com/doomemacs/themes
+;; ;; Темы из DOOM Emacs
 (use-package doom-themes
   :pin "MELPA-STABLE"
   :ensure t
@@ -399,13 +400,36 @@
 
 
 ;; -> ELECTRIC-INDENT MODE
-;; Встроренный пакет.
+;; Встроенный пакет.
 ;; Автоматический отступ. В основном только мешает, лучше выключить.
 (use-package electric
   :ensure nil
   :config (electric-indent-mode -1)
   :custom (electric-indent-inhibit t "Не выравнивать предыдущую строку по нажатию Enter.")
   :hook (emacs-lisp-mode . electric-indent-local-mode))
+
+
+;; -> EGLOT
+;; Пакет для поддержки LSP.
+;; https://elpa.gnu.org/packages/eglot.html
+;;
+;; ПОДГОТОВКА К РАБОТЕ
+;; Установка серверов:
+;; HTML: npm install -g vscode-langservers-extracted
+;; MARKDOWN: sudo snap install marksman
+(use-package eglot
+  :pin "GNU"
+  :ensure t
+  :defer t
+  :config
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+  :hook
+  ((
+    css-mode
+    json-mode
+    web-mode
+    markdown-mode
+    ) . eglot-ensure))
 
 
 ;; -> ELPY
@@ -443,7 +467,7 @@
 ;; Можно считать встроенным пакетом
 (use-package emacs
   :init
-  (setq indent-tabs-mode nil)
+  (setq-default indent-tabs-mode nil) ;; Отключить `indent-tabs-mode'.
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
   (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
@@ -454,7 +478,6 @@
   (custom-safe-themes t "Считать все темы безопасными")
   (delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
   (gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
-  (indent-tabs-mode nil "Выключить выравнивание с помощью [TAB]")
   (inhibit-splash-screen t "Не надо показывать загрузочный экран")
   (inhibit-startup-message t "Не надо показывать приветственное сообщение")
   (initial-scratch-message nil "В новых буферах не нужно ничего писать")
@@ -491,7 +514,6 @@
   (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
   (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
   (global-visual-line-mode 1) ;; Подсвечивать текущую строку
-  (indent-tabs-mode nil) ;; Отключить вставку табуляции при нажатии на [TAB].
   (line-number-mode t) ;; Показывать номер строки в статусной строке
   (menu-bar-mode 0) ;; Отключить показ меню
   (overwrite-mode 0) ;; Отключить режим перезаписи
@@ -575,8 +597,6 @@
     makefile-mode
     markdown-mode
     nxml-mode
-    php-mode
-    protobuf-mode
     python-mode
     rst-mode
     ruby-mode
@@ -696,7 +716,6 @@
        (or
         (mode . makefile-mode)
         (name  . "^Makefile$")))
-      ("Protobuf" (mode . protobuf-mode))
       ("Golang" (mode . go-mode))
       ("Python"
        (or
@@ -783,7 +802,8 @@
 (use-package make-mode
   :ensure nil
   :defer t
-  :config (setq-local indent-tabs-mode t))
+  ;; :config (setq-local indent-tabs-mode t)
+  )
 
 
 ;; -> MARKDOWN MODE
@@ -860,7 +880,14 @@
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
 
-
+;; -> MODUS-THEMES
+;; Темы от проекта GNU
+;; https://www.gnu.org/software/emacs/manual/html_mono/modus-themes.html
+;; https://git.sr.ht/~protesilaos/modus-themes
+;; (use-package modus-themes
+;;   :pin "GNU"
+;;   :ensure t
+;;   :config (load-theme 'modus-vivendi-tritanopia))
 
 
 ;; -> NXML-MODE
@@ -957,17 +984,6 @@
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint"))
 
 
-;; -> PYVENV
-;; https://github.com/jorgenschaefer/pyvenv
-;; Позволяет активировать виртуальные окружения из Emacs
-(use-package pyvenv
-  :pin "MELPA-STABLE"
-  :ensure t
-  :defer t
-  :after (python-mode)
-  :hook python-mode)
-
-
 ;; -> RAINBOW-DELIMITERS-MODE
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
@@ -989,8 +1005,6 @@
     markdown-mode
     nxml-mode
     org-mode
-    php-mode
-    protobuf-mode
     python-mode
     rst-mode
     sh-mode
@@ -1212,8 +1226,6 @@
     markdown-mode
     nxml-mode
     org-mode
-    php-mode
-    protobuf-mode
     python-mode
     rst-mode
     ruby-mode
@@ -1229,19 +1241,12 @@
 (use-package windmove
   :bind
   (:map global-map
-    ("C-x <up>" . windmove-up)
-    ("C-x <down>" . windmove-down)))
+        ("C-x <up>" . windmove-up)
+        ("C-x <down>" . windmove-down)))
 
 
 ;; -> WINDOW
 ;; Встроенный пакет, отвечает за управление размерами окон
-;;
-;;                 enlarge-window
-;;                    ↑
-;; shrink-window-horizontally ←  → enlarge-window-horizontally
-;;                    ↓
-;;                 shrink-window
-;;
 (use-package window
   :bind
   (:map global-map
@@ -1262,25 +1267,23 @@
   :defer t
   :hook
   ((
-     adoc-mode
-     conf-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     go-mode
-     js2-mode
-     latex-mode
-     markdown-mode
-     nxml-mode
-     php-mode
-     protobuf-mode
-     python-mode
-     rst-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode
-     ) . ws-butler-mode))
+    adoc-mode
+    conf-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    go-mode
+    js2-mode
+    latex-mode
+    markdown-mode
+    nxml-mode
+    python-mode
+    rst-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode
+    ) . ws-butler-mode))
 
 
 ;; -> YAML-MODE

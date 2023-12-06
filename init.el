@@ -838,7 +838,7 @@
 ;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
 ;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
 ;; YAML: npm install -g yaml-language-server
-(when init-emacs-version-greater-than-26-1
+(when init-emacs-version-greater-than-27-1
   (use-package lsp-mode
     :pin "MELPA-STABLE"
     :ensure t

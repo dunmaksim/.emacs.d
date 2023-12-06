@@ -1008,13 +1008,8 @@
   :defer t
   :config
   (setq-local
-    truncate-lines nil    ;; Не обрезать строки
-    org-todo-keywords '(( ;; Ключевые слова для статусов
-                          sequence
-                          "НОВАЯ"
-                          "|"
-                          "ВЫПОЛНЕНА"))
-    word-wrap t))        ;; Перенос длинных строк
+   truncate-lines nil ;; Не обрезать строки
+   word-wrap t))      ;; Перенос длинных строк
 
 
 ;; -> PACKAGE-LINT

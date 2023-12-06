@@ -9,11 +9,21 @@
 (defconst init-emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.") ;; ~/.emacs.d/
 (defconst init-emacs-autosave-dir (concat init-emacs-config-dir "saves") "Директория для файлов автосохранения.") ;; ~/.emacs.d/saves/
 (defconst init-emacs-package-user-dir (expand-file-name "elpa" user-emacs-directory) "Пользовательский каталог с пакетами.") ;; ~/.emacs.d/elpa/
+(defconst init-emacs-version-greater-than-26-1
+  (or
+   (> emacs-major-version 26)
+   (and (= emacs-major-version 26)
+        (>= emacs-minor-version 1))) "Версия Emacs ≥ 26.1.")
+(defconst init-emacs-version-greater-than-27-1
+  (or
+   (> emacs-major-version 27)
+   (and (= emacs-major-version 27)
+        (>= emacs-minor-version 1))) "Версия Emacs ≥ 27.1.")
 
 ;; Если нужного каталога не существует, его следует создать
 (dolist
-  (emacs-directory
-    (list
+    (emacs-directory
+     (list
       init-emacs-config-dir
       init-emacs-autosave-dir
       init-emacs-package-user-dir))
@@ -415,21 +425,28 @@
 ;;
 ;; ПОДГОТОВКА К РАБОТЕ
 ;; Установка серверов:
-;; HTML: npm install -g vscode-langservers-extracted
-;; MARKDOWN: sudo snap install marksman
-(use-package eglot
-  :pin "GNU"
-  :ensure t
-  :defer t
-  :config
-  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
-  :hook
-  ((
-    css-mode
-    json-mode
-    web-mode
-    markdown-mode
-    ) . eglot-ensure))
+;; - Ansible:
+;;   sudo npm install -g @ansible/ansible-language-server
+;; - HTML:
+;;   npm install -g vscode-langservers-extracted
+;; - Markdown:
+;;   sudo snap install marksman
+;; (use-package eglot
+;;   :pin "GNU"
+;;   :ensure t
+;;   :defer t
+;;   :config
+;;   (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
+;;   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+;;   (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
+;;   :hook
+;;   ((
+;;     css-mode
+;;     json-mode
+;;     markdown-mode
+;;     ruby-mode
+;;     web-mode
+;;     ) . eglot-ensure))
 
 
 ;; -> ELPY
@@ -652,6 +669,19 @@
   :bind (([f12] . format-all-buffer)))
 
 
+;; -> HELM
+;; https://emacs-helm.github.io/
+;; Подсказки и автодополнение ввода
+(use-package helm
+  :pin "NONGNU"
+  :ensure t
+  :config
+  (helm-mode 1)
+  :bind
+  (:map global-map
+        ("M-x" . helm-M-x)))
+
+
 ;; -> HL-TODO
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
@@ -785,6 +815,72 @@
   :defer t)
 
 
+;; -> LSP
+;; https://emacs-lsp.github.io/lsp-mode/
+;; Базовый пакет, необходимый для работы LSP
+;; Требуется EMACS версии 26.1 или новее.
+;;
+;; Полный список поддерживаемых языков и технологий:
+;; https://emacs-lsp.github.io/lsp-mode/page/lsp-dockerfile/
+;;
+;; Чтобы LSP "видел" директорию, её нужно добавить с помощью `lsp-workspace-folder-add'
+;;
+;; Для работы пакета нужны дополнительные средства:
+;;
+;; DOCKERFILE: npm install -g dockerfile-language-server-nodejs
+;; GOLANG: go install golang.org/x/tools/gopls@latest
+;; JSON: npm install -g vscode-json-languageserver
+;; MAKEFILE: sudo pip3 install cmake-language-server
+;; MARKDOWN: npm install -g remark-language-server remark
+;; NXML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
+;; PYTHON: pip3 install TODO
+;; SQL: go install github.com/lighttiger2505/sqls@latest
+;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
+;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
+;; YAML: npm install -g yaml-language-server
+(when init-emacs-version-greater-than-26-1
+  (use-package lsp-mode
+    :pin "MELPA-STABLE"
+    :ensure t
+    :defer t
+    :custom
+    (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
+    (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
+    :hook
+    ((
+      ansible
+      go-mode
+      python-mode
+      ) . lsp))
+
+
+  ;; -> LSP-PYRIGHT
+  ;; https://github.com/emacs-lsp/lsp-pyright
+  ;; Поддержка LSP PyRight от Microsoft
+  (use-package lsp-pyright
+    :pin "MELPA-STABLE"
+    :ensure t
+    :defer t
+    :requires lsp-mode
+    :hook (python-mode . (lambda ()
+                           (require 'lsp-pyright)
+                           (lsp))))
+
+  ;; -> LSP-UI
+  (use-package lsp-ui
+    :pin "MELPA-STABLE"
+    :ensure t
+    :defer t
+    :requires lsp-mode
+    :custom
+    (lsp-ui-doc-enable t "Показывать документацию в LSP-UI")
+    (lsp-ui-peek-always-show t "TODO")
+    (lsp-ui-peek-enable t "TODO")
+    (lsp-ui-sideline-enable t "TODO")
+    :after (lsp-mode)
+    :hook lsp-mode))
+
+
 ;; -> MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
@@ -809,23 +905,19 @@
 ;; -> MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
-(use-package markdown-mode
-  :pin "NONGNU"
-  :ensure t
-  :defer t
-  :when (or ;; Emacs version ≥ 27.1
-          (> emacs-major-version 27)
-          (and
-            (= emacs-major-version 27)
-            (>= emacs-minor-version 1)))
-  :custom
-  (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
-  (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
-  (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
-  :config (setq-local word-wrap t)
-  :bind (
-          :map markdown-mode-map
-          ("M-." . markdown-follow-thing-at-point)))
+(when init-emacs-version-greater-than-27-1
+  (use-package markdown-mode
+    :pin "NONGNU"
+    :ensure t
+    :defer t
+    :custom
+    (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
+    (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
+    (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
+    :config (setq-local word-wrap t)
+    :bind (
+           :map markdown-mode-map
+           ("M-." . markdown-follow-thing-at-point))))
 
 
 ;; -> MULTIPLE CURSORS
@@ -836,19 +928,19 @@
   :ensure t
   :bind
   (:map global-map
-    ("C-S-c C-S-c" . mc/edit-lines)
-    ("C->" . mc/mark-next-like-this)
-    ("C-<" . mc/mark-previous-like-this)
-    ("C-c C-<" . mc/mark-all-like-this))
+        ("C-S-c C-S-c" . mc/edit-lines)
+        ("C->" . mc/mark-next-like-this)
+        ("C-<" . mc/mark-previous-like-this)
+        ("C-c C-<" . mc/mark-all-like-this))
   :config
   (add-to-list 'after-make-frame-functions
-    (lambda ()
-      (when (display-graphic-p)
-        ;; Если режим графический, то курсоры можно расставлять с помощью Alt+Click
-        (progn
-          (global-unset-key (kbd "M-<down-mouse-1>"))
-          (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
-          )))))
+               (lambda ()
+                 (when (display-graphic-p)
+                   ;; Если режим графический, то курсоры можно расставлять с помощью Alt+Click
+                   (progn
+                     (global-unset-key (kbd "M-<down-mouse-1>"))
+                     (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click)
+                     )))))
 
 
 ;; -> NERD-ICONS
@@ -945,34 +1037,29 @@
   :ensure t
   :defer t
   :bind (
-          :map projectile-mode-map
-          ("M-p" . projectile-command-map))
+         :map projectile-mode-map
+         ("M-p" . projectile-command-map))
   :config
   (projectile-mode 1)
-  (projectile-register-project-type 'sphinx '("Makefile" "source" "source/conf.py")
-    :project-file "Makefile"
-    :install "pip3 install -r requirements.txt -U"
-    :compile "make dirhtml"
-    :src-dir "source/"
-    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080")
-  )
-
+  (projectile-register-project-type 'sphinx
+                                    '("Makefile" "source" "source/conf.py")
+                                    :project-file "Makefile"
+                                    :install "pip3 install -r requirements.txt -U"
+                                    :compile "make dirhtml"
+                                    :src-dir "source/"
+                                    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080"))
 
 
 ;; -> PULSAR
 ;; Вспыхивание строки, к которой переместился курсор
 ;; https://git.sr.ht/~protesilaos/pulsar
-(use-package pulsar
-  :pin "GNU"
-  :ensure t
-  :when (or ;; Emacs version ≥ 27.1
-         (> emacs-major-version 27)
-         (and
-          (= emacs-major-version 27)
-          (>= emacs-minor-version 1)))
-  :custom (pulsar-pulse t)
-  :hook (next-error . pulsar-pulse-line)
-  :config (pulsar-global-mode 1))
+(when init-emacs-version-greater-than-27-1
+  (use-package pulsar
+    :pin "GNU"
+    :ensure t
+    :custom (pulsar-pulse t)
+    :hook (next-error . pulsar-pulse-line)
+    :config (pulsar-global-mode 1)))
 
 
 ;; -> PYTHON-MODE

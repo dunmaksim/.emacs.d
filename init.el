@@ -327,6 +327,7 @@
     conf-mode
     dockerfile-mode
     emacs-lisp-mode
+    json-mode
     latex-mode
     lisp-data-mode
     makefile-mode
@@ -359,7 +360,7 @@
   :pin "MELPA-STABLE"
   :ensure t
   :config
-  (load-theme 'doom-acario-dark t))
+  (load-theme 'doom-monokai-classic t))
 
 
 ;; -> EDIT-INDIRECT
@@ -553,7 +554,6 @@
   (:map
    global-map
    ("<escape>" . keyboard-quit)           ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-   ("C-v" . yank)                         ;; Вставить текст из временного буфера
    ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
    ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
    ("C-z" . undo)                         ;; Отмена

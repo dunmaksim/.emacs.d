@@ -217,6 +217,7 @@
     minibufer-mode
     nxml-mode
     org-mode
+    rst-mode
     ruby-mode
     ) . company-mode)
   :bind
@@ -360,7 +361,7 @@
   :pin "MELPA-STABLE"
   :ensure t
   :config
-  (load-theme 'doom-monokai-classic t))
+  (load-theme 'doom-molokai t))
 
 
 ;; -> EDIT-INDIRECT
@@ -656,7 +657,10 @@
     adoc-mode
     markdown-mode
     rst-mode
-    ) . flyspell-mode))
+    ) . flyspell-mode)
+  ((
+    emacs-lisp-mode
+    ) . flyspell-prog-mode))
 
 
 ;; -> FORMAT-ALL
@@ -667,6 +671,28 @@
   :ensure t
   :defer t
   :bind (([f12] . format-all-buffer)))
+
+
+;; -> GUESS-LANGUAGE
+;; https://github.com/tmalsburg/guess-language.el
+;; Автоматическое определение языков текста для Flyspell
+(use-package guess-language
+  :pin "GNU"
+  :ensure t
+  :defer t
+  :custom
+  (guess-language-languages '(en ru))
+  (guess-language-langcodes
+   '((en . ("en_US" "English"))
+     (ru . ("ru_RU" "Русский"))))
+  :hook
+  ((
+    adoc-mode
+    markdown-mode
+    rst-mode
+    text-mode
+    web-mode
+    ) . guess-language-mode))
 
 
 ;; -> HELM
@@ -680,6 +706,18 @@
   :bind
   (:map global-map
         ("M-x" . helm-M-x)))
+
+;; -> HELM-COMPANY
+;;
+;; Расширение для `company-mode'.
+(use-package helm-company
+  :pin "MELPA-STABLE"
+  :ensure t
+  :defer t
+  :after (company helm)
+  :bind
+  (:map company-mode-map ("C-:" . helm-company))
+  (:map company-active-map ("C-:" . helm-company)))
 
 
 ;; -> HL-TODO

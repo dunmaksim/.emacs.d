@@ -4,7 +4,7 @@
 
 ;;; Code:
 
-(defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (скоращает объём вводимого текста для подтверждения команд)
+(defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
 (defconst init-emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.") ;; ~/.emacs.d/
 (defconst init-emacs-autosave-dir (concat init-emacs-config-dir "saves") "Директория для файлов автосохранения.") ;; ~/.emacs.d/saves/
@@ -40,6 +40,7 @@
   (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
 ;; -> PACKAGE
+;; Встроенный пакет для управления пакетами.
 (require 'package)
 (add-to-list 'package-archives '("GNU" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("MELPA" . "https://melpa.org/packages/") t)
@@ -74,13 +75,6 @@
         use-package-compute-statistics t
         use-package-expand-minimally t
         debug-on-error t))
-
-;; -> Сочетания клавиш
-
-;; Разные сочетания клавиш
-(global-set-key (kbd "C-x k") (lambda () (interactive) (kill-buffer (current-buffer)))) ;; Закрыть активный буфер без лишних вопросов
-(global-set-key (kbd "M--") (lambda () (interactive) (insert "—"))) ;; Вставка длинного тире по нажатию Alt+-
-(global-unset-key (kbd "M-,"))    ;; Disable M-, as markers
 
 
 ;; -> Настройки, специфичные для графического режима
@@ -532,6 +526,7 @@
   (delete-selection-mode t) ;; Удалять выделенный фрагмент при вводе текста
   (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
   (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
+  (global-unset-key (kbd "M-,")) ;; Такие маркеры не нужны
   (global-visual-line-mode 1) ;; Подсвечивать текущую строку
   (line-number-mode t) ;; Показывать номер строки в статусной строке
   (menu-bar-mode 0) ;; Отключить показ меню
@@ -550,15 +545,22 @@
   (tool-bar-mode 0) ;; Отключить отображение панели инструментов
   (tooltip-mode -1) ;; Отключить показ подсказок с помощью GUI
   (window-divider-mode t) ;; Отображать разделитель между окнами
-
   :bind
   (:map
    global-map
    ("<escape>" . keyboard-quit)           ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
    ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
+   ("C-x k" .
+    (lambda ()
+      (interactive)
+      (kill-buffer (current-buffer))))    ;; Закрыть активный буфер без лишних вопросов
    ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
    ("C-z" . undo)                         ;; Отмена
    ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
+   ("M--" .
+    (lambda ()
+      (interactive)
+      (insert "—"))) ;; Вставка длинного тире нажатием Alt+-
    ("S-<SPC>" . just-one-space)           ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
    ([f3] . replace-string)                ;; Замена строки
    ([f9] . sort-lines)))                  ;; Отсортировать выделенные строки
@@ -646,7 +648,6 @@
 ;; Использовать пакет только в том случае, когда дело происходит в Linux и
 ;; Aspell доступен
 (use-package flyspell
-  ;; :ensure nil
   :when (and
          (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
          (file-exists-p "/usr/bin/aspell"))    ;; Надо убедиться, что программа установлена в ОС
@@ -683,8 +684,8 @@
   :custom
   (guess-language-languages '(en ru))
   (guess-language-langcodes
-   '((en . ("en_US" "English"))
-     (ru . ("ru_RU" "Русский"))))
+   '((en . ("en" "English"))
+     (ru . ("russian" "Русский"))))
   :hook
   ((
     adoc-mode

@@ -49,16 +49,16 @@
 (package-initialize)
 
 (setq
-  package-archive-priorities
-  '(
-     ;; Порядок использования архивов.
-     ;; Чем выше приоритет, тем важнее архив
-     ("NONGNU" . 50)
-     ("GNU" . 40)
-     ("MELPA-STABLE" . 30)
-     ("MELPA" . 20))
-  package-native-compile t                      ;; Компиляция пакетов во время установки, а не при первом запуске
-  package-user-dir init-emacs-package-user-dir) ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
+ package-archive-priorities
+ '(
+   ;; Порядок использования архивов.
+   ;; Чем выше приоритет, тем важнее архив
+   ("NONGNU" . 50)
+   ("GNU" . 40)
+   ("MELPA-STABLE" . 30)
+   ("MELPA" . 20))
+ package-native-compile t                      ;; Компиляция пакетов во время установки, а не при первом запуске
+ package-user-dir init-emacs-package-user-dir) ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
 
 (add-to-list 'package-pinned-packages '("use-package" . "GNU"))
 
@@ -179,6 +179,22 @@
 (use-package bind-key
   :ensure t
   :pin "GNU")
+
+
+;; -> BUFFER-ENV
+;; https://github.com/astoff/buffer-env
+;; Настройка окружения отдельно для каждого буфера.
+;; Настройки загружаются из файла `.env' в каталоге проекта или `.dir-locals.el'.
+;; Во первом случае в файле должна быть указана команда для активации окружения, например:
+;; source .venv/bin/activate
+;; Во втором достаточно задать значение переменной `buffer-env-script-name'.
+(use-package buffer-env
+  :ensure t
+  :pin "GNU"
+  :defer
+  :hook
+  ((hack-local-variables
+    comint-mode) . buffer-env-update))
 
 
 ;; -> CHECKDOC
@@ -427,22 +443,26 @@
 ;;   npm install -g vscode-langservers-extracted
 ;; - Markdown:
 ;;   sudo snap install marksman
-;; (use-package eglot
-;;   :pin "GNU"
-;;   :ensure t
-;;   :defer t
-;;   :config
-;;   (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
-;;   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
-;;   (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
-;;   :hook
-;;   ((
-;;     css-mode
-;;     json-mode
-;;     markdown-mode
-;;     ruby-mode
-;;     web-mode
-;;     ) . eglot-ensure))
+(use-package eglot
+  :pin "GNU"
+  :ensure t
+  :defer t
+  :config
+  (add-to-list 'eglot-server-programs
+               '(ansible-mode . ("ansible-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs
+               '(markdown-mode . ("marksman")))
+  (add-to-list 'eglot-server-programs
+               '(python-mode . ("jedi-language-server")))
+  (add-to-list 'eglot-server-programs
+               '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
+  :hook
+  ((
+    ansible-mode
+    markdown-mode
+    python-mode
+    ruby-mode
+    ) . eglot-ensure))
 
 
 ;; -> ELPY
@@ -469,7 +489,7 @@
   :ensure nil
   :config
   (setq-local
-    tab-width 2)
+   tab-width 2)
   :mode
   ("\\abbrev_defs\\'" . lisp-data-mode)
   ("\\.el\\'" . emacs-lisp-mode))
@@ -490,6 +510,7 @@
   (cursor-type 'bar "Курсор в виде вертикальной черты")
   (custom-safe-themes t "Считать все темы безопасными")
   (delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
+  (enable-local-variables :all "Считать все переменные из файлов .dir-locals.el безопасными")
   (gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
   (inhibit-splash-screen t "Не надо показывать загрузочный экран")
   (inhibit-startup-message t "Не надо показывать приветственное сообщение")
@@ -699,6 +720,7 @@
 ;; -> HELM
 ;; https://emacs-helm.github.io/
 ;; Подсказки и автодополнение ввода
+;; [C-o] — переключение между источниками подсказок (история и полный список команд)
 (use-package helm
   :pin "NONGNU"
   :ensure t
@@ -877,47 +899,34 @@
 ;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
 ;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
 ;; YAML: npm install -g yaml-language-server
-(when init-emacs-version-greater-than-27-1
-  (use-package lsp-mode
-    :pin "MELPA-STABLE"
-    :ensure t
-    :defer t
-    :custom
-    (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
-    (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
-    :hook
-    ((
-      ansible
-      go-mode
-      python-mode
-      ) . lsp))
+;; (when init-emacs-version-greater-than-27-1
+;;   (use-package lsp-mode
+;;     :pin "MELPA-STABLE"
+;;     :ensure t
+;;     :defer t
+;;     :custom
+;;     (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
+;;     (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
+;;     :hook
+;;     ((
+;;       ;; ansible
+;;       go-mode
+;;       ;; python-mode
+;;       ) . lsp))
 
-
-  ;; -> LSP-PYRIGHT
-  ;; https://github.com/emacs-lsp/lsp-pyright
-  ;; Поддержка LSP PyRight от Microsoft
-  (use-package lsp-pyright
-    :pin "MELPA-STABLE"
-    :ensure t
-    :defer t
-    :requires lsp-mode
-    :hook (python-mode . (lambda ()
-                           (require 'lsp-pyright)
-                           (lsp))))
-
-  ;; -> LSP-UI
-  (use-package lsp-ui
-    :pin "MELPA-STABLE"
-    :ensure t
-    :defer t
-    :requires lsp-mode
-    :custom
-    (lsp-ui-doc-enable t "Показывать документацию в LSP-UI")
-    (lsp-ui-peek-always-show t "TODO")
-    (lsp-ui-peek-enable t "TODO")
-    (lsp-ui-sideline-enable t "TODO")
-    :after (lsp-mode)
-    :hook lsp-mode))
+;;   ;; -> LSP-UI
+;;   (use-package lsp-ui
+;;     :pin "MELPA-STABLE"
+;;     :ensure t
+;;     :defer t
+;;     :requires lsp-mode
+;;     :custom
+;;     (lsp-ui-doc-enable t "Показывать документацию в LSP-UI")
+;;     (lsp-ui-peek-always-show t "TODO")
+;;     (lsp-ui-peek-enable t "TODO")
+;;     (lsp-ui-sideline-enable t "TODO")
+;;     :after (lsp-mode)
+;;     :hook lsp-mode))
 
 
 ;; -> MAGIT
@@ -1144,10 +1153,10 @@
   :ensure t
   :hook
   ((
-     css-mode
-     emacs-lisp-mode
-     web-mode
-     ) . rainbow-mode))
+    css-mode
+    emacs-lisp-mode
+    web-mode
+    ) . rainbow-mode))
 
 
 ;; -> RUSSIAN-TECHWRITER
@@ -1168,9 +1177,9 @@
   :after (russian-techwriter)
   :custom
   (reverse-im-input-methods
-    '(
-       "russian-computer"
-       "russian-techwriter"))
+   '(
+     "russian-computer"
+     "russian-techwriter"))
   :config (reverse-im-mode t))
 
 
@@ -1203,8 +1212,8 @@
   (defvar ruby-indent-offset 2 "Ширина TAB'а в `ruby-mode'.")
   :mode
   (
-    "\\Vagrantfile\\'"
-    "\\.rb\\'"))
+   "\\Vagrantfile\\'"
+   "\\.rb\\'"))
 
 
 ;; -> SHELL-SCRIPT-MODE

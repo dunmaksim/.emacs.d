@@ -11,3 +11,11 @@ url/
 customize.el
 settings.el
 /projects.el
+/.cache/
+/.emacs-places
+/.lsp-session-v1
+/.mc-lists.el
+/games/
+/projects
+/recentf
+/tramp

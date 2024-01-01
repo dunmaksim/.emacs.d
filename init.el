@@ -595,6 +595,8 @@
   (text-scale-mode-step 1.1 "Шаг увеличения масштаба"))
 
 
+(delete-trailing-whitespace)
+
 ;; -> FILES
 ;; Это встроенный пакет для управления файлами
 (use-package files

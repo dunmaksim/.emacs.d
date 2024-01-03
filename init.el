@@ -53,8 +53,8 @@
  '(
    ;; Порядок использования архивов.
    ;; Чем выше приоритет, тем важнее архив
-   ("NONGNU" . 50)
-   ("GNU" . 40)
+   ("GNU" . 50)
+   ("NONGNU" . 40)
    ("MELPA-STABLE" . 30)
    ("MELPA" . 20))
  package-native-compile t                      ;; Компиляция пакетов во время установки, а не при первом запуске
@@ -179,6 +179,16 @@
 (use-package bind-key
   :ensure t
   :pin "GNU")
+
+
+;; -> BREADCRUMB
+;; https://elpa.gnu.org/packages/breadcrumb.html
+;; Хлебные крошки в верхней части буфера показывают путь к файлу или разделу
+(use-package breadcrumb
+  :ensure t
+  :pin "GNU"
+  :config
+  (breadcrumb-mode 1))
 
 
 ;; -> BUFFER-ENV
@@ -697,6 +707,21 @@
   :bind (([f12] . format-all-buffer)))
 
 
+;; -> GOTO-ADDRESS-MODE
+;; Встроенный пакет
+;; Подсвечивает ссылки и позволяет переходить по ним
+(use-package goto-addr
+  :ensure t
+  :hook
+  ((
+    adoc-mode
+    markdown-mode
+    rst-mode
+    text-mode
+    web-mode
+    ) . goto-address-mode))
+
+
 ;; -> GUESS-LANGUAGE
 ;; https://github.com/tmalsburg/guess-language.el
 ;; Автоматическое определение языков текста для Flyspell
@@ -1104,7 +1129,9 @@
     :ensure t
     :custom (pulsar-pulse t)
     :hook (next-error . pulsar-pulse-line)
-    :config (pulsar-global-mode 1)))
+    :config
+    (add-to-list 'pulsar-pulse-functions 'next-multiframe-window)
+    (pulsar-global-mode 1)))
 
 
 ;; -> PYTHON-MODE

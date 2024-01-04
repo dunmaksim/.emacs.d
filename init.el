@@ -6,8 +6,8 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
-(defconst init-emacs-config-dir (file-name-directory user-init-file) "Корневая директория для размещения настроек.") ;; ~/.emacs.d/
-(defconst init-emacs-autosave-dir (concat init-emacs-config-dir "saves") "Директория для файлов автосохранения.") ;; ~/.emacs.d/saves/
+(defconst init-emacs-config-dir (file-name-directory user-init-file) "Корневой каталог для размещения настроек.") ;; ~/.emacs.d/
+(defconst init-emacs-autosave-dir (concat init-emacs-config-dir "saves") "Каталог для файлов автосохранения.") ;; ~/.emacs.d/saves/
 (defconst init-emacs-package-user-dir (expand-file-name "elpa" user-emacs-directory) "Пользовательский каталог с пакетами.") ;; ~/.emacs.d/elpa/
 (defconst init-emacs-version-greater-than-26-1
   (or
@@ -168,6 +168,7 @@
 ;; https://github.com/k1LoW/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
 (use-package ansible
+  :pin "MELPA-STABLE"
   :ensure t
   :defer t)
 
@@ -715,6 +716,7 @@
   :hook
   ((
     adoc-mode
+    emacs-lisp-mode
     markdown-mode
     rst-mode
     text-mode
@@ -1034,6 +1036,7 @@
 ;; Иконки в `dired'.
 (use-package nerd-icons-dired
   :ensure t
+  :after (dired nerd-icons)
   :hook (dired-mode . nerd-icons-dired-mode))
 
 
@@ -1110,14 +1113,20 @@
          :map projectile-mode-map
          ("M-p" . projectile-command-map))
   :config
-  (projectile-mode 1)
   (projectile-register-project-type 'sphinx
                                     '("Makefile" "source" "source/conf.py")
-                                    :project-file "Makefile"
+                                    :project-file "source/conf.py"
+                                    :src-dir "source/"
                                     :install "pip3 install -r requirements.txt -U"
                                     :compile "make dirhtml"
-                                    :src-dir "source/"
-                                    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080"))
+                                    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080")
+  (projectile-register-project-type 'hugo
+                                    '("hugo.toml")
+                                    :project-file "hugo.toml"
+                                    :src-dir "content"
+                                    :compile "hugo"
+                                    :run "hugo server")
+  (projectile-mode 1))
 
 
 ;; -> PULSAR

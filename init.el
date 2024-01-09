@@ -332,8 +332,22 @@
   :config (global-diff-hl-mode 1))
 
 
+;; -> AUTO-REVERT
+;; Встроенный пакет
+;; Автоматически обновляет содержимое буфера при изменениях в файловой системе
+(use-package auto-revert
+  :hook
+  ((
+    dired-mode
+    treemacs-mode
+    ) . auto-revert-mode))
+
+
 ;; -> DIRED
 ;; Встроенный пакет для работы с файлами и каталогами.
+;; Клавиши:
+;; [+] - создание каталога.
+;; [C-x C-f] - создание файла с последующим открытием буфера.
 (use-package dired
   :custom
   (dired-listing-switches "-lah --group-directories-first"))
@@ -1121,6 +1135,7 @@
                                     :compile "make dirhtml"
                                     :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080")
   (projectile-register-project-type 'hugo
+
                                     '("hugo.toml")
                                     :project-file "hugo.toml"
                                     :src-dir "content"

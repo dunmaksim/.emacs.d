@@ -339,6 +339,7 @@
   :hook
   ((
     dired-mode
+    ibuffer-mode
     treemacs-mode
     ) . auto-revert-mode))
 
@@ -389,13 +390,18 @@
   :pin "NONGNU")
 
 
-;; ;; -> DOOM-THEMES
-;; ;; https://github.com/doomemacs/themes
-;; ;; Темы из DOOM Emacs
+;; -> DOOM-THEMES
+;; https://github.com/doomemacs/themes
+;; Темы из DOOM Emacs
 (use-package doom-themes
   :pin "MELPA-STABLE"
   :ensure t
+  :custom
+  (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
+  (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
   :config
+  (doom-themes-visual-bell-config)
+  ;; (doom-themes-treemacs-config)
   (load-theme 'doom-molokai t))
 
 
@@ -1155,6 +1161,7 @@
     :hook (next-error . pulsar-pulse-line)
     :config
     (add-to-list 'pulsar-pulse-functions 'next-multiframe-window)
+    (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)
     (pulsar-global-mode 1)))
 
 

@@ -280,7 +280,7 @@
   :custom
   (custom-file
    (expand-file-name
-    "custom.el"
+    (convert-standard-filename "custom.el")
     init-emacs-config-dir)
    "Файл для сохранения пользовательских настроек, сделанных в customize"))
 
@@ -748,7 +748,7 @@
 ;; https://github.com/tmalsburg/guess-language.el
 ;; Автоматическое определение языков текста для Flyspell
 (use-package guess-language
-  :pin "GNU"
+  :pin "MELPA"
   :ensure t
   :defer t
   :custom
@@ -1160,6 +1160,7 @@
     :custom (pulsar-pulse t)
     :hook (next-error . pulsar-pulse-line)
     :config
+    (add-to-list 'pulsar-pulse-functions 'ace-window)
     (add-to-list 'pulsar-pulse-functions 'next-multiframe-window)
     (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)
     (pulsar-global-mode 1)))

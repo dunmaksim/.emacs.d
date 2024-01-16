@@ -173,6 +173,18 @@
   :defer t)
 
 
+;; -> AUTO-REVERT
+;; Встроенный пакет
+;; Автоматически обновляет содержимое буфера при изменениях в файловой системе
+(use-package auto-revert
+  :hook
+  ((
+    dired-mode
+    ibuffer-mode
+    treemacs-mode
+    ) . auto-revert-mode))
+
+
 ;; -> BIND-KEY
 ;; https://github.com/jwiegley/use-package
 ;; Позволяет настраивать привязки клавиш более простым и наглядным способом чем
@@ -253,12 +265,13 @@
 (use-package conf-mode
   :ensure nil
   :defer t
-  :mode (
-         "\\.editorconfig\\'"
-         "\\.env\\'"
-         "\\.flake8\\'"
-         "\\.ini\\'"
-         "\\.pylintrc\\'"))
+  :mode
+  ((
+    "\\.editorconfig\\'"
+    "\\.env\\'"
+    "\\.flake8\\'"
+    "\\.ini\\'"
+    "\\.pylintrc\\'") . conf-mode))
 
 
 ;; -> CSS-MODE
@@ -282,7 +295,7 @@
    (expand-file-name
     (convert-standard-filename "custom.el")
     init-emacs-config-dir)
-   "Файл для сохранения пользовательских настроек, сделанных в customize"))
+   "Файл для сохранения пользовательских настроек, сделанных в customize."))
 
 
 ;; -> DASHBOARD
@@ -332,18 +345,6 @@
   :config (global-diff-hl-mode 1))
 
 
-;; -> AUTO-REVERT
-;; Встроенный пакет
-;; Автоматически обновляет содержимое буфера при изменениях в файловой системе
-(use-package auto-revert
-  :hook
-  ((
-    dired-mode
-    ibuffer-mode
-    treemacs-mode
-    ) . auto-revert-mode))
-
-
 ;; -> DIRED
 ;; Встроенный пакет для работы с файлами и каталогами.
 ;; Клавиши:
@@ -388,6 +389,30 @@
   :ensure t
   :defer t
   :pin "NONGNU")
+
+
+;; -> DOOM-MODELINE
+;; https://github.com/seagle0128/doom-modeline
+;; Красивая статусная строка
+(use-package doom-modeline
+  :ensure t
+  :pin "MELPA-STABLE"
+  :hook (after-init . doom-modeline-mode)
+  :requires (nerd-icons)
+  :custom
+  (doom-modeline-project-detection 'auto "Автоматическое определение проектов.")
+  (doom-modeline-icon t "Отображение иконок.")
+  (doom-modeline-major-mode-color-icon t "Отображение иконки основного режима.")
+  (doom-modeline-buffer-state-icon t "Отображение иконки со статусом буфера.")
+  (doom-modeline-lsp-icon t "Отображение иконки со статусом LSP-сервера.")
+  (doom-modeline-buffer-name t "Отображение названия буфера.")
+  (doom-modeline-highlight-modified-buffer-name t "Подсветка названия измененного буфера.")
+  (doom-modeline-minor-modes t "Отображение списка дополнительных режимов.")
+  (doom-modeline-total-line-number t "Отображение общего количества строк.")
+  (doom-modeline-workspace-name t "Отображение названия рабочего пространства.")
+  (doom-modeline-vcs-max-length 40 "Максимальная длина названия ветки VCS.")
+  (doom-modeline-lsp t "Отображение статуса LSP-сервера.")
+  (doom-modeline-env-version t "Отображение версии окружения."))
 
 
 ;; -> DOOM-THEMES
@@ -1154,16 +1179,18 @@
 ;; Вспыхивание строки, к которой переместился курсор
 ;; https://git.sr.ht/~protesilaos/pulsar
 (when init-emacs-version-greater-than-27-1
+  ;; Этот пакет требует Emacs версии 27.1 или новее
   (use-package pulsar
     :pin "GNU"
     :ensure t
     :custom (pulsar-pulse t)
-    :hook (next-error . pulsar-pulse-line)
+    :hook
+    (next-error . pulsar-pulse-line)
+    (after-init . pulsar-global-mode)
     :config
     (add-to-list 'pulsar-pulse-functions 'ace-window)
     (add-to-list 'pulsar-pulse-functions 'next-multiframe-window)
-    (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)
-    (pulsar-global-mode 1)))
+    (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)))
 
 
 ;; -> PYTHON-MODE

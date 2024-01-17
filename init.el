@@ -400,19 +400,22 @@
   :hook (after-init . doom-modeline-mode)
   :requires (nerd-icons)
   :custom
-  (doom-modeline-project-detection 'auto "Автоматическое определение проектов.")
-  (doom-modeline-icon t "Отображение иконок.")
-  (doom-modeline-major-mode-color-icon t "Отображение иконки основного режима.")
-  (doom-modeline-buffer-state-icon t "Отображение иконки со статусом буфера.")
-  (doom-modeline-lsp-icon t "Отображение иконки со статусом LSP-сервера.")
+  (doom-modeline-buffer-encoding t "Отображение кодировки.")
   (doom-modeline-buffer-name t "Отображение названия буфера.")
+  (doom-modeline-buffer-state-icon t "Отображение иконки со статусом буфера.")
+  (doom-modeline-env-version t "Отображение версии окружения.")
   (doom-modeline-highlight-modified-buffer-name t "Подсветка названия измененного буфера.")
-  (doom-modeline-minor-modes t "Отображение списка дополнительных режимов.")
-  (doom-modeline-total-line-number t "Отображение общего количества строк.")
-  (doom-modeline-workspace-name t "Отображение названия рабочего пространства.")
-  (doom-modeline-vcs-max-length 40 "Максимальная длина названия ветки VCS.")
+  (doom-modeline-icon t "Отображение иконок.")
+  (doom-modeline-indent-info t "Отображение информации об отступах.")
   (doom-modeline-lsp t "Отображение статуса LSP-сервера.")
-  (doom-modeline-env-version t "Отображение версии окружения."))
+  (doom-modeline-lsp-icon t "Отображение иконки со статусом LSP-сервера.")
+  (doom-modeline-major-mode-icon t "Отображение иконки основного режима.")
+  (doom-modeline-major-mode-color-icon t "Отображение иконки основного режима.")
+  (doom-modeline-minor-modes t "Отображение списка дополнительных режимов.")
+  (doom-modeline-project-detection 'auto "Автоматическое определение проектов.")
+  (doom-modeline-total-line-number t "Отображение общего количества строк.")
+  (doom-modeline-vcs-max-length 40 "Максимальная длина названия ветки VCS.")
+  (doom-modeline-workspace-name t "Отображение названия рабочего пространства."))
 
 
 ;; -> DOOM-THEMES
@@ -1384,6 +1387,8 @@
   (global-undo-tree-mode 1))
 
 
+
+
 ;; -> WEB-MODE
 ;; https://web-mode.org/
 (use-package web-mode
@@ -1394,6 +1399,7 @@
   (web-mode-enable-block-face t "Отображение")
   (web-mode-enable-css-colorization t "Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета")
   (web-mode-enable-current-element-highlight t "Подсветка активного элемента разметки")
+  (web-mode-html-offset 2 "Отступ в 2 знака для корректной работы `highlight-indentation-mode'.")
   (web-mode-markup-indent-offset 2 "Отступ при вёрстке HTML — 2 пробела")
   :init
   (setq-default major-mode 'web-mode)

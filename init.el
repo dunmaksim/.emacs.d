@@ -788,7 +788,6 @@
   ((
     adoc-mode
     markdown-mode
-    rst-mode
     text-mode
     web-mode
     ) . guess-language-mode))

@@ -780,26 +780,6 @@
     ) . goto-address-mode))
 
 
-;; -> GUESS-LANGUAGE
-;; https://github.com/tmalsburg/guess-language.el
-;; Автоматическое определение языков текста для Flyspell
-;; (use-package guess-language
-;;   :pin "melpa"
-;;   :ensure t
-;;   :defer t
-;;   :custom
-;;   (guess-language-languages '(en ru))
-;;   (guess-language-langcodes
-;;    '((en . ("en" "English"))
-;;      (ru . ("russian" "Русский"))))
-;;   :hook
-;;   ((
-;;     adoc-mode
-;;     markdown-mode
-;;     web-mode
-;;     ) . guess-language-mode))
-
-
 ;; -> HELM
 ;; https://emacs-helm.github.io/
 ;; Подсказки и автодополнение ввода
@@ -958,59 +938,6 @@
   :pin "melpa-stable"
   :ensure t
   :defer t)
-
-
-;; -> LSP
-;; https://emacs-lsp.github.io/lsp-mode/
-;; Базовый пакет, необходимый для работы LSP
-;; Требуется EMACS версии 26.1 или новее.
-;;
-;; Полный список поддерживаемых языков и технологий:
-;; https://emacs-lsp.github.io/lsp-mode/page/lsp-dockerfile/
-;;
-;; Чтобы LSP "видел" директорию, её нужно добавить с помощью `lsp-workspace-folder-add'
-;;
-;; Для работы пакета нужны дополнительные средства:
-;;
-;; DOCKERFILE: npm install -g dockerfile-language-server-nodejs
-;; GOLANG: go install golang.org/x/tools/gopls@latest
-;; JSON: npm install -g vscode-json-languageserver
-;; MAKEFILE: sudo pip3 install cmake-language-server
-;; MARKDOWN: npm install -g remark-language-server remark
-;; NXML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
-;; PYTHON: pip3 install TODO
-;; SQL: go install github.com/lighttiger2505/sqls@latest
-;; TERRAFORM: нужен установленный в системе terraform-ls. Можно скачать с сайта hashicorp.com
-;; XML: lsp-install-server, выбрать xmlls, установить на уровне системы JDK
-;; YAML: npm install -g yaml-language-server
-;; (when init-emacs-version-greater-than-27-1
-;;   (use-package lsp-mode
-;;     :pin "melpa-stable"
-;;     :ensure t
-;;     :defer t
-;;     :custom
-;;     (lsp-headerline-breadcrumb-enable t "Показывать \"хлебные крошки\" в заголовке")
-;;     (lsp-modeline-diagnostics-enable t "Показывать ошибки LSP в статусной строке")
-;;     :hook
-;;     ((
-;;       ;; ansible
-;;       go-mode
-;;       ;; python-mode
-;;       ) . lsp))
-
-;;   ;; -> LSP-UI
-;;   (use-package lsp-ui
-;;     :pin "melpa-stable"
-;;     :ensure t
-;;     :defer t
-;;     :requires lsp-mode
-;;     :custom
-;;     (lsp-ui-doc-enable t "Показывать документацию в LSP-UI")
-;;     (lsp-ui-peek-always-show t "TODO")
-;;     (lsp-ui-peek-enable t "TODO")
-;;     (lsp-ui-sideline-enable t "TODO")
-;;     :after (lsp-mode)
-;;     :hook lsp-mode))
 
 
 ;; -> MAGIT

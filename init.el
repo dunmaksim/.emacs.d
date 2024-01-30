@@ -142,8 +142,7 @@
   :defer t
   :custom
   (adoc-fontify-code-blocks-natively 10000)
-  :mode
-  ("\\.adoc\\'" . adoc-mode))
+  :mode "\\.adoc\\'")
 
 
 ;; -> AGGRESSIVE-INDENT
@@ -267,12 +266,11 @@
   :ensure nil
   :defer t
   :mode
-  ((
-    "\\.editorconfig\\'"
-    "\\.env\\'"
-    "\\.flake8\\'"
-    "\\.ini\\'"
-    "\\.pylintrc\\'") . conf-mode))
+  ("\\.editorconfig\\'"
+   "\\.env\\'"
+   "\\.flake8\\'"
+   "\\.ini\\'"
+   "\\.pylintrc\\'"))
 
 
 ;; -> CSS-MODE
@@ -282,8 +280,7 @@
   :defer t
   :custom
   (css-indent-offset 2)
-  :mode
-  ("\\.css\\'" . css-mode))
+  :mode "\\.css\\'")
 
 
 ;; -> CUS-EDIT
@@ -871,7 +868,6 @@
        (or
         (mode . makefile-mode)
         (name  . "^Makefile$")))
-      ("Golang" (mode . go-mode))
       ("Python"
        (or
         (mode . anaconda-mode)
@@ -1053,9 +1049,8 @@
   (nxml-child-indent 4 "Выравнивание дочерних элементов")
   (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
   :mode
-  (
-   ("\\.pom\\'" . nxml-mode)
-   ("\\.xml\\'" . nxml-mode)))
+  ("\\.pom\\'"
+   "\\.xml\\'"))
 
 
 ;; -> ORG-MODE
@@ -1151,7 +1146,6 @@
     conf-mode
     css-mode
     emacs-lisp-mode
-    go-mode
     js2-mode
     json-mode
     lisp-data-mode
@@ -1237,8 +1231,7 @@
   :init
   (defvar ruby-indent-offset 2 "Ширина TAB'а в `ruby-mode'.")
   :mode
-  (
-   "\\Vagrantfile\\'"
+  ("\\Vagrantfile\\'"
    "\\.rb\\'"))
 
 
@@ -1260,7 +1253,7 @@
   :pin "melpa-stable"
   :ensure t
   :defer t
-  :mode ("\\.terraformrc\\'" . terraform-mode))
+  :mode "\\.terraformrc\\'")
 
 
 ;; -> TREEMACS — awesome file manager (instead NeoTree)
@@ -1375,7 +1368,6 @@
     css-mode
     dockerfile-mode
     emacs-lisp-mode
-    go-mode
     js2-mode
     json-mode
     latex-mode
@@ -1430,7 +1422,6 @@
     conf-mode
     dockerfile-mode
     emacs-lisp-mode
-    go-mode
     js2-mode
     latex-mode
     markdown-mode
@@ -1453,13 +1444,13 @@
   :ensure t
   :defer t
   :mode
-  ("\\.ansible\\-lint\\'" . yaml-mode)
-  ("\\.pre\\-commit\\-config\\.yaml\\'" . yaml-mode)
-  ("\\.yaml\\'" . yaml-mode)
-  ("\\.yamllint\\'" . yaml-mode)
-  ("\\.yamllint\\-config\\.yaml\\'" . yaml-mode)
-  ("\\.yfm\\'" . yaml-mode)
-  ("\\.yml\\'" . yaml-mode))
+  ("\\.ansible\\-lint\\'"
+   "\\.pre\\-commit\\-config\\.yaml\\'"
+   "\\.yaml\\'"
+   "\\.yamllint\\'"
+   "\\.yamllint\\-config\\.yaml\\'"
+   "\\.yfm\\'"
+   "\\.yml\\'"))
 
 
 (put 'downcase-region 'disabled nil)

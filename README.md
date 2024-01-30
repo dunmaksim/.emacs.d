@@ -1,239 +1,251 @@
 # Конфигурация EMACS для технических писателей
 
-Я не использую пакетные менеджеры вроде `straight.el` или `use-package`. Вместо них для установки используется нативный `package.el`. Все необходимые пакеты устанавливаются автоматически при запуске редактора.
+Все необходимые пакеты устанавливаются автоматически при запуске редактора.
+Для управления конфигурацией используются возможности пакета [use-package][use-package].
 
 В этой конфигурации используются (в алфавитном порядке):
 
-* `abbrev-mode`
+## abbrev-mode
 
-    Встроенный пакет для использования аббревиатур — последовательностей, автоматически заменяемых на более длинные слова и предложения.
+Встроенный пакет для использования аббревиатур — последовательностей, автоматически заменяемых на более длинные слова и предложения.
 
-* [ace-window](https://github.com/abo-abo/ace-window)
+## ace-window
 
-    Пакет для управления окнами Emacs.
+Пакет для управления окнами Emacs. Я использую его для быстрого перехода между окнами с помощью сочетания **Alt+o**.
 
-* [adoc-mode](https://github.com/bbatsov/adoc-mode)
+[Страница проекта](https://github.com/abo-abo/ace-window)
 
-    Версия пакета от `bbatsov`. Подробнее [здесь](https://github.com/bbatsov/adoc-mode).
+## adoc-mode
 
-    Предоставляет поддержку [AsciiDoc](https://docs.asciidoctor.org/asciidoc/).
+Пакет для поддержки [AsciiDoc][AsciiDoc].
 
-* [aggressive-indent](https://github.com/Malabarba/aggressive-indent-mode)
+[Страница проекта][adoc-mode]
 
-    Принудительное выравнивание кода. Особенно полезен этот пакет для работы с `init.el`.
+## aggressive-indent
 
-* [ansible](https://github.com/k1LoW/emacs-ansible)
+Принудительное выравнивание кода. Особенно полезен этот пакет для работы с `init.el`.
 
-    Поддержка синтаксиса для конфигураций Ansible. Дополнительный режим, расширяющий возможности `yaml-mode`.
+[Страница проекта][aggressive-indent-mode]
 
-* [bind-key](https://github.com/jwiegley/use-package)
+## ansible
 
-    Обёртки над функциями Emacs, используемыми для привязки клавиш.
+Поддержка синтаксиса для конфигураций Ansible. Дополнительный режим, расширяющий возможности `yaml-mode`.
 
-* `checkdoc`
+[Страница проекта][ansible-mode]
 
-    Встроенный пакет, используемый для проверки документации пакетов Emacs Lisp.
+## bind-key
 
-* [company](https://company-mode.github.io/)
+Обёртки над функциями Emacs, используемыми для привязки клавиш.
 
-    Автодополнение. Используется в основном при работе с текстами программ.
+[Страница проекта][bind-key]
 
-* `conf-mode`
+## checkdoc
 
-    Встроенный пакет для работы с конфигурационными файлами формата INI.
+Встроенный пакет, используемый для проверки документации пакетов Emacs Lisp.
 
-* `css-mode`
+## company
 
-    Встроенный пакет для работы с файлами CSS.
+Автодополнение. Используется в основном при работе с текстами программ.
 
-* [dashboard](https://github.com/emacs-dashboard/emacs-dashboard)
+[Страница проекта][company-mode]
 
-    "Рабочий стол" со списком закладок, последних и закрепленных файлов и проектов.
+## conf-mode
 
-* `desktop`
+Встроенный пакет для работы с конфигурационными файлами формата INI.
 
-    Сохранение состояния Emacs между сессиями.
+## css-mode
 
-* [diff-hl](https://github.com/dgutov/diff-hl)
+Встроенный пакет для работы с файлами CSS.
 
-    Подсветка незафиксированных изменений.
+## dashboard
 
-* `dired`
+"Рабочий стол" со списком закладок, последних и закрепленных файлов и проектов.
 
-    Встроенный пакет для управления файлами.
+[Страница проекта][dashboard-mode]
 
-* `display-line-numbers`
+## desktop
 
-    Встроенный пакет для отображения номеров строк.
+Встроенный пакет для сохранение состояния Emacs между сессиями.
 
-* [dockerfile-mode](https://github.com/spotify/dockerfile-mode)
+## diff-hl
 
-    Поддержка конфигурационных файлов [Docker](https://docker.io/).
+Подсветка незафиксированных изменений.
 
-* [doom-modeline](https://github.com/seagle0128/doom-modeline)
+[Страница проекта][diff-hl-mode]
 
-    Строка статуса, используемая проектом [DooM EMACS](https://github.com/doomemacs/doomemacs). Выглядит отлично, поддерживает иконки и тонкую настройку внешнего вида.
+## dired
 
-* [doom-themes](https://github.com/doomemacs/themes)
+Встроенный пакет для управления файлами.
 
-    Темы из проекта [DooM EMACS](https://github.com/doomemacs/doomemacs). Мне больше всего нравится `monokai-pro`.
+## display-line-numbers
 
-* [edit-indirect](https://github.com/Fanael/edit-indirect)
+Встроенный пакет для отображения номеров строк.
 
-    Позволяет открыть буфер с фрагментом кода и нужным основным режимом во время работы с другим буфером. Например, код на Python, вставленный в Markdown-файл, откроется с основным режимом `anaconda-mode` и всеми его преимуществами: автодополнение, подсветка синтаксиса и т. д. Чтобы открыть фрагмент кода в другом буфере, нужно нажать **[C-c ']**, чтобы сохранить изменения — **[C-c C-c]**, закрыть буфер без сохранения изменений — **[C-c C-k]**.
+## dockerfile-mode
 
-* [editorconfig](https://github.com/editorconfig/editorconfig-emacs#readme)
+Поддержка конфигурационных файлов [Docker](https://docker.io/).
 
-    Поддержка [EditoConfig](https://editorconfig.org). Использование этой штуки задаёт правила форматирования текста на уровне проекта: TAB vs SPACES, типы концов строк и т. д.
+[Страница проекта](https://github.com/spotify/dockerfile-mode)
 
-* `elec-pair`
+## doom-modeline
 
-    Автоматическая вставка парной скобки.
+Строка статуса, используемая проектом [DooM EMACS][doom-emacs]. Выглядит отлично, поддерживает иконки и тонкую настройку внешнего вида.
 
-* [flycheck](https://www.flycheck.org)
+[Страница проекта](https://github.com/seagle0128/doom-modeline)
 
-    Автоматическая проверка синтаксиса с помощью статических анализаторов. Flymake давно устарел, [flycheck](https://www.flycheck.org/) обходит его по всем параметрам. Используйте его для статического анализа кода и текстов.
+## doom-themes
 
-* [flycheck-clang-tidy](https://github.com/ch1bo/flycheck-clang-tidy)
+Темы из проекта [DooM EMACS][doom-emacs]. Мне больше всего нравится `monokai-pro`.
 
-    Поддержка статического анализатора проекта Clang для проверки файлов на языках C и C++.
+[Страница проекта](https://github.com/doomemacs/themes)
 
-* [flycheck-color-mode-line](https://github.com/flycheck/flycheck-color-mode-line)
+## edit-indirect
 
-    Отображение результатов работы Flycheck с помощью цвета в статусной строке.
+Позволяет открыть буфер с фрагментом кода и нужным основным режимом во время работы с другим буфером. Например, код на Python, вставленный в Markdown-файл, откроется с основным режимом `anaconda-mode` и всеми его преимуществами: автодополнение, подсветка синтаксиса и т. д. Чтобы открыть фрагмент кода в другом буфере, нужно нажать **[C-c ']**, чтобы сохранить изменения — **[C-c C-c]**, закрыть буфер без сохранения изменений — **[C-c C-k]**.
 
-* [format-all](https://github.com/lassik/emacs-format-all-the-code)
+[Страница проекта](https://github.com/Fanael/edit-indirect)
 
-    Форматирование кода с помощью внешних средств, например, `standard` для JavaScript, `black` для Python и т. д.
+## editorconfig
 
-* [git-gutter](https://github.com/emacsorphanage/git-gutter)
+Поддержка [EditoConfig](https://editorconfig.org). Использование этой штуки задаёт правила форматирования текста на уровне проекта: TAB vs SPACES, типы концов строк и т. д.
 
-    Статус Git на боковой панели. Добавленные строки будут отмечены зеленым, измененные — синим, удаленные — красным, конфликты — оранжевым.
+[Страница проекта](https://github.com/editorconfig/editorconfig-emacs#readme)
 
-* [go-mode](https://github.com/dominikh/go-mode.el)
+## elec-pair
 
-    Поддержка языка программирования Golang.
+Встроенный пакет для автоматической вставки парной скобки.
 
-* [highlight-indentation](https://github.com/antonj/Highlight-Indentation-for-Emacs)
+## Flycheck
 
-    Отображает направляющие для отступов.
+Автоматическая проверка синтаксиса с помощью статических анализаторов. Отличная замена Flymake.
 
-* [js2-mode](https://github.com/mooz/js2-mode/)
+[Страница проекта](https://www.flycheck.org)
 
-    Расширенная поддержка языка программирования JavaScript. Обладает значительно большими возможностями, чем встроенный режим `javascript-mode`.
+## format-all
 
-* [lsp-mode](https://github.com/emacs-lsp/lsp-mode)
+Форматирование кода с помощью внешних средств, например, `standard` для JavaScript, `black` для Python и т. д.
 
-    Поддержка Language Server Protocol в EMACS.
+[Страница проекта](https://github.com/lassik/emacs-format-all-the-code)
 
-* [lsp-ui](https://github.com/emacs-lsp/lsp-ui)
+## js2-mode
 
-    Поддержка графического интерфейса при работе с LSP.
+Расширенная поддержка языка программирования JavaScript. Обладает значительно большими возможностями, чем встроенный режим `javascript-mode`.
 
-* [magit](https://github.com/magit/magit)
+[Страница проекта](https://github.com/mooz/js2-mode/)
 
-    Текстово-графичекий интерфейс для работы с системой контроля версий Git.
+## Magit
 
-* [multiple-cursors](https://github.com/magnars/multiple-cursors.el)
+Текстово-графичекий интерфейс для работы с системой контроля версий Git.
 
-    Поддержка мультикурсорности. Для редактирования выделенных строк нужно нажать **[C-S-c C-Sc]**.
+[Страница проекта](https://github.com/magit/magit)
 
-* [php-mode](https://github.com/emacs-php/php-mode)
+## multiple-cursors
 
-    Поддержка языка программирования PHP.
+Поддержка мультикурсорности. Для редактирования выделенных строк нужно нажать **[C-S-c C-Sc]**.
 
-* [projectile](https://github.com/bbatsov/projectile)
+[Страница проекта](https://github.com/magnars/multiple-cursors.el)
 
-    Работа с проектами.
+## Projectile
 
-* protobuf-mode
+Работа с проектами. Аналог встроенного пакета `project.el`.
 
-    Режим для работы с файлами Protobuf.
+[Страница проекта](https://github.com/bbatsov/projectile)
 
-* [pyenv-mode](https://github.com/proofit404/pyenv-mode)
+## Pulsar
 
-    Интеграция с [pyenv](https://github.com/pyenv/pyenv) — менеджером версий Python.
+Вспыхивание строки, к которой перемещён курсор. Помогает лучше ориентироваться среди множества открытых фреймов и окон.
 
-* [python-mode](https://gitlab.com/groups/python-mode-devs)
+[Страница проекта](https://git.sr.ht/~protesilaos/pulsar)
 
-    Базовая поддержка языка программирования Python.
+## python-mode
 
-* [rainbow-delimiters](https://github.com/Fanael/rainbow-delimiters)
+Базовая поддержка языка программирования Python.
 
-    Парные скобки отображаются одним цветом.
+[Страница проекта](https://gitlab.com/groups/python-mode-devs)
 
-* [scala-mode](https://github.com/hvesalai/emacs-scala-mode)
+## rainbow-delimiters
 
-    Поддержка языка программирования Scala.
+Парные скобки отображаются одним цветом.
 
-* [swiper](https://github.com/abo-abo/swiper)
+[Страница проекта](https://github.com/Fanael/rainbow-delimiters)
 
-    Продвинутый поиск по файлу. То же самое, что встроенный пакет `isearch`, только лучше.
+## terraform-mode
 
-* [terraform-mode](https://github.com/syohex/emacs-terraform-mode)
+Поддержка синтаксиса конфигурационных файлов Terraform.
 
-    Поддержка синтаксиса конфигурационных файлов Terraform.
+[Страница проекта](https://github.com/syohex/emacs-terraform-mode)
 
-* [treemacs](https://github.com/Alexander-Miller/treemacs)
+## treemacs
 
-    Дерево файлов в отдельном окне. Отличная замена устаревшему `neotree`.
+Дерево файлов в отдельном окне. Отличная замена устаревшему `neotree`.
 
-* [treemacs-all-the-icons](https://github.com/Alexander-Miller/treemacs)
+[Страница проекта](https://github.com/Alexander-Miller/treemacs)
 
-    Поддержка отображения иконок в Treemacs.
+## undo-tree
 
-* [treemacs-icons-for-dired](https://github.com/Alexander-Miller/treemacs)
+Замена стандартной системы Undo/Redo, используемой в EMACS, на более удобную.
 
-    Отображение иконок в `dired-mode`.
+[Страница проекта](https://www.dr-qubit.org/undo-tree.html)
 
-* [treemacs-magit](https://github.com/Alexander-Miller/treemacs)
+## vagrant
 
-    Интеграция Treemacs с Magit. Цвет файла в дереве показывает его состояние в Magit.
+Поддержка конфигурационных файлов Vagrant.
 
-* [undo-tree](https://www.dr-qubit.org/undo-tree.html)
+[Страница проекта](https://github.com/ottbot/vagrant.el)
 
-    Замена стандартной системы Undo/Redo, используемой в EMACS.
+## web-mode
 
-* [vagrant](https://github.com/ottbot/vagrant.el)
+Режим работы с Web-файлами: HTML, CSS.
 
-    Поддержка конфигурационных файлов Vagrant.
+[Страница проекта](https://web-mode.org)
 
-* [verb](https://github.com/federicotdn/verb)
+## which-key
 
-    Работа с REST API путем отправки HTTP-запросов к нужным эндпоинтам. Конфигурация пишется в org-файлах. Возможно, лучше использовать специализированное решение типа [Insomnia](https://insomnia.rest).
+Показывает подсказки с комбинациями клавиш, привязанным к командам.
 
-* [web-mode](https://web-mode.org)
+[Страница проекта](https://github.com/justbur/emacs-which-key)
 
-    Режим работы с Web-файлами: HTML, CSS.
+## whitespace
 
-* [wgrep](http://github.com/mhayashi1120/Emacs-wgrep/raw/master/wgrep.el)
+Встроенный пакет, отображающий невидимые символы: пробелы, табуляции, переходы на новую строку и т. п.
 
-    Аналог `grep`, позволяющий выполнять массовую замену текста средствами EMACS в нескольких файлах.
+## ws-butler
 
-* [which-key](https://github.com/justbur/emacs-which-key)
+Старый, но очень полезный пакет: позволяет работать с большими файлами так, будто включен режим удаления висячих пробелов, но затрагивает только изменённые строки.
 
-    Показывает подсказки с комбинациями клавиш, привязанным к командам.
+[Страница проекта][ws-butler-mode]
 
-* `whitespace`
+## yaml-mode
 
-    Встроенный режим, отображающий невидимые символы: пробелы, табуляции, переходы на новую строку и т. п.
+Поддержка синтаксиса языка разметки [YAML](https://yaml.org/).
 
-* [ws-butler](https://github.com/lewang/ws-butler)
+[Страница проекта][yaml-mode]
 
-    Старый, но очень полезный пакет: позволяет работать с большими файлами так, будто включен режим удаления висячих пробелов, но затрагивает только изменённые строки.
+## yasnippet
 
-* [yaml-mode](https://github.com/yoshiki/yaml-mode)
+Поддержка сниппетов: развёртывания небольших фрагментов текста в заранее подготовленные большие блоки.
 
-    Поддержка синтаксиса языка разметки [YAML](https://yaml.org/).
+[Страница проекта][yasnippet]
 
-* [yascroll](https://github.com/emacsorphanage/yascroll)
+## yasnippet-snippets
 
-    Альтернативные полосы прокрутки: показываются только когда это необходимо, в остальное время не видны.
+Набор сниппетов для `yasnippet`.
 
-* [yasnippet](https://github.com/joaotavora/yasnippet)
+[Страница проекта][yasnippet-snippets]
 
-    Поддержка сниппетов: развёртывания небольших фрагментов текста в заранее подготовленные большие блоки.
 
-* [yasnippet-snippets](https://github.com/AndreaCrotti/yasnippet-snippets)
 
-    Набор сниппетов для `yasnippet`.
+[AsciiDoc]: https://docs.asciidoctor.org/asciidoc/
+[adoc-mode]: https://github.com/bbatsov/adoc-mode
+[aggressive-indent-mode]: https://github.com/Malabarba/aggressive-indent-mode
+[ansible-mode]: https://github.com/k1LoW/emacs-ansible
+[bind-key]: https://github.com/jwiegley/use-package
+[company-mode]: https://company-mode.github.io/
+[dashboard-mode]: https://github.com/emacs-dashboard/emacs-dashboard
+[diff-hl-mode]: https://github.com/dgutov/diff-hl
+[doom-emacs]: https://github.com/doomemacs/doomemacs
+[use-package]: https://www.gnu.org/software/emacs/manual/html_mono/use-package.html
+[ws-butler-mode]: https://github.com/lewang/ws-butler
+[yaml-mode]: https://github.com/yoshiki/yaml-mode
+[yasnippet-snippets]: https://github.com/AndreaCrotti/yasnippet-snippets
+[yasnippet]: https://github.com/joaotavora/yasnippet

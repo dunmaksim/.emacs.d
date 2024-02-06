@@ -31,7 +31,7 @@
     (make-directory emacs-directory)
     (message (format "Создана директория %s" emacs-directory))))
 
-(defconst emacs-default-font-height 14 "Размер шрифта по умолчанию.")
+(defconst emacs-default-font-height 16 "Размер шрифта по умолчанию.")
 
 ;; Если используется старая версия EMACS, нужно указать параметры протокола TLS.
 ;; В противном случае будут проблемы при загрузке архива пакетов.
@@ -614,7 +614,8 @@
   (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
   (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
   (global-unset-key (kbd "M-,")) ;; Такие маркеры не нужны
-  (global-visual-line-mode 1) ;; Подсвечивать текущую строку
+  (global-visual-line-mode 1) ;; Деление логических строк на видимые
+  (hl-line-mode 1) ;; Подсвечивать текущую строку
   (line-number-mode t) ;; Показывать номер строки в статусной строке
   (menu-bar-mode 0) ;; Отключить показ меню
   (overwrite-mode 0) ;; Отключить режим перезаписи
@@ -627,9 +628,10 @@
   (set-language-environment 'utf-8)    ;; Кодировка языка по умолчанию
   (set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
   (set-terminal-coding-system 'utf-8) ;; Кодировка символов для вывода команд, запущенных в терминале
-  (show-paren-mode 1) ;; Подсвечивать парные сбоки
+  (show-paren-mode 1) ;; Подсвечивать парные скобки
   (size-indication-mode 1) ;; Отображать размер буфера в строке статуса
-  (tool-bar-mode 0) ;; Отключить отображение панели инструментов
+  (when (fboundp 'too-bar-mode)
+    (tool-bar-mode 0)) ;; Отключить отображение панели инструментов
   (tooltip-mode -1) ;; Отключить показ подсказок с помощью GUI
   (window-divider-mode t) ;; Отображать разделитель между окнами
   :bind
@@ -1246,6 +1248,16 @@
   ("\\.sh\\'" . shell-script-mode))
 
 
+;; -> SPHINX-MODE
+;; https://github.com/Fuco1/sphinx-mode
+;; Дополнительные функции для `rst-mode', если работаем со Sphinx.
+(use-package sphinx-mode
+  :pin "melpa-stable"
+  :ensure t
+  :defer t
+  :hook (rst-mode-hook . sphinx-mode))
+
+
 ;; -> TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
@@ -1293,6 +1305,7 @@
   :defer t
   :after (treemacs magit))
 
+
 ;; -> TREEMACS-PROJECTILE
 (use-package treemacs-projectile
   :pin "melpa-stable"
@@ -1313,8 +1326,6 @@
   (undo-tree-auto-save-history nil "Отключить создание резервных копий файлов")
   :config
   (global-undo-tree-mode 1))
-
-
 
 
 ;; -> WEB-MODE
@@ -1440,7 +1451,7 @@
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
 (use-package yaml-mode
-  :pin "gnu"
+  :pin "melpa-stable"
   :ensure t
   :defer t
   :mode

@@ -587,6 +587,7 @@
   (overwrite-mode-binary nil "Выключить режим перезаписи текста под курсором для бинарных файлов")
   (overwrite-mode-textual nil "Выключить режим перезаписи текста под курсором для текстовых файлов")
   (ring-bell-function #'ignore "Заблокировать пищание")
+  (safe-local-variable-values '((buffer-env-script-name ".venv/bin/activate")) "Безопасные переменные")
   (save-place-file (expand-file-name ".emacs-places" init-emacs-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
   (save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
   (scroll-bar-mode nil "Не показывать полосы прокрутки")
@@ -612,6 +613,7 @@
   (column-number-mode 1) ;; Показывать номер колонки в статусной строке
   (delete-selection-mode t) ;; Удалять выделенный фрагмент при вводе текста
   (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
+  (global-hl-line-mode 1) ;; Подсветка активной строки
   (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
   (global-unset-key (kbd "M-,")) ;; Такие маркеры не нужны
   (global-visual-line-mode 1) ;; Деление логических строк на видимые
@@ -715,6 +717,16 @@
     web-mode
     yaml-mode
     ) . flycheck-mode))
+
+
+;; -> FLYCHECK-EGLOT
+;; https://github.com/flycheck/flycheck-eglot
+;; Интеграция Flycheck + Eglot
+(use-package flycheck-eglot
+  :ensure t
+  :defer t
+  :after (eglot flycheck))
+
 
 
 ;; -> FLYMAKE
@@ -1122,6 +1134,8 @@
     (after-init . pulsar-global-mode)
     :config
     (add-to-list 'pulsar-pulse-functions 'ace-window)
+    (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
+    (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
     (add-to-list 'pulsar-pulse-functions 'next-multiframe-window)
     (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)))
 
@@ -1351,6 +1365,7 @@
 (use-package which-key
   :pin "gnu"
   :ensure t
+  :diminish nil
   :custom
   (which-key-idle-delay 2 "Задержка появления подсказки")
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")
@@ -1363,6 +1378,7 @@
 ;; -> WHITESPACE MODE
 ;; Встроенный пакет для отображения невидимых символов.
 (use-package whitespace
+  :diminish nil
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
    '(

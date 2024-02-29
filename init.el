@@ -194,16 +194,6 @@
   :pin "gnu")
 
 
-;; -> BREADCRUMB
-;; https://elpa.gnu.org/packages/breadcrumb.html
-;; Хлебные крошки в верхней части буфера показывают путь к файлу или разделу
-(use-package breadcrumb
-  :ensure t
-  :pin "gnu"
-  :config
-  (breadcrumb-mode 1))
-
-
 ;; -> BUFFER-ENV
 ;; https://github.com/astoff/buffer-env
 ;; Настройка окружения отдельно для каждого буфера.
@@ -378,6 +368,7 @@
     makefile-mode
     markdown-mode
     nxml-mode
+    po-mode
     python-mode
     rst-mode
     ruby-mode
@@ -479,12 +470,20 @@
 (use-package elec-pair
   :ensure nil
   :config
-  (add-to-list 'electric-pair-pairs '(?« . ?»))
+  (add-to-list 'electric-pair-pairs '(?\( . ?\)))
+  (add-to-list 'electric-pair-pairs '(?\[ . ?\]))
   (add-to-list 'electric-pair-pairs '(?{ . ?}))
+  (add-to-list 'electric-pair-pairs '(?« . ?»))
   (add-to-list 'electric-pair-pairs '(?‘ . ’?))
-  (add-to-list 'electric-pair-pairs '(?“ . ”?))
   (add-to-list 'electric-pair-pairs '(?‚ . ‘?))
-  (electric-pair-mode t)) ;; Глобальный режим
+  (add-to-list 'electric-pair-pairs '(?“ . ”?))
+  :hook
+  ((
+    adoc-mode
+    emacs-lisp-data-mode
+    emacs-lisp-mode
+    lisp-data-mode
+    markdown-mode) . electric-pair-local-mode))
 
 
 ;; -> ELECTRIC-INDENT MODE
@@ -576,7 +575,8 @@
   (cursor-type 'bar "Курсор в виде вертикальной черты")
   (custom-safe-themes t "Считать все темы безопасными")
   (delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
-  (enable-local-variables :all "Считать все переменные из файлов .dir-locals.el безопасными")
+  ;; (enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
+  (enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
   (inhibit-splash-screen t "Не надо показывать загрузочный экран")
   (inhibit-startup-message t "Не надо показывать приветственное сообщение")
@@ -640,11 +640,11 @@
   (:map
    global-map
    ("<escape>" . keyboard-quit)           ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-   ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
    ("C-x k" .
     (lambda ()
       (interactive)
       (kill-buffer (current-buffer))))    ;; Закрыть активный буфер без лишних вопросов
+   ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
    ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
    ("C-z" . undo)                         ;; Отмена
    ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
@@ -1089,6 +1089,17 @@
   :defer t)
 
 
+;; -> PO-MODE
+;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
+;; Работа с файлами локализации
+(use-package po-mode
+  :pin "melpa-stable"
+  :ensure t
+  :defer t
+  :mode
+  ("\\.po\\'\\|\\.po\\." . po-mode))
+
+
 ;; -> PROJECTILE
 ;; https://docs.projectile.mx/projectile/installation.html
 ;; Управление проектами. Чтобы каталог считался проектом, он должен быть
@@ -1111,7 +1122,6 @@
                                     :compile "make dirhtml"
                                     :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080")
   (projectile-register-project-type 'hugo
-
                                     '("hugo.toml")
                                     :project-file "hugo.toml"
                                     :src-dir "content"
@@ -1404,6 +1414,7 @@
     markdown-mode
     nxml-mode
     org-mode
+    po-mode
     python-mode
     rst-mode
     ruby-mode

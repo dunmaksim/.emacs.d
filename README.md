@@ -1,13 +1,15 @@
 # Конфигурация EMACS для технических писателей
 
 Все необходимые пакеты устанавливаются автоматически при запуске редактора.
-Для управления конфигурацией используются возможности пакета [use-package][use-package].
+Для управления конфигурацией используются возможности пакета [use-package](https://www.gnu.org/software/emacs/manual/html_mono/use-package.html).
 
 В этой конфигурации используются (в алфавитном порядке):
+
 
 ## abbrev-mode
 
 Встроенный пакет для использования аббревиатур — последовательностей, автоматически заменяемых на более длинные слова и предложения.
+
 
 ## ace-window
 
@@ -15,71 +17,89 @@
 
 [Страница проекта](https://github.com/abo-abo/ace-window)
 
+
 ## adoc-mode
 
-Пакет для поддержки [AsciiDoc][AsciiDoc].
+Пакет для поддержки [AsciiDoc](https://docs.asciidoctor.org/asciidoc/).
 
-[Страница проекта][adoc-mode]
+[Страница проекта](https://github.com/bbatsov/adoc-mode)
+
 
 ## aggressive-indent
 
 Принудительное выравнивание кода. Особенно полезен этот пакет для работы с `init.el`.
 
-[Страница проекта][aggressive-indent-mode]
+[Страница проекта](https://github.com/Malabarba/aggressive-indent-mode)
+
 
 ## ansible
 
 Поддержка синтаксиса для конфигураций Ansible. Дополнительный режим, расширяющий возможности `yaml-mode`.
 
-[Страница проекта][ansible-mode]
+[Страница проекта](https://github.com/k1LoW/emacs-ansible)
+
 
 ## bind-key
 
 Обёртки над функциями Emacs, используемыми для привязки клавиш.
 
-[Страница проекта][bind-key]
+[Страница проекта](https://github.com/jwiegley/use-package)
+
 
 ## checkdoc
 
 Встроенный пакет, используемый для проверки документации пакетов Emacs Lisp.
 
+
 ## company
 
 Автодополнение. Используется в основном при работе с текстами программ.
 
-[Страница проекта][company-mode]
+[Страница проекта](https://company-mode.github.io/)
+
 
 ## conf-mode
 
 Встроенный пакет для работы с конфигурационными файлами формата INI.
 
+
 ## css-mode
 
 Встроенный пакет для работы с файлами CSS.
+
 
 ## dashboard
 
 "Рабочий стол" со списком закладок, последних и закрепленных файлов и проектов.
 
-[Страница проекта][dashboard-mode]
+[Страница проекта](https://github.com/emacs-dashboard/emacs-dashboard)
+
 
 ## desktop
 
 Встроенный пакет для сохранение состояния Emacs между сессиями.
 
+Документация Emacs: [Saving Emacs Sessions](https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html)
+
+
 ## diff-hl
 
 Подсветка незафиксированных изменений.
 
-[Страница проекта][diff-hl-mode]
+[Страница проекта](https://github.com/dgutov/diff-hl)
+
 
 ## dired
 
 Встроенный пакет для управления файлами.
 
+Документация Emacs: [Dired, the Directory Editor](https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html)
+
+
 ## display-line-numbers
 
 Встроенный пакет для отображения номеров строк.
+
 
 ## dockerfile-mode
 
@@ -87,11 +107,13 @@
 
 [Страница проекта](https://github.com/spotify/dockerfile-mode)
 
+
 ## doom-modeline
 
 Строка статуса, используемая проектом [DooM EMACS][doom-emacs]. Выглядит отлично, поддерживает иконки и тонкую настройку внешнего вида.
 
 [Страница проекта](https://github.com/seagle0128/doom-modeline)
+
 
 ## doom-themes
 
@@ -99,11 +121,13 @@
 
 [Страница проекта](https://github.com/doomemacs/themes)
 
+
 ## edit-indirect
 
 Позволяет открыть буфер с фрагментом кода и нужным основным режимом во время работы с другим буфером. Например, код на Python, вставленный в Markdown-файл, откроется с основным режимом `anaconda-mode` и всеми его преимуществами: автодополнение, подсветка синтаксиса и т. д. Чтобы открыть фрагмент кода в другом буфере, нужно нажать **[C-c ']**, чтобы сохранить изменения — **[C-c C-c]**, закрыть буфер без сохранения изменений — **[C-c C-k]**.
 
 [Страница проекта](https://github.com/Fanael/edit-indirect)
+
 
 ## editorconfig
 
@@ -111,9 +135,11 @@
 
 [Страница проекта](https://github.com/editorconfig/editorconfig-emacs#readme)
 
+
 ## elec-pair
 
 Встроенный пакет для автоматической вставки парной скобки.
+
 
 ## Flycheck
 
@@ -121,11 +147,13 @@
 
 [Страница проекта](https://www.flycheck.org)
 
+
 ## format-all
 
 Форматирование кода с помощью внешних средств, например, `standard` для JavaScript, `black` для Python и т. д.
 
 [Страница проекта](https://github.com/lassik/emacs-format-all-the-code)
+
 
 ## js2-mode
 
@@ -133,11 +161,13 @@
 
 [Страница проекта](https://github.com/mooz/js2-mode/)
 
+
 ## Magit
 
 Текстово-графичекий интерфейс для работы с системой контроля версий Git.
 
 [Страница проекта](https://github.com/magit/magit)
+
 
 ## multiple-cursors
 
@@ -145,11 +175,13 @@
 
 [Страница проекта](https://github.com/magnars/multiple-cursors.el)
 
+
 ## Projectile
 
-Работа с проектами. Аналог встроенного пакета `project.el`.
+Работа с проектами. Аналог встроенного пакета `project.el`, предоставляющий дополнительные возможности.
 
 [Страница проекта](https://github.com/bbatsov/projectile)
+
 
 ## Pulsar
 
@@ -157,11 +189,13 @@
 
 [Страница проекта](https://git.sr.ht/~protesilaos/pulsar)
 
+
 ## python-mode
 
 Базовая поддержка языка программирования Python.
 
 [Страница проекта](https://gitlab.com/groups/python-mode-devs)
+
 
 ## rainbow-delimiters
 
@@ -169,11 +203,13 @@
 
 [Страница проекта](https://github.com/Fanael/rainbow-delimiters)
 
+
 ## terraform-mode
 
 Поддержка синтаксиса конфигурационных файлов Terraform.
 
 [Страница проекта](https://github.com/syohex/emacs-terraform-mode)
+
 
 ## treemacs
 
@@ -181,11 +217,13 @@
 
 [Страница проекта](https://github.com/Alexander-Miller/treemacs)
 
+
 ## undo-tree
 
 Замена стандартной системы Undo/Redo, используемой в EMACS, на более удобную.
 
 [Страница проекта](https://www.dr-qubit.org/undo-tree.html)
+
 
 ## vagrant
 
@@ -193,11 +231,13 @@
 
 [Страница проекта](https://github.com/ottbot/vagrant.el)
 
+
 ## web-mode
 
 Режим работы с Web-файлами: HTML, CSS.
 
 [Страница проекта](https://web-mode.org)
+
 
 ## which-key
 
@@ -205,47 +245,38 @@
 
 [Страница проекта](https://github.com/justbur/emacs-which-key)
 
+
 ## whitespace
 
 Встроенный пакет, отображающий невидимые символы: пробелы, табуляции, переходы на новую строку и т. п.
+
 
 ## ws-butler
 
 Старый, но очень полезный пакет: позволяет работать с большими файлами так, будто включен режим удаления висячих пробелов, но затрагивает только изменённые строки.
 
-[Страница проекта][ws-butler-mode]
+[Страница проекта](https://github.com/lewang/ws-butler)
+
 
 ## yaml-mode
 
 Поддержка синтаксиса языка разметки [YAML](https://yaml.org/).
 
-[Страница проекта][yaml-mode]
+[Страница проекта](https://github.com/yoshiki/yaml-mode)
+
 
 ## yasnippet
 
 Поддержка сниппетов: развёртывания небольших фрагментов текста в заранее подготовленные большие блоки.
 
-[Страница проекта][yasnippet]
+[Страница проекта](https://github.com/joaotavora/yasnippet)
+
 
 ## yasnippet-snippets
 
 Набор сниппетов для `yasnippet`.
 
-[Страница проекта][yasnippet-snippets]
+[Страница проекта](https://github.com/AndreaCrotti/yasnippet-snippets)
 
 
-
-[AsciiDoc]: https://docs.asciidoctor.org/asciidoc/
-[adoc-mode]: https://github.com/bbatsov/adoc-mode
-[aggressive-indent-mode]: https://github.com/Malabarba/aggressive-indent-mode
-[ansible-mode]: https://github.com/k1LoW/emacs-ansible
-[bind-key]: https://github.com/jwiegley/use-package
-[company-mode]: https://company-mode.github.io/
-[dashboard-mode]: https://github.com/emacs-dashboard/emacs-dashboard
-[diff-hl-mode]: https://github.com/dgutov/diff-hl
 [doom-emacs]: https://github.com/doomemacs/doomemacs
-[use-package]: https://www.gnu.org/software/emacs/manual/html_mono/use-package.html
-[ws-butler-mode]: https://github.com/lewang/ws-butler
-[yaml-mode]: https://github.com/yoshiki/yaml-mode
-[yasnippet-snippets]: https://github.com/AndreaCrotti/yasnippet-snippets
-[yasnippet]: https://github.com/joaotavora/yasnippet

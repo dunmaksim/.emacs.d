@@ -933,6 +933,19 @@
   ([f2] . ibuffer))
 
 
+;; IDO-MODE
+;; https://www.gnu.org/software/emacs/manual/html_mono/ido.html
+;; Встроенный режим, помогающий с автодополнением в минибуфере
+(use-package ido
+  :custom
+  (ido-use-faces t "Использование шрифтового оформления при использовании команд ido")
+  (ido-use-filename-at-point 'guess "Интеллектуальное открытие URL и файлов")
+  (ido-use-url-at-point t "Открытие URL с помощью ido")
+  (ido-ewerywhere t "Замена стандартных функций `read-file-name' и `read-buffer' на ido-аналоги")
+  :config
+  (ido-mode 1))
+
+
 ;; -> JS2-MODE
 ;; https://github.com/mooz/js2-mode
 (use-package js2-mode

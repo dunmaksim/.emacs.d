@@ -39,7 +39,6 @@
   (require 'gnutls)
   (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
-;; -> PACKAGE
 ;; Встроенный пакет для управления пакетами.
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
@@ -171,18 +170,6 @@
   :pin "melpa-stable"
   :ensure t
   :defer t)
-
-
-;; -> AUTO-REVERT
-;; Встроенный пакет
-;; Автоматически обновляет содержимое буфера при изменениях в файловой системе
-(use-package auto-revert
-  :hook
-  ((
-    dired-mode
-    ibuffer-mode
-    treemacs-mode
-    ) . auto-revert-mode))
 
 
 ;; -> BIND-KEY
@@ -575,8 +562,6 @@
   (cursor-type 'bar "Курсор в виде вертикальной черты")
   (custom-safe-themes t "Считать все темы безопасными")
   (delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
-  ;; (enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
-  (enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
   (inhibit-splash-screen t "Не надо показывать загрузочный экран")
   (inhibit-startup-message t "Не надо показывать приветственное сообщение")
@@ -590,13 +575,11 @@
   (safe-local-variable-values '((buffer-env-script-name ".venv/bin/activate")) "Безопасные переменные")
   (save-place-file (expand-file-name ".emacs-places" init-emacs-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
   (save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
-  (scroll-bar-mode nil "Не показывать полосы прокрутки")
   (scroll-conservatively 100000 "TODO: проверить, что это такое")
   (scroll-margin 5 "При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна")
   (scroll-preserve-screen-position 1 "TODO: проверить, что это такое")
   (show-trailing-whitespace t "Показывать висячие пробелы")
   (source-directory "/usr/share/emacs/28.2/src/" "Путь к исходному коду EMACS")
-  (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   (tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
   (tool-bar-mode nil "Отключить показ панели инструментов")
   (tooltip-mode nil "Отключить показ подсказок с помощью GUI")
@@ -606,24 +589,16 @@
   (use-dialog-box nil "Диалоговые окна не нужны, будем использовать текстовый интерфейс")
   (user-full-name "Dunaevsky Maxim" "Имя пользователя")
   (visible-bell t "Эффект мигания при переходе в буфер")
-  (window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
-  (window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон")
 
   :config
-  (column-number-mode 1) ;; Показывать номер колонки в статусной строке
   (delete-selection-mode t) ;; Удалять выделенный фрагмент при вводе текста
   (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
   (global-hl-line-mode 1) ;; Подсветка активной строки
   (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
   (global-unset-key (kbd "M-,")) ;; Такие маркеры не нужны
-  (global-visual-line-mode 1) ;; Деление логических строк на видимые
-  (hl-line-mode 1) ;; Подсвечивать текущую строку
-  (line-number-mode t) ;; Показывать номер строки в статусной строке
   (menu-bar-mode 0) ;; Отключить показ меню
-  (overwrite-mode 0) ;; Отключить режим перезаписи
   (prefer-coding-system 'utf-8)        ;; При попытке определить кодировку файла начинать перебор с UTF-8)
   (save-place-mode 1) ;; Помнить позицию курсора в открытых файлах
-  (savehist-mode t) ;; Запоминать историю введенных в минибуфере команд
   (scroll-bar-mode 0) ;; Не показывать полосы прокрутки
   (set-default-coding-systems 'utf-8)  ;; Кодировка по умолчанию
   (set-keyboard-coding-system 'utf-8)  ;; Кодировка символов при вводе текста в терминале
@@ -631,30 +606,22 @@
   (set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
   (set-terminal-coding-system 'utf-8) ;; Кодировка символов для вывода команд, запущенных в терминале
   (show-paren-mode 1) ;; Подсвечивать парные скобки
-  (size-indication-mode 1) ;; Отображать размер буфера в строке статуса
   (when (fboundp 'too-bar-mode)
     (tool-bar-mode 0)) ;; Отключить отображение панели инструментов
   (tooltip-mode -1) ;; Отключить показ подсказок с помощью GUI
-  (window-divider-mode t) ;; Отображать разделитель между окнами
   :bind
-  (:map
-   global-map
-   ("<escape>" . keyboard-quit)           ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-   ("C-x k" .
-    (lambda ()
-      (interactive)
-      (kill-buffer (current-buffer))))    ;; Закрыть активный буфер без лишних вопросов
-   ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно)
-   ("C-x o" . next-multiframe-window)     ;; Перейти в следующее окно
-   ("C-z" . undo)                         ;; Отмена
-   ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
-   ("M--" .
-    (lambda ()
-      (interactive)
-      (insert "—"))) ;; Вставка длинного тире нажатием Alt+-
-   ("S-<SPC>" . just-one-space)           ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
-   ([f3] . replace-string)                ;; Замена строки
-   ([f9] . sort-lines)))                  ;; Отсортировать выделенные строки
+  (:map global-map
+        ("C-x k" .
+         (lambda ()
+           (interactive)
+           (kill-buffer (current-buffer))))    ;; Закрыть активный буфер без лишних вопросов
+        ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
+        ("M--" .
+         (lambda ()
+           (interactive)
+           (insert "—"))) ;; Вставка длинного тире нажатием Alt+-
+        ([f3] . replace-string)                ;; Замена строки
+        ([f9] . sort-lines)))                  ;; Отсортировать выделенные строки
 
 
 ;; -> FACE-REMAP
@@ -672,6 +639,8 @@
   :custom
   (auto-save-file-name-transforms `((".*" , init-emacs-autosave-dir) t))
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
+  (enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
+  (enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
@@ -773,6 +742,20 @@
   :ensure t
   :defer t
   :bind (([f12] . format-all-buffer)))
+
+
+;; -> FRAME
+;; Встроенный пакет
+(use-package frame
+  :custom
+  (window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
+  (window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон")
+  :config
+  (window-divider-mode t) ;; Отображать разделитель между окнами
+  :bind
+  (:map global-map
+        ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно
+        ("C-x o" . next-multiframe-window)))   ;; Перейти в следующее окно
 
 
 ;; -> GOTO-ADDRESS-MODE
@@ -933,15 +916,15 @@
   ([f2] . ibuffer))
 
 
-;; IDO-MODE
+;; -> IDO-MODE
 ;; https://www.gnu.org/software/emacs/manual/html_mono/ido.html
 ;; Встроенный режим, помогающий с автодополнением в минибуфере
 (use-package ido
   :custom
+  (ido-ewerywhere t "Замена стандартных функций `read-file-name' и `read-buffer' на ido-аналоги")
   (ido-use-faces t "Использование шрифтового оформления при использовании команд ido")
   (ido-use-filename-at-point 'guess "Интеллектуальное открытие URL и файлов")
   (ido-use-url-at-point t "Открытие URL с помощью ido")
-  (ido-ewerywhere t "Замена стандартных функций `read-file-name' и `read-buffer' на ido-аналоги")
   :config
   (ido-mode 1))
 
@@ -1129,11 +1112,12 @@
   :config
   (projectile-register-project-type 'sphinx
                                     '("Makefile" "source" "source/conf.py")
-                                    :project-file "source/conf.py"
-                                    :src-dir "source/"
-                                    :install "pip3 install -r requirements.txt -U"
                                     :compile "make dirhtml"
-                                    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080")
+                                    :install "pip3 install -r requirements.txt -U"
+                                    :project-file "source/conf.py"
+                                    :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080"
+                                    :src-dir "source/"
+                                    :test "pre-commit run --all")
   (projectile-register-project-type 'hugo
                                     '("hugo.toml")
                                     :project-file "hugo.toml"
@@ -1274,6 +1258,21 @@
    "\\.rb\\'"))
 
 
+;; -> SAVE-HIST
+;; Встроенный пакет
+;; Запоминает историю введенных команд
+(use-package savehist
+  :config
+  (savehist-mode 1)) ;; Запоминать историю введенных в минибуфере команд
+
+
+;; SCROLL-BAR
+;; Встроенный пакет
+(use-package scroll-bar
+  :custom
+  (scroll-bar-mode nil "Не показывать полосы прокрутки"))
+
+
 ;; -> SHELL-SCRIPT-MODE
 ;; Встроенный пакет
 (use-package sh-script
@@ -1283,6 +1282,24 @@
   ("\\.bashrc\\'" . shell-script-mode)
   ("\\.profile\\'" . shell-script-mode)
   ("\\.sh\\'" . shell-script-mode))
+
+
+;; -> SIMPLE
+;; Встроенный пакет
+(use-package simple
+  :custom
+  (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
+  :config
+  (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
+  (global-visual-line-mode 1) ;; Деление логических строк на видимые
+  (line-number-mode t)        ;; Показывать номер строки в статусной строке
+  (overwrite-mode 0)          ;; Отключить режим перезаписи текста
+  (size-indication-mode 1)    ;; Отображать размер буфера в строке статуса
+  :bind
+  (:map global-map
+        ("<escape>" . keyboard-quit)   ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+        ("C-z" . undo)                 ;; Отмена
+        ("S-<SPC>" . just-one-space))) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
 
 
 ;; -> SPHINX-MODE

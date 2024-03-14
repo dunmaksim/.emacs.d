@@ -172,6 +172,15 @@
   :defer t)
 
 
+;; -> BBCODE-MODE
+;; https://github.com/lassik/emacs-bbcode-mode
+;; Режим редактирования BB-кодов
+(use-package bbcode-mode
+  :pin "melpa-stable"
+  :ensure t
+  :defer t)
+
+
 ;; -> BIND-KEY
 ;; https://github.com/jwiegley/use-package
 ;; Позволяет настраивать привязки клавиш более простым и наглядным способом чем
@@ -523,15 +532,15 @@
 ;; Краткая справка по использованию:
 ;; Проверка состояния: `elpy-config'.
 ;; Активация окружения: `pyenv-activate', указать путь к каталогу с окружением.
-;; (use-package elpy
-;;   :pin "melpa-stable"
-;;   :ensure t
-;;   :defer t
-;;   :after (python-mode)
-;;   :config
-;;   (elpy-enable)
-;;   (defalias 'workon 'pyvenv-workon)
-;;   :hook python-mode)
+(use-package elpy
+  :pin "melpa-stable"
+  :ensure t
+  :defer t
+  :after (python-mode)
+  :config
+  (elpy-enable)
+  (defalias 'workon 'pyvenv-workon)
+  :hook python-mode)
 
 
 ;; -> EMACS-LISP-MODE
@@ -720,18 +729,19 @@
 (use-package flyspell
   :when (and
           (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
-          (file-exists-p "/usr/bin/aspell"))    ;; Надо убедиться, что программа установлена в ОС
+          (file-exists-p "/usr/bin/hunspell"))    ;; Надо убедиться, что программа установлена в ОС
   :custom
-  (ispell-program-name "/usr/bin/aspell")
+  (ispell-program-name "/usr/bin/hunspell")
   :hook
   ((
      adoc-mode
      markdown-mode
      rst-mode
      ) . flyspell-mode)
-  ((
-     emacs-lisp-mode
-     ) . flyspell-prog-mode))
+  (emacs-lisp-mode . flyspell-prog-mode)
+  :bind
+  (:map global-map
+    ([f5] . ispell-buffer)))
 
 
 ;; -> FORMAT-ALL
@@ -799,6 +809,18 @@
   :bind
   (:map company-mode-map ("C-:" . helm-company))
   (:map company-active-map ("C-:" . helm-company)))
+
+
+;; -> HELM-PROJECTILE
+;; https://github.com/bbatsov/helm-projectile
+;; Интеграция Help с Projectile
+(use-package helm-projectile
+  :pin "melpa-stable"
+  :ensure t
+  :requires (helm projectile)
+  :after (helm projectile)
+  :config
+  (helm-projectile-on))
 
 
 ;; -> HL-TODO
@@ -1065,7 +1087,7 @@
 
 ;; -> ORG-MODE
 ;; https://orgmode.org/
-;; Органайзер, и не только
+;; Органайзер, заметки и так далее
 (use-package org
   :pin "gnu"
   :ensure t
@@ -1153,7 +1175,8 @@
   :pin "melpa-stable"
   :ensure t
   :custom
-  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint"))
+  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
+  (python-indent-offset 4))
 
 
 ;; -> RAINBOW-DELIMITERS-MODE

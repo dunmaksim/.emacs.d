@@ -305,6 +305,16 @@
   (setq initial-buffer-choice (lambda ()(get-buffer "*dashboard*")))) ;; Теперь Dashboard будет буфером по умолчанию после запуска
 
 
+;; -> DENOTE
+;; https://protesilaos.com/emacs/denote
+;; Режим для управления заметками
+(use-package denote
+  :pin "gnu"
+  :ensure t
+  :custom
+  (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок."))
+
+
 ;; -> DESKTOP-SAVE-MODE
 ;; Встроенный пакет, позволяет сохранять состояние EMACS между сессиями
 (use-package desktop

@@ -104,6 +104,7 @@
 
     (set-face-attribute 'default nil :height (* emacs-default-font-height 10))))
 
+
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
@@ -172,6 +173,17 @@
   :defer t)
 
 
+;; -> AUTOREVERT
+;; Встроенный пакет для автоматического обновления буферов при изменении связанного
+;; файла.
+(use-package autorevert
+  :custom
+  (auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
+  :config
+  (global-auto-revert-mode 1)) ;; Автоматически перезагружать буфер при изменении файла на диске.
+
+
+
 ;; -> BBCODE-MODE
 ;; https://github.com/lassik/emacs-bbcode-mode
 ;; Режим редактирования BB-кодов
@@ -204,6 +216,13 @@
   :hook
   ((hack-local-variables
      comint-mode) . buffer-env-update))
+
+
+;; -> CALENDAR
+;; Встроенный пакет
+(use-package calendar
+  :custom
+  (calendar-week-start-day 1 "Начнём неделю с понедельника"))
 
 
 ;; -> CHECKDOC
@@ -282,6 +301,13 @@
     "Файл для сохранения пользовательских настроек, сделанных в customize."))
 
 
+;; -> CUSTOM
+;; Встроенный пакет для управления настройками, сделанными с помощью customize.
+(use-package custom
+  :custom
+  (custom-safe-themes t "Считать все темы безопасными"))
+
+
 ;; -> DASHBOARD
 ;; https://github.com/emacs-dashboard/emacs-dashboard
 ;; Отображает дашборд при запуске EMACS
@@ -303,6 +329,15 @@
   :config
   (dashboard-setup-startup-hook)
   (setq initial-buffer-choice (lambda ()(get-buffer "*dashboard*")))) ;; Теперь Dashboard будет буфером по умолчанию после запуска
+
+
+;; -> DELSEL
+;; Встроенный пакет.
+;; Используется для управления удалением выделенного текста.
+(use-package delsel
+  :config
+  (delete-selection-mode t)) ;; Удалять выделенный фрагмент при вводе текста)
+
 
 
 ;; -> DENOTE
@@ -434,7 +469,8 @@
   :config
   (doom-themes-visual-bell-config)
   ;; (doom-themes-treemacs-config)
-  (load-theme 'doom-molokai t))
+  ;; (load-theme 'doom-molokai t)
+  )
 
 
 ;; -> EDIT-INDIRECT
@@ -573,13 +609,8 @@
   :init
   (setq-default indent-tabs-mode nil) ;; Отключить `indent-tabs-mode'.
   :custom
-  (auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
-  (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
-  (blink-matching-paren t "Мигать, когда скобки парные")
-  (calendar-week-start-day 1 "Начнём неделю с понедельника")
   (create-lockfiles nil "Не надо создавать lock-файлы")
   (cursor-type 'bar "Курсор в виде вертикальной черты")
-  (custom-safe-themes t "Считать все темы безопасными")
   (delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
   (gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
   (inhibit-splash-screen t "Не надо показывать загрузочный экран")
@@ -588,10 +619,7 @@
   (load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл")
   (locale-coding-system 'utf-8 "UTF-8 по умолчанию")
   (menu-bar-mode nil "Отключить показ главного меню")
-  (overwrite-mode-binary nil "Выключить режим перезаписи текста под курсором для бинарных файлов")
-  (overwrite-mode-textual nil "Выключить режим перезаписи текста под курсором для текстовых файлов")
   (ring-bell-function #'ignore "Заблокировать пищание")
-  (safe-local-variable-values '((buffer-env-script-name ".venv/bin/activate")) "Безопасные переменные")
   (save-place-file (expand-file-name ".emacs-places" init-emacs-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
   (save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
   (scroll-conservatively 100000 "TODO: проверить, что это такое")
@@ -601,46 +629,43 @@
   (source-directory "/usr/share/emacs/28.2/src/" "Путь к исходному коду EMACS")
   (tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
   (tool-bar-mode nil "Отключить показ панели инструментов")
-  (tooltip-mode nil "Отключить показ подсказок с помощью GUI")
   (truncate-lines 1 "Обрезать длинные строки")
-  (uniquify-buffer-name-style 'forward "Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)")
-  (uniquify-separator "/" "Разделять буферы с похожими именами, используя /")
   (use-dialog-box nil "Диалоговые окна не нужны, будем использовать текстовый интерфейс")
   (user-full-name "Dunaevsky Maxim" "Имя пользователя")
   (visible-bell t "Эффект мигания при переходе в буфер")
 
   :config
-  (delete-selection-mode t) ;; Удалять выделенный фрагмент при вводе текста
-  (global-auto-revert-mode 1) ;; Автоматически перезагружать буфер при изменении файла на дискею
-  (global-hl-line-mode 1) ;; Подсветка активной строки
   (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
   (global-unset-key (kbd "M-,")) ;; Такие маркеры не нужны
-  (menu-bar-mode 0) ;; Отключить показ меню
   (prefer-coding-system 'utf-8)        ;; При попытке определить кодировку файла начинать перебор с UTF-8)
-  (save-place-mode 1) ;; Помнить позицию курсора в открытых файлах
-  (scroll-bar-mode 0) ;; Не показывать полосы прокрутки
   (set-default-coding-systems 'utf-8)  ;; Кодировка по умолчанию
-  (set-keyboard-coding-system 'utf-8)  ;; Кодировка символов при вводе текста в терминале
   (set-language-environment 'utf-8)    ;; Кодировка языка по умолчанию
-  (set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
-  (set-terminal-coding-system 'utf-8) ;; Кодировка символов для вывода команд, запущенных в терминале
-  (show-paren-mode 1) ;; Подсвечивать парные скобки
   (when (fboundp 'too-bar-mode)
     (tool-bar-mode 0)) ;; Отключить отображение панели инструментов
   (tooltip-mode -1) ;; Отключить показ подсказок с помощью GUI
   :bind
   (:map global-map
-    ("C-x k" .
-      (lambda ()
-        (interactive)
-        (kill-buffer (current-buffer))))    ;; Закрыть активный буфер без лишних вопросов
-    ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
-    ("M--" .
-      (lambda ()
-        (interactive)
-        (insert "—"))) ;; Вставка длинного тире нажатием Alt+-
-    ([f3] . replace-string)                ;; Замена строки
-    ([f9] . sort-lines)))                  ;; Отсортировать выделенные строки
+        ("C-x k" .
+         (lambda ()
+           (interactive)
+           (kill-buffer (current-buffer))))    ;; Закрыть активный буфер без лишних вопросов
+        ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
+        ("M--" .
+         (lambda ()
+           (interactive)
+           (insert "—"))) ;; Вставка длинного тире нажатием Alt+-
+        ([f3] . replace-string)                ;; Замена строки
+        ([f9] . sort-lines)))                  ;; Отсортировать выделенные строки
+
+
+;; -> F-THEMES
+;; https://git.sr.ht/~protesilaos/ef-themes
+;; Красивые темы
+(use-package ef-themes
+  :pin "gnu"
+  :ensure t
+  :config
+  (load-theme 'ef-night))
 
 
 ;; -> FACE-REMAP
@@ -662,7 +687,9 @@
   (enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
-  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
+  (safe-local-variable-values '((buffer-env-script-name ".venv/bin/activate")) "Безопасные переменные")
+  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
+  )
 
 
 ;; -> FLYCHECK
@@ -780,7 +807,8 @@
 
 ;; -> GOTO-ADDRESS-MODE
 ;; Встроенный пакет
-;; Подсвечивает ссылки и позволяет переходить по ним
+;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
+;; Возможны варианты (зависит от основного режима).
 (use-package goto-addr
   :ensure t
   :hook
@@ -821,16 +849,11 @@
   (:map company-active-map ("C-:" . helm-company)))
 
 
-;; -> HELM-PROJECTILE
-;; https://github.com/bbatsov/helm-projectile
-;; Интеграция Help с Projectile
-(use-package helm-projectile
-  :pin "melpa-stable"
-  :ensure t
-  :requires (helm projectile)
-  :after (helm projectile)
+;; -> HL-LINE
+;; Встроенный пакет, используемый для подсветки текущей строки.
+(use-package hl-line
   :config
-  (helm-projectile-on))
+  (global-hl-line-mode 1)) ;; Подсветка активной строки
 
 
 ;; -> HL-TODO
@@ -1060,7 +1083,7 @@
 
 
 ;; -> NERD-ICONS-IBUFFER
-;;
+;; https://github.com/seagle0128/nerd-icons-ibuffer
 ;; Отображение иконок в ibuffer
 (use-package nerd-icons-ibuffer
   :pin "melpa-stable"
@@ -1069,14 +1092,22 @@
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
 
-;; -> MODUS-THEMES
-;; Темы от проекта gnu
-;; https://www.gnu.org/software/emacs/manual/html_mono/modus-themes.html
-;; https://git.sr.ht/~protesilaos/modus-themes
-;; (use-package modus-themes
-;;   :pin "gnu"
-;;   :ensure t
-;;   :config (load-theme 'modus-vivendi-tritanopia))
+;; -> MENU-BAR
+;; Встроенный пакет.
+;; Используется для отрисовки меню в графическом и текстовом режимах.
+(use-package menu-bar
+  :config
+  (menu-bar-mode 0)) ;; Отключить показ меню
+
+
+;; -> MULE
+;; Встроенный пакет
+;; Управление кодировками.
+(use-package mule
+  :config
+  (set-keyboard-coding-system 'utf-8)  ;; Кодировка символов при вводе текста в терминале
+  (set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
+  (set-terminal-coding-system 'utf-8)) ;; Кодировка символов для вывода команд, запущенных в терминале
 
 
 ;; -> NXML-MODE
@@ -1115,6 +1146,14 @@
   :pin "melpa-stable"
   :ensure t
   :defer t)
+
+
+;; -> PAREN
+;; Встроенный режим
+;; Управление парными скобками.
+(use-package paren
+  :config
+  (show-paren-mode 1)) ;; Подсвечивать парные скобки
 
 
 ;; -> PO-MODE
@@ -1184,9 +1223,10 @@
 (use-package python-mode
   :pin "melpa-stable"
   :ensure t
+  :init
+  (setq-default python-indent-offset 4)
   :custom
-  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
-  (python-indent-offset 4))
+  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint"))
 
 
 ;; -> RAINBOW-DELIMITERS-MODE
@@ -1244,6 +1284,14 @@
   :init (setq-default default-input-method 'russian-techwriter))
 
 
+;; -> SAVEPLACE
+;; Встроенный пакет.
+;; Запоминание позиции курсора в посещённых файлах.
+(use-package saveplace
+  :config
+  (save-place-mode 1)) ;; Помнить позицию курсора
+
+
 ;; -> REVERSE-IM
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
@@ -1299,11 +1347,13 @@
   (savehist-mode 1)) ;; Запоминать историю введенных в минибуфере команд
 
 
-;; SCROLL-BAR
+;; -> SCROLL-BAR
 ;; Встроенный пакет
 (use-package scroll-bar
   :custom
-  (scroll-bar-mode nil "Не показывать полосы прокрутки"))
+  (scroll-bar-mode nil "Не показывать полосы прокрутки")
+  :config
+  (scroll-bar-mode 0)) ;; Не показывать полосы прокрутки
 
 
 ;; -> SHELL-SCRIPT-MODE
@@ -1321,6 +1371,10 @@
 ;; Встроенный пакет
 (use-package simple
   :custom
+  (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
+  (blink-matching-paren t "Мигать, когда скобки парные")
+  (overwrite-mode-binary nil "Выключить режим перезаписи текста под курсором для бинарных файлов")
+  (overwrite-mode-textual nil "Выключить режим перезаписи текста под курсором для текстовых файлов")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
   (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
@@ -1330,9 +1384,9 @@
   (size-indication-mode 1)    ;; Отображать размер буфера в строке статуса
   :bind
   (:map global-map
-    ("<escape>" . keyboard-quit)   ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-    ("C-z" . undo)                 ;; Отмена
-    ("S-<SPC>" . just-one-space))) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+        ("<escape>" . keyboard-quit)   ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+        ("C-z" . undo)                 ;; Отмена
+        ("S-<SPC>" . just-one-space))) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
 
 
 ;; -> SPHINX-MODE
@@ -1345,6 +1399,11 @@
   :defer t)
 
 
+;; -> STARTUP
+;; Встроенный пакет.
+;; Отвечает за параметры запуска Emacs.
+
+
 ;; -> TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
@@ -1353,6 +1412,13 @@
   :ensure t
   :defer t
   :mode "\\.terraformrc\\'")
+
+
+;; -> TOOLTIP
+;; Встроенный пакет для вывода подсказок в графической среде
+(use-package tooltip
+  :custom
+  (tooltip-mode nil "Отключить показ подсказок с помощью GUI"))
 
 
 ;; -> TREEMACS — awesome file manager (instead NeoTree)
@@ -1399,6 +1465,15 @@
   :ensure t
   :defer t
   :after (treemacs projectile))
+
+
+;; -> UNIQUIFY
+;; Встроенный пакет.
+;; Используется для поддержания уникальности названий буферов, путей и т. д.
+(use-package uniquify
+  :custom
+  (uniquify-buffer-name-style 'forward "Показывать директорию перед именем файла, если буферы одинаковые (по умолчанию имя<директория>)")
+  (uniquify-separator "/" "Разделять буферы с похожими именами, используя /"))
 
 
 ;; -> UNDO-TREE

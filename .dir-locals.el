@@ -1,3 +1,4 @@
-((emacs-lisp-mode . ((full-column . 80)
-                     (sentence-end-double-space . t)
-                     (emacs-lisp-docstring-fill-column . 75))))
+((emacs-lisp-mode . ((electric-pair-preserve-balance . t)
+                     (emacs-lisp-docstring-fill-column . 70)
+                     (fill-column . 70)
+                     (sentence-end-double-space . t))))

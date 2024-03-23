@@ -39,8 +39,10 @@
   (require 'gnutls)
   (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
+
 ;; Встроенный пакет для управления пакетами.
 (require 'package)
+
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
@@ -56,8 +58,10 @@
      ("nongnu" . 40)
      ("melpa-stable" . 30)
      ("melpa" . 20))
-  package-native-compile t                      ;; Компиляция пакетов во время установки, а не при первом запуске
-  package-user-dir init-emacs-package-user-dir) ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
+  ;; Компиляция пакетов во время установки, а не при первом запуске
+  package-native-compile t
+  ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
+  package-user-dir init-emacs-package-user-dir)
 
 (add-to-list 'package-pinned-packages '("use-package" . "gnu"))
 
@@ -89,17 +93,26 @@
 
     ;; Перебор шрифтов
     (cond
-      ((member "Fire Code Nerd" availiable-fonts)(setq default-font-family "Fira Code Nerd"))
-      ((member "Fira Code" availiable-fonts) (setq default-font-family "Fira Code"))
-      ((member "DejaVu Sans Mono Nerd" availiable-fonts) (setq default-font-family "DejaVu Sans Mono Nerd"))
-      ((member "DejaVu Sans Mono" availiable-fonts) (setq default-font-family "DejaVu Sans Mono"))
-      ((member "Source Code Pro" availiable-fonts) (setq default-font-family "Source Code Pro"))
-      ((member "Consolas" availiable-fonts) (setq default-font-family "Consolas")))
+      ((member "Fire Code Nerd" availiable-fonts)
+        (setq default-font-family "Fira Code Nerd"))
+      ((member "Fira Code" availiable-fonts)
+        (setq default-font-family "Fira Code"))
+      ((member "DejaVu Sans Mono Nerd" availiable-fonts)
+        (setq default-font-family "DejaVu Sans Mono Nerd"))
+      ((member "DejaVu Sans Mono" availiable-fonts)
+        (setq default-font-family "DejaVu Sans Mono"))
+      ((member "Source Code Pro" availiable-fonts)
+        (setq default-font-family "Source Code Pro"))
+      ((member "Consolas" availiable-fonts)
+        (setq default-font-family "Consolas")))
 
     (when default-font-family
-      ;; Это формат  X Logical Font Description Conventions, XLFD
+      ;; Это формат X Logical Font Description Conventions, XLFD
       ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
-      (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1" default-font-family emacs-default-font-height) nil t)
+      (set-frame-font
+        (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
+          default-font-family
+          emacs-default-font-height) nil t)
       (set-face-attribute 'default nil :family default-font-family))
 
     (set-face-attribute 'default nil :height (* emacs-default-font-height 10))))
@@ -137,7 +150,7 @@
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
 (use-package adoc-mode
-  :pin "melpa"
+  :pin melpa
   :ensure t
   :defer t
   :custom
@@ -168,7 +181,7 @@
 ;; https://github.com/k1LoW/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
 (use-package ansible
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t)
 
@@ -183,12 +196,11 @@
   (global-auto-revert-mode 1)) ;; Автоматически перезагружать буфер при изменении файла на диске.
 
 
-
 ;; -> BBCODE-MODE
 ;; https://github.com/lassik/emacs-bbcode-mode
 ;; Режим редактирования BB-кодов
 (use-package bbcode-mode
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t)
 
@@ -266,7 +278,8 @@
 
 
 ;; -> CONF-MODE
-;; Встроенный пакет. Основной режим для редактирования конфигурационных файлов INI/CONF
+;; Встроенный пакет.
+;; Основной режим для редактирования конфигурационных файлов INI/CONF
 (use-package conf-mode
   :ensure nil
   :defer t
@@ -317,13 +330,13 @@
   :custom
   (dashboard-display-icons-p t "Включить отображение иконок")
   (dashboard-icon-type 'nerd-icons "Использовать иконки из пакета `nerd-icons'")
-  (dashboard-items             ;; Элементы дашборда
+  (dashboard-items       ;; Элементы дашборда
     '(
-       (recents . 15)           ;; Последние открытые файлы
-       (bookmarks . 10)         ;; Последние закладки
-       (projects . 10)          ;; Последние проекты
-       (agenda . 10)            ;; Агенда
-       (registers . 0)))        ;; Регистры
+       (recents . 15)    ;; Последние открытые файлы
+       (bookmarks . 10)  ;; Последние закладки
+       (projects . 10)   ;; Последние проекты
+       (agenda . 10)     ;; Агенда
+       (registers . 0))) ;; Регистры
   (dashboard-set-footer nil "Скрыть \"весёлые\" надписи в нижней части дашборда")
   (dashboard-set-file-icons t "Показывать иконки рядом с элементами списков")
   :config
@@ -337,7 +350,6 @@
 (use-package delsel
   :config
   (delete-selection-mode t)) ;; Удалять выделенный фрагмент при вводе текста)
-
 
 
 ;; -> DENOTE
@@ -390,6 +402,7 @@
 ;; [C-x C-f] - создание файла с последующим открытием буфера.
 (use-package dired
   :custom
+  (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог.")
   (dired-listing-switches "-lah --group-directories-first"))
 
 
@@ -427,7 +440,7 @@
 (use-package dockerfile-mode
   :ensure t
   :defer t
-  :pin "nongnu")
+  :pin nongnu)
 
 
 ;; -> DOOM-MODELINE
@@ -435,7 +448,7 @@
 ;; Красивая статусная строка
 (use-package doom-modeline
   :ensure t
-  :pin "melpa-stable"
+  :pin melpa-stable
   :hook (after-init . doom-modeline-mode)
   :requires (nerd-icons)
   :custom
@@ -461,7 +474,7 @@
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
 (use-package doom-themes
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :custom
   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
@@ -485,7 +498,7 @@
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :defer t
   :bind
@@ -496,7 +509,7 @@
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :defer t
   :after (ws-butler)
@@ -512,13 +525,13 @@
 (use-package elec-pair
   :ensure nil
   :config
-  (add-to-list 'electric-pair-pairs '(?\( . ?\)))
-  (add-to-list 'electric-pair-pairs '(?\[ . ?\]))
-  (add-to-list 'electric-pair-pairs '(?{ . ?}))
-  (add-to-list 'electric-pair-pairs '(?« . ?»))
-  (add-to-list 'electric-pair-pairs '(?‘ . ’?))
-  (add-to-list 'electric-pair-pairs '(?‚ . ‘?))
-  (add-to-list 'electric-pair-pairs '(?“ . ”?))
+  (add-to-list 'electric-pair-pairs '(?\( . ?\))) ;; ()
+  (add-to-list 'electric-pair-pairs '(?\[ . ?\])) ;; []
+  (add-to-list 'electric-pair-pairs '(?{ . ?}))   ;; {}
+  (add-to-list 'electric-pair-pairs '(?« . ?»))   ;; «»
+  (add-to-list 'electric-pair-pairs '(?‘ . ’?))   ;; ‘’
+  (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
+  (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”
   :hook
   ((
      adoc-mode
@@ -578,8 +591,10 @@
 ;; Краткая справка по использованию:
 ;; Проверка состояния: `elpy-config'.
 ;; Активация окружения: `pyenv-activate', указать путь к каталогу с окружением.
+;; Ещё лучше -- создать файл `.dir-locals.el', в котором указать команду
+;; для активации окружения.
 (use-package elpy
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :after (python-mode)
@@ -640,22 +655,19 @@
   (prefer-coding-system 'utf-8)        ;; При попытке определить кодировку файла начинать перебор с UTF-8)
   (set-default-coding-systems 'utf-8)  ;; Кодировка по умолчанию
   (set-language-environment 'utf-8)    ;; Кодировка языка по умолчанию
-  (when (fboundp 'too-bar-mode)
-    (tool-bar-mode 0)) ;; Отключить отображение панели инструментов
-  (tooltip-mode -1) ;; Отключить показ подсказок с помощью GUI
   :bind
   (:map global-map
-        ("C-x k" .
-         (lambda ()
-           (interactive)
-           (kill-buffer (current-buffer))))    ;; Закрыть активный буфер без лишних вопросов
-        ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
-        ("M--" .
-         (lambda ()
-           (interactive)
-           (insert "—"))) ;; Вставка длинного тире нажатием Alt+-
-        ([f3] . replace-string)                ;; Замена строки
-        ([f9] . sort-lines)))                  ;; Отсортировать выделенные строки
+    ("C-x k" .
+      (lambda ()
+        (interactive)
+        (kill-buffer (current-buffer))))    ;; Закрыть активный буфер без лишних вопросов
+    ("M-'" . comment-or-uncomment-region)  ;; Закомментировать/раскомментировать область)
+    ("M--" .
+      (lambda ()
+        (interactive)
+        (insert "—"))) ;; Вставка длинного тире нажатием Alt+-
+    ([f3] . replace-string)                ;; Замена строки
+    ([f9] . sort-lines)))                  ;; Отсортировать выделенные строки
 
 
 ;; -> F-THEMES
@@ -684,19 +696,26 @@
   (auto-save-file-name-transforms `((".*" , init-emacs-autosave-dir) t))
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
   (enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
-  (enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
+  (setq enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
   (safe-local-variable-values '((buffer-env-script-name ".venv/bin/activate")) "Безопасные переменные")
-  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
-  )
+  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
+
+
+;; -> FILL-COLUMN
+;; Встроенный пакет.
+;; Отображение рекомендуемой границы символов.
+(use-package fill-column
+  :hook
+  (emacs-lisp-mode . display-fill-column-indicator-mode))
 
 
 ;; -> FLYCHECK
 ;; https://flycheck.org
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :custom
@@ -785,7 +804,7 @@
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода по нажатию [F12]
 (use-package format-all
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :bind (([f12] . format-all-buffer)))
@@ -827,7 +846,7 @@
 ;; Подсказки и автодополнение ввода
 ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
 (use-package helm
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :diminish nil
   :config
@@ -840,7 +859,7 @@
 ;;
 ;; Расширение для `company-mode'.
 (use-package helm-company
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :after (company helm)
@@ -860,7 +879,7 @@
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
 (use-package hl-todo
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :config (global-hl-todo-mode t))
 
@@ -996,7 +1015,7 @@
 ;; -> JSON-MODE
 ;; Поддержка JSON
 (use-package json-mode
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t)
 
@@ -1005,7 +1024,7 @@
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (use-package magit
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :defer t
   :custom
@@ -1026,7 +1045,7 @@
 ;; Режим для работы с файлами в формате Markdown
 (when init-emacs-version-greater-than-27-1
   (use-package markdown-mode
-    :pin "nongnu"
+    :pin nongnu
     :ensure t
     :defer t
     :custom
@@ -1043,7 +1062,7 @@
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (use-package multiple-cursors
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :bind
   (:map global-map
@@ -1086,7 +1105,7 @@
 ;; https://github.com/seagle0128/nerd-icons-ibuffer
 ;; Отображение иконок в ibuffer
 (use-package nerd-icons-ibuffer
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :after (ibuffer nerd-icons)
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
@@ -1143,7 +1162,7 @@
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
 (use-package package-lint
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t)
 
@@ -1160,7 +1179,7 @@
 ;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
 ;; Работа с файлами локализации
 (use-package po-mode
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :mode
@@ -1174,13 +1193,17 @@
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (use-package projectile
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :defer t
   :bind (
           :map projectile-mode-map
           ("M-p" . projectile-command-map))
   :config
+  (projectile-register-project-type 'asciidoc
+    '("Gemfile")
+    :compile "make"
+    :install "bundle install")
   (projectile-register-project-type 'sphinx
     '("Makefile" "source" "source/conf.py")
     :compile "make dirhtml"
@@ -1221,7 +1244,7 @@
 ;; -> PYTHON-MODE
 ;; Встроенный пакет для работы с Python
 (use-package python-mode
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :init
   (setq-default python-indent-offset 4)
@@ -1233,7 +1256,7 @@
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
 (use-package rainbow-delimiters
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :diminish nil
   :hook
@@ -1279,7 +1302,7 @@
 ;; Метод ввода для технических писателей
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :init (setq-default default-input-method 'russian-techwriter))
 
@@ -1296,7 +1319,7 @@
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
 (use-package reverse-im
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :after (russian-techwriter)
   :custom
@@ -1394,38 +1417,43 @@
 ;; Дополнительные функции для `rst-mode', если работаем со Sphinx.
 ;; Пакет должен быть установлен, но включать его лучше через `.dir-locals.el'.
 (use-package sphinx-mode
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t)
-
-
-;; -> STARTUP
-;; Встроенный пакет.
-;; Отвечает за параметры запуска Emacs.
 
 
 ;; -> TERRAFORM-MODE
 ;; https://github.com/emacsorphanage/terraform-mode
 ;; Работа с файлами конфигурации Terraform
 (use-package terraform-mode
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :mode "\\.terraformrc\\'")
+
+
+;; -> TOOL-BAR-MODE
+;; Встроенный пакет.
+;; Отрисовка панели инструментов в графическом режиме.
+(when (fboundp 'tool-bar)
+  (tool-bar-mode nil))
 
 
 ;; -> TOOLTIP
 ;; Встроенный пакет для вывода подсказок в графической среде
 (use-package tooltip
   :custom
-  (tooltip-mode nil "Отключить показ подсказок с помощью GUI"))
+  (tooltip-mode nil "Отключить показ подсказок с помощью GUI")
+  :config
+  ;; Отключить показ подсказок с помощью GUI
+  (tooltip-mode -1))
 
 
 ;; -> TREEMACS — awesome file manager (instead NeoTree)
 ;; https://github.com/Alexander-Miller/treemacs
 ;; Дерево файлов и каталогов
 (use-package treemacs
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :custom
@@ -1453,7 +1481,7 @@
 
 ;; -> TREEMACS-MAGIT
 (use-package treemacs-magit
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :after (treemacs magit))
@@ -1461,7 +1489,7 @@
 
 ;; -> TREEMACS-PROJECTILE
 (use-package treemacs-projectile
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :after (treemacs projectile))
@@ -1494,7 +1522,7 @@
 ;; https://web-mode.org/
 ;; Режим для редактирования HTML и не только.
 (use-package web-mode
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :custom
   (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
@@ -1531,10 +1559,10 @@
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
     '(
-       (space-mark  ?\    [?\xB7]     [?.])      ;; Пробел
-       (space-mark  ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
-       (newline-mark ?\n  [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
-       (tab-mark    ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
+       (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
+       (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
+       (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
+       (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
        ))
   (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
   :hook
@@ -1590,7 +1618,7 @@
 ;; https://github.com/lewang/ws-butler
 ;; Удаляет висячие пробелы только из изменённых строк.
 (use-package ws-butler
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :defer t
   :hook
@@ -1617,7 +1645,7 @@
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
 (use-package yaml-mode
-  :pin "melpa-stable"
+  :pin melpa-stable
   :ensure t
   :defer t
   :mode

@@ -6,27 +6,27 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
-(defconst init-emacs-config-dir (file-name-directory user-init-file) "Корневой каталог для размещения настроек.") ;; ~/.emacs.d/
-(defconst init-emacs-autosave-dir (concat init-emacs-config-dir "saves") "Каталог для файлов автосохранения.") ;; ~/.emacs.d/saves/
-(defconst init-emacs-package-user-dir (expand-file-name "elpa" user-emacs-directory) "Пользовательский каталог с пакетами.") ;; ~/.emacs.d/elpa/
-(defconst init-emacs-version-greater-than-26-1
+(defconst init-el-config-dir (file-name-directory user-init-file) "Корневой каталог для размещения настроек.") ;; ~/.emacs.d/
+(defconst init-el-autosave-dir (concat init-el-config-dir "saves") "Каталог для файлов автосохранения.") ;; ~/.emacs.d/saves/
+(defconst init-el-package-user-dir (expand-file-name "elpa" user-emacs-directory) "Пользовательский каталог с пакетами.") ;; ~/.emacs.d/elpa/
+(defconst init-el-version-greater-than-26-1
   (or
-    (> emacs-major-version 26)
-    (and (= emacs-major-version 26)
-      (>= emacs-minor-version 1))) "Версия Emacs ≥ 26.1.")
-(defconst init-emacs-version-greater-than-27-1
+   (> emacs-major-version 26)
+   (and (= emacs-major-version 26)
+        (>= emacs-minor-version 1))) "Версия Emacs ≥ 26.1.")
+(defconst init-el-version-greater-than-27-1
   (or
-    (> emacs-major-version 27)
-    (and (= emacs-major-version 27)
-      (>= emacs-minor-version 1))) "Версия Emacs ≥ 27.1.")
+   (> emacs-major-version 27)
+   (and (= emacs-major-version 27)
+        (>= emacs-minor-version 1))) "Версия Emacs ≥ 27.1.")
 
 ;; Если нужного каталога не существует, его следует создать
 (dolist
-  (emacs-directory
-    (list
-      init-emacs-config-dir
-      init-emacs-autosave-dir
-      init-emacs-package-user-dir))
+    (emacs-directory
+     (list
+      init-el-config-dir
+      init-el-autosave-dir
+      init-el-package-user-dir))
   (unless (file-directory-p emacs-directory)
     (make-directory emacs-directory)
     (message (format "Создана директория %s" emacs-directory))))
@@ -61,7 +61,7 @@
   ;; Компиляция пакетов во время установки, а не при первом запуске
   package-native-compile t
   ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
-  package-user-dir init-emacs-package-user-dir)
+  package-user-dir init-el-package-user-dir)
 
 (add-to-list 'package-pinned-packages '("use-package" . "gnu"))
 
@@ -308,40 +308,18 @@
   :ensure nil
   :custom
   (custom-file
-    (expand-file-name
-      (convert-standard-filename "custom.el")
-      init-emacs-config-dir)
-    "Файл для сохранения пользовательских настроек, сделанных в customize."))
+   (expand-file-name
+    (convert-standard-filename "custom.el")
+    init-el-config-dir)
+   "Файл для сохранения пользовательских настроек, сделанных в customize."))
 
 
 ;; -> CUSTOM
-;; Встроенный пакет для управления настройками, сделанными с помощью customize.
+;; Встроенный пакет
+;; Управление настройками, сделанными с помощью customize.
 (use-package custom
   :custom
   (custom-safe-themes t "Считать все темы безопасными"))
-
-
-;; -> DASHBOARD
-;; https://github.com/emacs-dashboard/emacs-dashboard
-;; Отображает дашборд при запуске EMACS
-(use-package dashboard
-  :pin "melpa-stable"
-  :ensure t
-  :custom
-  (dashboard-display-icons-p t "Включить отображение иконок")
-  (dashboard-icon-type 'nerd-icons "Использовать иконки из пакета `nerd-icons'")
-  (dashboard-items       ;; Элементы дашборда
-    '(
-       (recents . 15)    ;; Последние открытые файлы
-       (bookmarks . 10)  ;; Последние закладки
-       (projects . 10)   ;; Последние проекты
-       (agenda . 10)     ;; Агенда
-       (registers . 0))) ;; Регистры
-  (dashboard-set-footer nil "Скрыть \"весёлые\" надписи в нижней части дашборда")
-  (dashboard-set-file-icons t "Показывать иконки рядом с элементами списков")
-  :config
-  (dashboard-setup-startup-hook)
-  (setq initial-buffer-choice (lambda ()(get-buffer "*dashboard*")))) ;; Теперь Dashboard будет буфером по умолчанию после запуска
 
 
 ;; -> DELSEL
@@ -362,14 +340,17 @@
   (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок."))
 
 
-;; -> DESKTOP-SAVE-MODE
-;; Встроенный пакет, позволяет сохранять состояние EMACS между сессиями
+;; -> DESKTOP
+;; Встроенный пакет.
+;; Сохранение состояния Emacs между сессиями.
 (use-package desktop
   :ensure nil
   :custom
-  (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован")
+  (desktop-dirname init-el-config-dir "Каталог для хранения файла .desktop.")
+  (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
   (desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode)) ; А вот эти не сохранять
-  (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов")
+  (desktop-restore-frames t "Восстанавливать фреймы.")
+  (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
   (desktop-save-mode 1)
   (add-hook 'server-after-make-frame-hook #'desktop-read))
@@ -461,13 +442,14 @@
   (doom-modeline-indent-info t "Отображение информации об отступах.")
   (doom-modeline-lsp t "Отображение статуса LSP-сервера.")
   (doom-modeline-lsp-icon t "Отображение иконки со статусом LSP-сервера.")
-  (doom-modeline-major-mode-icon t "Отображение иконки основного режима.")
   (doom-modeline-major-mode-color-icon t "Отображение иконки основного режима.")
+  (doom-modeline-major-mode-icon t "Отображение иконки основного режима.")
   (doom-modeline-minor-modes t "Отображение списка дополнительных режимов.")
   (doom-modeline-project-detection 'auto "Автоматическое определение проектов.")
   (doom-modeline-total-line-number t "Отображение общего количества строк.")
   (doom-modeline-vcs-max-length 40 "Максимальная длина названия ветки VCS.")
-  (doom-modeline-workspace-name t "Отображение названия рабочего пространства."))
+  (doom-modeline-workspace-name t "Отображение названия рабочего пространства.")
+  :config (doom-modeline-mode 1))
 
 
 ;; -> DOOM-THEMES
@@ -635,7 +617,7 @@
   (locale-coding-system 'utf-8 "UTF-8 по умолчанию")
   (menu-bar-mode nil "Отключить показ главного меню")
   (ring-bell-function #'ignore "Заблокировать пищание")
-  (save-place-file (expand-file-name ".emacs-places" init-emacs-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
+  (save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
   (save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
   (scroll-conservatively 100000 "TODO: проверить, что это такое")
   (scroll-margin 5 "При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна")
@@ -693,13 +675,19 @@
 (use-package files
   :ensure nil
   :custom
-  (auto-save-file-name-transforms `((".*" , init-emacs-autosave-dir) t))
+  (auto-save-file-name-transforms `((".*" , init-el-autosave-dir) t))
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
   (enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
-  (setq enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
+  (enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
-  (safe-local-variable-values '((buffer-env-script-name ".venv/bin/activate")) "Безопасные переменные")
+  (safe-local-variable-values
+   '(
+     (buffer-env-script-name ".venv/bin/activate")
+     (fill-column . 70)
+     (frozen_string_literal . true)
+     )
+   "Безопасные переменные")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
 
 
@@ -772,32 +760,41 @@
   :ensure t
   :hook
   ((
-     emacs-lisp-mode
-     lisp-data-mode
-     rst-mode
-     ) . flymake-mode))
+    emacs-lisp-mode
+    lisp-data-mode
+    rst-mode
+    ) . flymake-mode))
 
 
 ;; -> FLYSPELL-MODE
-;; Проверка орфографии с помощью словарей
+;; Встроенный пакет.
+;; Проверка орфографии с помощью словарей.
 ;; Использовать пакет только в том случае, когда дело происходит в Linux и
-;; Aspell доступен
-(use-package flyspell
-  :when (and
-          (string-equal system-type "gnu/linux") ;; Aspell для Linux, в Windows без проверки орфографии
-          (file-exists-p "/usr/bin/hunspell"))    ;; Надо убедиться, что программа установлена в ОС
-  :custom
-  (ispell-program-name "/usr/bin/hunspell")
-  :hook
-  ((
-     adoc-mode
-     markdown-mode
-     rst-mode
-     ) . flyspell-mode)
-  (emacs-lisp-mode . flyspell-prog-mode)
-  :bind
-  (:map global-map
-    ([f5] . ispell-buffer)))
+;; Hunspell или Aspell доступны.
+(when (string-equal system-type "gnu/linux")
+  (defvar text-spell-program nil "Программа для проверки орфографии.")
+  (cond
+   ((file-exists-p "/usr/bin/hunspell")
+    (setq text-spell-program "/usr/bin/hunspell"))
+   ((file-exists-p "/usr/bin/aspell")
+    (setq text-spell-program "/usr/bin/aspell")))
+  ;; Нужно использовать ispell-mode только в том случае, когда есть
+  ;; чем проверять орфографию.
+  (if text-spell-program
+      (progn
+        (message (format "Ispell use %s" text-spell-program))
+        (use-package flyspell
+          :custom (ispell-program-name text-spell-program)
+          :hook
+          ((
+            adoc-mode
+            markdown-mode
+            rst-mode) . flyspell-mode)
+          (emacs-lisp-mode . flyspell-prog-mode)
+          :bind
+          (:map global-map
+                ([f5] . ispell-buffer))))
+    (message "Flyspell: не найдено программ для проверки орфографии.")))
 
 
 ;; -> FORMAT-ALL
@@ -1043,7 +1040,7 @@
 ;; -> MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
-(when init-emacs-version-greater-than-27-1
+(when init-el-version-greater-than-27-1
   (use-package markdown-mode
     :pin nongnu
     :ensure t
@@ -1224,15 +1221,15 @@
 ;; -> PULSAR
 ;; Вспыхивание строки, к которой переместился курсор
 ;; https://git.sr.ht/~protesilaos/pulsar
-(when init-emacs-version-greater-than-27-1
+(when init-el-version-greater-than-27-1
   ;; Этот пакет требует Emacs версии 27.1 или новее
   (use-package pulsar
     :pin "gnu"
     :ensure t
     :custom (pulsar-pulse t)
     :hook
-    (next-error . pulsar-pulse-line)
     (after-init . pulsar-global-mode)
+    (next-error . pulsar-pulse-line)
     :config
     (add-to-list 'pulsar-pulse-functions 'ace-window)
     (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)

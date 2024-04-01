@@ -200,13 +200,20 @@
 
 
 ;; -> AUTOREVERT
-;; Встроенный пакет для автоматического обновления буферов при изменении связанного
-;; файла.
+;; Встроенный пакет.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Revert.html
+;; Автоматическое обновление буферов.
+;; По умолчанию `global-auto-revert-mode' работает только с файловыми
+;; буферами.
 (use-package autorevert
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
   :config
-  (global-auto-revert-mode 1)) ;; Автоматически перезагружать буфер при изменении файла на диске.
+  ;; Автоматически перезагружать файловый буфер при изменении файла на диске.
+  (global-auto-revert-mode 1)
+  :hook
+  ;; Включить автообновление буферов с `dired-mode'.
+  (dired-mode . auto-revert-mode))
 
 
 ;; -> BBCODE-MODE
@@ -764,7 +771,6 @@
   ((
     emacs-lisp-mode
     lisp-data-mode
-    rst-mode
     ) . flymake-mode))
 
 
@@ -987,7 +993,7 @@
   (defalias 'list-buffers 'ibuffer)
   (add-hook 'ibuffer-mode-hook #'(lambda ()
                                    (ibuffer-switch-to-saved-filter-groups "default")))
-  :bind (map: global-map
+  :bind (:map global-map
               ([f2] . ibuffer)))
 
 
@@ -1351,8 +1357,19 @@
 ;;                 (vector (append mod (list to)))))))))
 ;;     (when input-method
 ;;       (activate-input-method current))))
-;; (reverse-input-method 'russian-techwriter)
-;; (set-input-method 'russian-techwriter)
+;; (if (not (daemonp))
+;;     (reverse-input-method 'russian-computer)
+;;   (defun rev-inp-m-init (f)
+;;     (lexical-let ((frame f))
+;;                  (run-at-time
+;;                   nil
+;;                   nil
+;;                   #'(lambda ()
+;;                       (unless (and (daemonp) (eq f terminal-frame))
+;;                         (reverse-input-method 'russian-computer)
+;;                         (remove-hook 'after-make-frame-functions #'rev-inp-m-init))))))
+;;   (add-hook 'after-make-frame-functions #'rev-inp-m-init))
+
 
 
 ;; -> RST-MODE

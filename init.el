@@ -6,9 +6,16 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
-(defconst init-el-config-dir (file-name-directory user-init-file) "Корневой каталог для размещения настроек.") ;; ~/.emacs.d/
-(defconst init-el-autosave-dir (expand-file-name "saves" init-el-config-dir) "Каталог для файлов автосохранения.") ;; ~/.emacs.d/saves/
-(defconst init-el-package-user-dir (expand-file-name "elpa" user-emacs-directory) "Пользовательский каталог с пакетами.") ;; ~/.emacs.d/elpa/
+(defconst init-el-config-dir
+  (file-name-directory user-init-file)
+  "Корневой каталог для размещения настроек.")
+(defconst init-el-autosave-dir
+  (expand-file-name "saves" init-el-config-dir)
+  "Каталог для файлов автосохранения.")
+(defconst init-el-package-user-dir
+  (expand-file-name "elpa" init-el-config-dir)
+  "Пользовательский каталог с пакетами.")
+
 (defconst init-el-version-greater-than-26-1
   (or
    (> emacs-major-version 26)
@@ -22,14 +29,14 @@
 
 ;; Если нужного каталога не существует, его следует создать
 (dolist
-    (emacs-directory
+    (init-el-dir
      (list
       init-el-config-dir
       init-el-autosave-dir
       init-el-package-user-dir))
-  (unless (file-directory-p emacs-directory)
-    (make-directory emacs-directory)
-    (message (format "Создан каталог %s" emacs-directory))))
+  (unless (file-directory-p init-el-dir)
+    (make-directory init-el-dir)
+    (message (format "Создан каталог %s" init-el-dir))))
 
 (defconst emacs-default-font-height 16 "Размер шрифта по умолчанию.")
 
@@ -40,7 +47,9 @@
   (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
 
-;; Встроенный пакет для управления пакетами.
+;; -> PACKAGE
+;; Встроенный пакет.
+;; Управление другими пакетами.
 (require 'package)
 
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
@@ -63,9 +72,10 @@
  ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
  package-user-dir init-el-package-user-dir)
 
+;; Пакет `use-package' нужно устанавливать из репозитория GNU.
 (add-to-list 'package-pinned-packages '("use-package" . "gnu"))
 
-;; Проверка наличия индекса пакетов
+;; Если пакет `use-package` не установлен, нужно это сделать.
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package t))
@@ -124,16 +134,17 @@
 
 
 ;; -> ABBREV-MODE
-;; Использование аббревиатур -- фрагментов текста, которые при вводе определённой
-;; последовательности символов заменяются на другую, например:
+;; Встроенный пакет.
+;; Использование аббревиатур -- фрагментов текста, которые при вводе
+;; определённой последовательности символов заменяются на другую,
+;; например:
 ;; tf → Terraform
 ;; yc → Yandex Cloud
 ;; Это встроенный пакет
 (use-package abbrev
   :ensure nil
   :defer t
-  :diminish nil
-  :custom (abbrev-mode t "Включить поддержку аббревиатур глобально"))
+  :diminish "abb")
 
 
 ;; -> ACE-WINDOW
@@ -271,6 +282,7 @@
   :pin "gnu"
   :ensure t
   :defer t
+  :diminish ""
   :custom
   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
@@ -512,13 +524,29 @@
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :defer t
   :after (ws-butler)
   :custom
   (editorconfig-trim-whitespaces-mode 'ws-butler-mode "Очистка лишних пробелов методом `ws-butler'.")
   :config (editorconfig-mode 1))
+
+
+;; -> ELDOC-MODE
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Programming-Language-Doc.html
+;; Отображение подсказок при работе с Emacs Lisp
+(use-package eldoc
+  :pin "gnu"
+  :ensure t
+  :config
+  ;; Глобально этот режим не нужен
+  (global-eldoc-mode nil)
+  :hook
+  ;; Включаем только там, где это действительно необходимо
+  (emacs-lisp-mode . eldoc-mode)
+  (js2-mode . eldoc-mode)
+  (python-mode . eldoc-mode))
 
 
 ;; -> ELEC-PAIR MODE
@@ -640,7 +668,7 @@
   (save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
   (save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
   (scroll-conservatively 100000 "TODO: проверить, что это такое")
-  (scroll-margin 5 "При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна")
+  (scroll-margin 4 "При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна")
   (scroll-preserve-screen-position 1 "TODO: проверить, что это такое")
   (show-trailing-whitespace t "Показывать висячие пробелы")
   (source-directory "/usr/share/emacs/28.2/src/" "Путь к исходному коду EMACS")
@@ -788,20 +816,20 @@
     (setq text-spell-program "/usr/bin/aspell")))
   ;; Нужно использовать ispell-mode только в том случае, когда есть
   ;; чем проверять орфографию.
-  (if text-spell-program
-      (progn
-        (message (format "Ispell use %s" text-spell-program))
-        (use-package flyspell
-          :custom (ispell-program-name text-spell-program)
-          :hook
-          ((
-            adoc-mode
-            markdown-mode
-            rst-mode) . flyspell-mode)
-          (emacs-lisp-mode . flyspell-prog-mode)
-          :bind
-          (:map global-map
-                ([f5] . ispell-buffer))))
+  (when text-spell-program
+    (progn
+      (message (format "Ispell use %s" text-spell-program))
+      (use-package flyspell
+        :custom (ispell-program-name text-spell-program)
+        :hook
+        ((
+          adoc-mode
+          markdown-mode
+          rst-mode) . flyspell-mode)
+        (emacs-lisp-mode . flyspell-prog-mode)
+        :bind
+        (:map global-map
+              ([f5] . ispell-buffer))))
     (message "Flyspell: не найдено программ для проверки орфографии.")))
 
 
@@ -854,25 +882,11 @@
 (use-package helm
   :pin nongnu
   :ensure t
-  :diminish nil
+  :diminish ""
   :config
   (helm-mode 1)
   :bind (:map global-map
               ("M-x" . helm-M-x)))
-
-;; -> HELM-COMPANY
-;;
-;; Расширение для `company-mode'.
-(use-package helm-company
-  :pin melpa-stable
-  :ensure t
-  :defer t
-  :after (company helm)
-  :bind (
-         :map company-mode-map
-         ("C-:" . helm-company)
-         :map company-active-map
-         ("C-:" . helm-company)))
 
 
 ;; -> HL-LINE
@@ -1033,7 +1047,7 @@
   :ensure nil
   :defer t
   :mode
-  ("\\Makefile\\'" . make-mode))
+  ("\\Makefile\\'" . makefile-gmake-mode))
 
 
 ;; -> MARKDOWN MODE
@@ -1190,6 +1204,7 @@
 (use-package projectile
   :pin nongnu
   :ensure t
+  :diminish "PRJ"
   :bind (
          :map projectile-mode-map
          ("M-p" . projectile-command-map))
@@ -1258,7 +1273,7 @@
 (use-package rainbow-delimiters
   :pin nongnu
   :ensure t
-  :diminish nil
+  :diminish ""
   :hook
   ((
     adoc-mode
@@ -1289,7 +1304,7 @@
 (use-package rainbow-mode
   :pin "gnu"
   :ensure t
-  :diminish nil
+  :diminish ""
   :hook
   ((
     css-mode
@@ -1406,7 +1421,7 @@
 
 
 ;; -> SAVE-HIST
-;; Встроенный пакет
+;; Встроенный пакет.
 ;; Запоминает историю введенных команд
 (use-package savehist
   :config
@@ -1424,7 +1439,8 @@
 
 
 ;; -> SHELL-SCRIPT-MODE
-;; Встроенный пакет
+;; Встроенный пакет.
+;; Работа со скриптами Shell.
 (use-package sh-script
   :ensure nil
   :defer t
@@ -1435,7 +1451,8 @@
 
 
 ;; -> SIMPLE
-;; Встроенный пакет
+;; Встроенный пакет.
+;; Разные настройки управления элементарным редактированием текста.
 (use-package simple
   :custom
   (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
@@ -1448,7 +1465,7 @@
   (global-visual-line-mode 1) ;; Деление логических строк на видимые
   (line-number-mode t)        ;; Показывать номер строки в статусной строке
   (overwrite-mode 0)          ;; Отключить режим перезаписи текста
-  (size-indication-mode 1)    ;; Отображать размер буфера в строке статуса
+  (size-indication-mode 0)    ;; Отображать размер буфера в строке статуса
   :bind
   (:map global-map
         ("<escape>" . keyboard-quit)   ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
@@ -1553,7 +1570,7 @@
 (use-package which-key
   :pin "gnu"
   :ensure t
-  :diminish nil
+  :diminish ""
   :custom
   (which-key-idle-delay 2 "Задержка появления подсказки")
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")
@@ -1564,9 +1581,10 @@
 
 
 ;; -> WHITESPACE MODE
-;; Встроенный пакет для отображения невидимых символов.
+;; Встроенный пакет.
+;; Отображение невидимых символов.
 (use-package whitespace
-  :diminish nil
+  :diminish "ws"
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
    '(

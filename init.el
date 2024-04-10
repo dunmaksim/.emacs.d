@@ -566,10 +566,13 @@
   :hook
   ((
     adoc-mode
+    conf-mode
     emacs-lisp-data-mode
     emacs-lisp-mode
     lisp-data-mode
-    markdown-mode) . electric-pair-local-mode))
+    markdown-mode
+    ruby-mode
+    ) . electric-pair-local-mode))
 
 
 ;; -> ELECTRIC-INDENT MODE

@@ -216,6 +216,7 @@
 (use-package anzu
   :pin "nongnu"
   :ensure t
+  :diminish ""
   :config
   (global-anzu-mode 1))
 

@@ -174,7 +174,7 @@
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
 (use-package adoc-mode
-  :pin melpa
+  :pin "melpa"
   :ensure t
   :defer t
   :custom
@@ -205,9 +205,20 @@
 ;; https://github.com/k1LoW/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
 (use-package ansible
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t)
+
+
+;; -> ANZU
+;; https://github.com/emacsorphanage/anzu
+;; Подсказки о количестве совпадений при поиске с помощью `isearch'.
+(use-package anzu
+  :pin "nongnu"
+  :ensure t
+  :config
+  (global-anzu-mode 1))
+
 
 
 ;; -> AUTOREVERT
@@ -231,7 +242,7 @@
 ;; https://github.com/lassik/emacs-bbcode-mode
 ;; Режим редактирования BB-кодов
 (use-package bbcode-mode
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t)
 
@@ -463,7 +474,7 @@
 ;; Красивая статусная строка
 (use-package doom-modeline
   :ensure t
-  :pin melpa-stable
+  :pin "melpa-stable"
   ;; :hook (after-init . doom-modeline-mode)
   ;; :requires (nerd-icons)
   :custom
@@ -491,7 +502,7 @@
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
 (use-package doom-themes
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :custom
   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
@@ -513,7 +524,7 @@
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :defer t
   :bind (:map global-map
@@ -628,7 +639,7 @@
 ;; Ещё лучше -- создать файл `.dir-locals.el', в котором указать команду
 ;; для активации окружения.
 (use-package elpy
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t
   :after (python-mode)
@@ -744,7 +755,7 @@
 ;; https://flycheck.org
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t
   :custom
@@ -840,7 +851,7 @@
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода по нажатию [F12]
 (use-package format-all
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t
   :bind (:map global-map
@@ -883,7 +894,7 @@
 ;; Подсказки и автодополнение ввода
 ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
 (use-package helm
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :diminish ""
   :config
@@ -903,7 +914,7 @@
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
 (use-package hl-todo
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :config (global-hl-todo-mode t))
 
@@ -1026,7 +1037,7 @@
 ;; -> JSON-MODE
 ;; Поддержка JSON
 (use-package json-mode
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t
   :mode ("\\.json\\'" . json-mode))
@@ -1036,7 +1047,7 @@
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (use-package magit
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :defer t
   :custom
@@ -1058,7 +1069,7 @@
 ;; Режим для работы с файлами в формате Markdown
 (when init-el-version-greater-than-27-1
   (use-package markdown-mode
-    :pin nongnu
+    :pin "nongnu"
     :ensure t
     :defer t
     :custom
@@ -1075,7 +1086,7 @@
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (use-package multiple-cursors
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :bind (:map global-map
               ("C-S-c C-S-c" . mc/edit-lines)
@@ -1117,7 +1128,7 @@
 ;; https://github.com/seagle0128/nerd-icons-ibuffer
 ;; Отображение иконок в ibuffer
 (use-package nerd-icons-ibuffer
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :after (ibuffer nerd-icons)
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
@@ -1174,7 +1185,7 @@
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
 (use-package package-lint
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t)
 
@@ -1191,7 +1202,7 @@
 ;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
 ;; Работа с файлами локализации
 (use-package po-mode
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t
   :mode
@@ -1205,7 +1216,7 @@
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (use-package projectile
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :diminish "PRJ"
   :bind (
@@ -1262,7 +1273,7 @@
 ;; -> PYTHON-MODE
 ;; Встроенный пакет для работы с Python
 (use-package python-mode
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :init
   (setq-default python-indent-offset 4)
@@ -1274,7 +1285,7 @@
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
 (use-package rainbow-delimiters
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :diminish ""
   :hook
@@ -1320,7 +1331,7 @@
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
 (use-package reverse-im
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :after (russian-techwriter)
   :custom
@@ -1335,7 +1346,7 @@
 ;; Метод ввода для технических писателей
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :config
   (setq-default default-input-method 'russian-techwriter))
@@ -1482,7 +1493,7 @@
 ;; Пакет должен быть установлен, но включать его лучше через
 ;; `eval' в `.dir-locals.el'.
 (use-package sphinx-mode
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t)
 
@@ -1553,7 +1564,7 @@
 ;; https://web-mode.org/
 ;; Режим для редактирования HTML и не только.
 (use-package web-mode
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :custom
   (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
@@ -1650,7 +1661,7 @@
 ;; https://github.com/lewang/ws-butler
 ;; Удаляет висячие пробелы только из изменённых строк.
 (use-package ws-butler
-  :pin nongnu
+  :pin "nongnu"
   :ensure t
   :defer t
   :hook
@@ -1677,7 +1688,7 @@
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
 (use-package yaml-mode
-  :pin melpa-stable
+  :pin "melpa-stable"
   :ensure t
   :defer t
   :mode

@@ -221,7 +221,6 @@
   (global-anzu-mode 1))
 
 
-
 ;; -> AUTOREVERT
 ;; Встроенный пакет.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Revert.html
@@ -692,6 +691,7 @@
   (truncate-lines 1 "Обрезать длинные строки")
   (use-dialog-box nil "Диалоговые окна не нужны, будем использовать текстовый интерфейс")
   (user-full-name "Dunaevsky Maxim" "Имя пользователя")
+  (user-mail-address "dunmaksim@yandex.ru")
   (visible-bell t "Эффект мигания при переходе в буфер")
 
   :config
@@ -1149,7 +1149,7 @@
 (use-package mule
   :config
   (set-keyboard-coding-system 'utf-8)  ;; Кодировка символов при вводе текста в терминале
-  (set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи скопированных в буфер данных другим приложениям X11
+  (set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи данных в буфер обмена
   (set-terminal-coding-system 'utf-8)) ;; Кодировка символов для вывода команд, запущенных в терминале
 
 

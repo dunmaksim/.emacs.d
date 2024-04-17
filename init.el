@@ -388,9 +388,11 @@
 ;; -> DESKTOP
 ;; Встроенный пакет.
 ;; Сохранение состояния Emacs между сессиями.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
 (use-package desktop
   :ensure nil
   :custom
+  (desktop-auto-save-timeout 20 "Автосохранение каждые 20 секунд.")
   (desktop-dirname init-el-config-dir "Каталог для хранения файла .desktop.")
   (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
   (desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode)) ; А вот эти не сохранять
@@ -1399,7 +1401,6 @@
 ;;                         (reverse-input-method 'russian-computer)
 ;;                         (remove-hook 'after-make-frame-functions #'rev-inp-m-init))))))
 ;;   (add-hook 'after-make-frame-functions #'rev-inp-m-init))
-
 
 
 ;; -> RST-MODE

@@ -21,6 +21,13 @@
    (> emacs-major-version 26)
    (and (= emacs-major-version 26)
         (>= emacs-minor-version 1))) "Версия Emacs ≥ 26.1.")
+
+(defconst init-el-version-greater-than-26-3
+  (or
+   (> emacs-major-version 26)
+   (and (= emacs-major-version 26)
+        (>= emacs-minor-version 3))) "Версия Emacs ≥ 26.3.")
+
 (defconst init-el-version-greater-than-27-1
   (or
    (> emacs-major-version 27)
@@ -617,26 +624,27 @@
 ;;   npm install -g vscode-langservers-extracted
 ;; - Markdown:
 ;;   sudo snap install marksman
-(use-package eglot
-  :pin "gnu"
-  :ensure t
-  :defer t
-  :config
-  (add-to-list 'eglot-server-programs
-               '(ansible-mode . ("ansible-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs
-               '(markdown-mode . ("marksman")))
-  (add-to-list 'eglot-server-programs
-               '(python-mode . ("jedi-language-server")))
-  (add-to-list 'eglot-server-programs
-               '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
-  :hook
-  ((
-    ansible-mode
-    markdown-mode
-    python-mode
-    ruby-mode
-    ) . eglot-ensure))
+(when init-el-version-greater-than-26-3
+  (use-package eglot
+    :pin "gnu"
+    :ensure t
+    :defer t
+    :config
+    (add-to-list 'eglot-server-programs
+                 '(ansible-mode . ("ansible-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs
+                 '(markdown-mode . ("marksman")))
+    (add-to-list 'eglot-server-programs
+                 '(python-mode . ("jedi-language-server")))
+    (add-to-list 'eglot-server-programs
+                 '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
+    :hook
+    ((
+      ansible-mode
+      markdown-mode
+      python-mode
+      ruby-mode
+      ) . eglot-ensure)))
 
 
 ;; -> ELPY
@@ -806,10 +814,11 @@
 ;; -> FLYCHECK-EGLOT
 ;; https://github.com/flycheck/flycheck-eglot
 ;; Интеграция Flycheck + Eglot
-(use-package flycheck-eglot
-  :ensure t
-  :defer t
-  :after (eglot flycheck))
+(when init-el-version-greater-than-28-1
+  (use-package flycheck-eglot
+    :ensure t
+    :defer t
+    :after (eglot flycheck)))
 
 
 ;; -> FLYMAKE
@@ -1539,11 +1548,12 @@
 ;; -> TYPO
 ;; https://git.sr.ht/~pkal/typo/
 ;; Автодополнение на основе анализа ввода
-(use-package typo
-  :pin "gnu"
-  :ensure t
-  :init
-  (add-to-list 'completion-styles 'typo t))
+(when init-el-version-greater-than-27-1
+  (use-package typo
+    :pin "gnu"
+    :ensure t
+    :init
+    (add-to-list 'completion-styles 'typo t)))
 
 
 ;; -> UNIQUIFY

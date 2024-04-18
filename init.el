@@ -26,6 +26,11 @@
    (> emacs-major-version 27)
    (and (= emacs-major-version 27)
         (>= emacs-minor-version 1))) "Версия Emacs ≥ 27.1.")
+(defconst init-el-version-greater-than-28-1
+  (or
+   (> emacs-major-version 28)
+   (and (= emacs-major-version 28)
+        (>= emacs-minor-version 1))) "Версия Emacs ≥ 28.1.")
 
 ;; Если нужного каталога не существует, его следует создать
 (dolist
@@ -263,14 +268,15 @@
 ;; Во первом случае в файле должна быть указана команда для активации окружения, например:
 ;; source .venv/bin/activate
 ;; Во втором достаточно задать значение переменной `buffer-env-script-name'.
-(use-package buffer-env
-  :ensure t
-  :pin "gnu"
-  :defer
-  :hook ((
-          hack-local-variables
-          comint-mode
-          ) . buffer-env-update))
+(when init-el-version-greater-than-27-1
+  (use-package buffer-env
+    :ensure t
+    :pin "gnu"
+    :defer
+    :hook ((
+            hack-local-variables
+            comint-mode
+            ) . buffer-env-update)))
 
 
 ;; -> CALENDAR
@@ -378,11 +384,12 @@
 ;; -> DENOTE
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
-(use-package denote
-  :pin "gnu"
-  :ensure t
-  :custom
-  (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок."))
+(when init-el-version-greater-than-28-1
+  (use-package denote
+    :pin "gnu"
+    :ensure t
+    :custom
+    (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
 
 
 ;; -> DESKTOP

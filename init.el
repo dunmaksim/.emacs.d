@@ -9,9 +9,11 @@
 (defconst init-el-config-dir
   (file-name-directory user-init-file)
   "Корневой каталог для размещения настроек.")
+
 (defconst init-el-autosave-dir
   (expand-file-name "saves" init-el-config-dir)
   "Каталог для файлов автосохранения.")
+
 (defconst init-el-package-user-dir
   (expand-file-name "elpa" init-el-config-dir)
   "Пользовательский каталог с пакетами.")
@@ -524,7 +526,6 @@
   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
   (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
   :config
-  (doom-themes-visual-bell-config)
   (load-theme 'doom-molokai t))
 
 

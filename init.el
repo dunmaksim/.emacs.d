@@ -86,8 +86,18 @@
  ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
  package-user-dir init-el-package-user-dir)
 
-;; Пакет `use-package' нужно устанавливать из репозитория GNU.
-(add-to-list 'package-pinned-packages '("use-package" . "gnu"))
+
+(add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
+(add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.
+
+
+(unless (package-installed-p 'gnu-elpa-keyring-update)
+  (defvar package-check-signature-default package-check-signature)
+  (setq package-check-signature nil)
+  (package-refresh-contents)
+  (package-install 'gnu-elpa-keyring-update t)
+  (setq package-check-signature package-check-signature-default))
+
 
 ;; Если пакет `use-package` не установлен, нужно это сделать.
 (unless (package-installed-p 'use-package)
@@ -661,11 +671,10 @@
   :pin "melpa-stable"
   :ensure t
   :defer t
-  :after (python-mode)
   :config
   (elpy-enable)
   (defalias 'workon 'pyvenv-workon)
-  :hook python-mode)
+  :hook (python-mode . elpy))
 
 
 ;; -> EMACS-LISP-MODE
@@ -766,7 +775,7 @@
 ;; -> FILL-COLUMN
 ;; Встроенный пакет.
 ;; Отображение рекомендуемой границы символов.
-(use-package fill-column
+(use-package display-fill-column-indicator
   :hook
   (emacs-lisp-mode . display-fill-column-indicator-mode))
 

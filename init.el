@@ -599,6 +599,7 @@
     emacs-lisp-mode
     lisp-data-mode
     markdown-mode
+    python-mode
     ruby-mode
     ) . electric-pair-local-mode))
 

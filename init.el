@@ -60,6 +60,53 @@
   (require 'gnutls)
   (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
+(setq-default indent-tabs-mode nil) ;; Отключить `indent-tabs-mode'.
+(setq
+ create-lockfiles nil               ;; Не надо создавать lock-файлы
+ cursor-type 'bar                   ;; Курсор в виде вертикальной черты
+ delete-by-moving-to-trash t        ;; При удалении файла помещать его в Корзину
+ gc-cons-threshold (* 50 1000 1000) ;; "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
+ load-prefer-newer t                ;; Если есть файл elc, но el новее, загрузить el-файл
+ locale-coding-system 'utf-8        ;; UTF-8 по умолчанию
+ menu-bar-mode nil                  ;; Отключить показ главного меню
+ ring-bell-function #'ignore        ;; Заблокировать пищание
+ scroll-conservatively 100000       ;; TODO: проверить, что это такое
+ scroll-margin 4                    ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
+ scroll-preserve-screen-position 1  ;; TODO: проверить, что это такое
+ show-trailing-whitespace t         ;; Показывать висячие пробелы
+ source-directory (format           ;; Путь к исходному коду EMACS
+                   "/usr/share/emacs/%s.%s/src/"
+                   emacs-major-version
+                   emacs-minor-version)
+
+ tool-bar-mode nil                  ;; Отключить показ панели инструментов
+ truncate-lines 1                   ;; Обрезать длинные строки
+ use-dialog-box nil                 ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
+ user-full-name "Dunaevsky Maxim"   ;; Имя пользователя
+
+ visible-bell t)                    ;; Эффект мигания при переходе в буфер
+
+(custom-set-variables
+ '(inhibit-startup-screen t "Не надо показывать загрузочный экран")
+ '(initial-scratch-message nil "В новых буферах не нужно ничего писать")
+ '(safe-local-variable-values
+   '((buffer-env-script-name . ".venv/bin/activate")
+     (electric-pair-preserve-balance . t)
+     (fill-column . 70)
+     (frozen_string_literal . true)) nil nil "Безопасные значения локальных переменных")
+ '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
+ '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
+ '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
+ '(user-mail-address "dunmaksim@yandex.ru"))
+
+
+
+(global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
+(global-unset-key (kbd "M-,"))      ;; Такие маркеры не нужны
+(prefer-coding-system 'utf-8)       ;; При попытке определить кодировку файла начинать перебор с UTF-8)
+(set-default-coding-systems 'utf-8) ;; Кодировка по умолчанию
+(set-language-environment 'utf-8)   ;; Кодировка языка по умолчанию
+
 
 ;; -> PACKAGE
 ;; Встроенный пакет.
@@ -243,6 +290,15 @@
   :diminish ""
   :config
   (global-anzu-mode 1))
+
+
+;; -> APHELEIA
+;; https://github.com/radian-software/apheleia
+;; Форматирование содержимого буфера с помощью внешних средств
+(use-package apheleia
+  :pin "melpa-stable"
+  :ensure t
+  :diminish "")
 
 
 ;; -> AUTOREVERT
@@ -468,6 +524,7 @@
   ((
     adoc-mode
     conf-mode
+    css-mode
     dockerfile-mode
     emacs-lisp-mode
     json-mode
@@ -693,41 +750,6 @@
 ;; Настройки, предоставляемые базовой функциональностью Emacs
 ;; Можно считать встроенным пакетом
 (use-package emacs
-  :init
-  (setq-default indent-tabs-mode nil) ;; Отключить `indent-tabs-mode'.
-  :custom
-  (create-lockfiles nil "Не надо создавать lock-файлы")
-  (cursor-type 'bar "Курсор в виде вертикальной черты")
-  (delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
-  (gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
-  (inhibit-splash-screen t "Не надо показывать загрузочный экран")
-  (inhibit-startup-message t "Не надо показывать приветственное сообщение")
-  (initial-scratch-message nil "В новых буферах не нужно ничего писать")
-  (load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл")
-  (locale-coding-system 'utf-8 "UTF-8 по умолчанию")
-  (menu-bar-mode nil "Отключить показ главного меню")
-  (ring-bell-function #'ignore "Заблокировать пищание")
-  (save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
-  (save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
-  (scroll-conservatively 100000 "TODO: проверить, что это такое")
-  (scroll-margin 4 "При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна")
-  (scroll-preserve-screen-position 1 "TODO: проверить, что это такое")
-  (show-trailing-whitespace t "Показывать висячие пробелы")
-  (source-directory "/usr/share/emacs/28.2/src/" "Путь к исходному коду EMACS")
-  (tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
-  (tool-bar-mode nil "Отключить показ панели инструментов")
-  (truncate-lines 1 "Обрезать длинные строки")
-  (use-dialog-box nil "Диалоговые окна не нужны, будем использовать текстовый интерфейс")
-  (user-full-name "Dunaevsky Maxim" "Имя пользователя")
-  (user-mail-address "dunmaksim@yandex.ru")
-  (visible-bell t "Эффект мигания при переходе в буфер")
-
-  :config
-  (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
-  (global-unset-key (kbd "M-,"))      ;; Такие маркеры не нужны
-  (prefer-coding-system 'utf-8)       ;; При попытке определить кодировку файла начинать перебор с UTF-8)
-  (set-default-coding-systems 'utf-8) ;; Кодировка по умолчанию
-  (set-language-environment 'utf-8)   ;; Кодировка языка по умолчанию
   :bind
   (:map global-map
         ("C-x k" .
@@ -1386,6 +1408,9 @@
 ;; Встроенный пакет.
 ;; Запоминание позиции курсора в посещённых файлах.
 (use-package saveplace
+  :custom
+  (save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
+  (save-place-file (expand-file-name ".emacs-places" init-el-config-dir))
   :config
   (save-place-mode 1)) ;; Помнить позицию курсора
 

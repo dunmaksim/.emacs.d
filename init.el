@@ -18,28 +18,13 @@
   (expand-file-name "elpa" init-el-config-dir)
   "Пользовательский каталог с пакетами.")
 
-(defconst init-el-version-greater-than-26-1
+;; Возвращает t, если версия Emacs больше или равна указанной.
+(defun emacs-version-not-less-than (major minor)
+  "True when Emacs version is not less than MAJOR and MINOR versions."
   (or
-   (> emacs-major-version 26)
-   (and (= emacs-major-version 26)
-        (>= emacs-minor-version 1))) "Версия Emacs ≥ 26.1.")
-
-(defconst init-el-version-greater-than-26-3
-  (or
-   (> emacs-major-version 26)
-   (and (= emacs-major-version 26)
-        (>= emacs-minor-version 3))) "Версия Emacs ≥ 26.3.")
-
-(defconst init-el-version-greater-than-27-1
-  (or
-   (> emacs-major-version 27)
-   (and (= emacs-major-version 27)
-        (>= emacs-minor-version 1))) "Версия Emacs ≥ 27.1.")
-(defconst init-el-version-greater-than-28-1
-  (or
-   (> emacs-major-version 28)
-   (and (= emacs-major-version 28)
-        (>= emacs-minor-version 1))) "Версия Emacs ≥ 28.1.")
+   (> emacs-major-version major)
+   (and (= emacs-major-version major)
+        (>= emacs-minor-version minor))))
 
 ;; Если нужного каталога не существует, его следует создать
 (dolist
@@ -343,7 +328,7 @@
 ;; Во первом случае в файле должна быть указана команда для активации окружения, например:
 ;; source .venv/bin/activate
 ;; Во втором достаточно задать значение переменной `buffer-env-script-name'.
-(when init-el-version-greater-than-27-1
+(when (emacs-version-not-less-than 27 1)
   (use-package buffer-env
     :ensure t
     :pin "gnu"
@@ -459,7 +444,7 @@
 ;; -> DENOTE
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
-(when init-el-version-greater-than-28-1
+(when (emacs-version-not-less-than 28 1)
   (use-package denote
     :pin "gnu"
     :ensure t
@@ -687,13 +672,11 @@
 ;;
 ;; ПОДГОТОВКА К РАБОТЕ
 ;; Установка серверов:
-;; - Ansible:
-;;   sudo npm install -g @ansible/ansible-language-server
-;; - HTML:
-;;   npm install -g vscode-langservers-extracted
-;; - Markdown:
-;;   sudo snap install marksman
-(when init-el-version-greater-than-26-3
+;; - Ansible:  sudo npm install -g @ansible/ansible-language-server
+;; - HTML:     npm install -g vscode-langservers-extracted
+;; - Markdown: sudo snap install marksman
+;; - Python:   pip3 install jedi-language-server
+(when (emacs-version-not-less-than 26 3)
   (use-package eglot
     :pin "gnu"
     :ensure t
@@ -847,7 +830,7 @@
 ;; -> FLYCHECK-EGLOT
 ;; https://github.com/flycheck/flycheck-eglot
 ;; Интеграция Flycheck + Eglot
-(when init-el-version-greater-than-28-1
+(when (emacs-version-not-less-than 28 1)
   (use-package flycheck-eglot
     :ensure t
     :defer t
@@ -1077,6 +1060,16 @@
               ([f2] . ibuffer)))
 
 
+;; -> JS-MODE
+;; Встроенный пакет.
+;; Базовые настройки при работе с JavaScript.
+(use-package js
+  :custom
+  (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
+  (js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
+  :mode ("\\.js\\'" . js-mode))
+
+
 ;; -> JS2-MODE
 ;; https://github.com/mooz/js2-mode
 (use-package js2-mode
@@ -1119,7 +1112,7 @@
 ;; -> MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
-(when init-el-version-greater-than-27-1
+(when (emacs-version-not-less-than 27 1)
   (use-package markdown-mode
     :pin "nongnu"
     :ensure t
@@ -1272,7 +1265,7 @@
   :ensure t
   :diminish "PRJ"
   :bind (
-         :map projectile-mode-map
+         :map global-map
          ("M-p" . projectile-command-map))
   :config
   ;; AsciiDoc
@@ -1305,7 +1298,7 @@
 ;; -> PULSAR
 ;; Вспыхивание строки, к которой переместился курсор
 ;; https://git.sr.ht/~protesilaos/pulsar
-(when init-el-version-greater-than-27-1
+(when (emacs-version-not-less-than 27 1)
   ;; Этот пакет требует Emacs версии 27.1 или новее
   (use-package pulsar
     :pin "gnu"
@@ -1415,46 +1408,6 @@
   (save-place-mode 1)) ;; Помнить позицию курсора
 
 
-;; -> QUAIL
-;; Встроенный пакет.
-;; Управление методами ввода и локализацией клавиш.
-;; (require 'quail)
-;; (defun reverse-input-method (input-method)
-;;   "Build the reverse mapping of single letters from INPUT-METHOD."
-;;   (interactive
-;;    (list (read-input-method-name "Use input method (default current): ")))
-;;   (if (and input-method (symbolp input-method))
-;;       (setq input-method (symbol-name input-method)))
-;;   (let ((current current-input-method)
-;;         (modifiers '(nil (control) (meta) (control meta))))
-;;     (when input-method
-;;       (activate-input-method input-method))
-;;     (when (and current-input-method quail-keyboard-layout)
-;;       (dolist (map (cdr (quail-map)))
-;;         (let* ((to (car map))
-;;                (from (quail-get-translation
-;;                       (cadr map) (char-to-string to) 1)))
-;;           (when (and (characterp from) (characterp to))
-;;             (dolist (mod modifiers)
-;;               (define-key local-function-key-map
-;;                 (vector (append mod (list from)))
-;;                 (vector (append mod (list to)))))))))
-;;     (when input-method
-;;       (activate-input-method current))))
-;; (if (not (daemonp))
-;;     (reverse-input-method 'russian-computer)
-;;   (defun rev-inp-m-init (f)
-;;     (lexical-let ((frame f))
-;;                  (run-at-time
-;;                   nil
-;;                   nil
-;;                   #'(lambda ()
-;;                       (unless (and (daemonp) (eq f terminal-frame))
-;;                         (reverse-input-method 'russian-computer)
-;;                         (remove-hook 'after-make-frame-functions #'rev-inp-m-init))))))
-;;   (add-hook 'after-make-frame-functions #'rev-inp-m-init))
-
-
 ;; -> RST-MODE
 ;; Основной режим для редактирования reStructutedText
 ;; Встроенный пакет.
@@ -1471,8 +1424,7 @@
   (rst-indent-width 3)
   (rst-toc-indent 3)
   :mode
-  (("\\.rest\\'" . rst-mode)
-   ("\\.rst\\'" . rst-mode)
+  (("\\.rst\\'" . rst-mode)
    ("\\.txt\\'" . rst-mode)))
 
 
@@ -1584,7 +1536,7 @@
 ;; -> TYPO
 ;; https://git.sr.ht/~pkal/typo/
 ;; Автодополнение на основе анализа ввода
-(when init-el-version-greater-than-27-1
+(when (emacs-version-not-less-than 27 1)
   (use-package typo
     :pin "gnu"
     :ensure t

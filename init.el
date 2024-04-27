@@ -45,45 +45,44 @@
   (require 'gnutls)
   (custom-set-variables '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")))
 
-(setq-default indent-tabs-mode nil) ;; Отключить `indent-tabs-mode'.
-(setq
- create-lockfiles nil               ;; Не надо создавать lock-файлы
- cursor-type 'bar                   ;; Курсор в виде вертикальной черты
- delete-by-moving-to-trash t        ;; При удалении файла помещать его в Корзину
- gc-cons-threshold (* 50 1000 1000) ;; "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
- load-prefer-newer t                ;; Если есть файл elc, но el новее, загрузить el-файл
- locale-coding-system 'utf-8        ;; UTF-8 по умолчанию
- menu-bar-mode nil                  ;; Отключить показ главного меню
- ring-bell-function #'ignore        ;; Заблокировать пищание
- scroll-conservatively 100000       ;; TODO: проверить, что это такое
- scroll-margin 4                    ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
- scroll-preserve-screen-position 1  ;; TODO: проверить, что это такое
- show-trailing-whitespace t         ;; Показывать висячие пробелы
- source-directory (format           ;; Путь к исходному коду EMACS
-                   "/usr/share/emacs/%s.%s/src/"
-                   emacs-major-version
-                   emacs-minor-version)
+(setq-default
+  indent-tabs-mode nil               ;; Отключить `indent-tabs-mode'.
+  create-lockfiles nil               ;; Не надо создавать lock-файлы
+  cursor-type 'bar                   ;; Курсор в виде вертикальной черты
+  delete-by-moving-to-trash t        ;; При удалении файла помещать его в Корзину
+  gc-cons-threshold (* 50 1000 1000) ;; "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
+  load-prefer-newer t                ;; Если есть файл elc, но el новее, загрузить el-файл
+  locale-coding-system 'utf-8        ;; UTF-8 по умолчанию
+  menu-bar-mode nil                  ;; Отключить показ главного меню
+  ring-bell-function #'ignore        ;; Заблокировать пищание
+  scroll-conservatively 100000       ;; TODO: проверить, что это такое
+  scroll-margin 4                    ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
+  scroll-preserve-screen-position 1  ;; TODO: проверить, что это такое
+  show-trailing-whitespace t         ;; Показывать висячие пробелы
+  source-directory (format           ;; Путь к исходному коду EMACS
+                     "/usr/share/emacs/%s.%s/src/"
+                     emacs-major-version
+                     emacs-minor-version)
 
- tool-bar-mode nil                  ;; Отключить показ панели инструментов
- truncate-lines 1                   ;; Обрезать длинные строки
- use-dialog-box nil                 ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
- user-full-name "Dunaevsky Maxim"   ;; Имя пользователя
+  tool-bar-mode nil                  ;; Отключить показ панели инструментов
+  truncate-lines 1                   ;; Обрезать длинные строки
+  use-dialog-box nil                 ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
+  user-full-name "Dunaevsky Maxim"   ;; Имя пользователя
+  visible-bell t)                    ;; Эффект мигания при переходе в буфер
 
- visible-bell t)                    ;; Эффект мигания при переходе в буфер
 
 (custom-set-variables
- '(inhibit-startup-screen t "Не надо показывать загрузочный экран")
- '(initial-scratch-message nil "В новых буферах не нужно ничего писать")
- '(safe-local-variable-values
-   '((buffer-env-script-name . ".venv/bin/activate")
-     (electric-pair-preserve-balance . t)
-     (fill-column . 70)
-     (frozen_string_literal . true)) nil nil "Безопасные значения локальных переменных")
- '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
- '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
- '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
- '(user-mail-address "dunmaksim@yandex.ru"))
-
+  '(inhibit-startup-screen t "Не надо показывать загрузочный экран")
+  '(initial-scratch-message nil "В новых буферах не нужно ничего писать")
+  '(safe-local-variable-values
+     '((buffer-env-script-name . ".venv/bin/activate")
+        (electric-pair-preserve-balance . t)
+        (fill-column . 70)
+        (frozen_string_literal . true)) nil nil "Безопасные значения локальных переменных")
+  '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
+  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
+  '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
+  '(user-mail-address "dunmaksim@yandex.ru"))
 
 
 (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
@@ -104,19 +103,14 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-(setq
- package-archive-priorities
- '(
-   ;; Порядок использования архивов.
-   ;; Чем выше приоритет, тем важнее архив
-   ("gnu" . 50)
-   ("nongnu" . 40)
-   ("melpa-stable" . 30)
-   ("melpa" . 20))
- ;; Компиляция пакетов во время установки, а не при первом запуске
- package-native-compile t
- ;; Хранить все пакеты в каталоге ~/.emacs.d/elpa/
- package-user-dir init-el-package-user-dir)
+(custom-set-variables
+ '(package-archive-priorities
+   '(("gnu" . 50)
+     ("nongnu" . 40)
+     ("melpa-stable" . 30)
+     ("melpa" . 20)) "Порядок использования архивов")
+ '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске")
+ '(package-user-dir init-el-package-user-dir "Хранить все пакеты в каталоге ~/.emacs.d/elpa/"))
 
 
 (add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
@@ -125,10 +119,10 @@
 
 (unless (package-installed-p 'gnu-elpa-keyring-update)
   (defvar package-check-signature-default package-check-signature)
-  (setq package-check-signature nil)
+  (custom-set-variables '(package-check-signature nil))
   (package-refresh-contents)
   (package-install 'gnu-elpa-keyring-update t)
-  (setq package-check-signature package-check-signature-default))
+  (custom-set-variables '(package-check-signature package-check-signature-default)))
 
 
 ;; Если пакет `use-package` не установлен, нужно это сделать.
@@ -140,10 +134,11 @@
 
 ;; Настройки отладочного режима
 (when init-file-debug
-  (setq use-package-verbose t
-        use-package-compute-statistics t
-        use-package-expand-minimally t
-        debug-on-error t))
+  (custom-set-variables
+   '(use-package-verbose t)
+   '(use-package-compute-statistics t)
+   '(use-package-expand-minimally t)
+   '(debug-on-error t)))
 
 
 ;; -> Настройки, специфичные для графического режима
@@ -507,6 +502,7 @@
   :hook
   ((
     adoc-mode
+    c-mode
     conf-mode
     css-mode
     dockerfile-mode
@@ -596,7 +592,7 @@
   :ensure t
   :defer t
   :bind (:map global-map
-              ("C-c '" . edit-indirect-region)))
+          ("C-c '" . edit-indirect-region)))
 
 
 ;; -> EDITORCONFIG
@@ -605,10 +601,7 @@
 (use-package editorconfig
   :pin "nongnu"
   :ensure t
-  :defer t
-  :after (ws-butler)
-  :custom
-  (editorconfig-trim-whitespaces-mode 'ws-butler-mode "Очистка лишних пробелов методом `ws-butler'.")
+  :after (nerd-icons)
   :config (editorconfig-mode 1))
 
 
@@ -1152,11 +1145,15 @@
 ;; https://github.com/rainstormstudio/nerd-icons.el
 ;; Требуется для корректной работы `doom-modeline'.
 ;; Начиная с версии 4.0.0 пакет `all-the-icons' не поддерживается.
+;;
 ;; Для установки самих шрифтов следует использовать команду `nerd-icons-install-fonts'.
 ;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
 ;; скопировать их в `/usr/local/share/fonts/'.
 (use-package nerd-icons
-  :ensure t)
+  :pin "melpa-stable"
+  :ensure t
+  :custom
+  (nerd-icons-color-icons t "Использовать цветные иконки."))
 
 
 ;; -> NERD-ICONS-DIRED
@@ -1392,8 +1389,8 @@
 (use-package russian-techwriter
   :pin "melpa-stable"
   :ensure t
-  :config
-  (setq-default default-input-method 'russian-techwriter))
+  :custom
+  (default-input-method 'russian-techwriter))
 
 
 ;; -> SAVEPLACE

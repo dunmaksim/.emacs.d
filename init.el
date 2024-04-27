@@ -43,7 +43,7 @@
 ;; В противном случае будут проблемы при загрузке архива пакетов.
 (when (< emacs-major-version 27)
   (require 'gnutls)
-  (setq-default gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
+  (custom-set-variables '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")))
 
 (setq-default indent-tabs-mode nil) ;; Отключить `indent-tabs-mode'.
 (setq
@@ -416,7 +416,6 @@
 ;; Встроенный пакет.
 ;; Управление custom-файлами
 (use-package cus-edit
-  :ensure nil
   :custom
   (custom-file
    (expand-file-name

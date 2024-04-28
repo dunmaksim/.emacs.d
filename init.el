@@ -1,4 +1,4 @@
-;;; init.el --- Dunaevsky Maxim GNU EMACS config -*- lexical-binding:t -*-
+;;; init.el --- Dunaevsky Maxim GNU EMACS config
 ;;; Commentary:
 ;;; Настройки EMACS для работы техническим писателем.
 
@@ -53,18 +53,11 @@
   gc-cons-threshold (* 50 1000 1000) ;; "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
   load-prefer-newer t                ;; Если есть файл elc, но el новее, загрузить el-файл
   locale-coding-system 'utf-8        ;; UTF-8 по умолчанию
-  menu-bar-mode nil                  ;; Отключить показ главного меню
   ring-bell-function #'ignore        ;; Заблокировать пищание
   scroll-conservatively 100000       ;; TODO: проверить, что это такое
   scroll-margin 4                    ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
   scroll-preserve-screen-position 1  ;; TODO: проверить, что это такое
   show-trailing-whitespace t         ;; Показывать висячие пробелы
-  source-directory (format           ;; Путь к исходному коду EMACS
-                     "/usr/share/emacs/%s.%s/src/"
-                     emacs-major-version
-                     emacs-minor-version)
-
-  tool-bar-mode nil                  ;; Отключить показ панели инструментов
   truncate-lines 1                   ;; Обрезать длинные строки
   use-dialog-box nil                 ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
   user-full-name "Dunaevsky Maxim"   ;; Имя пользователя
@@ -74,6 +67,7 @@
 (custom-set-variables
   '(inhibit-startup-screen t "Не надо показывать загрузочный экран")
   '(initial-scratch-message nil "В новых буферах не нужно ничего писать")
+  '(menu-bar-mode nil "Отключить меню")
   '(safe-local-variable-values
      '((buffer-env-script-name . ".venv/bin/activate")
         (electric-pair-preserve-balance . t)
@@ -82,6 +76,7 @@
   '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
   '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
   '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
+  '(tool-bar-mode nil "Отключить панель инструментов.")
   '(user-mail-address "dunmaksim@yandex.ru"))
 
 
@@ -895,8 +890,27 @@
   :config
   (window-divider-mode t) ;; Отображать разделитель между окнами
   :bind (:map global-map
-              ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно
-              ("C-x o" . next-multiframe-window)))   ;; Перейти в следующее окно
+          ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно
+          ("C-x o" . next-multiframe-window)))   ;; Перейти в следующее окно
+
+
+;; -> GIT-COMMIt
+;; https://github.com/magit/magit
+;; Специальный режим для правки коммитов при работе с `magit'.
+(use-package git-commit
+  :pin "nongnu"
+  :ensure t)
+
+
+;; -> GIT-GUTTER
+;; https://github.com/emacsorphanage/git-gutter
+;; Подсветка изменённых строк.
+(use-package git-gutter
+  :pin "melpa-stable"
+  :ensure t
+  :custom
+  (git-gutter:hide-gutter t)
+  :config (global-git-gutter-mode 1))
 
 
 ;; -> GOTO-ADDRESS-MODE
@@ -907,13 +921,13 @@
   :ensure t
   :hook
   ((
-    adoc-mode
-    emacs-lisp-mode
-    markdown-mode
-    rst-mode
-    text-mode
-    web-mode
-    ) . goto-address-mode))
+     adoc-mode
+     emacs-lisp-mode
+     markdown-mode
+     rst-mode
+     text-mode
+     web-mode
+     ) . goto-address-mode))
 
 
 ;; -> HELM
@@ -927,7 +941,7 @@
   :config
   (helm-mode 1)
   :bind (:map global-map
-              ("M-x" . helm-M-x)))
+          ("M-x" . helm-M-x)))
 
 
 ;; -> HL-LINE
@@ -1260,34 +1274,9 @@
   :pin "nongnu"
   :ensure t
   :diminish "PRJ"
-  :bind (
-         :map global-map
-         ("M-p" . projectile-command-map))
+  :bind (:map global-map
+          ("M-p" . projectile-command-map))
   :config
-  ;; AsciiDoc
-  (projectile-register-project-type
-   'asciidoc
-   '("Gemfile")
-   :compile "make"
-   :install "bundle install")
-  ;; Sphinx Doc
-  (projectile-register-project-type
-   'sphinx
-   '("Makefile" "source" "source/conf.py")
-   :compile "make dirhtml"
-   :install "pip3 install -r requirements.txt -U"
-   :project-file "source/conf.py"
-   :run "python3 -m http.server -d build/dirhtml -b 127.0.0.1 8080"
-   :src-dir "source/"
-   :test "pre-commit run --all")
-  ;; Hugo Static Site Generator
-  (projectile-register-project-type
-   'hugo
-   '("hugo.toml")
-   :project-file "hugo.toml"
-   :src-dir "content"
-   :compile "hugo"
-   :run "hugo server")
   (projectile-mode 1))
 
 

@@ -45,29 +45,19 @@
   (require 'gnutls)
   (custom-set-variables '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")))
 
-(setq-default
-  indent-tabs-mode nil               ;; Отключить `indent-tabs-mode'.
-  create-lockfiles nil               ;; Не надо создавать lock-файлы
-  cursor-type 'bar                   ;; Курсор в виде вертикальной черты
-  delete-by-moving-to-trash t        ;; При удалении файла помещать его в Корзину
-  gc-cons-threshold (* 50 1000 1000) ;; "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000
-  load-prefer-newer t                ;; Если есть файл elc, но el новее, загрузить el-файл
-  locale-coding-system 'utf-8        ;; UTF-8 по умолчанию
-  ring-bell-function #'ignore        ;; Заблокировать пищание
-  scroll-conservatively 100000       ;; TODO: проверить, что это такое
-  scroll-margin 4                    ;; При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна
-  scroll-preserve-screen-position 1  ;; TODO: проверить, что это такое
-  show-trailing-whitespace t         ;; Показывать висячие пробелы
-  truncate-lines 1                   ;; Обрезать длинные строки
-  use-dialog-box nil                 ;; Диалоговые окна не нужны, будем использовать текстовый интерфейс
-  user-full-name "Dunaevsky Maxim"   ;; Имя пользователя
-  visible-bell t)                    ;; Эффект мигания при переходе в буфер
-
 
 (custom-set-variables
+  '(create-lockfiles nil "Не надо создавать lock-файлы")
+  '(cursor-type 'bar "Курсор в виде вертикальной черты")
+  '(delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
+  '(gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
+  '(indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   '(inhibit-startup-screen t "Не надо показывать загрузочный экран")
   '(initial-scratch-message nil "В новых буферах не нужно ничего писать")
+  '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл")
+  '(locale-coding-system 'utf-8 "UTF-8 по умолчанию")
   '(menu-bar-mode nil "Отключить меню")
+  '(ring-bell-function #'ignore "Заблокировать пищание")
   '(safe-local-variable-values
      '((buffer-env-script-name . ".venv/bin/activate")
         (electric-pair-preserve-balance . t)
@@ -75,9 +65,17 @@
         (frozen_string_literal . true)) nil nil "Безопасные значения локальных переменных")
   '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
   '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
+  '(scroll-conservatively 100000 "TODO: проверить, что это такое")
+  '(scroll-margin 4 "При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна")
+  '(scroll-preserve-screen-position 1 "TODO: проверить, что это такое")
+  '(show-trailing-whitespace t "Показывать висячие пробелы")
   '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
   '(tool-bar-mode nil "Отключить панель инструментов.")
-  '(user-mail-address "dunmaksim@yandex.ru"))
+  '(truncate-lines 1 "Обрезать длинные строки")
+  '(use-dialog-box nil "Диалоговые окна не нужны, будем использовать текстовый интерфейс")
+  '(user-full-name "Dunaevsky Maxim" "Имя пользователя")
+  '(user-mail-address "dunmaksim@yandex.ru")
+  '(visible-bell t "Эффект мигания при переходе в буфер"))
 
 
 (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
@@ -408,10 +406,10 @@
 (use-package cus-edit
   :custom
   (custom-file
-   (expand-file-name
-    (convert-standard-filename "custom.el")
-    init-el-config-dir)
-   "Файл для сохранения пользовательских настроек, сделанных в customize."))
+    (expand-file-name
+      (convert-standard-filename "custom.el")
+      init-el-config-dir)
+    "Файл для сохранения пользовательских настроек, сделанных в customize."))
 
 
 ;; -> CUSTOM
@@ -433,41 +431,41 @@
 ;; -> DENOTE
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
-(when (emacs-version-not-less-than 28 1)
-  (use-package denote
+  (when (emacs-version-not-less-than 28 1)
+    (use-package denote
+      :pin "gnu"
+      :ensure t
+      :custom
+      (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
+
+
+  ;; -> DESKTOP
+  ;; Встроенный пакет.
+  ;; Сохранение состояния Emacs между сессиями.
+  ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
+  (use-package desktop
+    :ensure nil
+    :custom
+    (desktop-auto-save-timeout 20 "Автосохранение каждые 20 секунд.")
+    (desktop-dirname init-el-config-dir "Каталог для хранения файла .desktop.")
+    (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
+    (desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode)) ; А вот эти не сохранять
+    (desktop-restore-frames t "Восстанавливать фреймы.")
+    (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
+    :config
+    (desktop-save-mode 1)
+    (add-hook 'server-after-make-frame-hook #'desktop-read))
+
+
+  ;; -> DIFF-HL
+  ;; https://github.com/dgutov/diff-hl
+  ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
+  ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
+  (use-package diff-hl
     :pin "gnu"
     :ensure t
-    :custom
-    (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
-
-
-;; -> DESKTOP
-;; Встроенный пакет.
-;; Сохранение состояния Emacs между сессиями.
-;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
-(use-package desktop
-  :ensure nil
-  :custom
-  (desktop-auto-save-timeout 20 "Автосохранение каждые 20 секунд.")
-  (desktop-dirname init-el-config-dir "Каталог для хранения файла .desktop.")
-  (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
-  (desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode)) ; А вот эти не сохранять
-  (desktop-restore-frames t "Восстанавливать фреймы.")
-  (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
-  :config
-  (desktop-save-mode 1)
-  (add-hook 'server-after-make-frame-hook #'desktop-read))
-
-
-;; -> DIFF-HL
-;; https://github.com/dgutov/diff-hl
-;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
-;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
-(use-package diff-hl
-  :pin "gnu"
-  :ensure t
-  :commands (diff-hl-mode diff-hl-dired-mode)
-  :config (global-diff-hl-mode 1))
+    :commands (diff-hl-mode diff-hl-dired-mode)
+    :config (global-diff-hl-mode 1))
 
 
 ;; -> DIMINISH
@@ -1270,14 +1268,14 @@
 ;; под контролем любой системы версионирования, либо содержать специальные
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
-(use-package projectile
-  :pin "nongnu"
-  :ensure t
-  :diminish "PRJ"
-  :bind (:map global-map
-          ("M-p" . projectile-command-map))
-  :config
-  (projectile-mode 1))
+;; (use-package projectile
+;;   :pin "nongnu"
+;;   :ensure t
+;;   :diminish "PRJ"
+;;   :bind (:map global-map
+;;           ("M-p" . projectile-command-map))
+;;   :config
+;;   (projectile-mode 1))
 
 
 ;; -> PULSAR

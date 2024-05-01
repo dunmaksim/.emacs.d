@@ -39,12 +39,14 @@
 
 (defconst emacs-default-font-height 16 "Размер шрифта по умолчанию.")
 
+(require 'custom)
+
 ;; Если используется старая версия EMACS, нужно указать параметры протокола TLS.
 ;; В противном случае будут проблемы при загрузке архива пакетов.
 (when (< emacs-major-version 27)
   (require 'gnutls)
-  (custom-set-variables '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")))
-
+  (custom-set-variables
+    '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3" t "Необходимо для старых версий Emacs")))
 
 (custom-set-variables
   '(create-lockfiles nil "Не надо создавать lock-файлы")
@@ -74,12 +76,20 @@
   '(truncate-lines 1 "Обрезать длинные строки")
   '(use-dialog-box nil "Диалоговые окна не нужны, будем использовать текстовый интерфейс")
   '(user-full-name "Dunaevsky Maxim" "Имя пользователя")
-  '(user-mail-address "dunmaksim@yandex.ru")
+  '(user-mail-address "dunmaksim@yandex.ru" "Адрес электронной почты")
   '(visible-bell t "Эффект мигания при переходе в буфер"))
 
 
 (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
 (global-unset-key (kbd "M-,"))      ;; Такие маркеры не нужны
+(global-set-key (kbd "C-x k")       ;; Закрыть буфер по нажатию [C-x k]
+  (lambda()
+    (interactive)
+    (kill-buffer (current-buffer))))
+(global-set-key (kbd "M--")         ;; Вставка длинного тире
+  (lambda()
+    (interactive)
+    (insert "—")))
 (prefer-coding-system 'utf-8)       ;; При попытке определить кодировку файла начинать перебор с UTF-8)
 (set-default-coding-systems 'utf-8) ;; Кодировка по умолчанию
 (set-language-environment 'utf-8)   ;; Кодировка языка по умолчанию
@@ -111,11 +121,12 @@
 
 
 (unless (package-installed-p 'gnu-elpa-keyring-update)
-  (defvar package-check-signature-default package-check-signature)
+  (defvar init-el-check-signature-default "Проверка подписей пакетов")
+  (setq init-el-check-signature-default package-check-signature)
   (custom-set-variables '(package-check-signature nil))
   (package-refresh-contents)
   (package-install 'gnu-elpa-keyring-update t)
-  (custom-set-variables '(package-check-signature package-check-signature-default)))
+  (custom-set-variables '(package-check-signature init-el-check-signature-default)))
 
 
 ;; Если пакет `use-package` не установлен, нужно это сделать.
@@ -714,25 +725,6 @@
   ("\\.el\\'" . emacs-lisp-mode))
 
 
-;; -> EMACS
-;; Настройки, предоставляемые базовой функциональностью Emacs
-;; Можно считать встроенным пакетом
-(use-package emacs
-  :bind
-  (:map global-map
-        ("C-x k" .
-         (lambda ()
-           (interactive)
-           (kill-buffer (current-buffer))))   ;; Закрыть активный буфер без лишних вопросов
-        ("M-'" . comment-or-uncomment-region) ;; Закомментировать/раскомментировать область)
-        ("M--" .
-         (lambda ()
-           (interactive)
-           (insert "—")))       ;; Вставка длинного тире нажатием Alt+-
-        ([f3] . replace-string) ;; Замена строки
-        ([f9] . sort-lines)))   ;; Отсортировать выделенные строки
-
-
 ;; -> FACE-REMAP
 ;; Встроенный пакет.
 ;; Отображение шрифтов в графическом режиме.
@@ -1187,6 +1179,14 @@
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
 
+;; -> NEW-COMMENT
+;; Встроенный пакет.
+;; Работа с комментариями.
+(use-package newcomment
+  :bind
+  (:map global-map ("M-'" . comment-or-uncomment-region)))
+
+
 ;; -> MENU-BAR
 ;; Встроенный пакет.
 ;; Используется для отрисовки меню в графическом и текстовом режимах.
@@ -1318,29 +1318,29 @@
   :diminish ""
   :hook
   ((
-    adoc-mode
-    conf-mode
-    css-mode
-    emacs-lisp-mode
-    js2-mode
-    json-mode
-    lisp-data-mode
-    makefile-gmake-mode
-    makefile-mode
-    markdown-mode
-    nxml-mode
-    org-mode
-    python-mode
-    rst-mode
-    sh-mode
-    sql-mode
-    terraform-mode
-    web-mode
-    yaml-mode
-    ) . rainbow-delimiters-mode))
+     adoc-mode
+     conf-mode
+     css-mode
+     emacs-lisp-mode
+     js2-mode
+     json-mode
+     lisp-data-mode
+     makefile-gmake-mode
+     makefile-mode
+     markdown-mode
+     nxml-mode
+     org-mode
+     python-mode
+     rst-mode
+     sh-mode
+     sql-mode
+     terraform-mode
+     web-mode
+     yaml-mode
+     ) . rainbow-delimiters-mode))
 
 
-;; => RAINBOW-MODE
+;; -> RAINBOW-MODE
 ;; https://elpa.gnu.org/packages/rainbow-mode.html
 ;; Подсветка строк с цветами нужным цветом, например #153415, #223956
 (use-package rainbow-mode
@@ -1349,10 +1349,18 @@
   :diminish ""
   :hook
   ((
-    css-mode
-    emacs-lisp-mode
-    web-mode
-    ) . rainbow-mode))
+     css-mode
+     emacs-lisp-mode
+     web-mode
+     ) . rainbow-mode))
+
+
+;; -> REPLACE
+;; Встроенный пакет.
+;; Функции поиска и замены текста.
+(use-package replace
+  :bind
+  (:map global-map ([f3] . replace-string)))
 
 
 ;; -> REVERSE-IM
@@ -1364,10 +1372,10 @@
   :after (russian-techwriter)
   :custom
   (reverse-im-input-methods
-   '(
-     "russian-computer"
-     "russian-techwriter"))
-  :config (reverse-im-mode t))
+    '(
+       "russian-computer"
+       "russian-techwriter"))
+  :config (reverse-im-mode 1))
 
 
 ;; -> RUSSIAN-TECHWRITER
@@ -1471,9 +1479,15 @@
   (size-indication-mode 0)    ;; Отображать размер буфера в строке статуса
   :bind
   (:map global-map
-        ("<escape>" . keyboard-quit)   ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
-        ("C-z" . undo)                 ;; Отмена
-        ("S-<SPC>" . just-one-space))) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+    ("<escape>" . keyboard-quit)   ;; ESC работает как и Ctrl+g, т. е. прерывает ввод команды
+    ("C-z" . undo)                 ;; Отмена
+    ("S-<SPC>" . just-one-space))) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+
+
+;; -> SORT
+;; Встроенный пакет.
+(use-package sort
+  :bind (:map global-map ([f9] . sort-lines)))
 
 
 ;; -> SPHINX-MODE
@@ -1557,14 +1571,13 @@
   :pin "nongnu"
   :ensure t
   :custom
+  (major-mode 'web-mode)
   (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
   (web-mode-enable-block-face t "Отображение")
   (web-mode-enable-css-colorization t "Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета")
   (web-mode-enable-current-element-highlight t "Подсветка активного элемента разметки")
   (web-mode-html-offset 2 "Отступ в 2 знака для корректной работы `highlight-indentation-mode'.")
   (web-mode-markup-indent-offset 2 "Отступ при вёрстке HTML — 2 пробела")
-  :init
-  (setq-default major-mode 'web-mode)
   :mode "\\.html\\'")
 
 

@@ -409,6 +409,15 @@
   :mode "\\.css\\'")
 
 
+;; -> CSV-MODE
+;; https://elpa.gnu.org/packages/csv-mode.html
+;; Поддержка CSV
+(use-package csv-mode
+  :pin "gnu"
+  :ensure t
+  :mode "\\.csv\\'")
+
+
 ;; -> CUS-EDIT
 ;; Встроенный пакет.
 ;; Управление custom-файлами

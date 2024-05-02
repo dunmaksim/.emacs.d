@@ -121,12 +121,10 @@
 
 
 (unless (package-installed-p 'gnu-elpa-keyring-update)
-  (defvar init-el-check-signature-default "Проверка подписей пакетов")
-  (setq init-el-check-signature-default package-check-signature)
-  (custom-set-variables '(package-check-signature nil))
+  (custom-set-variables '(package-check-signature 'allow-unsigned "Отключить проверку подписей"))
   (package-refresh-contents)
   (package-install 'gnu-elpa-keyring-update t)
-  (custom-set-variables '(package-check-signature init-el-check-signature-default)))
+  (custom-set-variables '(package-check-signature 'all "Включить проверку подписей")))
 
 
 ;; Если пакет `use-package` не установлен, нужно это сделать.
@@ -1268,14 +1266,14 @@
 ;; под контролем любой системы версионирования, либо содержать специальные
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
-;; (use-package projectile
-;;   :pin "nongnu"
-;;   :ensure t
-;;   :diminish "PRJ"
-;;   :bind (:map global-map
-;;           ("M-p" . projectile-command-map))
-;;   :config
-;;   (projectile-mode 1))
+(use-package projectile
+  :pin "nongnu"
+  :ensure t
+  :diminish "PRJ"
+  :bind-keymap
+  ("M-p" . projectile-command-map)
+  :config
+  (projectile-mode 1))
 
 
 ;; -> PULSAR

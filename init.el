@@ -512,28 +512,29 @@
 (use-package display-line-numbers
   :hook
   ((
-    adoc-mode
-    c-mode
-    conf-mode
-    css-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    json-mode
-    latex-mode
-    lisp-data-mode
-    makefile-mode
-    markdown-mode
-    nxml-mode
-    po-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    sh-mode
-    shell-script-mode
-    terraform-mode
-    web-mode
-    yaml-mode
-    ) . display-line-numbers-mode))
+     adoc-mode
+     c-mode
+     conf-mode
+     css-mode
+     csv-mode
+     dockerfile-mode
+     emacs-lisp-mode
+     json-mode
+     latex-mode
+     lisp-data-mode
+     makefile-mode
+     markdown-mode
+     nxml-mode
+     po-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     sh-mode
+     shell-script-mode
+     terraform-mode
+     web-mode
+     yaml-mode
+     ) . display-line-numbers-mode))
 
 
 ;; -> DOCKERFILE-MODE
@@ -612,6 +613,7 @@
 (use-package editorconfig
   :pin "nongnu"
   :ensure t
+  :diminish ""
   :after (nerd-icons)
   :config (editorconfig-mode 1))
 
@@ -675,31 +677,33 @@
 ;;
 ;; ПОДГОТОВКА К РАБОТЕ
 ;; Установка серверов:
-;; - Ansible:  sudo npm install -g @ansible/ansible-language-server
-;; - HTML:     npm install -g vscode-langservers-extracted
-;; - Markdown: sudo snap install marksman
-;; - Python:   pip3 install jedi-language-server
+;; - Ansible:    sudo npm install -g @ansible/ansible-language-server
+;; - Dockerfile: sudo npm -g install dockerfile-language-server-nodejs
+;; - HTML:       npm install -g vscode-langservers-extracted
+;; - Markdown:   sudo snap install marksman
+;; - Python:     pip3 install jedi-language-server
+;; - YAML:       sudo npm -g install yaml-language-server
 (when (emacs-version-not-less-than 26 3)
   (use-package eglot
     :pin "gnu"
     :ensure t
     :defer t
     :config
-    (add-to-list 'eglot-server-programs
-                 '(ansible-mode . ("ansible-language-server" "--stdio")))
-    (add-to-list 'eglot-server-programs
-                 '(markdown-mode . ("marksman")))
-    (add-to-list 'eglot-server-programs
-                 '(python-mode . ("jedi-language-server")))
-    (add-to-list 'eglot-server-programs
-                 '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
+    (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '(dockerfile-mode . ("docker-langserver" "--stdio")))
+    (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+    (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+    (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
+    (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server")))
     :hook
     ((
-      ansible-mode
-      markdown-mode
-      python-mode
-      ruby-mode
-      ) . eglot-ensure)))
+       ansible-mode
+       dockerfile-mode
+       markdown-mode
+       python-mode
+       ruby-mode
+       yaml-mode
+       ) . eglot-ensure)))
 
 
 ;; -> ELPY
@@ -843,27 +847,31 @@
 (when (string-equal system-type "gnu/linux")
   (defvar text-spell-program nil "Программа для проверки орфографии.")
   (cond
-   ((file-exists-p "/usr/bin/hunspell")
-    (setq text-spell-program "/usr/bin/hunspell"))
-   ((file-exists-p "/usr/bin/aspell")
-    (setq text-spell-program "/usr/bin/aspell")))
+    ((or
+       (file-exists-p "/usr/bin/hunspell")
+       (file-symlink-p "/usr/bin/hunspell"))
+      (setq text-spell-program "hunspell"))
+    ((or
+       (file-exists-p "/usr/bin/aspell")
+       (file-symlink-p "/usr/bin/aspell"))
+      (setq text-spell-program "aspell")))
   ;; Нужно использовать ispell-mode только в том случае, когда есть
   ;; чем проверять орфографию.
-  (when text-spell-program
+  (if text-spell-program
     (progn
-      (message (format "Ispell use %s" text-spell-program))
+      (message (format "Для проверки орфографии используется %s" text-spell-program))
       (use-package flyspell
         :custom (ispell-program-name text-spell-program)
         :hook
         ((
-          adoc-mode
-          markdown-mode
-          rst-mode) . flyspell-mode)
+           adoc-mode
+           markdown-mode
+           rst-mode) . flyspell-mode)
         (emacs-lisp-mode . flyspell-prog-mode)
         :bind
         (:map global-map
-              ([f5] . ispell-buffer))))
-    (message "Flyspell: не найдено программ для проверки орфографии.")))
+          ([f5] . ispell-buffer))))
+    (message "Не найдено программ для проверки орфографии.")))
 
 
 ;; -> FORMAT-ALL
@@ -1280,7 +1288,7 @@
   :ensure t
   :diminish "PRJ"
   :bind-keymap
-  ("M-p" . projectile-command-map)
+  ("C-x p" . projectile-command-map)
   :config
   (projectile-mode 1))
 

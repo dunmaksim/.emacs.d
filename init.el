@@ -449,41 +449,41 @@
 ;; 📦 DENOTE
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
-  (when (emacs-version-not-less-than 28 1)
-    (use-package denote
-      :pin "gnu"
-      :ensure t
-      :custom
-      (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
-
-
-  ;; 📦 DESKTOP
-  ;; Встроенный пакет.
-  ;; Сохранение состояния Emacs между сессиями.
-  ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
-  (use-package desktop
-    :ensure nil
-    :custom
-    (desktop-auto-save-timeout 20 "Автосохранение каждые 20 секунд.")
-    (desktop-dirname init-el-config-dir "Каталог для хранения файла .desktop.")
-    (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
-    (desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode)) ; А вот эти не сохранять
-    (desktop-restore-frames t "Восстанавливать фреймы.")
-    (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
-    :config
-    (desktop-save-mode 1)
-    (add-hook 'server-after-make-frame-hook #'desktop-read))
-
-
-  ;; 📦 DIFF-HL
-  ;; https://github.com/dgutov/diff-hl
-  ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
-  ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
-  (use-package diff-hl
+(when (emacs-version-not-less-than 28 1)
+  (use-package denote
     :pin "gnu"
     :ensure t
-    :commands (diff-hl-mode diff-hl-dired-mode)
-    :config (global-diff-hl-mode 1))
+    :custom
+    (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
+
+
+;; 📦 DESKTOP
+;; Встроенный пакет.
+;; Сохранение состояния Emacs между сессиями.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
+(use-package desktop
+  :ensure nil
+  :custom
+  (desktop-auto-save-timeout 20 "Автосохранение каждые 20 секунд.")
+  (desktop-dirname init-el-config-dir "Каталог для хранения файла .desktop.")
+  (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
+  (desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode)) ; А вот эти не сохранять
+  (desktop-restore-frames t "Восстанавливать фреймы.")
+  (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
+  :config
+  (desktop-save-mode 1)
+  (add-hook 'server-after-make-frame-hook #'desktop-read))
+
+
+;; 📦 DIFF-HL
+;; https://github.com/dgutov/diff-hl
+;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
+;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
+(use-package diff-hl
+  :pin "gnu"
+  :ensure t
+  :commands (diff-hl-mode diff-hl-dired-mode)
+  :config (global-diff-hl-mode 1))
 
 
 ;; 📦 DIMINISH
@@ -973,102 +973,109 @@
 (use-package ibuffer
   :custom
   (ibuffer-formats ;; Форматирование вывода
-   '(
-     (;; Полный формат
-      mark      ;; Отметка
-      modified  ;; Буфер изменён?
-      read-only ;; Только чтение?
-      locked    ;; Заблокирован?
-      " "
-      (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
-      " "
-      (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
-      " "
-      filename-and-process)     ;; Имя файла и процесс
-     ( ;; Сокращённый формат
-      mark      ;; Отметка?
-      " "
-      (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
-      " "
-      filename)))  ;; Имя файла)
+    '(
+       (;; Полный формат
+         mark      ;; Отметка
+         modified  ;; Буфер изменён?
+         read-only ;; Только чтение?
+         locked    ;; Заблокирован?
+         " "
+         (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
+         " "
+         (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
+         " "
+         filename-and-process)     ;; Имя файла и процесс
+       ( ;; Сокращённый формат
+         mark      ;; Отметка?
+         " "
+         (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
+         " "
+         filename)))  ;; Имя файла)
+  (ibuffer-default-sorting-mode 'filename/process "Сортировать файлы по имени / процессу")
   (ibuffer-expert 1 "Не запрашивать подтверждение для опасных операций")
-  (ibuffer-hidden-filter-groups (list "*Internal*" ) "Не показывать эти буферы")
-  (ibuffer-saved-filter-groups                    ;; Группы по умолчанию
-   '(
-     ("default"
-      ("Dired" (mode . dired-mode))
-      ("EMACS Lisp"
-       (or
-        (mode . emacs-lisp-mode)
-        (mode . lisp-data-mode)))
-      ("Org" (mode . org-mode))
-      ("Markdown" (mode . markdown-mode))
-      ("AsciiDoc" (mode . adoc-mode))
-      ("ReStructured Text" (mode . rst-mode))
-      ("CONF / INI"
-       (or
-        (mode . conf-mode)
-        (name . "\\.conf\\'")
-        (name . "\\.editorconfig\\'")
-        (name . "\\.ini\\'")))
-      ("XML"
-       (or
-        (mode . nxml-mode)
-        (mode . xml-mode)))
-      ("YAML" (mode . yaml-mode))
-      ("Makefile"
-       (or
-        (mode . makefile-mode)
-        (name  . "^Makefile$")))
-      ("Python"
-       (or
-        (mode . anaconda-mode)
-        (mode . python-mode)))
-      ("SSH keys" (or (name . "^\\*.pub$")))
-      ("Shell-script"
-       (or
-        (mode . shell-script-mode)
-        (mode . sh-mode)))
-      ("Terraform"
-       (or
-        (mode . terraform-mode)
-        (name . "^\\*.tf$")))
-      ("SQL" (mode . sql-mode))
-      ("Web"
-       (or
-        (mode . javascript-mode)
-        (mode . js-mode)
-        (mode . js2-mode)
-        (mode . web-mode)))
-      ("Magit"
-       (or
-        (mode . magit-status-mode)
-        (mode . magit-log-mode)
-        (name . "^\\*magit")
-        (name . "git-monitor")))
-      ("Commands"
-       (or
-        (mode . compilation-mode)
-        (mode . eshell-mode)
-        (mode . shell-mode)
-        (mode . term-mode)))
-      ("Emacs"
-       (or
-        (name . "^\\*scratch\\*$")
-        (name . "^\\*Messages\\*$")
-        (name . "^\\*\\(Customize\\|Help\\)")
-        (name . "\\*\\(Echo\\|Minibuf\\)"))))))
-  (ibuffer-show-empty-filter-groups nil "Не показывать пустые группы")
-  (ibuffer-sorting-mode 'filename/process "Сортировать файлы по имени / процессу")
   (ibuffer-truncate-lines nil "Не обкусывать длинные строки")
-  (ibuffer-use-other-window t "Открывать ibuffer в отдельном окне")
+  (ibuffer-use-other-window t "Открывать буфер *Ibuffer* в отдельном окне")
   :commands ibuffer
   :init
-  (defalias 'list-buffers 'ibuffer)
-  (add-hook 'ibuffer-mode-hook #'(lambda ()
-                                   (ibuffer-switch-to-saved-filter-groups "default")))
+  (defalias 'list-buffers 'ibuffer "Замена стандартной функции на ibuffer.")
   :bind (:map global-map
-              ([f2] . ibuffer)))
+          ([f2] . ibuffer)))
+
+;; 📦 IBUF-EXT
+;; Встроенный пакет.
+;; Дополнительные настройки `ibuffer'.
+(use-package ibuf-ext
+  :custom
+  (ibuffer-saved-filter-groups                    ;; Группы по умолчанию
+    '(
+       ("default"
+         ("Dired" (mode . dired-mode))
+         ("EMACS Lisp"
+           (or
+             (mode . emacs-lisp-mode)
+             (mode . lisp-data-mode)))
+         ("Org" (mode . org-mode))
+         ("Markdown" (mode . markdown-mode))
+         ("AsciiDoc" (mode . adoc-mode))
+         ("ReStructured Text" (mode . rst-mode))
+         ("CONF / INI"
+           (or
+             (mode . conf-mode)
+             (name . "\\.conf\\'")
+             (name . "\\.editorconfig\\'")
+             (name . "\\.ini\\'")))
+         ("XML"
+           (or
+             (mode . nxml-mode)
+             (mode . xml-mode)))
+         ("YAML" (mode . yaml-mode))
+         ("Makefile"
+           (or
+             (mode . makefile-mode)
+             (name  . "^Makefile$")))
+         ("Python"
+           (or
+             (mode . anaconda-mode)
+             (mode . python-mode)))
+         ("SSH keys" (or (name . "^\\*.pub$")))
+         ("Shell-script"
+           (or
+             (mode . shell-script-mode)
+             (mode . sh-mode)))
+         ("Terraform"
+           (or
+             (mode . terraform-mode)
+             (name . "^\\*.tf$")))
+         ("SQL" (mode . sql-mode))
+         ("Web"
+           (or
+             (mode . javascript-mode)
+             (mode . js-mode)
+             (mode . js2-mode)
+             (mode . web-mode)))
+         ("Magit"
+           (or
+             (mode . magit-status-mode)
+             (mode . magit-log-mode)
+             (name . "^\\*magit")
+             (name . "git-monitor")))
+         ("Commands"
+           (or
+             (mode . compilation-mode)
+             (mode . eshell-mode)
+             (mode . shell-mode)
+             (mode . term-mode)))
+         ("Emacs"
+           (or
+             (name . "^\\*scratch\\*$")
+             (name . "^\\*Messages\\*$")
+             (name . "^\\*\\(Customize\\|Help\\)")
+             (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+  (ibuffer-hidden-filter-groups (list "*Internal*" ) "Не показывать эти буферы")
+  (ibuffer-show-empty-filter-groups nil "Не показывать пустые группы")
+  :init
+  (add-hook 'ibuffer-mode-hook #'ibuffer-auto-mode)
+  (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
 
 
 ;; 📦 JS-MODE
@@ -1145,19 +1152,19 @@
   :pin "nongnu"
   :ensure t
   :bind (:map global-map
-              ("C-S-c C-S-c" . mc/edit-lines)
-              ("C📦" . mc/mark-next-like-this)
-              ("C-<" . mc/mark-previous-like-this)
-              ("C-c C-<" . mc/mark-all-like-this))
+          ("C-S-c C-S-c" . mc/edit-lines)
+          ("C->" . mc/mark-next-like-this)
+          ("C-<" . mc/mark-previous-like-this)
+          ("C-c C-<" . mc/mark-all-like-this))
   :config
   (add-to-list
-   'after-make-frame-functions
-   (lambda ()
-     (when (display-graphic-p)
-       ;; Если режим графический, то курсоры можно расставлять с помощью Alt+Click
-       (progn
-         (global-unset-key (kbd "M-<down-mouse-1>"))
-         (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))))))
+    'after-make-frame-functions
+    (lambda ()
+      (when (display-graphic-p)
+        ;; Если режим графический, то курсоры можно расставлять с помощью Alt+Click
+        (progn
+          (global-unset-key (kbd "M-<down-mouse-1>"))
+          (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))))))
 
 
 ;; 📦 NERD-ICONS

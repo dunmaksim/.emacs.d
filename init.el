@@ -64,9 +64,11 @@
      '((buffer-env-script-name . ".venv/bin/activate")
         (electric-pair-preserve-balance . t)
         (fill-column . 70)
+        (fill-column . 120)
         (frozen_string_literal . true)) nil nil "Безопасные значения локальных переменных")
   '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
   '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
+  '(scroll-bar-mode nil "Отключить полосы прокрутки")
   '(scroll-conservatively 100000 "TODO: проверить, что это такое")
   '(scroll-margin 4 "При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна")
   '(scroll-preserve-screen-position 1 "TODO: проверить, что это такое")
@@ -156,30 +158,29 @@
 
     ;; Перебор шрифтов
     (cond
-     ((member "Fire Code Nerd" availiable-fonts)
-      (setq default-font-family "Fira Code Nerd"))
-     ((member "Fira Code" availiable-fonts)
-      (setq default-font-family "Fira Code"))
-     ((member "DejaVu Sans Mono Nerd" availiable-fonts)
-      (setq default-font-family "DejaVu Sans Mono Nerd"))
-     ((member "DejaVu Sans Mono" availiable-fonts)
-      (setq default-font-family "DejaVu Sans Mono"))
-     ((member "Source Code Pro" availiable-fonts)
-      (setq default-font-family "Source Code Pro"))
-     ((member "Consolas" availiable-fonts)
-      (setq default-font-family "Consolas")))
+      ((member "Fire Code Nerd" availiable-fonts)
+        (setq default-font-family "Fira Code Nerd"))
+      ((member "Fira Code" availiable-fonts)
+        (setq default-font-family "Fira Code"))
+      ((member "DejaVu Sans Mono Nerd" availiable-fonts)
+        (setq default-font-family "DejaVu Sans Mono Nerd"))
+      ((member "DejaVu Sans Mono" availiable-fonts)
+        (setq default-font-family "DejaVu Sans Mono"))
+      ((member "Source Code Pro" availiable-fonts)
+        (setq default-font-family "Source Code Pro"))
+      ((member "Consolas" availiable-fonts)
+        (setq default-font-family "Consolas")))
 
     (when default-font-family
       ;; Это формат X Logical Font Description Conventions, XLFD
       ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
       (set-frame-font
-       (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-               default-font-family
-               emacs-default-font-height) nil t)
+        (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
+          default-font-family
+          emacs-default-font-height) nil t)
       (set-face-attribute 'default nil :family default-font-family))
 
     (set-face-attribute 'default nil :height (* emacs-default-font-height 10))))
-
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
@@ -532,6 +533,7 @@
      sh-mode
      shell-script-mode
      terraform-mode
+     tex-mode
      web-mode
      yaml-mode
      ) . display-line-numbers-mode))
@@ -650,15 +652,15 @@
   (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”
   :hook
   ((
-    adoc-mode
-    conf-mode
-    emacs-lisp-data-mode
-    emacs-lisp-mode
-    lisp-data-mode
-    markdown-mode
-    python-mode
-    ruby-mode
-    ) . electric-pair-local-mode))
+     adoc-mode
+     conf-mode
+     emacs-lisp-data-mode
+     emacs-lisp-mode
+     lisp-data-mode
+     markdown-mode
+     python-mode
+     ruby-mode
+     ) . electric-pair-local-mode))
 
 
 ;; 📦 ELECTRIC-INDENT MODE
@@ -718,6 +720,8 @@
   :pin "melpa-stable"
   :ensure t
   :defer t
+  :custom
+  (elpy-rpc-python-command "python3" "Интерпретатор по умолчанию.")
   :config
   (elpy-enable)
   (defalias 'workon 'pyvenv-workon)
@@ -1212,9 +1216,9 @@
 ;; 📦 MENU-BAR
 ;; Встроенный пакет.
 ;; Используется для отрисовки меню в графическом и текстовом режимах.
-(use-package menu-bar
-  :config
-  (menu-bar-mode 0)) ;; Отключить показ меню
+;; (use-package menu-bar
+;;   :config
+;;   (menu-bar-mode 0)) ;; Отключить показ меню
 
 
 ;; 📦 MULE
@@ -1463,11 +1467,9 @@
 ;; 📦 SCROLL-BAR
 ;; Встроенный пакет.
 ;; Управление полосами прокрутки
-(use-package scroll-bar
-  :custom
-  (scroll-bar-mode nil "Не показывать полосы прокрутки")
-  :config
-  (scroll-bar-mode 0)) ;; Не показывать полосы прокрутки
+;; (use-package scroll-bar
+;;   :custom
+;;   (scroll-bar-mode nil "Не показывать полосы прокрутки"))
 
 
 ;; 📦 SHELL-SCRIPT-MODE
@@ -1534,11 +1536,12 @@
   ("\\.tf\\'" . terraform-mode))
 
 
-;; 📦 TOOL-BAR-MODE
+;; 📦 TEX-MODE
 ;; Встроенный пакет.
-;; Отрисовка панели инструментов в графическом режиме.
-(when (fboundp 'tool-bar)
-  (tool-bar-mode nil))
+;; Работа с TeX и LaTeX
+(use-package tex-mode
+  :mode
+  ("\\.text\\'" . tex-mode))
 
 
 ;; 📦 TOOLTIP
@@ -1585,6 +1588,17 @@
   (global-undo-tree-mode 1))
 
 
+;; 📦 VERTICO
+;; https://github.com/minad/vertico
+;; Пакет для какого-то автодополнения.
+;; TODO: понять, надо ли оно, и чем оно лучше `company-mode'.
+(use-package vertico
+  :pin "gnu"
+  :ensure t
+  :config
+  (vertico-mode 1))
+
+
 ;; 📦 WEB-MODE
 ;; https://web-mode.org/
 ;; Режим для редактирования HTML и не только.
@@ -1625,38 +1639,39 @@
   :diminish "ws"
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
-   '(
-     (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
-     (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
-     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
-     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
-     ))
+    '(
+       (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
+       (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
+       (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
+       (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
+       ))
   (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
   :hook
   ((
-    adoc-mode
-    conf-mode
-    css-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    js2-mode
-    json-mode
-    latex-mode
-    lisp-data-mode
-    makefile-gmake-mode
-    makefile-mode
-    markdown-mode
-    nxml-mode
-    org-mode
-    po-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    sh-mode
-    sql-mode
-    terraform-mode
-    web-mode
-    yaml-mode) . whitespace-mode))
+     adoc-mode
+     conf-mode
+     css-mode
+     dockerfile-mode
+     emacs-lisp-mode
+     js2-mode
+     json-mode
+     latex-mode
+     lisp-data-mode
+     makefile-gmake-mode
+     makefile-mode
+     markdown-mode
+     nxml-mode
+     org-mode
+     po-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     sh-mode
+     sql-mode
+     terraform-mode
+     tex-mode
+     web-mode
+     yaml-mode) . whitespace-mode))
 
 
 ;; 📦 WINDMOVE
@@ -1664,8 +1679,18 @@
 (use-package windmove
   :bind
   (:map global-map
-        ("C-x <up>" . windmove-up)
-        ("C-x <down>" . windmove-down)))
+    ("C-x <up>" . windmove-up)
+    ("C-x <down>" . windmove-down)))
+
+
+;; 📦 WINNER-MODE
+;; Встроенный пакет для управления окнами.
+;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Convenience.html
+;; Для управления конфигурациями окон используются последовательности
+;; [C-c <left>] и [C-c <right>]
+(use-package winner
+  :config
+  (winner-mode 1))
 
 
 ;; 📦 WINDOW
@@ -1673,12 +1698,12 @@
 (use-package window
   :bind
   (:map global-map
-        ("S-C-<left>" . shrink-window-horizontally)   ;; [Ctrl+Shift+←]   Уменьшить размер окна по ширине
-        ("S-C-<right>" . enlarge-window-horizontally) ;; [Ctrl+Shift+→]   Увеличить размер окна по ширине
-        ("S-C-<down>" . enlarge-window)               ;; [Ctrl+Shift+↓]   Увеличить размер окна по ширине
-        ("S-C-<up>" . shrink-window)                  ;; [Ctrl+Shift+↑]   Уменьшить размер окна по высоте
-        ([C-tab] . next-buffer)                       ;; [Ctrl+Tab]       Следующий буфер
-        ([C-S-iso-lefttab] . previous-buffer)))       ;; [Ctrl+Shift+Tab] Предыдущий буфер)
+    ("S-C-<left>" . shrink-window-horizontally)   ;; [Ctrl+Shift+←]   Уменьшить размер окна по ширине
+    ("S-C-<right>" . enlarge-window-horizontally) ;; [Ctrl+Shift+→]   Увеличить размер окна по ширине
+    ("S-C-<down>" . enlarge-window)               ;; [Ctrl+Shift+↓]   Увеличить размер окна по ширине
+    ("S-C-<up>" . shrink-window)                  ;; [Ctrl+Shift+↑]   Уменьшить размер окна по высоте
+    ([C-tab] . next-buffer)                       ;; [Ctrl+Tab]       Следующий буфер
+    ([C-S-iso-lefttab] . previous-buffer)))       ;; [Ctrl+Shift+Tab] Предыдущий буфер)
 
 
 ;; 📦 WS-BUTLER

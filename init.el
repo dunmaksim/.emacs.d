@@ -1,4 +1,4 @@
-;;; init.el --- Dunaevsky Maxim GNU EMACS config
+;;; init.el --- Dunaevsky Maxim GNU EMACS config -*- lexical-binding: t; -*-
 ;;; Commentary:
 ;;; Настройки EMACS для работы техническим писателем.
 
@@ -46,40 +46,34 @@
 (when (< emacs-major-version 27)
   (require 'gnutls)
   (custom-set-variables
-    '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3" t "Необходимо для старых версий Emacs")))
+    '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3" "Необходимо для старых версий Emacs.")))
+
+(setq
+  create-lockfiles nil ;; Не надо создавать lock-файлы
+  cursor-type 'bar ;; Курсор в виде вертикальной черты
+  delete-by-moving-to-trash t ;; Удалять файлы в Корзину
+  gc-cons-threshold (* 50 1000 1000) ;; Увеличить размер памяти для сборщика мусора
+  indent-tabs-mode nil ;; Отключить `indent-tabs-mode'
+  inhibit-startup-screen t ;; Не показывать загрузочный экран
+  initial-scratch-message nil ;; В новых буферах не нужно ничего писать.
+  load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
+  menu-bar-mode nil ;; Отключить меню.
+  ring-bell-function #'ignore ;; Заблокировать пищание.
+  scroll-bar-mode nil ;; Отключить полосы прокрутки
+  scroll-conservatively 101 ;; TODO: проверить что это такое
+  scroll-margin 4 ;; Количество строк сверху и снизу от границ окна
+  show-trailing-whitespace t ;; Показывать висячие пробелы
+  tab-always-indent 'complete ;;Если можно — выровнять текст, иначе — автодополнение.
+  tool-bar-mode nil ;; Отключить панель инструментов.
+  truncate-lines 1 ;; Обрезать длинные строки
+  use-dialog-box nil ;; "Диалоговые окна ОС не нужны
+  user-full-name "Dunaevsky Maxim" ;; Имя пользователя
+  user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты.
+  visible-bell t) ;; Эффект мигания при переходе в буфер.
 
 (custom-set-variables
-  '(create-lockfiles nil "Не надо создавать lock-файлы")
-  '(cursor-type 'bar "Курсор в виде вертикальной черты")
-  '(delete-by-moving-to-trash t "При удалении файла помещать его в Корзину")
-  '(gc-cons-threshold (* 50 1000 1000) "Увеличим лимит для сборщика мусора с 800 000 до 50 000 000")
-  '(indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
-  '(inhibit-startup-screen t "Не надо показывать загрузочный экран")
-  '(initial-scratch-message nil "В новых буферах не нужно ничего писать")
-  '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл")
-  '(locale-coding-system 'utf-8 "UTF-8 по умолчанию")
-  '(menu-bar-mode nil "Отключить меню")
-  '(ring-bell-function #'ignore "Заблокировать пищание")
-  '(safe-local-variable-values
-     '((buffer-env-script-name . ".venv/bin/activate")
-        (electric-pair-preserve-balance . t)
-        (fill-column . 70)
-        (fill-column . 120)
-        (frozen_string_literal . true)) nil nil "Безопасные значения локальных переменных")
   '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
-  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
-  '(scroll-bar-mode nil "Отключить полосы прокрутки")
-  '(scroll-conservatively 100000 "TODO: проверить, что это такое")
-  '(scroll-margin 4 "При прокрутке помещать курсор на 5 строк выше / ниже верхней / нижней границы окна")
-  '(scroll-preserve-screen-position 1 "TODO: проверить, что это такое")
-  '(show-trailing-whitespace t "Показывать висячие пробелы")
-  '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение")
-  '(tool-bar-mode nil "Отключить панель инструментов.")
-  '(truncate-lines 1 "Обрезать длинные строки")
-  '(use-dialog-box nil "Диалоговые окна не нужны, будем использовать текстовый интерфейс")
-  '(user-full-name "Dunaevsky Maxim" "Имя пользователя")
-  '(user-mail-address "dunmaksim@yandex.ru" "Адрес электронной почты")
-  '(visible-bell t "Эффект мигания при переходе в буфер"))
+  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо"))
 
 
 (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
@@ -92,31 +86,25 @@
   (lambda()
     (interactive)
     (insert "—")))
-(prefer-coding-system 'utf-8)       ;; При попытке определить кодировку файла начинать перебор с UTF-8)
-(set-default-coding-systems 'utf-8) ;; Кодировка по умолчанию
-(set-language-environment 'utf-8)   ;; Кодировка языка по умолчанию
 
 
 ;; 📦 PACKAGE
 ;; Встроенный пакет.
 ;; Управление другими пакетами.
 (require 'package)
-
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-(custom-set-variables
- '(package-archive-priorities
-   '(("gnu" . 50)
-     ("nongnu" . 40)
-     ("melpa-stable" . 30)
-     ("melpa" . 20)) "Порядок использования архивов")
- '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске")
- '(package-user-dir init-el-package-user-dir "Хранить все пакеты в каталоге ~/.emacs.d/elpa/"))
-
+(setq
+  package-archive-priorities '(("gnu" . 50)
+                                ("nongnu" . 40)
+                                ("melpa-stable" . 30)
+                                ("melpa" . 20)) ;; Приоритеты архивов
+  package-native-compile t ;;Компиляция пакетов во время установки, а не при первом запуске
+  package-user-dir init-el-package-user-dir) ;; "Хранить все пакеты в каталоге ~/.emacs.d/elpa/"
 
 (add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
 (add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.
@@ -129,7 +117,7 @@
   (custom-set-variables '(package-check-signature 'all "Включить проверку подписей")))
 
 
-;; Если пакет `use-package` не установлен, нужно это сделать.
+;; Если пакет `use-package' не установлен, нужно это сделать.
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package t))
@@ -139,10 +127,10 @@
 ;; Настройки отладочного режима
 (when init-file-debug
   (custom-set-variables
-   '(use-package-verbose t)
-   '(use-package-compute-statistics t)
-   '(use-package-expand-minimally t)
-   '(debug-on-error t)))
+    '(use-package-verbose t "Подробный режим работы `use-package'.")
+    '(use-package-compute-statistics t "Сбор статистики `use-package'.")
+    '(use-package-expand-minimally t "TODO: ???")
+    '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")))
 
 
 ;; 📦 Настройки, специфичные для графического режима
@@ -204,7 +192,6 @@
 ;; 📦 ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами по Alt+O
-;; От этого пакета зависит `treemacs'.
 (use-package ace-window
   :pin "gnu"
   :ensure t
@@ -244,15 +231,26 @@
   :defer t
   :hook
   ((
-    emacs-lisp-mode
-    js2-mode
-    json-mode
-    latex-mode
-    lisp-data-mode
-    nxml-mode
-    sh-mode
-    sql-mode
-    ) . aggressive-indent-mode))
+     emacs-lisp-mode
+     js2-mode
+     json-mode
+     latex-mode
+     lisp-data-mode
+     nxml-mode
+     sh-mode
+     sql-mode
+     ) . aggressive-indent-mode))
+
+
+;; 📦 ANACONDA-MODE
+;; https://github.com/proofit404/anaconda-mode
+;; Расширенная поддержка Python.
+(use-package anaconda-mode
+  :pin "melpa-stable"
+  :ensure t
+  :hook
+  (python-mode . anaconda-mode)
+  (python-mode . anaconda-eldoc-mode))
 
 
 ;; 📦 ANSIBLE
@@ -330,11 +328,12 @@
   (use-package buffer-env
     :ensure t
     :pin "gnu"
-    :defer
+    :defer t
+    :after (files)
     :hook ((
-            hack-local-variables
-            comint-mode
-            ) . buffer-env-update)))
+             hack-local-variables
+             comint-mode
+             ) . buffer-env-update)))
 
 
 ;; 📦 CALENDAR
@@ -708,26 +707,6 @@
        ) . eglot-ensure)))
 
 
-;; 📦 ELPY
-;; Python IDE
-;; https://elpy.readthedocs.io/en/latest/index.html
-;; Краткая справка по использованию:
-;; Проверка состояния: `elpy-config'.
-;; Активация окружения: `pyenv-activate', указать путь к каталогу с окружением.
-;; Ещё лучше -- создать файл `.dir-locals.el', в котором указать команду
-;; для активации окружения.
-(use-package elpy
-  :pin "melpa-stable"
-  :ensure t
-  :defer t
-  :custom
-  (elpy-rpc-python-command "python3" "Интерпретатор по умолчанию.")
-  :config
-  (elpy-enable)
-  (defalias 'workon 'pyvenv-workon)
-  :hook (python-mode . elpy))
-
-
 ;; 📦 EMACS-LISP-MODE
 ;; IT IS NOT A ELISP-MODE!
 ;; Встроенный пакет для EMACS Lisp
@@ -759,14 +738,17 @@
   (enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
-  (safe-local-variable-values
-   '(
-     (buffer-env-script-name ".venv/bin/activate")
-     (fill-column . 70)
-     (frozen_string_literal . true)
-     )
-   "Безопасные переменные")
-  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
+  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
+  :config
+  (add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
+  (add-to-list 'safe-local-variable-values '(electric-pair-preserve-balance . t))
+  (add-to-list 'safe-local-variable-values '(emacs-lisp-docstring-fill-column . 70))
+  (add-to-list 'safe-local-variable-values '(fill-column . 120))
+  (add-to-list 'safe-local-variable-values '(fill-column . 70))
+  (add-to-list 'safe-local-variable-values '(frozen_string_literal . true))
+  (add-to-list 'safe-local-variable-values '(lexical-binding . t))
+  (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
+  (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all")))
 
 
 ;; 📦 FILL-COLUMN
@@ -917,6 +899,7 @@
 (use-package git-gutter
   :pin "melpa-stable"
   :ensure t
+  :diminish ""
   :custom
   (git-gutter:hide-gutter t)
   :config (global-git-gutter-mode 1))
@@ -1213,24 +1196,6 @@
   (:map global-map ("M-'" . comment-or-uncomment-region)))
 
 
-;; 📦 MENU-BAR
-;; Встроенный пакет.
-;; Используется для отрисовки меню в графическом и текстовом режимах.
-;; (use-package menu-bar
-;;   :config
-;;   (menu-bar-mode 0)) ;; Отключить показ меню
-
-
-;; 📦 MULE
-;; Встроенный пакет
-;; Управление кодировками.
-(use-package mule
-  :config
-  (set-keyboard-coding-system 'utf-8)  ;; Кодировка символов при вводе текста в терминале
-  (set-selection-coding-system 'utf-8) ;; Кодировка символов для передачи данных в буфер обмена
-  (set-terminal-coding-system 'utf-8)) ;; Кодировка символов для вывода команд, запущенных в терминале
-
-
 ;; 📦 NXML-MODE
 ;; Встроенный пакет, почти как `xml-mode', только лучше и новее
 (use-package nxml-mode
@@ -1244,7 +1209,7 @@
   (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
   :mode
   ("\\.pom\\'"
-   "\\.xml\\'"))
+    "\\.xml\\'"))
 
 
 ;; 📦 ORG-MODE
@@ -1453,7 +1418,7 @@
   (defvar ruby-indent-offset 2 "Ширина TAB'а в `ruby-mode'.")
   :mode
   ("\\Vagrantfile\\'"
-   "\\.rb\\'"))
+    "\\.rb\\'"))
 
 
 ;; 📦 SAVE-HIST

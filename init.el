@@ -48,32 +48,30 @@
   (custom-set-variables
     '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3" "Необходимо для старых версий Emacs.")))
 
-(setq
-  create-lockfiles nil ;; Не надо создавать lock-файлы
-  cursor-type 'bar ;; Курсор в виде вертикальной черты
-  delete-by-moving-to-trash t ;; Удалять файлы в Корзину
-  gc-cons-threshold (* 50 1000 1000) ;; Увеличить размер памяти для сборщика мусора
-  indent-tabs-mode nil ;; Отключить `indent-tabs-mode'
-  inhibit-startup-screen t ;; Не показывать загрузочный экран
-  initial-scratch-message nil ;; В новых буферах не нужно ничего писать.
-  load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
-  menu-bar-mode nil ;; Отключить меню.
-  ring-bell-function #'ignore ;; Заблокировать пищание.
-  scroll-bar-mode nil ;; Отключить полосы прокрутки
-  scroll-conservatively 101 ;; TODO: проверить что это такое
-  scroll-margin 4 ;; Количество строк сверху и снизу от границ окна
-  show-trailing-whitespace t ;; Показывать висячие пробелы
-  tab-always-indent 'complete ;;Если можно — выровнять текст, иначе — автодополнение.
-  tool-bar-mode nil ;; Отключить панель инструментов.
-  truncate-lines 1 ;; Обрезать длинные строки
-  use-dialog-box nil ;; "Диалоговые окна ОС не нужны
-  user-full-name "Dunaevsky Maxim" ;; Имя пользователя
-  user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты.
-  visible-bell t) ;; Эффект мигания при переходе в буфер.
-
 (custom-set-variables
+  '(create-lockfiles nil "Не создавать lock-файлы")
+  '(cursor-type 'bar "Курсор в виде вертикальной черты")
+  '(delete-by-moving-to-trash t "Удалять файлы в Корзину")
+  '(gc-cons-threshold (* 50 1000 1000) "Увеличить размер памяти для сборщика мусора")
+  '(indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
+  '(inhibit-startup-screen t "Не показывать приветственный экран")
+  '(initial-scratch-message nil "Пустой буфер *scratch*")
+  '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл.")
+  '(menu-bar-mode nil "Выключить отображение меню")
+  '(ring-bell-function #'ignore "Отключить звуковое сопровождение событий")
   '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
-  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо"))
+  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
+  '(scroll-bar-mode nil "Отключить полосы прокрутки")
+  '(scroll-conservatively 101 "TODO: проверить что это такое")
+  '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
+  '(show-trailing-whitespace t "Подсветка висячих пробелов")
+  '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
+  '(tool-bar-mode nil "Отключить панель инструментов")
+  '(truncate-lines 1 "Обрезать длинные строки")
+  '(use-dialog-box nil "Диалоговые окна ОС не нужны")
+  '(user-full-name "Dunaevsky Maxim" "Имя пользователя")
+  '(user-mail-address "dunmaksim@yandex.ru" "Адрес электронной почты")
+  '(visible-bell t "Мигать буфером при переходе в него"))
 
 
 (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
@@ -98,13 +96,13 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-(setq
-  package-archive-priorities '(("gnu" . 50)
-                                ("nongnu" . 40)
-                                ("melpa-stable" . 30)
-                                ("melpa" . 20)) ;; Приоритеты архивов
-  package-native-compile t ;;Компиляция пакетов во время установки, а не при первом запуске
-  package-user-dir init-el-package-user-dir) ;; "Хранить все пакеты в каталоге ~/.emacs.d/elpa/"
+(custom-set-variables
+  '(package-archive-priorities '(("gnu" . 50)
+                                  ("nongnu" . 40)
+                                  ("melpa-stable" . 30)
+                                  ("melpa" . 20))) ;; Приоритеты архивов
+  '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске")
+  '(package-user-dir init-el-package-user-dir "Хранить все пакеты в каталоге ~/.emacs.d/elpa/"))
 
 (add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
 (add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.

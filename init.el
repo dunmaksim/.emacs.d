@@ -18,13 +18,17 @@
   (expand-file-name "elpa" init-el-config-dir)
   "Пользовательский каталог с пакетами.")
 
+(defconst init-el-is-linux
+  (string-equal system-type "gnu/linux")
+  "Используется ОС на базе GNU/Linux.")
+
 ;; Возвращает t, если версия Emacs больше или равна указанной.
 (defun emacs-version-not-less-than (major minor)
   "True when Emacs version is not less than MAJOR and MINOR versions."
   (or
-   (> emacs-major-version major)
-   (and (= emacs-major-version major)
-        (>= emacs-minor-version minor))))
+    (> emacs-major-version major)
+    (and (= emacs-major-version major)
+      (>= emacs-minor-version minor))))
 
 ;; Если нужного каталога не существует, его следует создать
 (dolist
@@ -85,6 +89,26 @@
     (interactive)
     (insert "—")))
 
+;; Определение пути к каталогу с исходным кодом
+(when init-el-is-linux
+  (message "Используется ОС на базе GNU/Linux")
+  (defvar init-el-emacs-source-path "Путь к каталогу с исходным кодом Emacs")
+  (setq init-el-emacs-source-path
+    (format "/usr/share/emacs/%d.%d/src/"
+      emacs-major-version
+      emacs-minor-version))
+  (if (file-exists-p init-el-emacs-source-path)
+    ;; Каталог существует
+    (if (directory-empty-p init-el-emacs-source-path)
+      ;; Каталог пуст
+      (message (format "Каталог %s пуст." init-el-emacs-source-path))
+      ;; Каталог не пуст
+      (progn
+        (custom-set-variables '(source-directory init-el-emacs-source-path))
+        (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
+    ;; Каталог не существует
+    (message (format "Каталог %s не существует." init-el-emacs-source-path))))
+
 
 ;; 📦 PACKAGE
 ;; Встроенный пакет.
@@ -101,8 +125,7 @@
                                   ("nongnu" . 40)
                                   ("melpa-stable" . 30)
                                   ("melpa" . 20))) ;; Приоритеты архивов
-  '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске")
-  '(package-user-dir init-el-package-user-dir "Хранить все пакеты в каталоге ~/.emacs.d/elpa/"))
+  '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске"))
 
 (add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
 (add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.
@@ -113,7 +136,6 @@
   (package-refresh-contents)
   (package-install 'gnu-elpa-keyring-update t)
   (custom-set-variables '(package-check-signature 'all "Включить проверку подписей")))
-
 
 ;; Если пакет `use-package' не установлен, нужно это сделать.
 (unless (package-installed-p 'use-package)
@@ -828,7 +850,7 @@
 ;; Проверка орфографии с помощью словарей.
 ;; Использовать пакет только в том случае, когда дело происходит в Linux и
 ;; Hunspell или Aspell доступны.
-(when (string-equal system-type "gnu/linux")
+(when init-el-is-linux
   (defvar text-spell-program nil "Программа для проверки орфографии.")
   (cond
     ((or
@@ -855,6 +877,7 @@
         :bind
         (:map global-map
           ([f5] . ispell-buffer))))
+    ;; Не найдено программ для проверки орфографии
     (message "Не найдено программ для проверки орфографии.")))
 
 

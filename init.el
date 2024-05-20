@@ -1125,6 +1125,15 @@
   (magit-define-global-key-bindings t "Включить глобальные сочетания Magit."))
 
 
+;; 📦 MAGIT-FILE-ICONS
+;; https://github.com/gekoke/magit-file-icons
+;; Иконки в буферах Magit
+(use-package magit-file-icons
+  :ensure t
+  :hook
+  (magit-mode . magit-file-icons-mode))
+
+
 ;; 📦 MAKEFILE
 ;; Встроенный пакет.
 ;; Поддержка Makefile.
@@ -1448,14 +1457,6 @@
 (use-package savehist
   :config
   (savehist-mode 1))
-
-
-;; 📦 SCROLL-BAR
-;; Встроенный пакет.
-;; Управление полосами прокрутки
-;; (use-package scroll-bar
-;;   :custom
-;;   (scroll-bar-mode nil "Не показывать полосы прокрутки"))
 
 
 ;; 📦 SHELL-SCRIPT-MODE

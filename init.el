@@ -1018,7 +1018,7 @@
     '(
        ("default"
          ("Dired" (mode . dired-mode))
-         ("EMACS Lisp"
+         ("Emacs Lisp"
            (or
              (mode . emacs-lisp-mode)
              (mode . lisp-data-mode)))
@@ -1040,20 +1040,18 @@
          ("Makefile"
            (or
              (mode . makefile-mode)
-             (name  . "^Makefile$")))
+             (name . "^Makefile$")))
          ("Python"
            (or
              (mode . anaconda-mode)
              (mode . python-mode)))
+         ("Ruby" (mode . ruby-mode))
          ("SSH keys" (or (name . "^\\*.pub$")))
          ("Shell-script"
            (or
              (mode . shell-script-mode)
              (mode . sh-mode)))
-         ("Terraform"
-           (or
-             (mode . terraform-mode)
-             (name . "^\\*.tf$")))
+         ("Terraform" (mode . terraform-mode))
          ("SQL" (mode . sql-mode))
          ("Web"
            (or

@@ -943,9 +943,17 @@
      ) . goto-address-mode))
 
 
+;; 📦 GREP
+;; Встроенный пакет.
+;; Поиск с помощью `grep'.
+(use-package grep
+  :bind (:map global-map
+          ([f6] . find-grep))) ;; Запуск `find-grep' по нажатию [F6].
+
+
 ;; 📦 HELM
 ;; https://emacs-helm.github.io/
-;; Подсказки и автодополнение ввода
+;; Подсказки и автодополнение ввода.
 ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
 (use-package helm
   :pin "nongnu"
@@ -1270,11 +1278,21 @@
   (show-paren-mode 1)) ;; Подсвечивать парные скобки
 
 
+;; 📦 PHP-MODE
+;; https://github.com/emacs-php/php-mode
+;; Работа с файлами PHP
+(use-package php-mode
+  :pin "melpa-stable"
+  :ensure t
+  :mode("\\.php\\'" . php-mode))
+
+
 ;; 📦 PO-MODE
 ;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
-;; Работа с файлами локализации
+;; Работа с файлами локализации.
+;; Необходимо установить в систему утилиты из набора gettext, иначе
+;; работать не будет.
 (use-package po-mode
-  :pin "melpa-stable"
   :ensure t
   :defer t
   :mode
@@ -1322,10 +1340,9 @@
 (use-package python-mode
   :pin "melpa-stable"
   :ensure t
-  :init
-  (setq-default python-indent-offset 4)
   :custom
-  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint"))
+  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
+  (setq python-indent-offset 4))
 
 
 ;; 📦 RAINBOW-DELIMITERS-MODE
@@ -1496,17 +1513,6 @@
 ;; Встроенный пакет.
 (use-package sort
   :bind (:map global-map ([f9] . sort-lines)))
-
-
-;; 📦 SPHINX-MODE
-;; https://github.com/Fuco1/sphinx-mode
-;; Дополнительные функции для `rst-mode', если работаем со Sphinx.
-;; Пакет должен быть установлен, но включать его лучше через
-;; `eval' в `.dir-locals.el'.
-(use-package sphinx-mode
-  :pin "melpa-stable"
-  :ensure t
-  :defer t)
 
 
 ;; 📦 TERRAFORM-MODE
@@ -1687,8 +1693,8 @@
     ("S-C-<right>" . enlarge-window-horizontally) ;; [Ctrl+Shift+→]   Увеличить размер окна по ширине
     ("S-C-<down>" . enlarge-window)               ;; [Ctrl+Shift+↓]   Увеличить размер окна по ширине
     ("S-C-<up>" . shrink-window)                  ;; [Ctrl+Shift+↑]   Уменьшить размер окна по высоте
-    ([C-tab] . next-buffer)                       ;; [Ctrl+Tab]       Следующий буфер
-    ([C-S-iso-lefttab] . previous-buffer)))       ;; [Ctrl+Shift+Tab] Предыдущий буфер)
+    ([C-S-iso-lefttab] . next-buffer)             ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
+    ([C-tab] . previous-buffer)))                 ;; [Ctrl+Shift+Tab] Следующий буфер
 
 
 ;; 📦 WS-BUTLER

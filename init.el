@@ -132,7 +132,7 @@
 
 
 (unless (package-installed-p 'gnu-elpa-keyring-update)
-  (custom-set-variables '(package-check-signature 'allow-unsigned "Отключить проверку подписей"))
+  (custom-set-variables '(package-check-signature 'nil "Отключить проверку подписей"))
   (package-refresh-contents)
   (package-install 'gnu-elpa-keyring-update t)
   (custom-set-variables '(package-check-signature 'all "Включить проверку подписей")))
@@ -1476,12 +1476,12 @@
   :defer t
   :mode
   ("\\.ansible\\-lint\\'"
-   "\\.pre\\-commit\\-config\\.yaml\\'"
-   "\\.yaml\\'"
-   "\\.yamllint\\'"
-   "\\.yamllint\\-config\\.yaml\\'"
-   "\\.yfm\\'"
-   "\\.yml\\'"))
+    "\\.pre\\-commit\\-config\\.yaml\\'"
+    "\\.yaml\\'"
+    "\\.yamllint\\'"
+    "\\.yamllint\\-config\\.yaml\\'"
+    "\\.yfm\\'"
+    "\\.yml\\'"))
 
 
 (put 'downcase-region 'disabled nil)

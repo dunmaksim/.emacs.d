@@ -153,48 +153,6 @@
     '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")))
 
 
-;; 📦 Настройки, специфичные для графического режима
-(defun setup-gui-settings (frame-name)
-  "Настройки, необходимые при запуске EMACS в графической среде.
-
-  FRAME-NAME — имя фрейма, который настраивается."
-  (when (display-graphic-p frame-name)
-    (global-font-lock-mode t)  ;; Отображать шрифты красиво, используя Font Face's
-
-    (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
-    (defvar default-font-family nil "Шрифт по умолчанию.")
-
-    ;; Перебор шрифтов
-    (cond
-      ((member "Fire Code Nerd" availiable-fonts)
-        (setq default-font-family "Fira Code Nerd"))
-      ((member "Fira Code" availiable-fonts)
-        (setq default-font-family "Fira Code"))
-      ((member "DejaVu Sans Mono Nerd" availiable-fonts)
-        (setq default-font-family "DejaVu Sans Mono Nerd"))
-      ((member "DejaVu Sans Mono" availiable-fonts)
-        (setq default-font-family "DejaVu Sans Mono"))
-      ((member "Source Code Pro" availiable-fonts)
-        (setq default-font-family "Source Code Pro"))
-      ((member "Consolas" availiable-fonts)
-        (setq default-font-family "Consolas")))
-
-    (when default-font-family
-      ;; Это формат X Logical Font Description Conventions, XLFD
-      ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
-      (set-frame-font
-        (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-          default-font-family
-          emacs-default-font-height) nil t)
-      (set-face-attribute 'default nil :family default-font-family))
-
-    (set-face-attribute 'default nil :height (* emacs-default-font-height 10))))
-
-;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
-;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
-(add-to-list 'after-make-frame-functions #'setup-gui-settings)
-
-
 ;; 📦 ABBREV-MODE
 ;; Встроенный пакет.
 ;; Использование аббревиатур -- фрагментов текста, которые при вводе
@@ -227,20 +185,9 @@
   :ensure t
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind (:map emacs-lisp-mode-map
-              ("<tab>" . lisp-indent-adjust-parens)
-              ("<backtab>" . lisp-dedent-adjust-parens)))
+          ("<tab>" . lisp-indent-adjust-parens)
+          ("<backtab>" . lisp-dedent-adjust-parens)))
 
-
-;; 📦 ADOC-MODE
-;; https://github.com/bbatsov/adoc-mode
-;; Работа с AsciiDoc
-(use-package adoc-mode
-  :pin "melpa"
-  :ensure t
-  :defer t
-  :custom
-  (adoc-fontify-code-blocks-natively 10000)
-  :mode ("\\.adoc\\'" . adoc-mode))
 
 
 ;; 📦 AGGRESSIVE-INDENT
@@ -317,15 +264,6 @@
   :hook
   ;; Включить автообновление буферов с `dired-mode'.
   (dired-mode . auto-revert-mode))
-
-
-;; 📦 BBCODE-MODE
-;; https://github.com/lassik/emacs-bbcode-mode
-;; Режим редактирования BB-кодов
-(use-package bbcode-mode
-  :pin "melpa-stable"
-  :ensure t
-  :defer t)
 
 
 ;; 📦 BIND-KEY
@@ -466,17 +404,6 @@
   (delete-selection-mode t)) ;; Удалять выделенный фрагмент при вводе текста)
 
 
-;; 📦 DENOTE
-;; https://protesilaos.com/emacs/denote
-;; Режим для управления заметками
-(when (emacs-version-not-less-than 28 1)
-  (use-package denote
-    :pin "gnu"
-    :ensure t
-    :custom
-    (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
-
-
 ;; 📦 DESKTOP
 ;; Встроенный пакет.
 ;; Сохранение состояния Emacs между сессиями.
@@ -573,8 +500,6 @@
 (use-package doom-modeline
   :ensure t
   :pin "melpa-stable"
-  ;; :hook (after-init . doom-modeline-mode)
-  ;; :requires (nerd-icons)
   :custom
   (doom-modeline-buffer-encoding t "Отображение кодировки.")
   (doom-modeline-buffer-name t "Отображение названия буфера.")
@@ -737,14 +662,6 @@
   :mode
   ("\\abbrev_defs\\'" . lisp-data-mode)
   ("\\.el\\'" . emacs-lisp-mode))
-
-
-;; 📦 FACE-REMAP
-;; Встроенный пакет.
-;; Отображение шрифтов в графическом режиме.
-(use-package face-remap
-  :custom
-  (text-scale-mode-step 1.1 "Шаг увеличения масштаба"))
 
 
 ;; 📦 FILES
@@ -924,23 +841,6 @@
   :custom
   (git-gutter:hide-gutter t)
   :config (global-git-gutter-mode 1))
-
-
-;; 📦 GOTO-ADDRESS-MODE
-;; Встроенный пакет.
-;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
-;; Возможны варианты (зависит от основного режима).
-(use-package goto-addr
-  :ensure t
-  :hook
-  ((
-     adoc-mode
-     emacs-lisp-mode
-     markdown-mode
-     rst-mode
-     text-mode
-     web-mode
-     ) . goto-address-mode))
 
 
 ;; 📦 GREP
@@ -1131,15 +1031,6 @@
   (magit-define-global-key-bindings t "Включить глобальные сочетания Magit."))
 
 
-;; 📦 MAGIT-FILE-ICONS
-;; https://github.com/gekoke/magit-file-icons
-;; Иконки в буферах Magit
-(use-package magit-file-icons
-  :ensure t
-  :hook
-  (magit-mode . magit-file-icons-mode))
-
-
 ;; 📦 MAKEFILE
 ;; Встроенный пакет.
 ;; Поддержка Makefile.
@@ -1148,24 +1039,6 @@
   :defer t
   :mode
   ("\\Makefile\\'" . makefile-gmake-mode))
-
-
-;; 📦 MARKDOWN MODE
-;; https://github.com/jrblevin/markdown-mode
-;; Режим для работы с файлами в формате Markdown
-(when (emacs-version-not-less-than 27 1)
-  (use-package markdown-mode
-    :pin "nongnu"
-    :ensure t
-    :defer t
-    :custom
-    (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
-    (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
-    (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
-    :config (setq-local word-wrap t)
-    :bind (
-           :map markdown-mode-map
-           ("M-." . markdown-follow-thing-at-point))))
 
 
 ;; 📦 MULTIPLE CURSORS
@@ -1188,40 +1061,6 @@
         (progn
           (global-unset-key (kbd "M-<down-mouse-1>"))
           (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))))))
-
-
-;; 📦 NERD-ICONS
-;; https://github.com/rainstormstudio/nerd-icons.el
-;; Требуется для корректной работы `doom-modeline'.
-;; Начиная с версии 4.0.0 пакет `all-the-icons' не поддерживается.
-;;
-;; Для установки самих шрифтов следует использовать команду `nerd-icons-install-fonts'.
-;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
-;; скопировать их в `/usr/local/share/fonts/'.
-(use-package nerd-icons
-  :pin "melpa-stable"
-  :ensure t
-  :custom
-  (nerd-icons-color-icons t "Использовать цветные иконки."))
-
-
-;; 📦 NERD-ICONS-DIRED
-;; https://github.com/rainstormstudio/nerd-icons-dired
-;; Иконки в `dired'.
-(use-package nerd-icons-dired
-  :ensure t
-  :after (dired nerd-icons)
-  :hook (dired-mode . nerd-icons-dired-mode))
-
-
-;; 📦 NERD-ICONS-IBUFFER
-;; https://github.com/seagle0128/nerd-icons-ibuffer
-;; Отображение иконок в ibuffer
-(use-package nerd-icons-ibuffer
-  :pin "melpa-stable"
-  :ensure t
-  :after (ibuffer nerd-icons)
-  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
 
 ;; 📦 NEW-COMMENT
@@ -1248,19 +1087,6 @@
     "\\.xml\\'"))
 
 
-;; 📦 ORG-MODE
-;; https://orgmode.org/
-;; Органайзер, заметки и так далее
-(use-package org
-  :pin "gnu"
-  :ensure t
-  :defer t
-  :config
-  (setq-local
-   truncate-lines nil ;; Не обрезать строки
-   word-wrap t))      ;; Перенос длинных строк
-
-
 ;; 📦 PACKAGE-LINT
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
@@ -1285,18 +1111,6 @@
   :pin "melpa-stable"
   :ensure t
   :mode("\\.php\\'" . php-mode))
-
-
-;; 📦 PO-MODE
-;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
-;; Работа с файлами локализации.
-;; Необходимо установить в систему утилиты из набора gettext, иначе
-;; работать не будет.
-(use-package po-mode
-  :ensure t
-  :defer t
-  :mode
-  ("\\.po\\'\\|\\.po\\." . po-mode))
 
 
 ;; 📦 PROJECTILE
@@ -1435,25 +1249,6 @@
   (save-place-mode 1)) ;; Помнить позицию курсора
 
 
-;; 📦 RST-MODE
-;; Основной режим для редактирования reStructutedText
-;; Встроенный пакет.
-;; https://www.writethedocs.org/guide/writing/reStructuredText/
-(use-package rst
-  :ensure t
-  :defer t
-  :custom
-  (rst-default-indent 3)
-  (rst-indent-comment 3)
-  (rst-indent-field 3)
-  (rst-indent-literal-minimized 3)
-  (rst-indent-width 3)
-  (rst-toc-indent 3)
-  :mode
-  (("\\.rst\\'" . rst-mode)
-    ("\\.txt\\'" . rst-mode)))
-
-
 ;; 📦 RUBY-MODE
 ;; Встроенный пакет
 (use-package ruby-mode
@@ -1527,14 +1322,6 @@
   ("\\.tf\\'" . terraform-mode))
 
 
-;; 📦 TEX-MODE
-;; Встроенный пакет.
-;; Работа с TeX и LaTeX
-(use-package tex-mode
-  :mode
-  ("\\.text\\'" . tex-mode))
-
-
 ;; 📦 TOOLTIP
 ;; Встроенный пакет для вывода подсказок в графической среде
 (use-package tooltip
@@ -1588,23 +1375,6 @@
   :ensure t
   :config
   (vertico-mode 1))
-
-
-;; 📦 WEB-MODE
-;; https://web-mode.org/
-;; Режим для редактирования HTML и не только.
-(use-package web-mode
-  :pin "nongnu"
-  :ensure t
-  :custom
-  (major-mode 'web-mode)
-  (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
-  (web-mode-enable-block-face t "Отображение")
-  (web-mode-enable-css-colorization t "Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета")
-  (web-mode-enable-current-element-highlight t "Подсветка активного элемента разметки")
-  (web-mode-html-offset 2 "Отступ в 2 знака для корректной работы `highlight-indentation-mode'.")
-  (web-mode-markup-indent-offset 2 "Отступ при вёрстке HTML — 2 пробела")
-  :mode "\\.html\\'")
 
 
 ;; 📦 WHICH-KEY MODE
@@ -1695,33 +1465,6 @@
     ("S-C-<up>" . shrink-window)                  ;; [Ctrl+Shift+↑]   Уменьшить размер окна по высоте
     ([C-S-iso-lefttab] . next-buffer)             ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
     ([C-tab] . previous-buffer)))                 ;; [Ctrl+Shift+Tab] Следующий буфер
-
-
-;; 📦 WS-BUTLER
-;; https://github.com/lewang/ws-butler
-;; Удаляет висячие пробелы только из изменённых строк.
-(use-package ws-butler
-  :pin "nongnu"
-  :ensure t
-  :defer t
-  :hook
-  ((
-    adoc-mode
-    conf-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    js2-mode
-    latex-mode
-    markdown-mode
-    nxml-mode
-    python-mode
-    rst-mode
-    sh-mode
-    sql-mode
-    terraform-mode
-    web-mode
-    yaml-mode
-    ) . ws-butler-mode))
 
 
 ;; 📦 YAML-MODE

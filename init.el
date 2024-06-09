@@ -791,34 +791,34 @@
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
   (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-locate-config-file-functions '(
-                                           flycheck-locate-config-file-by-path
-                                           flycheck-locate-config-file-ancestor-directories
-                                           flycheck-locate-config-file-home))
+                                            flycheck-locate-config-file-by-path
+                                            flycheck-locate-config-file-ancestor-directories
+                                            flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
   ((
-    adoc-mode
-    conf-mode
-    css-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    js2-mode
-    json-mode
-    latex-mode
-    lisp-data-mode
-    makefile-mode
-    markdown-mode
-    nxml-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    sh-mode
-    sql-mode
-    terraform-mode
-    web-mode
-    yaml-mode
-    ) . flycheck-mode))
+     adoc-mode
+     conf-mode
+     css-mode
+     dockerfile-mode
+     emacs-lisp-mode
+     js2-mode
+     json-mode
+     latex-mode
+     lisp-data-mode
+     makefile-mode
+     markdown-mode
+     nxml-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     sh-mode
+     sql-mode
+     terraform-mode
+     web-mode
+     yaml-mode
+     ) . flycheck-mode))
 
 
 ;; 📦 FLYCHECK-EGLOT
@@ -1543,6 +1543,14 @@
   :config
   ;; Отключить показ подсказок с помощью GUI
   (tooltip-mode -1))
+
+
+;; 📦 TRAMP
+;; Пакет для работы с файлами на удалённых серверах.
+;; https://www.gnu.org/software/tramp/
+(use-package tramp
+  :pin "gnu"
+  :ensure t)
 
 
 ;; 📦 TYPO

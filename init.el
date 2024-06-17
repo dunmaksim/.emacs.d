@@ -385,23 +385,24 @@
   (company-tooltip-limit 15 "Ограничение на число подсказок")
   :hook
   ((
-    css-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    js2-mode
-    latex-mode
-    lisp-data-mode
-    minibufer-mode
-    nxml-mode
-    org-mode
-    rst-mode
-    ruby-mode
-    ) . company-mode)
+     css-mode
+     dockerfile-mode
+     emacs-lisp-mode
+     js2-mode
+     latex-mode
+     lisp-data-mode
+     minibufer-mode
+     nxml-mode
+     org-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     ) . company-mode)
   :bind
   (:map company-active-map
-        ("TAB" . company-complete-common-or-cycle)
-        ("M-/" . company-complete)
-        ("M-." . company-show-location)))
+    ("TAB" . company-complete-common-or-cycle)
+    ("M-/" . company-complete)
+    ("M-." . company-show-location)))
 
 
 ;; 📦 CONF-MODE
@@ -412,10 +413,10 @@
   :defer t
   :mode
   ("\\.editorconfig\\'"
-   "\\.env\\'"
-   "\\.flake8\\'"
-   "\\.ini\\'"
-   "\\.pylintrc\\'"))
+    "\\.env\\'"
+    "\\.flake8\\'"
+    "\\.ini\\'"
+    "\\.pylintrc\\'"))
 
 
 ;; 📦 CSS-MODE
@@ -831,6 +832,16 @@
     :after (eglot flycheck)))
 
 
+;; 📦 FLYLISP
+;; https://elpa.gnu.org/packages/flylisp.html
+;; Подсвекта непарных или неправильно выровненных скобок
+(use-package flylisp
+  :pin "gnu"
+  :ensure t
+  :hook
+  (emacs-lisp-mode . flylisp-mode))
+
+
 ;; 📦 FLYMAKE
 ;; Более свежая версия встроенного пакета из репозитория gnu
 ;; Используется для проверки `init.el'.
@@ -840,9 +851,9 @@
   :ensure t
   :hook
   ((
-    emacs-lisp-mode
-    lisp-data-mode
-    ) . flymake-mode))
+     emacs-lisp-mode
+     lisp-data-mode
+     ) . flymake-mode))
 
 
 ;; 📦 FLYSPELL-MODE
@@ -1128,7 +1139,9 @@
   :ensure t
   :defer t
   :custom
-  (magit-define-global-key-bindings t "Включить глобальные сочетания Magit."))
+  (magit-define-global-key-bindings t "Включить глобальные сочетания Magit.")
+  :config
+  (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
 
 
 ;; 📦 MAGIT-FILE-ICONS
@@ -1342,7 +1355,8 @@
   :ensure t
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
-  (setq python-indent-offset 4))
+  (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
+  (python-indent-offset 4 "Отсуп по умолчанию — 4 пробела"))
 
 
 ;; 📦 RAINBOW-DELIMITERS-MODE

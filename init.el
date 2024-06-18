@@ -121,10 +121,11 @@
 (package-initialize)
 
 (custom-set-variables
-  '(package-archive-priorities '(("gnu" . 50)
+  '(package-archive-priorities '( ;; Приоритеты архивов
+                                  ("gnu" . 50)
                                   ("nongnu" . 40)
                                   ("melpa-stable" . 30)
-                                  ("melpa" . 20))) ;; Приоритеты архивов
+                                  ("melpa" . 20)))
   '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске"))
 
 (add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
@@ -1187,8 +1188,18 @@
     (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
     :config (setq-local word-wrap t)
     :bind (
-           :map markdown-mode-map
-           ("M-." . markdown-follow-thing-at-point))))
+            :map markdown-mode-map
+            ("M-." . markdown-follow-thing-at-point))))
+
+
+;; 📦 MINIMAP
+;; https://elpa.gnu.org/packages/minimap.html
+;; Мини-карта буфера в отдельном окне
+(use-package minimap
+  :ensure t
+  :custom
+  (minimap-minimum-width 25)
+  :config (minimap-mode 1))
 
 
 ;; 📦 MULTIPLE CURSORS

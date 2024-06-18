@@ -405,6 +405,17 @@
     ("M-." . company-show-location)))
 
 
+;; 📦 COMPANY-ANACONDA
+;; https://github.com/proofit404/anaconda-mode
+;; Интеграция Anaconda + Company
+(use-package company-anaconda
+  :pin "melpa-stable"
+  :ensure t
+  :requires company
+  :config
+  (add-to-list 'company-backends 'company-anaconda))
+
+
 ;; 📦 CONF-MODE
 ;; Встроенный пакет.
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF

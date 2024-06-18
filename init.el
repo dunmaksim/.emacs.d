@@ -1197,8 +1197,11 @@
 ;; Мини-карта буфера в отдельном окне
 (use-package minimap
   :ensure t
+  :diminish ""
   :custom
-  (minimap-minimum-width 25)
+  (minimap-minimum-width 25 "Минимальная ширина в символах")
+  (minimap-width-fraction 0.1 "Ширина в процентах")
+  (minimap-window-location 'right "Показывать справа, а не слева")
   :config (minimap-mode 1))
 
 
@@ -1747,24 +1750,25 @@
   :pin "nongnu"
   :ensure t
   :defer t
+  :diminish ""
   :hook
   ((
-    adoc-mode
-    conf-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    js2-mode
-    latex-mode
-    markdown-mode
-    nxml-mode
-    python-mode
-    rst-mode
-    sh-mode
-    sql-mode
-    terraform-mode
-    web-mode
-    yaml-mode
-    ) . ws-butler-mode))
+     adoc-mode
+     conf-mode
+     dockerfile-mode
+     emacs-lisp-mode
+     js2-mode
+     latex-mode
+     markdown-mode
+     nxml-mode
+     python-mode
+     rst-mode
+     sh-mode
+     sql-mode
+     terraform-mode
+     web-mode
+     yaml-mode
+     ) . ws-butler-mode))
 
 
 ;; 📦 YAML-MODE

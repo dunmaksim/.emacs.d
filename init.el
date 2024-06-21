@@ -1328,7 +1328,9 @@
   :bind
   ("C-x C-b" . persp-list-buffers)
   :custom
-  (persp-mode-prefix-key (kbd "C-c M-p")))
+  (persp-mode-prefix-key (kbd "C-c M-p"))
+  :config
+  (persp-mode 1))
 
 
 ;; 📦 PHP-MODE

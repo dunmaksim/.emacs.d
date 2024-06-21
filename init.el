@@ -586,8 +586,6 @@
 (use-package doom-modeline
   :ensure t
   :pin "melpa-stable"
-  ;; :hook (after-init . doom-modeline-mode)
-  ;; :requires (nerd-icons)
   :custom
   (doom-modeline-buffer-encoding t "Отображение кодировки.")
   (doom-modeline-buffer-name t "Отображение названия буфера.")
@@ -945,7 +943,14 @@
   :diminish ""
   :custom
   (git-gutter:hide-gutter t)
-  :config (global-git-gutter-mode 1))
+  :hook
+  ((
+     adoc-mode
+     emacs-lisp-mode
+     markdown-mode
+     rst-mode
+     yaml-mode
+     ) . git-gutter-mode))
 
 
 ;; 📦 GOTO-ADDRESS-MODE
@@ -985,6 +990,19 @@
   (helm-mode 1)
   :bind (:map global-map
           ("M-x" . helm-M-x)))
+
+
+;; 📦 HELM-PROJECTILE
+;; https://github.com/bbatsov/helm-projectile
+;; Интеграция HELM с PROJECTILE
+(use-package helm-projectile
+  :pin "melpa-stable"
+  :ensure t
+  :diminish ""
+  :requires (helm projectile)
+  :after (helm projectile)
+  :config
+  (helm-projectile-on))
 
 
 ;; 📦 HL-LINE
@@ -1188,21 +1206,8 @@
     (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
     :config (setq-local word-wrap t)
     :bind (
-            :map markdown-mode-map
-            ("M-." . markdown-follow-thing-at-point))))
-
-
-;; 📦 MINIMAP
-;; https://elpa.gnu.org/packages/minimap.html
-;; Мини-карта буфера в отдельном окне
-(use-package minimap
-  :ensure t
-  :diminish ""
-  :custom
-  (minimap-minimum-width 25 "Минимальная ширина в символах")
-  (minimap-width-fraction 0.1 "Ширина в процентах")
-  (minimap-window-location 'right "Показывать справа, а не слева")
-  :config (minimap-mode 1))
+           :map markdown-mode-map
+           ("M-." . markdown-follow-thing-at-point))))
 
 
 ;; 📦 MULTIPLE CURSORS
@@ -1212,19 +1217,19 @@
   :pin "nongnu"
   :ensure t
   :bind (:map global-map
-          ("C-S-c C-S-c" . mc/edit-lines)
-          ("C->" . mc/mark-next-like-this)
-          ("C-<" . mc/mark-previous-like-this)
-          ("C-c C-<" . mc/mark-all-like-this))
+              ("C-S-c C-S-c" . mc/edit-lines)
+              ("C->" . mc/mark-next-like-this)
+              ("C-<" . mc/mark-previous-like-this)
+              ("C-c C-<" . mc/mark-all-like-this))
   :config
   (add-to-list
-    'after-make-frame-functions
-    (lambda ()
-      (when (display-graphic-p)
-        ;; Если режим графический, то курсоры можно расставлять с помощью Alt+Click
-        (progn
-          (global-unset-key (kbd "M-<down-mouse-1>"))
-          (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))))))
+   'after-make-frame-functions
+   (lambda ()
+     (when (display-graphic-p)
+       ;; Если режим графический, то курсоры можно расставлять с помощью Alt+Click
+       (progn
+         (global-unset-key (kbd "M-<down-mouse-1>"))
+         (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))))))
 
 
 ;; 📦 NERD-ICONS
@@ -1313,6 +1318,17 @@
 (use-package paren
   :config
   (show-paren-mode 1)) ;; Подсвечивать парные скобки
+
+
+;; 📦 PERSPECTIVE
+;; https://github.com/nex3/perspective-el
+;; Рабочие пространства
+(use-package perspective
+  :ensure t
+  :bind
+  ("C-x C-b" . persp-list-buffers)
+  :custom
+  (persp-mode-prefix-key (kbd "C-c M-p")))
 
 
 ;; 📦 PHP-MODE
@@ -1488,7 +1504,8 @@
   (rst-indent-width 3)
   (rst-toc-indent 3)
   :mode
-  (("\\.rst\\'" . rst-mode)
+  (
+    ("\\.rst\\'" . rst-mode)
     ("\\.txt\\'" . rst-mode)))
 
 

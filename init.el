@@ -1320,19 +1320,6 @@
   (show-paren-mode 1)) ;; Подсвечивать парные скобки
 
 
-;; 📦 PERSPECTIVE
-;; https://github.com/nex3/perspective-el
-;; Рабочие пространства
-(use-package perspective
-  :ensure t
-  :bind
-  ("C-x C-b" . persp-list-buffers)
-  :custom
-  (persp-mode-prefix-key (kbd "C-c M-p"))
-  :config
-  (persp-mode 1))
-
-
 ;; 📦 PHP-MODE
 ;; https://github.com/emacs-php/php-mode
 ;; Работа с файлами PHP

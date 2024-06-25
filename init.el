@@ -217,7 +217,28 @@
   :pin "gnu"
   :ensure t
   :bind (:map global-map
-              ("M-o" . ace-window)))
+          ("M-o" . ace-window)))
+
+
+;; 📦 ACTIVITIES
+;; https://github.com/alphapapa/activities.el
+;; Почти как `desktop.el', только восстанавливает не только буферы, но
+;; и окна.
+(use-package activities
+  :ensure t
+  :bind
+  (
+    ("C-x C-a C-n" . activities-new)
+    ("C-x C-a C-d" . activities-define)
+    ("C-x C-a C-a" . activities-resume)
+    ("C-x C-a C-s" . activities-suspend)
+    ("C-x C-a C-k" . activities-kill)
+    ("C-x C-a RET" . activities-switch)
+    ("C-x C-a b" . activities-switch-buffer)
+    ("C-x C-a g" . activities-revert)
+    ("C-x C-a l" . activities-list))
+  :config
+  (activities-mode 1))
 
 
 ;; 📦 ADJUST-PARENS
@@ -228,8 +249,8 @@
   :ensure t
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind (:map emacs-lisp-mode-map
-              ("<tab>" . lisp-indent-adjust-parens)
-              ("<backtab>" . lisp-dedent-adjust-parens)))
+          ("<tab>" . lisp-indent-adjust-parens)
+          ("<backtab>" . lisp-dedent-adjust-parens)))
 
 
 ;; 📦 ADOC-MODE

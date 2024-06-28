@@ -69,6 +69,7 @@
   '(scroll-conservatively 101 "TODO: проверить что это такое")
   '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
   '(show-trailing-whitespace t "Подсветка висячих пробелов")
+  '(standard-indent 4 "Отступ по умолчанию")
   '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
   '(tool-bar-mode nil "Отключить панель инструментов")
   '(truncate-lines 1 "Обрезать длинные строки")
@@ -80,6 +81,7 @@
 
 (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
 (global-unset-key (kbd "M-,"))      ;; Такие маркеры не нужны
+(global-unset-key (kbd "C-z"))      ;; Такой Ctrl+Z нам не нужен
 (global-set-key (kbd "C-x k")       ;; Закрыть буфер по нажатию [C-x k]
   (lambda()
     (interactive)
@@ -218,27 +220,6 @@
   :ensure t
   :bind (:map global-map
           ("M-o" . ace-window)))
-
-
-;; 📦 ACTIVITIES
-;; https://github.com/alphapapa/activities.el
-;; Почти как `desktop.el', только восстанавливает не только буферы, но
-;; и окна.
-(use-package activities
-  :ensure t
-  :bind
-  (
-    ("C-x C-a C-n" . activities-new)
-    ("C-x C-a C-d" . activities-define)
-    ("C-x C-a C-a" . activities-resume)
-    ("C-x C-a C-s" . activities-suspend)
-    ("C-x C-a C-k" . activities-kill)
-    ("C-x C-a RET" . activities-switch)
-    ("C-x C-a b" . activities-switch-buffer)
-    ("C-x C-a g" . activities-revert)
-    ("C-x C-a l" . activities-list))
-  :config
-  (activities-mode 1))
 
 
 ;; 📦 ADJUST-PARENS
@@ -812,7 +793,7 @@
 
 
 ;; 📦 FLYCHECK
-;; https://flycheck.org
+;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
   :pin "melpa-stable"
@@ -946,14 +927,6 @@
   :bind (:map global-map
           ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно
           ("C-x o" . next-multiframe-window)))   ;; Перейти в следующее окно
-
-
-;; 📦 GIT-COMMIt
-;; https://github.com/magit/magit
-;; Специальный режим для правки коммитов при работе с `magit'.
-(use-package git-commit
-  :pin "nongnu"
-  :ensure t)
 
 
 ;; 📦 GIT-GUTTER
@@ -1185,7 +1158,7 @@
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (use-package magit
-  :pin "nongnu"
+  :pin "melpa"
   :ensure t
   :defer t
   :custom
@@ -1199,8 +1172,9 @@
 ;; Иконки в буферах Magit
 (use-package magit-file-icons
   :ensure t
-  :hook
-  (magit-mode . magit-file-icons-mode))
+  :after magit
+  :config
+  (magit-file-icons-mode 1))
 
 
 ;; 📦 MAKEFILE

@@ -648,8 +648,10 @@
   :pin "nongnu"
   :ensure t
   :diminish ""
-  :after (nerd-icons)
-  :config (editorconfig-mode 1))
+  :config
+  (editorconfig-mode 1)
+  :mode
+  ("\\.editorconfig\\'" . editorconfig-conf-mode))
 
 
 ;; 📦 ELDOC-MODE
@@ -832,16 +834,6 @@
      web-mode
      yaml-mode
      ) . flycheck-mode))
-
-
-;; 📦 FLYCHECK-EGLOT
-;; https://github.com/flycheck/flycheck-eglot
-;; Интеграция Flycheck + Eglot
-(when (emacs-version-not-less-than 28 1)
-  (use-package flycheck-eglot
-    :ensure t
-    :defer t
-    :after (eglot flycheck)))
 
 
 ;; 📦 FLYLISP

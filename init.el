@@ -977,7 +977,6 @@
 ;; Подсказки и автодополнение ввода.
 ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
 (use-package helm
-  :pin "nongnu"
   :ensure t
   :diminish ""
   :config
@@ -1158,7 +1157,6 @@
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (use-package magit
-  :pin "melpa"
   :ensure t
   :defer t
   :custom

@@ -134,26 +134,42 @@
 (add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.
 
 
-(unless (package-installed-p 'gnu-elpa-keyring-update)
+(unless (package-installed-p 'use-package)
   (custom-set-variables '(package-check-signature nil "Отключить проверку подписей"))
   (package-refresh-contents)
+  (package-install 'use-package t)
   (package-install 'gnu-elpa-keyring-update t)
   (custom-set-variables '(package-check-signature 'all "Включить проверку подписей")))
 
-;; Если пакет `use-package' не установлен, нужно это сделать.
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package t))
-
 (require 'use-package)
+
+
+;; Straight.el
+;; https://github.com/radian-software/straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
 
 ;; Настройки отладочного режима
 (when init-file-debug
   (custom-set-variables
-    '(use-package-verbose t "Подробный режим работы `use-package'.")
-    '(use-package-compute-statistics t "Сбор статистики `use-package'.")
-    '(use-package-expand-minimally t "TODO: ???")
-    '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")))
+   '(use-package-verbose t "Подробный режим работы `use-package'.")
+   '(use-package-compute-statistics t "Сбор статистики `use-package'.")
+   '(use-package-expand-minimally t "TODO: ???")
+   '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")))
 
 
 ;; 📦 Настройки, специфичные для графического режима
@@ -207,7 +223,6 @@
 ;; yc → Yandex Cloud
 ;; Это встроенный пакет
 (use-package abbrev
-  :ensure nil
   :defer t
   :diminish "abb")
 
@@ -216,8 +231,10 @@
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами по Alt+O
 (use-package ace-window
-  :pin "gnu"
-  :ensure t
+  :straight (ace-window
+             :host github
+             :repo "abo-abo/ace-window"
+             :tag "0.10.0")
   :bind (:map global-map
           ("M-o" . ace-window)))
 
@@ -226,20 +243,21 @@
 ;; https://elpa.gnu.org/packages/adjust-parens.html
 ;; Пакет для автоматического управления скобочками и уровнями отступов.
 (use-package adjust-parens
-  :pin "gnu"
-  :ensure t
+  :straight (adjust-parens)
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind (:map emacs-lisp-mode-map
-          ("<tab>" . lisp-indent-adjust-parens)
-          ("<backtab>" . lisp-dedent-adjust-parens)))
+              ("<tab>" . lisp-indent-adjust-parens)
+              ("<backtab>" . lisp-dedent-adjust-parens)))
 
 
 ;; 📦 ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
 (use-package adoc-mode
-  :pin "melpa"
-  :ensure t
+  :straight (adoc-mode
+             :host github
+             :repo "bbatsov/adoc-mode"
+             :tag "v0.7.0")
   :defer t
   :custom
   (adoc-fontify-code-blocks-natively 10000)
@@ -247,41 +265,48 @@
 
 
 ;; 📦 AGGRESSIVE-INDENT
+;; https://github.com/Malabarba/aggressive-indent-mode
 ;; Принудительное выравнивание кода
 (use-package aggressive-indent
-  :pin "gnu"
-  :ensure t
+  :straight (aggressive-indent
+             :host github
+             :repo "Malabarba/aggressive-indent-mode"
+             :tag "1.10.0")
   :defer t
   :hook
   ((
-     emacs-lisp-mode
-     js2-mode
-     json-mode
-     latex-mode
-     lisp-data-mode
-     nxml-mode
-     sh-mode
-     sql-mode
-     ) . aggressive-indent-mode))
+    emacs-lisp-mode
+    js2-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    nxml-mode
+    sh-mode
+    sql-mode
+    ) . aggressive-indent-mode))
 
 
 ;; 📦 ANACONDA-MODE
-;; https://github.com/proofit404/anaconda-mode
+;; https://github.com/pythonic-emacs/anaconda-mode
 ;; Расширенная поддержка Python.
 (use-package anaconda-mode
-  :pin "melpa-stable"
-  :ensure t
+  :straight (anaconda-mode
+             :host github
+             :repo "pythonic-emacs/anaconda-mode"
+             :tag "v0.1.16")
   :hook
   (python-mode . anaconda-mode)
   (python-mode . anaconda-eldoc-mode))
 
 
 ;; 📦 ANSIBLE
-;; https://github.com/k1LoW/emacs-ansible
+;; https://gitlab.com/emacs-ansible/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
 (use-package ansible
-  :pin "melpa-stable"
-  :ensure t
+  :straight (ansible
+             :host gitlab
+             :repo "emacs-ansible/emacs-ansible"
+             :tag "0.3.2")
   :defer t)
 
 
@@ -289,8 +314,10 @@
 ;; https://github.com/emacsorphanage/anzu
 ;; Подсказки о количестве совпадений при поиске с помощью `isearch'.
 (use-package anzu
-  :pin "nongnu"
-  :ensure t
+  :straight (anzu
+             :host github
+             :repo "emacsorphanage/anzu"
+             :tag "0.64")
   :diminish ""
   :config
   (global-anzu-mode 1))
@@ -300,8 +327,10 @@
 ;; https://github.com/radian-software/apheleia
 ;; Форматирование содержимого буфера с помощью внешних средств
 (use-package apheleia
-  :pin "melpa-stable"
-  :ensure t
+  :straight (apheleia
+             :host github
+             :repo "radian-software/apheleia"
+             :tag "v4.1")
   :diminish "")
 
 
@@ -326,18 +355,11 @@
 ;; https://github.com/lassik/emacs-bbcode-mode
 ;; Режим редактирования BB-кодов
 (use-package bbcode-mode
-  :pin "melpa-stable"
-  :ensure t
+  :straight (bbcode-mode
+             :host github
+             :repo "lassik/emacs-bbcode-mode"
+             :tag "v2.3.0")
   :defer t)
-
-
-;; 📦 BIND-KEY
-;; https://github.com/jwiegley/use-package
-;; Позволяет настраивать привязки клавиш более простым и наглядным способом чем
-;; тот, что предоставляет Emacs
-(use-package bind-key
-  :ensure t
-  :pin "gnu")
 
 
 ;; 📦 BUFFER-ENV
@@ -349,14 +371,15 @@
 ;; Во втором достаточно задать значение переменной `buffer-env-script-name'.
 (when (emacs-version-not-less-than 27 1)
   (use-package buffer-env
-    :ensure t
-    :pin "gnu"
+    :straight (buffer-env
+               :host github
+               :repo "astoff/buffer-env")
     :defer t
     :after (files)
     :hook ((
-             hack-local-variables
-             comint-mode
-             ) . buffer-env-update)))
+            hack-local-variables
+            comint-mode
+            ) . buffer-env-update)))
 
 
 ;; 📦 CALENDAR
@@ -376,9 +399,10 @@
 ;; https://company-mode.github.io/
 ;; Автодополнение
 (use-package company
-  :pin "gnu"
-  :ensure t
-  :defer t
+  :straight (company
+             :host github
+             :repo "company-mode/company-mode"
+             :tag "0.10.2")
   :diminish ""
   :custom
   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
@@ -409,12 +433,14 @@
 
 
 ;; 📦 COMPANY-ANACONDA
-;; https://github.com/proofit404/anaconda-mode
+;; https://github.com/pythonic-emacs/company-anaconda
 ;; Интеграция Anaconda + Company
 (use-package company-anaconda
-  :pin "melpa-stable"
-  :ensure t
-  :requires company
+  :straight (company-anaconda
+             :host github
+             :repo "pythonic-emacs/company-anaconda"
+             :tag "v0.2.0")
+  :requires (anaconda-mode company)
   :config
   (add-to-list 'company-backends 'company-anaconda))
 
@@ -423,7 +449,6 @@
 ;; Встроенный пакет.
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF
 (use-package conf-mode
-  :ensure nil
   :defer t
   :mode
   ("\\.editorconfig\\'"
@@ -437,7 +462,6 @@
 ;; Встроенный пакет.
 ;; Поддержка CSS.
 (use-package css-mode
-  :ensure nil
   :defer t
   :custom
   (css-indent-offset 2)
@@ -448,7 +472,6 @@
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
 (use-package csv-mode
-  :pin "gnu"
   :ensure t
   :mode "\\.csv\\'")
 
@@ -486,7 +509,10 @@
 ;; Режим для управления заметками
 (when (emacs-version-not-less-than 28 1)
   (use-package denote
-    :pin "gnu"
+    :straight (denote
+               :host github
+               :repo "protesilaos/denote"
+               :tag "3.0.6")
     :ensure t
     :custom
     (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
@@ -515,8 +541,10 @@
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
-  :pin "gnu"
-  :ensure t
+  :straight (diff-hl
+             :host github
+             :repo "dgutov/diff-hl"
+             :tag "1.9.2")
   :commands (diff-hl-mode diff-hl-dired-mode)
   :config (global-diff-hl-mode 1))
 
@@ -526,8 +554,9 @@
 ;; Позволяет изменить или вовсе скрыть название дополнительного режима с панели статуса.
 ;; Поддерживается `use-package' с помощью ключевого слова `diminish'.
 (use-package diminish
-  :pin "gnu"
-  :ensure t)
+  :straight (diminish
+             :host github
+             :repo "myrjola/diminish.el"))
 
 
 ;; 📦 DIRED
@@ -577,17 +606,23 @@
 ;; https://github.com/spotify/dockerfile-mode
 ;; Работа с файлами `Dockerfile'.
 (use-package dockerfile-mode
-  :ensure t
+  :straight (dockerfile-mode
+             :host github
+             :repo "spotify/dockerfile-mode"
+             :tag "v1.9")
   :defer t
-  :pin "nongnu")
+  :mode
+  ("\\Dockerfile\\'" . dockerfile-mode))
 
 
 ;; 📦 DOOM-MODELINE
 ;; https://github.com/seagle0128/doom-modeline
 ;; Красивая статусная строка
 (use-package doom-modeline
-  :ensure t
-  :pin "melpa-stable"
+  :straight (doom-modeline
+             :host github
+             :repo "seagle0128/doom-modeline"
+             :tag "v4.1.0")
   :custom
   (doom-modeline-buffer-encoding t "Отображение кодировки.")
   (doom-modeline-buffer-name t "Отображение названия буфера.")
@@ -613,8 +648,10 @@
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
 (use-package doom-themes
-  :pin "melpa-stable"
-  :ensure t
+  :straight (doom-themes
+             :host github
+             :repo "doomemacs/themes"
+             :tag "v2.3.0")
   :custom
   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
   (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
@@ -634,8 +671,10 @@
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
-  :pin "nongnu"
-  :ensure t
+  :straight (edit-indirect
+             :host github
+             :repo "Fanael/edit-indirect"
+             :tag "0.1.13")
   :defer t
   :bind (:map global-map
           ("C-c '" . edit-indirect-region)))
@@ -645,8 +684,10 @@
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
-  :pin "nongnu"
-  :ensure t
+  :straight (editorconfig
+             :host github
+             :repo "editorconfig/editorconfig-emacs"
+             :tag "v0.11.0")
   :diminish ""
   :config
   (editorconfig-mode 1)
@@ -658,8 +699,6 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Programming-Language-Doc.html
 ;; Отображение подсказок при работе с Emacs Lisp
 (use-package eldoc
-  :pin "gnu"
-  :ensure t
   :config
   ;; Глобально этот режим не нужен
   (global-eldoc-mode nil)
@@ -675,7 +714,6 @@
 ;; Автоматически вставляет при вводе одной скобки или кавычки парную ей. Если
 ;; выделен регион, то в скобки обрамляется он.
 (use-package elec-pair
-  :ensure nil
   :config
   (add-to-list 'electric-pair-pairs '(?\( . ?\))) ;; ()
   (add-to-list 'electric-pair-pairs '(?\[ . ?\])) ;; []
@@ -701,7 +739,6 @@
 ;; Встроенный пакет.
 ;; Автоматический отступ. В основном только мешает, лучше выключить.
 (use-package electric
-  :ensure nil
   :config (electric-indent-mode -1)
   :custom (electric-indent-inhibit t "Не выравнивать предыдущую строку по нажатию Enter.")
   :hook (emacs-lisp-mode . electric-indent-local-mode))
@@ -721,8 +758,10 @@
 ;; - YAML:       sudo npm -g install yaml-language-server
 (when (emacs-version-not-less-than 26 3)
   (use-package eglot
-    :pin "gnu"
-    :ensure t
+    :straight (eglot
+               :host github
+               :repo "joaotavora/eglot"
+               :tag "1.9")
     :defer t
     :config
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
@@ -746,7 +785,6 @@
 ;; IT IS NOT A ELISP-MODE!
 ;; Встроенный пакет для EMACS Lisp
 (use-package elisp-mode
-  :ensure nil
   :config
   (setq-local tab-width 2)
   :mode
@@ -765,7 +803,6 @@
 ;; 📦 FILES
 ;; Это встроенный пакет для управления файлами
 (use-package files
-  :ensure nil
   :custom
   (auto-save-file-name-transforms `((".*" , init-el-autosave-dir) t))
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
@@ -798,8 +835,10 @@
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
-  :pin "melpa-stable"
-  :ensure t
+  :straight (flycheck
+             :host github
+             :repo "flycheck/flycheck"
+             :tag "34.1")
   :defer t
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
@@ -840,8 +879,8 @@
 ;; https://elpa.gnu.org/packages/flylisp.html
 ;; Подсвекта непарных или неправильно выровненных скобок
 (use-package flylisp
-  :pin "gnu"
-  :ensure t
+  :straight (flylisp
+             :tag "0.2")
   :hook
   (emacs-lisp-mode . flylisp-mode))
 
@@ -851,8 +890,8 @@
 ;; Используется для проверки `init.el'.
 ;; https://elpa.gnu.org/packages/flymake.html
 (use-package flymake
-  :pin "gnu"
-  :ensure t
+  :straight (flymake
+             :tag "1.3.7")
   :hook
   ((
      emacs-lisp-mode
@@ -898,13 +937,15 @@
 
 ;; 📦 FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
-;; Форматирование кода по нажатию [F12]
+;; Форматирование кода с помощью разных внешних средств.
 (use-package format-all
-  :pin "melpa-stable"
-  :ensure t
+  :straight (format-all
+             :host github
+             :repo "lassik/emacs-format-all-the-code"
+             :tag "0.6.0")
   :defer t
   :bind (:map global-map
-              ([f12] . format-all-buffer)))
+          ([f12] . format-all-buffer)))
 
 
 ;; 📦 FRAME
@@ -925,7 +966,10 @@
 ;; https://github.com/emacsorphanage/git-gutter
 ;; Подсветка изменённых строк.
 (use-package git-gutter
-  :ensure t
+  :straight (git-gutter
+             :host github
+             :repo "emacsorphanage/git-gutter"
+             :tag "0.92")
   :diminish ""
   :custom
   (git-gutter:hide-gutter t)
@@ -944,7 +988,6 @@
 ;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
 ;; Возможны варианты (зависит от основного режима).
 (use-package goto-addr
-  :ensure t
   :hook
   ((
      adoc-mode
@@ -965,11 +1008,14 @@
 
 
 ;; 📦 HELM
-;; https://emacs-helm.github.io/
+;; https://github.com/emacs-helm/helm
 ;; Подсказки и автодополнение ввода.
 ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
 (use-package helm
-  :ensure t
+  :straight (helm
+             :host github
+             :repo "emacs-helm/helm"
+             :tag "v3.9.9")
   :diminish ""
   :config
   (helm-mode 1)
@@ -981,8 +1027,10 @@
 ;; https://github.com/bbatsov/helm-projectile
 ;; Интеграция HELM с PROJECTILE
 (use-package helm-projectile
-  :pin "melpa-stable"
-  :ensure t
+  :straight (helm-projectile
+             :host github
+             :repo "bbatsov/helm-projectile"
+             :tag "v1.0.0")
   :diminish ""
   :requires (helm projectile)
   :after (helm projectile)
@@ -991,7 +1039,8 @@
 
 
 ;; 📦 HL-LINE
-;; Встроенный пакет, используемый для подсветки текущей строки.
+;; Встроенный пакет.
+;; Подсветка текущей строки.
 (use-package hl-line
   :config
   (global-hl-line-mode 1)) ;; Подсветка активной строки
@@ -1001,8 +1050,10 @@
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
 (use-package hl-todo
-  :pin "melpa-stable"
-  :ensure t
+  :straight (hl-todo
+             :host github
+             :repo "tarsius/hl-todo"
+             :tag "v3.7.0")
   :config (global-hl-todo-mode t))
 
 
@@ -1130,17 +1181,21 @@
 ;; 📦 JS2-MODE
 ;; https://github.com/mooz/js2-mode
 (use-package js2-mode
-  :pin "gnu"
-  :ensure t
+  :straight (js2-mode
+             :host github
+             :repo "mooz/js2-mode")
   :defer t
   :mode ("\\.js\\'" . js2-mode))
 
 
 ;; 📦 JSON-MODE
+;; https://github.com/json-emacs/json-mode
 ;; Поддержка JSON
 (use-package json-mode
-  :pin "melpa-stable"
-  :ensure t
+  :straight (json-mode
+             :host github
+             :repo "json-emacs/json-mode"
+             :tag "v1.9.2")
   :defer t
   :mode ("\\.json\\'" . json-mode))
 
@@ -1149,8 +1204,10 @@
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (use-package magit
-  :ensure t
-  :defer t
+  :straight (magit
+             :host github
+             :repo "magit/magit"
+             :tag "v3.3.0")
   :custom
   (magit-define-global-key-bindings t "Включить глобальные сочетания Magit.")
   :config
@@ -1160,18 +1217,20 @@
 ;; 📦 MAGIT-FILE-ICONS
 ;; https://github.com/gekoke/magit-file-icons
 ;; Иконки в буферах Magit
-(use-package magit-file-icons
-  :ensure t
-  :after magit
-  :config
-  (magit-file-icons-mode 1))
+;; (use-package magit-file-icons
+;;   :straight (magit-file-icons
+;;              :host github
+;;              :repo "gekoke/magit-file-icons"
+;;              :tag "v2.0.0")
+;;   :after magit
+;;   :config
+;;   (magit-file-icons-mode 1))
 
 
 ;; 📦 MAKEFILE
 ;; Встроенный пакет.
 ;; Поддержка Makefile.
 (use-package make-mode
-  :ensure nil
   :defer t
   :mode
   ("\\Makefile\\'" . makefile-gmake-mode))
@@ -1182,8 +1241,10 @@
 ;; Режим для работы с файлами в формате Markdown
 (when (emacs-version-not-less-than 27 1)
   (use-package markdown-mode
-    :pin "nongnu"
-    :ensure t
+    :straight (markdown-mode
+               :host github
+               :repo "jrblevin/markdown-mode"
+               :tag "v2.6")
     :defer t
     :custom
     (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
@@ -1199,8 +1260,9 @@
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (use-package multiple-cursors
-  :pin "nongnu"
-  :ensure t
+  :straight (multiple-cursors
+             :host github
+             :repo "magnars/multiple-cursors.el")
   :bind (:map global-map
               ("C-S-c C-S-c" . mc/edit-lines)
               ("C->" . mc/mark-next-like-this)
@@ -1226,8 +1288,11 @@
 ;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
 ;; скопировать их в `/usr/local/share/fonts/'.
 (use-package nerd-icons
-  :pin "melpa-stable"
-  :ensure t
+
+
+  :straight (nerd-icons
+             :host github
+             :repo "rainstormstudio/nerd-icons.el")
   :custom
   (nerd-icons-color-icons t "Использовать цветные иконки."))
 
@@ -1236,7 +1301,9 @@
 ;; https://github.com/rainstormstudio/nerd-icons-dired
 ;; Иконки в `dired'.
 (use-package nerd-icons-dired
-  :ensure t
+  :straight (nerd-icons-dired
+             :host github
+             :repo "rainstormstudio/nerd-icons-dired")
   :after (dired nerd-icons)
   :hook (dired-mode . nerd-icons-dired-mode))
 
@@ -1245,8 +1312,9 @@
 ;; https://github.com/seagle0128/nerd-icons-ibuffer
 ;; Отображение иконок в ibuffer
 (use-package nerd-icons-ibuffer
-  :pin "melpa-stable"
-  :ensure t
+  :straight (nerd-icons-ibuffer
+             :host github
+             :repo "seagle0128/nerd-icons-ibuffer")
   :after (ibuffer nerd-icons)
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
@@ -1260,10 +1328,10 @@
 
 
 ;; 📦 NXML-MODE
-;; Встроенный пакет, почти как `xml-mode', только лучше и новее
+;; Встроенный пакет.
+;; Почти как `xml-mode', только лучше и новее (ну вы поняли...)
 (use-package nxml-mode
   :defer t
-  :ensure nil
   :custom
   (nxml-attribute-indent 4 "Выравнивание атрибутов")
   (nxml-auto-insert-xml-declaration-flag nil "Не вставлять декларацию")
@@ -1279,21 +1347,23 @@
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (use-package org
-  :pin "gnu"
-  :ensure t
+  :straight (org
+             :tag "9.7.6")
   :defer t
   :config
   (setq-local
-   truncate-lines nil ;; Не обрезать строки
-   word-wrap t))      ;; Перенос длинных строк
+    truncate-lines nil ;; Не обрезать строки
+    word-wrap t))      ;; Перенос длинных строк
 
 
 ;; 📦 PACKAGE-LINT
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
 (use-package package-lint
-  :pin "melpa-stable"
-  :ensure t
+  :straight (package-lint
+             :host github
+             :repo "purcell/package-lint"
+             :tag "0.23")
   :defer t)
 
 
@@ -1309,8 +1379,10 @@
 ;; https://github.com/emacs-php/php-mode
 ;; Работа с файлами PHP
 (use-package php-mode
-  :pin "melpa-stable"
-  :ensure t
+  :straight (php-mode
+             :host github
+             :repo "emacs-php/php-mode"
+             :tag "v1.25.1")
   :mode("\\.php\\'" . php-mode))
 
 
@@ -1320,7 +1392,7 @@
 ;; Необходимо установить в систему утилиты из набора gettext, иначе
 ;; работать не будет.
 (use-package po-mode
-  :ensure t
+  :straight (po-mode)
   :defer t
   :mode
   ("\\.po\\'\\|\\.po\\." . po-mode))
@@ -1333,8 +1405,10 @@
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (use-package projectile
-  :pin "nongnu"
-  :ensure t
+  :straight (projectile
+             :host github
+             :repo "bbatsov/projectile"
+             :tag "v2.8.0")
   :diminish "PRJ"
   :bind-keymap
   ("C-x p" . projectile-command-map)
@@ -1344,12 +1418,14 @@
 
 ;; 📦 PULSAR
 ;; Вспыхивание строки, к которой переместился курсор
-;; https://git.sr.ht/~protesilaos/pulsar
+;; https://github.com/protesilaos/pulsar
 (when (emacs-version-not-less-than 27 1)
   ;; Этот пакет требует Emacs версии 27.1 или новее
   (use-package pulsar
-    :pin "gnu"
-    :ensure t
+    :straight (pulsar
+               :host github
+               :repo "protesilaos/pulsar"
+               :tag "1.0.0")
     :custom (pulsar-pulse t)
     :hook
     (after-init . pulsar-global-mode)
@@ -1365,8 +1441,9 @@
 ;; 📦 PYTHON-MODE
 ;; Встроенный пакет для работы с Python
 (use-package python-mode
-  :pin "melpa-stable"
-  :ensure t
+  :straight (python-mode
+             :host github
+             :repo "emacsmirror/python-mode")
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
@@ -1377,8 +1454,10 @@
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
 (use-package rainbow-delimiters
-  :pin "nongnu"
-  :ensure t
+  :straight (rainbow-delimiters
+             :host github
+             :repo "Fanael/rainbow-delimiters"
+             :tag "2.1.5")
   :diminish ""
   :hook
   ((
@@ -1408,8 +1487,8 @@
 ;; https://elpa.gnu.org/packages/rainbow-mode.html
 ;; Подсветка строк с цветами нужным цветом, например #153415, #223956
 (use-package rainbow-mode
-  :pin "gnu"
-  :ensure t
+  :straight (rainbow-mode
+             :tag "1.0.6")
   :diminish ""
   :hook
   ((
@@ -1431,8 +1510,10 @@
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
 (use-package reverse-im
-  :pin "melpa-stable"
-  :ensure t
+  :straight (reverse-im
+             :host github
+             :repo "a13/reverse-im.el"
+             :tag "v0.0.8")
   :after (russian-techwriter)
   :custom
   (reverse-im-input-methods
@@ -1446,8 +1527,9 @@
 ;; Метод ввода для технических писателей
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
-  :pin "melpa-stable"
-  :ensure t
+  :straight (russian-techwriter
+             :host github
+             :repo "dunmaksim/emacs-russian-techwriter-input-method")
   :custom
   (default-input-method 'russian-techwriter))
 
@@ -1464,11 +1546,10 @@
 
 
 ;; 📦 RST-MODE
-;; Основной режим для редактирования reStructutedText
 ;; Встроенный пакет.
+;; Основной режим для редактирования reStructutedText
 ;; https://www.writethedocs.org/guide/writing/reStructuredText/
 (use-package rst
-  :ensure t
   :defer t
   :custom
   (rst-default-indent 3)
@@ -1478,15 +1559,13 @@
   (rst-indent-width 3)
   (rst-toc-indent 3)
   :mode
-  (
-    ("\\.rst\\'" . rst-mode)
-    ("\\.txt\\'" . rst-mode)))
+  (("\\.rst\\'" . rst-mode)
+   ("\\.txt\\'" . rst-mode)))
 
 
 ;; 📦 RUBY-MODE
 ;; Встроенный пакет
 (use-package ruby-mode
-  :ensure nil
   :defer t
   :init
   (defvar ruby-indent-offset 2 "Ширина TAB'а в `ruby-mode'.")
@@ -1507,7 +1586,6 @@
 ;; Встроенный пакет.
 ;; Работа со скриптами Shell.
 (use-package sh-script
-  :ensure nil
   :defer t
   :mode
   ("\\.bashrc\\'" . shell-script-mode)
@@ -1545,11 +1623,13 @@
 
 
 ;; 📦 TERRAFORM-MODE
-;; https://github.com/emacsorphanage/terraform-mode
+;; https://github.com/hcl-emacs/terraform-mode
 ;; Работа с файлами конфигурации Terraform
 (use-package terraform-mode
-  :pin "melpa-stable"
-  :ensure t
+  :straight (terraform-mode
+             :host github
+             :repo "hcl-emacs/terraform-mode"
+             :tag "1.0.1")
   :defer t
   :mode
   ("\\.terraformrc\\'" . terraform-mode)
@@ -1565,32 +1645,14 @@
 
 
 ;; 📦 TOOLTIP
-;; Встроенный пакет для вывода подсказок в графической среде
+;; Встроенный пакет.
+;; Вывод подсказок в графической среде.
 (use-package tooltip
   :custom
   (tooltip-mode nil "Отключить показ подсказок с помощью GUI")
   :config
   ;; Отключить показ подсказок с помощью GUI
   (tooltip-mode -1))
-
-
-;; 📦 TRAMP
-;; Пакет для работы с файлами на удалённых серверах.
-;; https://www.gnu.org/software/tramp/
-(use-package tramp
-  :pin "gnu"
-  :ensure t)
-
-
-;; 📦 TYPO
-;; https://git.sr.ht/~pkal/typo/
-;; Автодополнение на основе анализа ввода
-(when (emacs-version-not-less-than 27 1)
-  (use-package typo
-    :pin "gnu"
-    :ensure t
-    :init
-    (add-to-list 'completion-styles 'typo t)))
 
 
 ;; 📦 UNIQUIFY
@@ -1602,27 +1664,15 @@
   (uniquify-separator "/" "Разделять буферы с похожими именами, используя /"))
 
 
-;; 📦 UNDO-TREE
-;; https://gitlab.com/tsc25/undo-tree
-;; Не только предоставляет привычное поведение при отмене команд, но и даёт мощные возможности по
-;; ведению дерева правок.
-(use-package undo-tree
-  :pin "gnu"
-  :ensure t
-  :defer t
-  :custom
-  (undo-tree-auto-save-history nil "Отключить создание резервных копий файлов")
-  :config
-  (global-undo-tree-mode 1))
-
-
 ;; 📦 VERTICO
 ;; https://github.com/minad/vertico
 ;; Пакет для какого-то автодополнения.
 ;; TODO: понять, надо ли оно, и чем оно лучше `company-mode'.
 (use-package vertico
-  :pin "gnu"
-  :ensure t
+  :straight (vertico
+             :host github
+             :repo "minad/vertico"
+             :tag "1.8")
   :config
   (vertico-mode 1))
 
@@ -1631,8 +1681,10 @@
 ;; https://web-mode.org/
 ;; Режим для редактирования HTML и не только.
 (use-package web-mode
-  :pin "nongnu"
-  :ensure t
+  :straight (web-mode
+             :host github
+             :repo "fxbois/web-mode"
+             :tag "v17.3.13")
   :custom
   (major-mode 'web-mode)
   (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
@@ -1647,9 +1699,15 @@
 ;; 📦 WHICH-KEY MODE
 ;; https://github.com/justbur/emacs-which-key
 ;; Показывает подсказки к сочетаниям клавиш.
+;;
+;; ⚠ 25.06.2024 репозиторий стал архивным, а функциональность
+;; переехала в основную ветку Emacs.
+;; TODO: обновить ссылку, когда which-key появится в репозитории GNU.
 (use-package which-key
-  :pin "gnu"
-  :ensure t
+  :straight (which-key
+             :host github
+             :repo "justbur/emacs-which-key"
+             :tag "v3.6.0")
   :diminish ""
   :custom
   (which-key-idle-delay 2 "Задержка появления подсказки")
@@ -1703,7 +1761,8 @@
 
 
 ;; 📦 WINDMOVE
-;; Встроенный пакет для перемещения между окнами Emacs
+;; Встроенный пакет.
+;; Перемещение между окнами Emacs.
 (use-package windmove
   :bind
   (:map global-map
@@ -1712,7 +1771,8 @@
 
 
 ;; 📦 WINNER-MODE
-;; Встроенный пакет для управления окнами.
+;; Встроенный пакет.
+;; Управление окнами.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Convenience.html
 ;; Для управления конфигурациями окон используются последовательности
 ;; [C-c <left>] и [C-c <right>]
@@ -1734,40 +1794,14 @@
     ([C-tab] . previous-buffer)))                 ;; [Ctrl+Shift+Tab] Следующий буфер
 
 
-;; 📦 WS-BUTLER
-;; https://github.com/lewang/ws-butler
-;; Удаляет висячие пробелы только из изменённых строк.
-(use-package ws-butler
-  :pin "nongnu"
-  :ensure t
-  :defer t
-  :diminish ""
-  :hook
-  ((
-     adoc-mode
-     conf-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     js2-mode
-     latex-mode
-     markdown-mode
-     nxml-mode
-     python-mode
-     rst-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode
-     ) . ws-butler-mode))
-
-
 ;; 📦 YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
 (use-package yaml-mode
-  :pin "melpa-stable"
-  :ensure t
+  :straight (yaml-mode
+             :host github
+             :repo "yoshiki/yaml-mode"
+             :tag "0.0.16")
   :defer t
   :mode
   ("\\.ansible\\-lint\\'"

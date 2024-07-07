@@ -451,11 +451,10 @@
 (use-package conf-mode
   :defer t
   :mode
-  ("\\.editorconfig\\'"
-    "\\.env\\'"
-    "\\.flake8\\'"
-    "\\.ini\\'"
-    "\\.pylintrc\\'"))
+  ("\\.env\\'"
+   "\\.flake8\\'"
+   "\\.ini\\'"
+   "\\.pylintrc\\'"))
 
 
 ;; 📦 CSS-MODE

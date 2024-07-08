@@ -49,8 +49,10 @@
 ;; В противном случае будут проблемы при загрузке архива пакетов.
 (when (< emacs-major-version 27)
   (require 'gnutls)
-  (custom-set-variables
-    '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3" "Необходимо для старых версий Emacs.")))
+  (customize-set-variable
+    'gnutls-algorithm-priority
+    "NORMAL:-VERS-TLS1.3"
+    "Необходимо для старых версий Emacs."))
 
 (custom-set-variables
   '(create-lockfiles nil "Не создавать lock-файлы")
@@ -106,7 +108,7 @@
       (message (format "Каталог %s пуст." init-el-emacs-source-path))
       ;; Каталог не пуст
       (progn
-        (custom-set-variables '(source-directory init-el-emacs-source-path))
+        (customize-set-variable 'source-directory init-el-emacs-source-path)
         (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
     ;; Каталог не существует
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
@@ -134,42 +136,36 @@
 (add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.
 
 
-(unless (package-installed-p 'use-package)
-  (custom-set-variables '(package-check-signature nil "Отключить проверку подписей"))
-  (package-refresh-contents)
-  (package-install 'use-package t)
-  (package-install 'gnu-elpa-keyring-update t)
-  (custom-set-variables '(package-check-signature 'all "Включить проверку подписей")))
-
-(require 'use-package)
-
-
-;; Straight.el
+;; 📦 Straight.el
 ;; https://github.com/radian-software/straight.el
+;; Пакет для более строгого управления пакетами
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
+        (expand-file-name
+          "straight/repos/straight.el/bootstrap.el"
+          (or (bound-and-true-p straight-base-dir)
             user-emacs-directory)))
-      (bootstrap-version 7))
+       (bootstrap-version 7))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
+      (url-retrieve-synchronously
+        "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+        'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(straight-use-package '(use-package
+                         :tag "2.4.5"))
+(require 'use-package)
 
 ;; Настройки отладочного режима
 (when init-file-debug
   (custom-set-variables
-   '(use-package-verbose t "Подробный режим работы `use-package'.")
+   '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")
    '(use-package-compute-statistics t "Сбор статистики `use-package'.")
    '(use-package-expand-minimally t "TODO: ???")
-   '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")))
+   '(use-package-verbose t "Подробный режим работы `use-package'.")))
 
 
 ;; 📦 Настройки, специфичные для графического режима
@@ -445,6 +441,18 @@
   (add-to-list 'company-backends 'company-anaconda))
 
 
+;; 📦 COMPANY-ANSIBLE
+;; https://github.com/krzysztof-magosa/company-ansible
+;; Автодополнение Company в Ansible
+(use-package company-ansible
+  :straight company-ansible
+  :after company
+  :requires (company)
+  :defer t
+  :config
+  (add-to-list 'company-backends 'company-ansible))
+
+
 ;; 📦 CONF-MODE
 ;; Встроенный пакет.
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF
@@ -471,7 +479,8 @@
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
 (use-package csv-mode
-  :ensure t
+  :straight (csv-mode
+             :tag "1.25")
   :mode "\\.csv\\'")
 
 
@@ -522,7 +531,6 @@
 ;; Сохранение состояния Emacs между сессиями.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
 (use-package desktop
-  :ensure nil
   :custom
   (desktop-auto-save-timeout 20 "Автосохранение каждые 20 секунд.")
   (desktop-dirname init-el-config-dir "Каталог для хранения файла .desktop.")
@@ -648,14 +656,14 @@
 ;; Темы из DOOM Emacs
 (use-package doom-themes
   :straight (doom-themes
-             :host github
-             :repo "doomemacs/themes"
-             :tag "v2.3.0")
+              :host github
+              :repo "doomemacs/themes"
+              :tag "v2.3.0")
   :custom
   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
   (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
   :config
-  (load-theme 'doom-molokai t))
+  (load-theme 'doom-monokai-pro t))
 
 
 ;; 📦 EDIT-INDIRECT

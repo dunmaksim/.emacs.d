@@ -270,8 +270,7 @@
              :tag "1.10.0")
   :defer t
   :hook
-  ((
-    emacs-lisp-mode
+  ((emacs-lisp-mode
     js2-mode
     json-mode
     latex-mode
@@ -372,10 +371,11 @@
                :repo "astoff/buffer-env")
     :defer t
     :after (files)
-    :hook ((
-            hack-local-variables
-            comint-mode
-            ) . buffer-env-update)))
+    :hook
+    ((
+      hack-local-variables
+      comint-mode
+      ) . buffer-env-update)))
 
 
 ;; 📦 CALENDAR
@@ -407,25 +407,24 @@
   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
   (company-tooltip-limit 15 "Ограничение на число подсказок")
   :hook
-  ((
-     css-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     js2-mode
-     latex-mode
-     lisp-data-mode
-     minibufer-mode
-     nxml-mode
-     org-mode
-     python-mode
-     rst-mode
-     ruby-mode
-     ) . company-mode)
+  ((css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    js2-mode
+    latex-mode
+    lisp-data-mode
+    minibufer-mode
+    nxml-mode
+    org-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    ) . company-mode)
   :bind
   (:map company-active-map
-    ("TAB" . company-complete-common-or-cycle)
-    ("M-/" . company-complete)
-    ("M-." . company-show-location)))
+        ("TAB" . company-complete-common-or-cycle)
+        ("M-/" . company-complete)
+        ("M-." . company-show-location)))
 
 
 ;; 📦 COMPANY-ANACONDA
@@ -582,31 +581,30 @@
 ;; Показывает номера строк
 (use-package display-line-numbers
   :hook
-  ((
-     adoc-mode
-     c-mode
-     conf-mode
-     css-mode
-     csv-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     json-mode
-     latex-mode
-     lisp-data-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode
-     po-mode
-     python-mode
-     rst-mode
-     ruby-mode
-     sh-mode
-     shell-script-mode
-     terraform-mode
-     tex-mode
-     web-mode
-     yaml-mode
-     ) . display-line-numbers-mode))
+  ((adoc-mode
+    c-mode
+    conf-mode
+    css-mode
+    csv-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    po-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    sh-mode
+    shell-script-mode
+    terraform-mode
+    tex-mode
+    web-mode
+    yaml-mode
+    ) . display-line-numbers-mode))
 
 
 ;; 📦 DOCKERFILE-MODE
@@ -684,7 +682,7 @@
              :tag "0.1.13")
   :defer t
   :bind (:map global-map
-          ("C-c '" . edit-indirect-region)))
+              ("C-c '" . edit-indirect-region)))
 
 
 ;; 📦 EDITORCONFIG
@@ -730,16 +728,15 @@
   (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
   (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”
   :hook
-  ((
-     adoc-mode
-     conf-mode
-     emacs-lisp-data-mode
-     emacs-lisp-mode
-     lisp-data-mode
-     markdown-mode
-     python-mode
-     ruby-mode
-     ) . electric-pair-local-mode))
+  ((adoc-mode
+    conf-mode
+    emacs-lisp-data-mode
+    emacs-lisp-mode
+    lisp-data-mode
+    markdown-mode
+    python-mode
+    ruby-mode
+    ) . electric-pair-local-mode))
 
 
 ;; 📦 ELECTRIC-INDENT MODE
@@ -778,14 +775,13 @@
     (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server")))
     :hook
-    ((
-       ansible-mode
-       dockerfile-mode
-       markdown-mode
-       python-mode
-       ruby-mode
-       yaml-mode
-       ) . eglot-ensure)))
+    ((ansible-mode
+      dockerfile-mode
+      markdown-mode
+      python-mode
+      ruby-mode
+      yaml-mode
+      ) . eglot-ensure)))
 
 
 ;; 📦 EMACS-LISP-MODE
@@ -852,34 +848,33 @@
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
   (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-locate-config-file-functions '(
-                                            flycheck-locate-config-file-by-path
-                                            flycheck-locate-config-file-ancestor-directories
-                                            flycheck-locate-config-file-home))
+                                           flycheck-locate-config-file-by-path
+                                           flycheck-locate-config-file-ancestor-directories
+                                           flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
-  ((
-     adoc-mode
-     conf-mode
-     css-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     js2-mode
-     json-mode
-     latex-mode
-     lisp-data-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode
-     python-mode
-     rst-mode
-     ruby-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode
-     ) . flycheck-mode))
+  ((adoc-mode
+    conf-mode
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    js2-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode
+    ) . flycheck-mode))
 
 
 ;; 📦 FLYLISP
@@ -900,44 +895,42 @@
   :straight (flymake
              :tag "1.3.7")
   :hook
-  ((
-     emacs-lisp-mode
-     lisp-data-mode
-     ) . flymake-mode))
+  ((emacs-lisp-mode
+    lisp-data-mode
+    ) . flymake-mode))
 
 
 ;; 📦 FLYSPELL-MODE
 ;; Встроенный пакет.
 ;; Проверка орфографии с помощью словарей.
-;; Использовать пакет только в том случае, когда дело происходит в Linux и
-;; Hunspell или Aspell доступны.
+;; Использовать пакет только в том случае, когда дело происходит в
+;; Linux и Hunspell или Aspell доступны.
 (when init-el-is-linux
   (defvar text-spell-program nil "Программа для проверки орфографии.")
   (cond
-    ((or
-       (file-exists-p "/usr/bin/hunspell")
-       (file-symlink-p "/usr/bin/hunspell"))
-      (setq text-spell-program "hunspell"))
-    ((or
-       (file-exists-p "/usr/bin/aspell")
-       (file-symlink-p "/usr/bin/aspell"))
-      (setq text-spell-program "aspell")))
+   ((or
+     (file-exists-p "/usr/bin/hunspell")
+     (file-symlink-p "/usr/bin/hunspell"))
+    (setq text-spell-program "hunspell"))
+   ((or
+     (file-exists-p "/usr/bin/aspell")
+     (file-symlink-p "/usr/bin/aspell"))
+    (setq text-spell-program "aspell")))
   ;; Нужно использовать ispell-mode только в том случае, когда есть
   ;; чем проверять орфографию.
   (if text-spell-program
-    (progn
-      (message (format "Для проверки орфографии используется %s" text-spell-program))
-      (use-package flyspell
-        :custom (ispell-program-name text-spell-program)
-        :hook
-        ((
-           adoc-mode
-           markdown-mode
-           rst-mode) . flyspell-mode)
-        (emacs-lisp-mode . flyspell-prog-mode)
-        :bind
-        (:map global-map
-          ([f5] . ispell-buffer))))
+      (progn
+        (message (format "Для проверки орфографии используется %s" text-spell-program))
+        (use-package flyspell
+          :custom (ispell-program-name text-spell-program)
+          :hook
+          ((adoc-mode
+            markdown-mode
+            rst-mode) . flyspell-mode)
+          (emacs-lisp-mode . flyspell-prog-mode)
+          :bind
+          (:map global-map
+                ([f5] . ispell-buffer))))
     ;; Не найдено программ для проверки орфографии
     (message "Не найдено программ для проверки орфографии.")))
 
@@ -981,13 +974,12 @@
   :custom
   (git-gutter:hide-gutter t)
   :hook
-  ((
-     adoc-mode
-     emacs-lisp-mode
-     markdown-mode
-     rst-mode
-     yaml-mode
-     ) . git-gutter-mode))
+  ((adoc-mode
+    emacs-lisp-mode
+    markdown-mode
+    rst-mode
+    yaml-mode
+    ) . git-gutter-mode))
 
 
 ;; 📦 GOTO-ADDRESS-MODE
@@ -996,14 +988,13 @@
 ;; Возможны варианты (зависит от основного режима).
 (use-package goto-addr
   :hook
-  ((
-     adoc-mode
-     emacs-lisp-mode
-     markdown-mode
-     rst-mode
-     text-mode
-     web-mode
-     ) . goto-address-mode))
+  ((adoc-mode
+    emacs-lisp-mode
+    markdown-mode
+    rst-mode
+    text-mode
+    web-mode
+    ) . goto-address-mode))
 
 
 ;; 📦 GREP
@@ -1467,27 +1458,26 @@
              :tag "2.1.5")
   :diminish ""
   :hook
-  ((
-     adoc-mode
-     conf-mode
-     css-mode
-     emacs-lisp-mode
-     js2-mode
-     json-mode
-     lisp-data-mode
-     makefile-gmake-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode
-     org-mode
-     python-mode
-     rst-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     web-mode
-     yaml-mode
-     ) . rainbow-delimiters-mode))
+  ((adoc-mode
+    conf-mode
+    css-mode
+    emacs-lisp-mode
+    js2-mode
+    json-mode
+    lisp-data-mode
+    makefile-gmake-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    org-mode
+    python-mode
+    rst-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode
+    ) . rainbow-delimiters-mode))
 
 
 ;; 📦 RAINBOW-MODE
@@ -1498,11 +1488,10 @@
              :tag "1.0.6")
   :diminish ""
   :hook
-  ((
-     css-mode
-     emacs-lisp-mode
-     web-mode
-     ) . rainbow-mode))
+  ((css-mode
+    emacs-lisp-mode
+    web-mode
+    ) . rainbow-mode))
 
 
 ;; 📦 REPLACE
@@ -1732,39 +1721,38 @@
   :diminish "ws"
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
-    '(
-       (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
-       (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
-       (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
-       (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
-       ))
+   '(
+     (space-mark   ?\    [?\xB7]     [?.])      ;; Пробел
+     (space-mark   ?\xA0 [?\xA4]     [?_])      ;; Неразрывный пробел
+     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])  ;; Конец строки
+     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]) ;; TAB
+     ))
   (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
   :hook
-  ((
-     adoc-mode
-     conf-mode
-     css-mode
-     dockerfile-mode
-     emacs-lisp-mode
-     js2-mode
-     json-mode
-     latex-mode
-     lisp-data-mode
-     makefile-gmake-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode
-     org-mode
-     po-mode
-     python-mode
-     rst-mode
-     ruby-mode
-     sh-mode
-     sql-mode
-     terraform-mode
-     tex-mode
-     web-mode
-     yaml-mode) . whitespace-mode))
+  ((adoc-mode
+    conf-mode
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    js2-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    makefile-gmake-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    org-mode
+    po-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    tex-mode
+    web-mode
+    yaml-mode) . whitespace-mode))
 
 
 ;; 📦 WINDMOVE

@@ -73,7 +73,6 @@
   '(show-trailing-whitespace t "Подсветка висячих пробелов")
   '(standard-indent 4 "Отступ по умолчанию")
   '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
-  '(tool-bar-mode nil "Отключить панель инструментов")
   '(truncate-lines 1 "Обрезать длинные строки")
   '(use-dialog-box nil "Диалоговые окна ОС не нужны")
   '(user-full-name "Dunaevsky Maxim" "Имя пользователя")
@@ -98,18 +97,18 @@
   (message "Используется ОС на базе GNU/Linux")
   (defvar init-el-emacs-source-path "Путь к каталогу с исходным кодом Emacs")
   (setq init-el-emacs-source-path
-    (format "/usr/share/emacs/%d.%d/src/"
-      emacs-major-version
-      emacs-minor-version))
+        (format "/usr/share/emacs/%d.%d/src/"
+                emacs-major-version
+                emacs-minor-version))
   (if (file-exists-p init-el-emacs-source-path)
-    ;; Каталог существует
-    (if (directory-empty-p init-el-emacs-source-path)
-      ;; Каталог пуст
-      (message (format "Каталог %s пуст." init-el-emacs-source-path))
-      ;; Каталог не пуст
-      (progn
-        (customize-set-variable 'source-directory init-el-emacs-source-path)
-        (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
+      ;; Каталог существует
+      (if (directory-empty-p init-el-emacs-source-path)
+          ;; Каталог пуст
+          (message (format "Каталог %s пуст." init-el-emacs-source-path))
+        ;; Каталог не пуст
+        (progn
+          (customize-set-variable 'source-directory init-el-emacs-source-path)
+          (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
     ;; Каталог не существует
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
 
@@ -117,23 +116,23 @@
 ;; 📦 PACKAGE
 ;; Встроенный пакет.
 ;; Управление другими пакетами.
-(require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-(package-initialize)
+;; (require 'package)
+;; (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;; (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+;; (package-initialize)
 
-(custom-set-variables
-  '(package-archive-priorities '( ;; Приоритеты архивов
-                                  ("gnu" . 50)
-                                  ("nongnu" . 40)
-                                  ("melpa-stable" . 30)
-                                  ("melpa" . 20)))
-  '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске"))
+;; (custom-set-variables
+;;   '(package-archive-priorities '( ;; Приоритеты архивов
+;;                                   ("gnu" . 50)
+;;                                   ("nongnu" . 40)
+;;                                   ("melpa-stable" . 30)
+;;                                   ("melpa" . 20)))
+;;   '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске"))
 
-(add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
-(add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.
+;; (add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
+;; (add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.
 
 
 ;; 📦 Straight.el
@@ -1638,6 +1637,12 @@
 (use-package tex-mode
   :mode
   ("\\.text\\'" . tex-mode))
+
+
+;; 📦 TOOLBAR
+;; Встроенный пакет, недоступный в Emacs NOX
+(when (fboundp 'tool-bar-mode)
+  (customize-set-variable 'tool-bar-mode nil))
 
 
 ;; 📦 TOOLTIP

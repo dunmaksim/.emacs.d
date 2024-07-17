@@ -1195,14 +1195,13 @@
 ;; 📦 MAGIT-FILE-ICONS
 ;; https://github.com/gekoke/magit-file-icons
 ;; Иконки в буферах Magit
-;; (use-package magit-file-icons
-;;   :straight (magit-file-icons
-;;              :host github
-;;              :repo "gekoke/magit-file-icons"
-;;              :tag "v2.0.0")
-;;   :after magit
-;;   :config
-;;   (magit-file-icons-mode 1))
+(use-package magit-file-icons
+  :straight (magit-file-icons
+              :host github
+              :repo "gekoke/magit-file-icons")
+  :after magit
+  :config
+  (magit-file-icons-mode 1))
 
 
 ;; 📦 MAKEFILE
@@ -1231,7 +1230,8 @@
     :config (setq-local word-wrap t)
     :bind (
             :map markdown-mode-map
-            ("M-." . markdown-follow-thing-at-point))))
+            ("M-." . markdown-follow-thing-at-point))
+    :mode ("\\.md\\'" . markdown-mode)))
 
 
 ;; 📦 MULTIPLE CURSORS

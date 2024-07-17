@@ -97,42 +97,20 @@
   (message "Используется ОС на базе GNU/Linux")
   (defvar init-el-emacs-source-path "Путь к каталогу с исходным кодом Emacs")
   (setq init-el-emacs-source-path
-        (format "/usr/share/emacs/%d.%d/src/"
-                emacs-major-version
-                emacs-minor-version))
+    (format "/usr/share/emacs/%d.%d/src/"
+      emacs-major-version
+      emacs-minor-version))
   (if (file-exists-p init-el-emacs-source-path)
-      ;; Каталог существует
-      (if (directory-empty-p init-el-emacs-source-path)
-          ;; Каталог пуст
-          (message (format "Каталог %s пуст." init-el-emacs-source-path))
-        ;; Каталог не пуст
-        (progn
-          (customize-set-variable 'source-directory init-el-emacs-source-path)
-          (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
+    ;; Каталог существует
+    (if (directory-empty-p init-el-emacs-source-path)
+      ;; Каталог пуст
+      (message (format "Каталог %s пуст." init-el-emacs-source-path))
+      ;; Каталог не пуст
+      (progn
+        (customize-set-variable 'source-directory init-el-emacs-source-path)
+        (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
     ;; Каталог не существует
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
-
-
-;; 📦 PACKAGE
-;; Встроенный пакет.
-;; Управление другими пакетами.
-;; (require 'package)
-;; (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-;; (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-;; (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-;; (package-initialize)
-
-;; (custom-set-variables
-;;   '(package-archive-priorities '( ;; Приоритеты архивов
-;;                                   ("gnu" . 50)
-;;                                   ("nongnu" . 40)
-;;                                   ("melpa-stable" . 30)
-;;                                   ("melpa" . 20)))
-;;   '(package-native-compile t "Компиляция пакетов во время установки, а не при первом запуске"))
-
-;; (add-to-list 'package-pinned-packages '("use-package" . "gnu")) ;; Пакет `use-package' нужно устанавливать из репозитория GNU.
-;; (add-to-list 'package-pinned-packages '("gnu-elpa-keyring-update" . "gnu")) ;; Этот тоже только из репозитория GNU.
 
 
 ;; 📦 Straight.el
@@ -140,31 +118,32 @@
 ;; Пакет для более строгого управления пакетами
 (defvar bootstrap-version)
 (let ((bootstrap-file
-        (expand-file-name
-          "straight/repos/straight.el/bootstrap.el"
-          (or (bound-and-true-p straight-base-dir)
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
             user-emacs-directory)))
-       (bootstrap-version 7))
+      (bootstrap-version 7))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
-      (url-retrieve-synchronously
-        "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-        'silent 'inhibit-cookies)
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; 📦 USE-PACKAGE
+;; https://elpa.gnu.org/packages/use-package.html
 (straight-use-package '(use-package
                          :tag "2.4.5"))
-(require 'use-package)
 
 ;; Настройки отладочного режима
 (when init-file-debug
   (custom-set-variables
-   '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")
-   '(use-package-compute-statistics t "Сбор статистики `use-package'.")
-   '(use-package-expand-minimally t "TODO: ???")
-   '(use-package-verbose t "Подробный режим работы `use-package'.")))
+    '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")
+    '(use-package-compute-statistics t "Сбор статистики `use-package'.")
+    '(use-package-expand-minimally t "TODO: ???")
+    '(use-package-verbose t "Подробный режим работы `use-package'.")))
 
 
 ;; 📦 Настройки, специфичные для графического режима
@@ -224,12 +203,12 @@
 
 ;; 📦 ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
-;; Быстрое переключение между окнами по Alt+O
+;; Быстрое переключение между окнами по M+o
 (use-package ace-window
-  :straight (ace-window
-             :host github
-             :repo "abo-abo/ace-window"
-             :tag "0.10.0")
+  :straight '(ace-window
+               :host github
+               :repo "abo-abo/ace-window"
+               :tag "0.10.0")
   :bind (:map global-map
           ("M-o" . ace-window)))
 
@@ -238,7 +217,8 @@
 ;; https://elpa.gnu.org/packages/adjust-parens.html
 ;; Пакет для автоматического управления скобочками и уровнями отступов.
 (use-package adjust-parens
-  :straight (adjust-parens)
+  :straight (adjust-parens
+             :tag "3.2")
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind (:map emacs-lisp-mode-map
               ("<tab>" . lisp-indent-adjust-parens)
@@ -1334,10 +1314,11 @@
   (nxml-bind-meta-tab-to-complete-flag t "Использовать TAB для завершения ввода")
   (nxml-child-indent 4 "Выравнивание дочерних элементов")
   (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
+  :commands nxml-mode
   :mode
   (
-    "\\.pom\\'"
-    "\\.xml\\'"))
+   "\\.pom\\'"
+   "\\.xml\\'"))
 
 
 ;; 📦 ORG-MODE

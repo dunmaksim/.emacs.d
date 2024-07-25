@@ -153,6 +153,9 @@
 ;; загружен как можно раньше.
 (use-package delight
   :straight (delight
+             :host nil
+             :type git
+             :repo "https://git.savannah.gnu.org/git/delight.git"
              :tag "1.7"))
 
 
@@ -640,7 +643,7 @@
   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
   (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
   :config
-  (load-theme 'doom-monokai-pro t))
+  (load-theme 'doom-monokai-classic t))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1714,16 +1717,10 @@
 
 
 ;; 📦 WHICH-KEY MODE
-;; https://github.com/justbur/emacs-which-key
+;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
-;;
-;; ⚠ 25.06.2024 репозиторий стал архивным, а функциональность
-;; переехала в основную ветку Emacs.
-;; TODO: обновить ссылку, когда which-key появится в репозитории GNU.
 (use-package which-key
-  :straight (which-key
-             :host github
-             :tag "v3.6.0")
+  :straight (which-key :tag "v3.6.1")
   :delight ""
   :custom
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")

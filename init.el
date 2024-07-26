@@ -1395,7 +1395,7 @@
              :host github
              :repo "bbatsov/projectile"
              :tag "v2.8.0")
-  :delight "PRJ"
+  :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
   :config
@@ -1737,7 +1737,7 @@
 ;; Встроенный пакет.
 ;; Отображение невидимых символов.
 (use-package whitespace
-  :delight "ws"
+  :delight ""
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
    '(

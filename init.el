@@ -746,9 +746,9 @@
 (when (emacs-version-not-less-than 26 3)
   (use-package eglot
     :straight (eglot
-               :host github
-               :repo "joaotavora/eglot"
-               :tag "1.9")
+                :host github
+                :repo "joaotavora/eglot"
+                :tag "1.9")
     :defer t
     :config
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
@@ -759,12 +759,11 @@
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server")))
     :hook
     ((ansible-mode
-      dockerfile-mode
-      markdown-mode
-      python-mode
-      ruby-mode
-      yaml-mode
-      ) . eglot-ensure)))
+       dockerfile-mode
+       markdown-mode
+       python-mode
+       ruby-mode
+       ) . eglot-ensure)))
 
 
 ;; 📦 EMACS-LISP-MODE
@@ -1178,11 +1177,36 @@
 ;; Поддержка JSON
 (use-package json-mode
   :straight (json-mode
-             :host github
-             :repo "json-emacs/json-mode"
-             :tag "v1.9.2")
+              :host github
+              :repo "json-emacs/json-mode"
+              :tag "v1.9.2")
   :defer t
   :mode ("\\.json\\'" . json-mode))
+
+
+;; 📦 LSP-MODE
+;; https://github.com/emacs-lsp/ls-mode
+;; https://emacs-lsp.github.io/lsp-mode/
+;; Альтернативный LSP-сервер
+(use-package lsp-mode
+  :straight (lsp-mode
+              :tag "9.0.0")
+  :commands lsp
+  :hook
+  ((
+     yaml-mode
+     ) . lsp))
+
+
+;; 📦 LSP-UI
+;; https://github.com/emacs-lsp/lsp-ui
+;; Расширение для красивостей LSP-MODE
+(use-package lsp-ui
+  :straight (lsp-ui
+              :tag "9.0.0")
+  :commands lsp-ui-mode
+  :hook
+  (lsp-mode . lsp-ui-mode))
 
 
 ;; 📦 MAGIT
@@ -1190,9 +1214,9 @@
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
 (use-package magit
   :straight (magit
-             :host github
-             :repo "magit/magit"
-             :tag "v3.3.0")
+              :host github
+              :repo "magit/magit"
+              :tag "v3.3.0")
   :custom
   (magit-define-global-key-bindings t "Включить глобальные сочетания Magit.")
   :config
@@ -1204,8 +1228,9 @@
 ;; Иконки в буферах Magit
 (use-package magit-file-icons
   :straight (magit-file-icons
-             :host github
-             :repo "gekoke/magit-file-icons")
+              :host github
+              :repo "gekoke/magit-file-icons"
+              :tag "v2.0.0")
   :after magit
   :config
   (magit-file-icons-mode 1))
@@ -1702,15 +1727,17 @@
 ;; Режим для редактирования HTML и не только.
 (use-package web-mode
   :straight (web-mode
-             :host github
-             :repo "fxbois/web-mode"
-             :tag "v17.3.13")
+              :host github
+              :repo "fxbois/web-mode"
+              :tag "v17.3.13")
   :custom
   (major-mode 'web-mode)
-  (web-mode-attr-indent-offset 4 "Отступ в атрибутов — 4 пробела")
-  (web-mode-enable-block-face t "Отображение")
+  (web-mode-attr-indent-offset 4 "4 пробела при выравнивании")
+  (web-mode-enable-block-face t "Раскрашивать блок в соответствующий цвет")
   (web-mode-enable-css-colorization t "Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета")
+  (web-mode-enable-current-column-highlight t "Подсветка отступа активного элемента")
   (web-mode-enable-current-element-highlight t "Подсветка активного элемента разметки")
+  (web-mode-enable-part-face t)
   (web-mode-html-offset 2 "Отступ в 2 знака для корректной работы `highlight-indentation-mode'.")
   (web-mode-markup-indent-offset 2 "Отступ при вёрстке HTML — 2 пробела")
   :mode "\\.html\\'")

@@ -1186,17 +1186,18 @@
 
 
 ;; 📦 LSP-MODE
-;; https://github.com/emacs-lsp/ls-mode
+;; https://github.com/emacs-lsp/lsp-mode
 ;; https://emacs-lsp.github.io/lsp-mode/
 ;; Альтернативный LSP-сервер
 (use-package lsp-mode
   :straight (lsp-mode
-              :tag "9.0.0")
+             :tag "9.0.0")
   :custom
   (lsp-keymap-prefix "C-c l")
   :commands lsp
   :hook
   (lsp-mode . lsp-enable-which-key-integration)
+  (python-mode . lsp)
   (yaml-mode . lsp))
 
 

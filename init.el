@@ -1337,6 +1337,7 @@
   :straight (nerd-icons-dired
              :host github
              :repo "rainstormstudio/nerd-icons-dired")
+  :delight ""
   :after (dired nerd-icons)
   :hook (dired-mode . nerd-icons-dired-mode))
 
@@ -1447,6 +1448,8 @@
   :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
+  :bind
+  ([f7] . projectile-compile-project)
   :config
   (projectile-mode 1))
 

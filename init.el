@@ -135,7 +135,7 @@
 
 ;; 📦 USE-PACKAGE
 ;; https://elpa.gnu.org/packages/use-package.html
-(straight-use-package '(use-package :branch "2.4.5"))
+(straight-use-package '(use-package))
 
 ;; Настройки отладочного режима
 (when init-file-debug
@@ -157,7 +157,7 @@
              :host nil
              :type git
              :repo "https://git.savannah.gnu.org/git/delight.git"
-             :branch "1.7"))
+             :ref "1.7"))
 
 
 ;; 📦 Настройки, специфичные для графического режима
@@ -222,7 +222,7 @@
   :straight '(ace-window
               :host github
               :repo "abo-abo/ace-window"
-              :branch "0.10.0")
+              :ref "0.10.0")
   :bind (:map global-map
               ("M-o" . ace-window)))
 
@@ -232,7 +232,7 @@
 ;; Управление наборами окон, вкладок, фреймов и буферов
 (use-package activities
   :straight '(activities
-              :branch "0.7.1")
+              :ref "0.7.1")
   :config
   (activities-mode 1)
   :bind
@@ -251,7 +251,8 @@
 ;; https://elpa.gnu.org/packages/adjust-parens.html
 ;; Пакет для автоматического управления скобочками и уровнями отступов.
 (use-package adjust-parens
-  :straight (adjust-parens :branch "3.2")
+  :straight (adjust-parens
+             :ref "3.2")
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind (:map emacs-lisp-mode-map
               ("<tab>" . lisp-indent-adjust-parens)
@@ -278,7 +279,7 @@
   :straight (aggressive-indent
              :host github
              :repo "Malabarba/aggressive-indent-mode"
-             :branch "1.10.0")
+             :ref "1.10.0")
   :defer t
   :hook
   ((emacs-lisp-mode
@@ -299,7 +300,7 @@
   :straight (anaconda-mode
              :host github
              :repo "pythonic-emacs/anaconda-mode"
-             :branch "v0.1.16")
+             :ref "v0.1.16")
   :hook
   (python-mode . anaconda-mode)
   (python-mode . anaconda-eldoc-mode))
@@ -312,7 +313,7 @@
   :straight (ansible
              :host gitlab
              :repo "emacs-ansible/emacs-ansible"
-             :branch "0.3.2")
+             :ref "0.3.2")
   :defer t)
 
 
@@ -323,7 +324,7 @@
   :straight (anzu
              :host github
              :repo "emacsorphanage/anzu"
-             :branch "0.64")
+             :ref "0.64")
   :delight ""
   :config
   (global-anzu-mode 1))
@@ -336,7 +337,7 @@
   :straight (apheleia
              :host github
              :repo "radian-software/apheleia"
-             :branch "v4.1")
+             :ref "v4.1")
   :delight "")
 
 
@@ -364,7 +365,7 @@
   :straight (bbcode-mode
              :host github
              :repo "lassik/emacs-bbcode-mode"
-             :branch "v2.3.0")
+             :ref "v2.3.0")
   :defer t)
 
 
@@ -404,6 +405,18 @@
   :hook (emacs-lisp-mode . checkdoc-minor-mode))
 
 
+;; COLORFUL-MODE
+;; https://github.com/DevelopmentCool2449/colorful-mode
+;; Отображение цветов прямо в буфере
+(use-package colorful-mode
+  :straight (colorful-mode
+             :host github
+             :repo "DevelopmentCool2449/colorful-mode"
+             :branch: "v1.0.4")
+  :hook (css-mode
+         web-mode))
+
+
 ;; 📦 COMPANY-MODE
 ;; https://company-mode.github.io/
 ;; Автодополнение
@@ -411,7 +424,7 @@
   :straight (company
              :host github
              :repo "company-mode/company-mode"
-             :branch "0.10.2")
+             :ref "0.10.2")
   :delight ""
   :custom
   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
@@ -447,7 +460,7 @@
   :straight (company-anaconda
              :host github
              :repo "pythonic-emacs/company-anaconda"
-             :branch "v0.2.0")
+             :ref "v0.2.0")
   :requires (anaconda-mode company)
   :config
   (add-to-list 'company-backends 'company-anaconda))
@@ -492,7 +505,7 @@
 ;; Поддержка CSV
 (use-package csv-mode
   :straight (csv-mode
-             :branch "1.26")
+             :ref "1.26")
   :mode "\\.csv\\'")
 
 
@@ -532,7 +545,7 @@
     :straight (denote
                :host github
                :repo "protesilaos/denote"
-               :branch "3.0.6")
+               :ref "3.0.6")
     :ensure t
     :custom
     (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
@@ -563,7 +576,7 @@
   :straight (diff-hl
              :host github
              :repo "dgutov/diff-hl"
-             :branch "1.9.2")
+             :ref "1.9.2")
   :commands (diff-hl-mode diff-hl-dired-mode)
   :config (global-diff-hl-mode 1))
 
@@ -617,7 +630,7 @@
   :straight (dockerfile-mode
              :host github
              :repo "spotify/dockerfile-mode"
-             :branch "v1.9")
+             :ref "v1.9")
   :defer t
   :mode
   ("\\Dockerfile\\'" . dockerfile-mode))
@@ -630,7 +643,7 @@
   :straight (doom-modeline
              :host github
              :repo "seagle0128/doom-modeline"
-             :branch "v4.1.0")
+             :ref "v4.1.0")
   :custom
   (doom-modeline-buffer-encoding t "Отображение кодировки.")
   (doom-modeline-buffer-name t "Отображение названия буфера.")
@@ -659,7 +672,7 @@
   :straight (doom-themes
              :host github
              :repo "doomemacs/themes"
-             :branch "v2.3.0")
+             :ref "v2.3.0")
   :custom
   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
   (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
@@ -682,7 +695,7 @@
   :straight (edit-indirect
              :host github
              :repo "Fanael/edit-indirect"
-             :branch "0.1.13")
+             :ref "0.1.13")
   :defer t
   :bind (:map global-map
               ("C-c '" . edit-indirect-region)))
@@ -695,7 +708,7 @@
   :straight (editorconfig
              :host github
              :repo "editorconfig/editorconfig-emacs"
-             :branch "v0.11.0")
+             :ref "v0.11.0")
   :delight ""
   :config
   (editorconfig-mode 1)
@@ -769,7 +782,7 @@
     :straight (eglot
                :host github
                :repo "joaotavora/eglot"
-               :branch "1.17")
+               :ref "1.17")
     :defer t
     :config
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
@@ -844,7 +857,7 @@
   :straight (flycheck
              :host github
              :repo "flycheck/flycheck"
-             :branch "34.1")
+             :ref "34.1")
   :defer t
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
@@ -886,7 +899,7 @@
 ;; Подсвекта непарных или неправильно выровненных скобок
 (use-package flylisp
   :straight (flylisp
-             :branch "0.2")
+             :ref "0.2")
   :hook
   (emacs-lisp-mode . flylisp-mode))
 
@@ -897,7 +910,7 @@
 ;; https://elpa.gnu.org/packages/flymake.html
 (use-package flymake
   :straight (flymake
-             :branch "1.3.7")
+             :ref "1.3.7")
   :hook
   ((emacs-lisp-mode
     lisp-data-mode
@@ -946,7 +959,7 @@
   :straight (format-all
              :host github
              :repo "lassik/emacs-format-all-the-code"
-             :branch "0.6.0")
+             :ref "0.6.0")
   :defer t
   :bind (:map global-map
               ([f12] . format-all-buffer)))
@@ -973,7 +986,7 @@
   :straight (git-gutter
              :host github
              :repo "emacsorphanage/git-gutter"
-             :branch "0.92")
+             :ref "0.92")
   :delight ""
   :custom
   (git-gutter:hide-gutter t)
@@ -1019,7 +1032,7 @@
   :straight (helm
              :host github
              :repo "emacs-helm/helm"
-             :branch "v3.9.9")
+             :ref "v3.9.9")
   :delight ""
   :config
   (helm-mode 1)
@@ -1037,7 +1050,7 @@
   :straight (helm-projectile
              :host github
              :repo "bbatsov/helm-projectile"
-             :branch "v1.0.0")
+             :ref "v1.0.0")
   :delight ""
   :requires (helm projectile)
   :after (helm projectile)
@@ -1060,7 +1073,7 @@
   :straight (hl-todo
              :host github
              :repo "tarsius/hl-todo"
-             :branch "v3.7.0")
+             :ref "v3.7.0")
   :config (global-hl-todo-mode t))
 
 
@@ -1200,7 +1213,7 @@
   :straight (json-mode
              :host github
              :repo "json-emacs/json-mode"
-             :branch "v1.9.2")
+             :ref "v1.9.2")
   :defer t
   :mode ("\\.json\\'" . json-mode))
 
@@ -1211,7 +1224,7 @@
 ;; Альтернативный LSP-сервер
 (use-package lsp-mode
   :straight (lsp-mode
-             :branch "9.0.0")
+             :ref "9.0.0")
   :custom
   (lsp-keymap-prefix "C-c l")
   :commands lsp
@@ -1226,7 +1239,7 @@
 ;; Расширение для красивостей LSP-MODE
 (use-package lsp-ui
   :straight (lsp-ui
-             :branch "9.0.0")
+             :ref "9.0.0")
   :commands lsp-ui-mode
   :hook
   (lsp-mode . lsp-ui-mode))
@@ -1239,7 +1252,7 @@
   :straight (magit
              :host github
              :repo "magit/magit"
-             :branch "v3.3.0")
+             :branch "v4.0.0")
   :custom
   (magit-define-global-key-bindings t "Включить глобальные сочетания Magit.")
   :config
@@ -1248,15 +1261,16 @@
 
 ;; 📦 MAGIT-FILE-ICONS
 ;; https://github.com/gekoke/magit-file-icons
+;; TODO: ждём обновления для синхронизации версий
 ;; Иконки в буферах Magit
-(use-package magit-file-icons
-  :straight (magit-file-icons
-             :host github
-             :repo "gekoke/magit-file-icons"
-             :branch "v2.0.0")
-  :after magit
-  :config
-  (magit-file-icons-mode 1))
+;; (use-package magit-file-icons
+;;   :straight (magit-file-icons
+;;              :host github
+;;              :repo "gekoke/magit-file-icons"
+;;              :ref "v2.0.0")
+;;   :after magit
+;;   :config
+;;   (magit-file-icons-mode 1))
 
 
 ;; 📦 MAKEFILE
@@ -1276,7 +1290,7 @@
     :straight (markdown-mode
                :host github
                :repo "jrblevin/markdown-mode"
-               :branch "v2.6")
+               :ref "v2.6")
     :defer t
     :after tree-sitter
     :custom
@@ -1384,7 +1398,7 @@
 ;; Органайзер, заметки и так далее
 (use-package org
   :straight (org
-             :branch "9.7.9")
+             :ref "9.7.9")
   :defer t
   :config
   (setq-local
@@ -1399,7 +1413,7 @@
   :straight (package-lint
              :host github
              :repo "purcell/package-lint"
-             :branch "0.23")
+             :ref "0.23")
   :defer t)
 
 
@@ -1418,7 +1432,7 @@
   :straight (php-mode
              :host github
              :repo "emacs-php/php-mode"
-             :branch "v1.25.1")
+             :ref "v1.25.1")
   :mode("\\.php\\'" . php-mode))
 
 
@@ -1444,7 +1458,7 @@
   :straight (projectile
              :host github
              :repo "bbatsov/projectile"
-             :branch "v2.8.0")
+             :ref "v2.8.0")
   :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
@@ -1463,7 +1477,7 @@
     :straight (pulsar
                :host github
                :repo "protesilaos/pulsar"
-               :branch "1.0.0")
+               :ref "1.0.0")
     :custom (pulsar-pulse t)
     :hook
     (after-init . pulsar-global-mode)
@@ -1495,7 +1509,7 @@
   :straight (rainbow-delimiters
              :host github
              :repo "Fanael/rainbow-delimiters"
-             :branch "2.1.5")
+             :ref "2.1.5")
   :delight ""
   :hook
   ((
@@ -1526,7 +1540,7 @@
 ;; Подсветка строк с цветами нужным цветом, например #153415, #223956
 (use-package rainbow-mode
   :straight (rainbow-mode
-             :branch "1.0.6")
+             :ref "1.0.6")
   :delight ""
   :hook
   ((
@@ -1551,7 +1565,7 @@
   :straight (reverse-im
              :host github
              :repo "a13/reverse-im.el"
-             :branch "v0.0.8")
+             :ref "v0.0.8")
   :after (russian-techwriter)
   :custom
   (reverse-im-input-methods
@@ -1672,7 +1686,7 @@
   :straight (terraform-mode
              :host github
              :repo "hcl-emacs/terraform-mode"
-             :branch "1.0.1")
+             :ref "1.0.1")
   :defer t
   :mode
   ("\\.terraformrc\\'" . terraform-mode)
@@ -1756,7 +1770,7 @@
   :straight (web-mode
              :host github
              :repo "fxbois/web-mode"
-             :branch "v17.3.13")
+             :ref "v17.3.13")
   :custom
   (major-mode 'web-mode)
   (web-mode-attr-indent-offset 4 "4 пробела при выравнивании")
@@ -1774,7 +1788,7 @@
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
 (use-package which-key
-  :straight (which-key :branch "v3.6.1")
+  :straight (which-key :ref "v3.6.1")
   :delight ""
   :custom
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
@@ -1868,7 +1882,7 @@
   :straight (yaml-mode
              :host github
              :repo "yoshiki/yaml-mode"
-             :branch "0.0.16")
+             :ref "0.0.16")
   :defer t
   :mode
   ("\\.ansible\\-lint\\'"

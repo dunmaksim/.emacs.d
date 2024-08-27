@@ -589,7 +589,9 @@
 (use-package dired
   :custom
   (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог.")
-  (dired-listing-switches "-lah --group-directories-first"))
+  (dired-listing-switches "-l --human-readable --all --group-directories-first")
+  :hook
+  (dired-mode . dired-hide-details-mode))
 
 
 ;; 📦 DISPLAY-LINE-NUMBERS-MODE
@@ -604,6 +606,7 @@
     csv-mode
     dockerfile-mode
     emacs-lisp-mode
+    js2-mode
     json-mode
     latex-mode
     lisp-data-mode
@@ -804,8 +807,6 @@
 ;; IT IS NOT A ELISP-MODE!
 ;; Встроенный пакет для EMACS Lisp
 (use-package elisp-mode
-  :config
-  (setq-local tab-width 2)
   :mode
   ("\\abbrev_defs\\'" . lisp-data-mode)
   ("\\.el\\'" . emacs-lisp-mode))
@@ -943,7 +944,8 @@
           :hook
           ((adoc-mode
             markdown-mode
-            rst-mode) . flyspell-mode)
+            rst-mode
+            text-mode) . flyspell-mode)
           (emacs-lisp-mode . flyspell-prog-mode)
           :bind
           (:map global-map
@@ -1032,7 +1034,7 @@
   :straight (helm
              :host github
              :repo "emacs-helm/helm"
-             :ref "v3.9.9")
+             :ref "v4.0")
   :delight ""
   :config
   (helm-mode 1)

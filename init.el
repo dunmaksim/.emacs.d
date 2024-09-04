@@ -1520,8 +1520,9 @@
   (quelpa 'pulsar
           :fetcher github
           :repo "protesilaos/pulsar"
-          :version "1.0.0")
+          :version "1.1.0")
   (use-package pulsar
+    :ensure t
     :custom (pulsar-pulse t)
     :hook
     (after-init . pulsar-global-mode)

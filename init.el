@@ -65,7 +65,6 @@
  '(inhibit-startup-screen t "Не показывать приветственный экран")
  '(initial-scratch-message nil "Пустой буфер *scratch*")
  '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл.")
- '(menu-bar-mode nil "Выключить отображение меню")
  '(package-install-upgrade-built-in t "Обновлять даже встроенные пакеты")
  '(ring-bell-function #'ignore "Отключить звуковое сопровождение событий")
  '(save-place-file (expand-file-name ".emacs-places" init-el-config-dir) "Хранить данные о позициях в открытых файлах в .emacs-places")
@@ -75,7 +74,6 @@
  '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
  '(show-trailing-whitespace t "Подсветка висячих пробелов")
  '(standard-indent 4 "Отступ по умолчанию")
- '(tool-bar-mode nil "Выключить панель инструментов.")
  '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
  '(truncate-lines 1 "Обрезать длинные строки")
  '(use-dialog-box nil "Диалоговые окна ОС не нужны")
@@ -83,6 +81,11 @@
  '(user-mail-address "dunmaksim@yandex.ru" "Адрес электронной почты")
  '(vc-follow-symlinks t "Переходить по ссылкам без лишних вопросов")
  '(visible-bell t "Мигать буфером при переходе в него"))
+
+(when (fboundp 'menu-bar-mode)
+  (customize-set-variable 'menu-bar-mode nil "Выключить отображение меню"))
+(when (fboundp 'tool-bar-mode)
+  (customize-set-variable 'tool-bar-mode nil "Выключить отображение панели инструментов"))
 
 
 (global-unset-key (kbd "<insert>")) ;; Режим перезаписи не нужен
@@ -876,12 +879,13 @@
         :fetcher github
         :repo "flycheck/flycheck"
         :version "34.1")
+(defconst flycheck-default-margin-str "⮾")
 (use-package flycheck
   :defer t
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
-  (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
+  (setq flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
   (flycheck-locate-config-file-functions '(
                                            flycheck-locate-config-file-by-path
                                            flycheck-locate-config-file-ancestor-directories

@@ -57,6 +57,7 @@
 (custom-set-variables
  '(create-lockfiles nil "Не создавать lock-файлы")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
+ '(custom-safe-themes t "Считать все темы безопасными")
  '(default-input-method "russian-computer" "Метод ввода по умолчанию")
  '(default-transient-input-method "russian-computer")
  '(delete-by-moving-to-trash t "Удалять файлы в Корзину")
@@ -141,11 +142,9 @@
 
 
 ;; QUELPA
-(require 'quelpa)
+;; Позволяет управлять пакетами, фиксируя их версии.
+(require 'quelpa "~/.emacs.d/quelpa.el")
 
-;; (defconst git "git")
-;; (defconst github "github")
-;; (defconst gitlab "gitlab")
 
 ;; 📦 USE-PACKAGE
 ;; https://elpa.gnu.org/packages/use-package.html
@@ -168,7 +167,10 @@
 ;; Эти строки находятся здесь потому, что `use-package' активно
 ;; использует возможности этого пакета далее, поэтому он должен быть
 ;; загружен как можно раньше.
-(quelpa '(delight :version "1.7"))
+(quelpa '(delight
+          :fetcher git
+          :url "https://git.savannah.nongnu.org/git/delight.git"
+          :version "1.7"))
 
 
 ;; 📦 Настройки, специфичные для графического режима
@@ -263,8 +265,8 @@
 ;; 📦 ADJUST-PARENS
 ;; https://elpa.gnu.org/packages/adjust-parens.html
 ;; Пакет для автоматического управления скобочками и уровнями отступов.
-(quelpa '(adjust-parens))
 (use-package adjust-parens
+  :ensure t
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind (:map emacs-lisp-mode-map
               ("<tab>" . lisp-indent-adjust-parens)
@@ -275,7 +277,7 @@
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
 (quelpa '(adoc-mode
-          :fetcher "github"
+          :fetcher github
           :repo "bbatsov/adoc-mode"))
 (use-package adoc-mode
   :defer t
@@ -288,7 +290,7 @@
 ;; https://github.com/Malabarba/aggressive-indent-mode
 ;; Принудительное выравнивание кода
 (quelpa '(aggressive-indent
-          :fetcher "github"
+          :fetcher github
           :repo "Malabarba/aggressive-indent-mode"
           :version "1.10.0"))
 (use-package aggressive-indent
@@ -309,7 +311,7 @@
 ;; https://github.com/pythonic-emacs/anaconda-mode
 ;; Расширенная поддержка Python.
 (quelpa '(anaconda-mode
-          :fetcher "github"
+          :fetcher github
           :version "v0.1.16"
           :repo "pythonic-emacs/anaconda-mode"))
 (use-package anaconda-mode
@@ -330,11 +332,11 @@
 
 
 ;; 📦 ANZU
-;; https://github.com/emacsorphanage/anzu
+;; https://salsa.debian.org/emacsen-team/emacs-anzu.git
 ;; Подсказки о количестве совпадений при поиске с помощью `isearch'.
 (quelpa '(anzu
-          :fetcher github
-          :repo "emacsorpanage/anzu"
+          :fetcher git
+          :url "https://salsa.debian.org/emacsen-team/emacs-anzu.git"
           :version "0.64"))
 (use-package anzu
   :delight ""
@@ -593,7 +595,14 @@
           :version "1.9.2"))
 (use-package diff-hl
   :commands (diff-hl-mode diff-hl-dired-mode)
-  :config (global-diff-hl-mode 1))
+  :config (global-diff-hl-mode 1)
+  :hook
+  ((adoc-mode
+    emacs-lisp-mode
+    markdown-mode
+    python-mode
+    rst-mode
+    yaml-mode). diff-hl-mode))
 
 
 ;; 📦 DIRED
@@ -686,16 +695,13 @@
 ;; 📦 DOOM-THEMES
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
-(quelpa '(doom-themes
-          :fetcher github
-          :repo "doomemacs/themes"
-          :version "v2.3.0"))
-(use-package doom-themes
-  :custom
-  (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
-  (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
-  :config
-  (load-theme 'doom-monokai-classic t))
+;; (use-package doom-themes
+;;   :ensure t
+;;   :custom
+;;   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
+;;   (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
+;;   :config
+;;   (load-theme 'doom-monokai-classic t))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -914,9 +920,10 @@
 ;; 📦 FLYLISP
 ;; https://elpa.gnu.org/packages/flylisp.html
 ;; Подсвекта непарных или неправильно выровненных скобок
-(quelpa '(flylisp
-          :version "0.2"))
+;;(quelpa '(flylisp
+;;          :version "0.2"))
 (use-package flylisp
+  :ensure t
   :hook
   (emacs-lisp-mode . flylisp-mode))
 
@@ -994,28 +1001,6 @@
   :bind (:map global-map
               ("C-x O" . previous-multiframe-window) ;; Перейти в предыдущее окно
               ("C-x o" . next-multiframe-window)))   ;; Перейти в следующее окно
-
-
-;; 📦 GIT-GUTTER
-;; https://github.com/emacsorphanage/git-gutter
-;; Подсветка изменённых строк.
-(quelpa '(git-gutter
-          :fetcher github
-          :repo "emacsorphanage/git-gutter"
-          :version "0.92"))
-(use-package git-gutter
-  :delight ""
-  :custom
-  (git-gutter:hide-gutter t)
-  :hook
-  ((
-    adoc-mode
-    emacs-lisp-mode
-    markdown-mode
-    python-mode
-    rst-mode
-    yaml-mode
-    ) . git-gutter-mode))
 
 
 ;; 📦 GOTO-ADDRESS-MODE
@@ -1338,6 +1323,7 @@
 ;; 📦 MODUS-THEMES
 ;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
 (quelpa '(modus-themes))
+(load-theme 'modus-vivendi)
 
 
 
@@ -1575,9 +1561,8 @@
 ;; 📦 RAINBOW-MODE
 ;; https://elpa.gnu.org/packages/rainbow-mode.html
 ;; Подсветка строк с цветами нужным цветом, например #153415, #223956
-(quelpa '(rainbow-mode
-          :version "1.0.6"))
 (use-package rainbow-mode
+  :ensure t
   :delight ""
   :hook
   ((
@@ -1822,8 +1807,8 @@
 ;; 📦 WHICH-KEY MODE
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
-(quelpa '(which-key :version "v3.6.1"))
 (use-package which-key
+  :ensure t
   :delight ""
   :custom
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")

@@ -1013,6 +1013,7 @@
     adoc-mode
     emacs-lisp-mode
     markdown-mode
+    python-mode
     rst-mode
     yaml-mode
     ) . git-gutter-mode))
@@ -1334,6 +1335,12 @@
            :map markdown-mode-map
            ("M-." . markdown-follow-thing-at-point))
     :mode ("\\.md\\'" . markdown-mode)))
+
+
+;; 📦 MODUS-THEMES
+;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
+(quelpa 'modus-themes)
+
 
 
 ;; 📦 MULTIPLE CURSORS

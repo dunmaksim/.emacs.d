@@ -18,7 +18,7 @@ jobs:
         run: sudo apt-get update
 
       - name: Install DEB packages
-        run: sudo apt-get install emacs git --yes
+        run: sudo apt-get install emacs-nox git --yes
 
       - name: Run Emacs
         run: emacs --debug-init

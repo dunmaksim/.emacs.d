@@ -141,18 +141,16 @@
 
 
 ;; QUELPA
-(unless (package-installed-p 'quelpa)
-  (package-install 'quelpa))
 (require 'quelpa)
 
-(defconst git "git")
-(defconst github "github")
-(defconst gitlab "gitlab")
+;; (defconst git "git")
+;; (defconst github "github")
+;; (defconst gitlab "gitlab")
 
 ;; 📦 USE-PACKAGE
 ;; https://elpa.gnu.org/packages/use-package.html
-(quelpa 'use-package
-        :version "2.4.6")
+(quelpa '(use-package
+           :version "2.4.6"))
 
 
 ;; Настройки отладочного режима
@@ -170,8 +168,7 @@
 ;; Эти строки находятся здесь потому, что `use-package' активно
 ;; использует возможности этого пакета далее, поэтому он должен быть
 ;; загружен как можно раньше.
-(use-package delight
-  :ensure t)
+(quelpa '(delight :version "1.7"))
 
 
 ;; 📦 Настройки, специфичные для графического режима
@@ -232,10 +229,10 @@
 ;; 📦 ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами по M+o
-(quelpa 'ace-window
-        :fetcher github
-        :version "0.10.0"
-        :repo "abo-abo/ace-window")
+(quelpa '(ace-window
+          :fetcher github
+          :version "0.10.0"
+          :repo "abo-abo/ace-window"))
 (use-package ace-window
   :bind (:map global-map
               ("M-o" . ace-window)))
@@ -244,10 +241,10 @@
 ;; 📦 ACTIVITIES
 ;; https://elpa.gnu.org/packages/activities.html
 ;; Управление наборами окон, вкладок, фреймов и буферов
-(quelpa 'activities
-        :fetcher github
-        :repo "alphapapa/activities.el"
-        :version "0.7.1")
+(quelpa '(activities
+          :fetcher github
+          :repo "alphapapa/activities.el"
+          :version "0.7.1"))
 (use-package activities
   :config
   (activities-mode 1)
@@ -266,9 +263,8 @@
 ;; 📦 ADJUST-PARENS
 ;; https://elpa.gnu.org/packages/adjust-parens.html
 ;; Пакет для автоматического управления скобочками и уровнями отступов.
-(quelpa 'adjust-parens)
+(quelpa '(adjust-parens))
 (use-package adjust-parens
-  :ensure t
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind (:map emacs-lisp-mode-map
               ("<tab>" . lisp-indent-adjust-parens)
@@ -278,9 +274,9 @@
 ;; 📦 ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
-(quelpa 'adoc-mode
-        :fetcher "github"
-        :repo "bbatsov/adoc-mode")
+(quelpa '(adoc-mode
+          :fetcher "github"
+          :repo "bbatsov/adoc-mode"))
 (use-package adoc-mode
   :defer t
   :custom
@@ -291,10 +287,10 @@
 ;; 📦 AGGRESSIVE-INDENT
 ;; https://github.com/Malabarba/aggressive-indent-mode
 ;; Принудительное выравнивание кода
-(quelpa 'aggressive-indent
-        :fetcher "github"
-        :repo "Malabarba/aggressive-indent-mode"
-        :version "1.10.0")
+(quelpa '(aggressive-indent
+          :fetcher "github"
+          :repo "Malabarba/aggressive-indent-mode"
+          :version "1.10.0"))
 (use-package aggressive-indent
   :defer t
   :hook
@@ -312,10 +308,10 @@
 ;; 📦 ANACONDA-MODE
 ;; https://github.com/pythonic-emacs/anaconda-mode
 ;; Расширенная поддержка Python.
-(quelpa 'anaconda-mode
-        :fetcher "github"
-        :version "v0.1.16"
-        :repo "pythonic-emacs/anaconda-mode")
+(quelpa '(anaconda-mode
+          :fetcher "github"
+          :version "v0.1.16"
+          :repo "pythonic-emacs/anaconda-mode"))
 (use-package anaconda-mode
   :hook
   (python-mode . anaconda-mode)
@@ -325,10 +321,10 @@
 ;; 📦 ANSIBLE
 ;; https://gitlab.com/emacs-ansible/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
-(quelpa 'ansible
-        :fetcher gitlab
-        :repo "emacs-ansible/emacs-ansible"
-        :version "0.3.2")
+(quelpa '(ansible
+          :fetcher gitlab
+          :repo "emacs-ansible/emacs-ansible"
+          :version "0.3.2"))
 (use-package ansible
   :defer t)
 
@@ -336,10 +332,10 @@
 ;; 📦 ANZU
 ;; https://github.com/emacsorphanage/anzu
 ;; Подсказки о количестве совпадений при поиске с помощью `isearch'.
-(quelpa 'anzu
-        :fetcher github
-        :repo "emacsorpanage/anzu"
-        :version "0.64")
+(quelpa '(anzu
+          :fetcher github
+          :repo "emacsorpanage/anzu"
+          :version "0.64"))
 (use-package anzu
   :delight ""
   :config
@@ -349,10 +345,10 @@
 ;; 📦 APHELEIA
 ;; https://github.com/radian-software/apheleia
 ;; Форматирование содержимого буфера с помощью внешних средств
-(quelpa 'apheleia
-        :fetcher github
-        :repo "radian-software/apheleia"
-        :version "v4.2")
+(quelpa '(apheleia
+          :fetcher github
+          :repo "radian-software/apheleia"
+          :version "v4.2"))
 (use-package apheleia
   :delight "")
 
@@ -377,10 +373,10 @@
 ;; 📦 BBCODE-MODE
 ;; https://github.com/lassik/emacs-bbcode-mode
 ;; Режим редактирования BB-кодов
-(quelpa 'bbcode-mode
-        :fetcher github
-        :repo "lassik/emacs-bbcode-mode"
-        :version "v2.3.0")
+(quelpa '(bbcode-mode
+          :fetcher github
+          :repo "lassik/emacs-bbcode-mode"
+          :version "v2.3.0"))
 (use-package bbcode-mode
   :defer t)
 
@@ -393,9 +389,9 @@
 ;; source .venv/bin/activate
 ;; Во втором достаточно задать значение переменной `buffer-env-script-name'.
 (when (emacs-version-not-less-than 27 1)
-  (quelpa 'buffer-env
-          :fetcher github
-          :repo "astoff/buffer-env")
+  (quelpa '(buffer-env
+            :fetcher github
+            :repo "astoff/buffer-env"))
   (use-package buffer-env
     :defer t
     :after (files)
@@ -424,12 +420,11 @@
 ;; COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере
-;; (quelpa 'colorful-mode
-;;         :fetcher github
-;;         :repo "DevelopmentCool2449/colorful-mode"
-;;         :version "v1.0.4")
+(quelpa '(colorful-mode
+          :fetcher github
+          :repo "DevelopmentCool2449/colorful-mode"
+          :version "v1.0.4"))
 (use-package colorful-mode
-  :ensure t
   :hook (css-mode
          web-mode))
 
@@ -437,10 +432,10 @@
 ;; 📦 COMPANY-MODE
 ;; https://company-mode.github.io/
 ;; Автодополнение
-(quelpa 'company
-        :fetcher github
-        :repo "company-mode/company-mode"
-        :version "0.10.2")
+(quelpa '(company
+          :fetcher github
+          :repo "company-mode/company-mode"
+          :version "0.10.2"))
 (use-package company
   :delight ""
   :custom
@@ -473,9 +468,9 @@
 ;; 📦 COMPANY-ANACONDA
 ;; https://github.com/pythonic-emacs/company-anaconda
 ;; Интеграция Anaconda + Company
-(quelpa 'company-anaconda
-        :fetcher github
-        :repo "pythonic-emacs/company-anaconda")
+(quelpa '(company-anaconda
+          :fetcher github
+          :repo "pythonic-emacs/company-anaconda"))
 (use-package company-anaconda
   :requires (anaconda-mode company)
   :config
@@ -485,10 +480,10 @@
 ;; 📦 COMPANY-ANSIBLE
 ;; https://github.com/krzysztof-magosa/company-ansible
 ;; Автодополнение Company в Ansible
-(quelpa 'company-ansible
-        :fetcher github
-        :repo "krzysztof-magosa/company-ansible"
-        :version "0.8.0")
+(quelpa '(company-ansible
+          :fetcher github
+          :repo "krzysztof-magosa/company-ansible"
+          :version "0.8.0"))
 (use-package company-ansible
   :after company
   :requires (company)
@@ -522,10 +517,10 @@
 ;; 📦 CSV-MODE
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
-(quelpa 'csv-mode
-        :fetcher git
-        :url "https://git.savannah.gnu.or/git/emacs/elpa.git"
-        :version "1.27")
+(quelpa '(csv-mode))
+;;          :fetcher git
+;;          :url "https://git.savannah.gnu.or/git/emacs/elpa.git"
+;;          :version "1.27"))
 (use-package csv-mode
   :mode "\\.csv\\'")
 
@@ -562,12 +557,11 @@
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
 (when (emacs-version-not-less-than 28 1)
-  (quelpa 'denote
-          :fetcher github
-          :repo "protesilaos/denote"
-          :version "3.0.6")
+  (quelpa '(denote
+            :fetcher github
+            :repo "protesilaos/denote"
+            :version "3.0.6"))
   (use-package denote
-    :ensure t
     :custom
     (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
 
@@ -593,10 +587,10 @@
 ;; https://github.com/dgutov/diff-hl
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
-(quelpa 'diff-hl
-        :fetcher github
-        :repo "dgutov/diff-hl"
-        :version "1.9.2")
+(quelpa '(diff-hl
+          :fetcher github
+          :repo "dgutov/diff-hl"
+          :version "1.9.2"))
 (use-package diff-hl
   :commands (diff-hl-mode diff-hl-dired-mode)
   :config (global-diff-hl-mode 1))
@@ -650,10 +644,10 @@
 ;; 📦 DOCKERFILE-MODE
 ;; https://github.com/spotify/dockerfile-mode
 ;; Работа с файлами `Dockerfile'.
-(quelpa 'dockerfile-mode
-        :fetcher github
-        :repo "spotify/dockerfile-mode"
-        :version "v1.9")
+(quelpa '(dockerfile-mode
+          :fetcher github
+          :repo "spotify/dockerfile-mode"
+          :version "v1.9"))
 (use-package dockerfile-mode
   :defer t
   :mode
@@ -663,10 +657,10 @@
 ;; 📦 DOOM-MODELINE
 ;; https://github.com/seagle0128/doom-modeline
 ;; Красивая статусная строка
-(quelpa 'doom-modeline
-        :fetcher github
-        :repo "seagle0128/doom-modeline"
-        :version "v4.1.0")
+(quelpa '(doom-modeline
+          :fetcher github
+          :repo "seagle0128/doom-modeline"
+          :version "v4.1.0"))
 (use-package doom-modeline
   :custom
   (doom-modeline-buffer-encoding t "Отображение кодировки.")
@@ -692,10 +686,10 @@
 ;; 📦 DOOM-THEMES
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
-(quelpa 'doom-themes
-        :fetcher github
-        :repo "doomemacs/themes"
-        :version "v2.3.0")
+(quelpa '(doom-themes
+          :fetcher github
+          :repo "doomemacs/themes"
+          :version "v2.3.0"))
 (use-package doom-themes
   :custom
   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
@@ -715,10 +709,10 @@
 ;; 3. Редактируем.
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
-(quelpa 'edit-indirect
-        :fetcher github
-        :repo "Fanael/edit-indirect"
-        :version "0.1.13")
+(quelpa '(edit-indirect
+          :fetcher github
+          :repo "Fanael/edit-indirect"
+          :version "0.1.13"))
 (use-package edit-indirect
   :defer t
   :bind (:map global-map
@@ -728,10 +722,10 @@
 ;; 📦 EDITORCONFIG
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
-(quelpa 'editorconfig
-        :fetcher github
-        :repo "editorconfig/editorconfig-emacs"
-        :version "v0.11.0")
+(quelpa '(editorconfig
+          :fetcher github
+          :repo "editorconfig/editorconfig-emacs"
+          :version "v0.11.0"))
 (use-package editorconfig
   :delight ""
   :config
@@ -802,10 +796,10 @@
 ;; - Python:     pip3 install jedi-language-server
 ;; - YAML:       sudo npm -g install yaml-language-server
 (when (emacs-version-not-less-than 26 3)
-  (quelpa 'eglot
-          :fetcher github
-          :repo "joaotavora/eglot"
-          :version "1.17")
+  (quelpa '(eglot
+            :fetcher github
+            :repo "joaotavora/eglot"
+            :version "1.17"))
   (use-package eglot
     :defer t
     :config
@@ -875,10 +869,10 @@
 ;; 📦 FLYCHECK
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
-(quelpa 'flycheck
-        :fetcher github
-        :repo "flycheck/flycheck"
-        :version "34.1")
+(quelpa '(flycheck
+          :fetcher github
+          :repo "flycheck/flycheck"
+          :version "34.1"))
 (defconst flycheck-default-margin-str "⮾")
 (use-package flycheck
   :defer t
@@ -920,8 +914,9 @@
 ;; 📦 FLYLISP
 ;; https://elpa.gnu.org/packages/flylisp.html
 ;; Подсвекта непарных или неправильно выровненных скобок
+(quelpa '(flylisp
+          :version "0.2"))
 (use-package flylisp
-  :ensure t
   :hook
   (emacs-lisp-mode . flylisp-mode))
 
@@ -930,7 +925,7 @@
 ;; Более свежая версия встроенного пакета из репозитория gnu
 ;; Используется для проверки `init.el'.
 ;; https://elpa.gnu.org/packages/flymake.html
-(quelpa 'flymake)
+(quelpa '(flymake))
 (use-package flymake
   :hook
   ((emacs-lisp-mode
@@ -977,10 +972,10 @@
 ;; 📦 FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода с помощью разных внешних средств.
-(quelpa 'format-all
-        :fetcher github
-        :repo "lassik/emacs-format-all-the-code"
-        :version "0.6.0")
+(quelpa '(format-all
+          :fetcher github
+          :repo "lassik/emacs-format-all-the-code"
+          :version "0.6.0"))
 (use-package format-all
   :defer t
   :bind (:map global-map
@@ -1004,10 +999,10 @@
 ;; 📦 GIT-GUTTER
 ;; https://github.com/emacsorphanage/git-gutter
 ;; Подсветка изменённых строк.
-(quelpa 'git-gutter
-        :fetcher github
-        :repo "emacsorphanage/git-gutter"
-        :version "0.92")
+(quelpa '(git-gutter
+          :fetcher github
+          :repo "emacsorphanage/git-gutter"
+          :version "0.92"))
 (use-package git-gutter
   :delight ""
   :custom
@@ -1051,10 +1046,10 @@
 ;; https://github.com/emacs-helm/helm
 ;; Подсказки и автодополнение ввода.
 ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
-(quelpa 'helm
-        :fetcher github
-        :repo "emacs-helm/helm"
-        :version "v4.0")
+(quelpa '(helm
+          :fetcher github
+          :repo "emacs-helm/helm"
+          :version "v4.0"))
 (use-package helm
   :delight ""
   :config
@@ -1069,10 +1064,10 @@
 ;; 📦 HELM-PROJECTILE
 ;; https://github.com/bbatsov/helm-projectile
 ;; Интеграция HELM с PROJECTILE
-(quelpa 'helm-projectile
-        :fetcher github
-        :repo "bbatsov/helm-projectile"
-        :version "v1.0.0")
+(quelpa '(helm-projectile
+          :fetcher github
+          :repo "bbatsov/helm-projectile"
+          :version "v1.0.0"))
 (use-package helm-projectile
   :delight ""
   :requires (helm projectile)
@@ -1092,10 +1087,10 @@
 ;; 📦 HL-TODO
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
-(quelpa 'hl-todo
-        :fetcher github
-        :repo "tarsius/hl-todo"
-        :version "v3.7.0")
+(quelpa '(hl-todo
+          :fetcher github
+          :repo "tarsius/hl-todo"
+          :version "v3.7.0"))
 (use-package hl-todo
   :config (global-hl-todo-mode t))
 
@@ -1221,9 +1216,9 @@
 
 ;; 📦 JS2-MODE
 ;; https://github.com/mooz/js2-mode
-(quelpa 'js2-mode
-        :fetcher github
-        :repo "mooz/js2-mode")
+(quelpa '(js2-mode
+          :fetcher github
+          :repo "mooz/js2-mode"))
 (use-package js2-mode
   :defer t
   :mode ("\\.js\\'" . js2-mode))
@@ -1232,10 +1227,10 @@
 ;; 📦 JSON-MODE
 ;; https://github.com/json-emacs/json-mode
 ;; Поддержка JSON
-(quelpa 'json-mode
-        :fetcher github
-        :repo "json-emacs/json-mode"
-        :version "v1.9.2")
+(quelpa '(json-mode
+          :fetcher github
+          :repo "json-emacs/json-mode"
+          :version "v1.9.2"))
 (use-package json-mode
   :defer t
   :mode ("\\.json\\'" . json-mode))
@@ -1245,10 +1240,10 @@
 ;; https://github.com/emacs-lsp/lsp-mode
 ;; https://emacs-lsp.github.io/lsp-mode/
 ;; Альтернативный LSP-сервер
-(quelpa 'lsp-mode
-        :fetcher github
-        :repo "emacs-lsp/lsp-mode"
-        :version "9.0.0")
+(quelpa '(lsp-mode
+          :fetcher github
+          :repo "emacs-lsp/lsp-mode"
+          :version "9.0.0"))
 (use-package lsp-mode
   :custom
   (lsp-keymap-prefix "C-c l")
@@ -1262,10 +1257,10 @@
 ;; 📦 LSP-UI
 ;; https://github.com/emacs-lsp/lsp-ui
 ;; Расширение для красивостей LSP-MODE
-(quelpa 'lsp-ui
-        :fetcher github
-        :repo "emacs-lsp/lsp-ui"
-        :version "9.0.0")
+(quelpa '(lsp-ui
+          :fetcher github
+          :repo "emacs-lsp/lsp-ui"
+          :version "9.0.0"))
 (use-package lsp-ui
   :commands lsp-ui-mode
   :hook
@@ -1275,21 +1270,20 @@
 ;; 📦 MAGIT-TRANSIENT
 ;; https://github.com/magit/transient
 ;; Зависимость пакета Magit, без которого он не работает
-;;(quelpa 'transient
-;;        :fetcher github
-;;        :repo "magit/transient"
-;;        :version "v0.7.5")
+(quelpa '(transient
+          :fetcher github
+          :repo "magit/transient"
+          :version "v0.7.5"))
 
 
 ;; 📦 MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
-;;(quelpa 'magit
-;;        :fetcher github
-;;        :repo "magit/magit"
-;;        :version "v4.0.0")
+(quelpa '(magit
+          :fetcher github
+          :repo "magit/magit"
+          :version "v4.1.0"))
 (use-package magit
-  :ensure t
   :custom
   (magit-define-global-key-bindings t "Включить глобальные сочетания Magit.")
   :config
@@ -1300,10 +1294,10 @@
 ;; https://github.com/gekoke/magit-file-icons
 ;; TODO: ждём обновления для синхронизации версий
 ;; Иконки в буферах Magit
-(quelpa 'magit-file-icons
-        :fetcher github
-        :repo "gekoke/magit-file-icons"
-        :version "v2.0.0")
+(quelpa '(magit-file-icons
+          :fetcher github
+          :repo "gekoke/magit-file-icons"
+          :version "v2.0.0"))
 (use-package magit-file-icons
   :after magit
   :config
@@ -1323,10 +1317,10 @@
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (when (emacs-version-not-less-than 27 1)
-  (quelpa 'markdown-mode
-          :fetcher github
-          :repo "jrblevin/markdown-mode"
-          :version "v2.6")
+  (quelpa '(markdown-mode
+            :fetcher github
+            :repo "jrblevin/markdown-mode"
+            :version "v2.6"))
   (use-package markdown-mode
     :defer t
     :after tree-sitter
@@ -1343,16 +1337,16 @@
 
 ;; 📦 MODUS-THEMES
 ;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
-(quelpa 'modus-themes)
+(quelpa '(modus-themes))
 
 
 
 ;; 📦 MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
-(quelpa 'multiple-cursors
-        :fetcher github
-        :repo "magnars/multiple-cursors.el")
+(quelpa '(multiple-cursors
+          :fetcher github
+          :repo "magnars/multiple-cursors.el"))
 (use-package multiple-cursors
   :bind (:map global-map
               ("C-S-c C-S-c" . mc/edit-lines)
@@ -1378,9 +1372,9 @@
 ;; Для установки самих шрифтов следует использовать команду `nerd-icons-install-fonts'.
 ;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
 ;; скопировать их в `/usr/local/share/fonts/'.
-(quelpa 'nerd-icons
-        :fetcher github
-        :repo "rainstormstudio/nerd-icons.el")
+(quelpa '(nerd-icons
+          :fetcher github
+          :repo "rainstormstudio/nerd-icons.el"))
 (use-package nerd-icons
   :delight ""
   :custom
@@ -1390,9 +1384,9 @@
 ;; 📦 NERD-ICONS-DIRED
 ;; https://github.com/rainstormstudio/nerd-icons-dired
 ;; Иконки в `dired'.
-(quelpa 'nerd-icons-dired
-        :fetcher github
-        :repo "rainstormstudio/nerd-icons-dired")
+(quelpa '(nerd-icons-dired
+          :fetcher github
+          :repo "rainstormstudio/nerd-icons-dired"))
 (use-package nerd-icons-dired
   :delight ""
   :after (dired nerd-icons)
@@ -1402,9 +1396,9 @@
 ;; 📦 NERD-ICONS-IBUFFER
 ;; https://github.com/seagle0128/nerd-icons-ibuffer
 ;; Отображение иконок в ibuffer
-(quelpa 'nerd-icons-ibuffer
-        :fetcher github
-        :repo "seagle0128/nerd-icons-ibuffer")
+(quelpa '(nerd-icons-ibuffer
+          :fetcher github
+          :repo "seagle0128/nerd-icons-ibuffer"))
 (use-package nerd-icons-ibuffer
   :after (ibuffer nerd-icons)
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
@@ -1439,8 +1433,8 @@
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
-(quelpa 'org
-        :version "9.7.9")
+(quelpa '(org
+          :version "9.7.9"))
 (use-package org
   :defer t
   :config
@@ -1452,10 +1446,10 @@
 ;; 📦 PACKAGE-LINT
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
-(quelpa 'package-lint
-        :fetcher github
-        :repo "purcell/package-lint"
-        :version "0.23")
+(quelpa '(package-lint
+          :fetcher github
+          :repo "purcell/package-lint"
+          :version "0.23"))
 (use-package package-lint
   :defer t)
 
@@ -1471,12 +1465,11 @@
 ;; 📦 PHP-MODE
 ;; https://github.com/emacs-php/php-mode
 ;; Работа с файлами PHP
-;; (quelpa 'php-mode
-;;         :fetcher github
-;;         :repo "emacs-php/php-mode"
-;;         :version "v1.25.1")
+(quelpa '(php-mode
+          :fetcher github
+          :repo "emacs-php/php-mode"
+          :version "v1.25.1"))
 (use-package php-mode
-  :ensure t
   :mode("\\.php\\'" . php-mode))
 
 
@@ -1485,7 +1478,7 @@
 ;; Работа с файлами локализации.
 ;; Необходимо установить в систему утилиты из набора gettext, иначе
 ;; работать не будет.
-(quelpa 'po-mode)
+(quelpa '(po-mode))
 (use-package po-mode
   :defer t
   :mode
@@ -1498,10 +1491,10 @@
 ;; под контролем любой системы версионирования, либо содержать специальные
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
-(quelpa 'projectile
-        :fetcher github
-        :repo "bbatsov/projectile"
-        :version "v2.8.0")
+(quelpa '(projectile
+          :fetcher github
+          :repo "bbatsov/projectile"
+          :version "v2.8.0"))
 (use-package projectile
   :delight ""
   :bind-keymap
@@ -1517,12 +1510,11 @@
 ;; https://github.com/protesilaos/pulsar
 (when (emacs-version-not-less-than 27 1)
   ;; Этот пакет требует Emacs версии 27.1 или новее
-  (quelpa 'pulsar
-          :fetcher github
-          :repo "protesilaos/pulsar"
-          :version "1.1.0")
+  (quelpa '(pulsar
+            :fetcher github
+            :repo "protesilaos/pulsar"
+            :version "1.1.0"))
   (use-package pulsar
-    :ensure t
     :custom (pulsar-pulse t)
     :hook
     (after-init . pulsar-global-mode)
@@ -1537,9 +1529,9 @@
 
 ;; 📦 PYTHON-MODE
 ;; Встроенный пакет для работы с Python
-(quelpa 'python-mode
-        :fetcher github
-        :repo "emacsmirror/python-mode")
+(quelpa '(python-mode
+          :fetcher github
+          :repo "emacsmirror/python-mode"))
 (use-package python-mode
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
@@ -1550,10 +1542,10 @@
 ;; 📦 RAINBOW-DELIMITERS-MODE
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
-(quelpa 'rainbow-delimiters
-        :fetcher github
-        :repo "Fanael/rainbow-delimiters"
-        :version "2.1.5")
+(quelpa '(rainbow-delimiters
+          :fetcher github
+          :repo "Fanael/rainbow-delimiters"
+          :version "2.1.5"))
 (use-package rainbow-delimiters
   :delight ""
   :hook
@@ -1583,10 +1575,9 @@
 ;; 📦 RAINBOW-MODE
 ;; https://elpa.gnu.org/packages/rainbow-mode.html
 ;; Подсветка строк с цветами нужным цветом, например #153415, #223956
-;; (quelpa 'rainbow-mode
-;;         :version "1.0.6")
+(quelpa '(rainbow-mode
+          :version "1.0.6"))
 (use-package rainbow-mode
-  :ensure t
   :delight ""
   :hook
   ((
@@ -1607,10 +1598,10 @@
 ;; 📦 REVERSE-IM
 ;; https://github.com/a13/reverse-im.el
 ;; Чтобы сочетания клавиш работали в любой раскладке.
-(quelpa 'reverse-im
-        :fetcher github
-        :repo "a13/reverse-im.el"
-        :version "v0.0.8")
+(quelpa '(reverse-im
+          :fetcher github
+          :repo "a13/reverse-im.el"
+          :version "v0.0.8"))
 (use-package reverse-im
   :after (russian-techwriter)
   :custom
@@ -1624,9 +1615,9 @@
 ;; 📦 RUSSIAN-TECHWRITER
 ;; Метод ввода для технических писателей
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
-(quelpa 'russian-techwriter
-        :fetcher github
-        :repo "dunmaksim/emacs-russian-techwriter-input-method")
+(quelpa '(russian-techwriter
+          :fetcher github
+          :repo "dunmaksim/emacs-russian-techwriter-input-method"))
 (use-package russian-techwriter
   :custom
   (default-input-method 'russian-techwriter))
@@ -1726,10 +1717,10 @@
 ;; 📦 TERRAFORM-MODE
 ;; https://github.com/hcl-emacs/terraform-mode
 ;; Работа с файлами конфигурации Terraform
-(quelpa 'terraform-mode
-        :fetcher github
-        :repo "hcl-emacs/terraform-mode"
-        :version "1.0.1")
+(quelpa '(terraform-mode
+          :fetcher github
+          :repo "hcl-emacs/terraform-mode"
+          :version "1.0.1"))
 (use-package terraform-mode
   :defer t
   :mode
@@ -1765,9 +1756,8 @@
 ;; 📦 TREE-SITTER
 ;; https://emacs-tree-sitter.github.io/
 ;; Расширенная поддержка синтаксиса
-;; (quelpa 'tree-sitter)
+(quelpa '(tree-sitter))
 (use-package tree-sitter
-  :ensure t
   :delight ""
   :config
   ;; Подсветка синтаксиса средствами `tree-sitter' вместо
@@ -1775,7 +1765,7 @@
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 
-(quelpa ' tree-sitter-langs)
+(quelpa '(tree-sitter-langs))
 (use-package tree-sitter-langs
   :requires tree-sitter
   :after tree-sitter
@@ -1811,10 +1801,10 @@
 ;; 📦 WEB-MODE
 ;; https://web-mode.org/
 ;; Режим для редактирования HTML и не только.
-(quelpa 'web-mode
-        :fetcher github
-        :repo "fxbois/web-mode"
-        :version "v17.3.13")
+(quelpa '(web-mode
+          :fetcher github
+          :repo "fxbois/web-mode"
+          :version "v17.3.13"))
 (use-package web-mode
   :custom
   (major-mode 'web-mode)
@@ -1832,7 +1822,7 @@
 ;; 📦 WHICH-KEY MODE
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
-(quelpa 'which-key :version "v3.6.1")
+(quelpa '(which-key :version "v3.6.1"))
 (use-package which-key
   :delight ""
   :custom
@@ -1923,10 +1913,10 @@
 ;; 📦 YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
-(quelpa 'yaml-mode
-        :fetcher github
-        :repo "yoshiki/yaml-mode"
-        :version "0.0.16")
+(quelpa '(yaml-mode
+          :fetcher github
+          :repo "yoshiki/yaml-mode"
+          :version "0.0.16"))
 (use-package yaml-mode
   :defer t
   :mode

@@ -55,6 +55,7 @@
    "Необходимо для старых версий Emacs."))
 
 (custom-set-variables
+ '(compilation-scroll-output t "Автоматическая прокрутка буфера *compilation*")
  '(create-lockfiles nil "Не создавать lock-файлы")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
  '(custom-safe-themes t "Считать все темы безопасными")
@@ -140,15 +141,21 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-
-;; QUELPA
+;; 📦 QUELPA
 ;; Позволяет управлять пакетами, фиксируя их версии.
-(require 'quelpa "~/.emacs.d/quelpa.el")
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
+(require 'quelpa)
 
 
 ;; 📦 USE-PACKAGE
 ;; https://elpa.gnu.org/packages/use-package.html
-(quelpa '(use-package :version "2.4.6"))
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
 
 
 ;; Настройки отладочного режима
@@ -1420,9 +1427,12 @@
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
-(quelpa '(org
-          :version "9.7.9"))
+;; (quelpa '(org
+;;           :fetcher git
+;;           :url "https://git.savannah.gnu.org/git/emacs/org-mode.git"
+;;           :version "9.7.11"))
 (use-package org
+  :ensure t
   :defer t
   :config
   (setq-local

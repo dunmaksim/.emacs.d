@@ -591,7 +591,7 @@
 (quelpa '(diff-hl
           :fetcher github
           :repo "dgutov/diff-hl"
-          :version "1.9.2"))
+          :version "1.10.0"))
 (use-package diff-hl
   :commands (diff-hl-mode diff-hl-dired-mode)
   :config

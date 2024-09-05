@@ -1277,7 +1277,6 @@
 
 ;; 📦 MAGIT-FILE-ICONS
 ;; https://github.com/gekoke/magit-file-icons
-;; TODO: ждём обновления для синхронизации версий
 ;; Иконки в буферах Magit
 (quelpa '(magit-file-icons
           :fetcher github
@@ -1314,17 +1313,15 @@
     (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
     (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
     :config (setq-local word-wrap t)
-    :bind (
-           :map markdown-mode-map
-           ("M-." . markdown-follow-thing-at-point))
+    :bind (:map markdown-mode-map
+                ("M-." . markdown-follow-thing-at-point))
     :mode ("\\.md\\'" . markdown-mode)))
 
 
 ;; 📦 MODUS-THEMES
 ;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
 (quelpa '(modus-themes))
-(load-theme 'modus-vivendi)
-
+(load-theme 'modus-vivendi-tinted)
 
 
 ;; 📦 MULTIPLE CURSORS

@@ -148,8 +148,7 @@
 
 ;; 📦 USE-PACKAGE
 ;; https://elpa.gnu.org/packages/use-package.html
-(quelpa '(use-package
-           :version "2.4.6"))
+(quelpa '(use-package :version "2.4.6"))
 
 
 ;; Настройки отладочного режима
@@ -595,7 +594,10 @@
           :version "1.9.2"))
 (use-package diff-hl
   :commands (diff-hl-mode diff-hl-dired-mode)
-  :config (global-diff-hl-mode 1)
+  :config
+  (global-diff-hl-mode 1)
+  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
   ((adoc-mode
     emacs-lisp-mode
@@ -699,9 +701,7 @@
 ;;   :ensure t
 ;;   :custom
 ;;   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
-;;   (doom-themes-enable-italic t "Включить поддержку наклонного начертания.")
-;;   :config
-;;   (load-theme 'doom-monokai-classic t))
+;;   (doom-themes-enable-italic t "Включить поддержку наклонного начертания."))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -738,6 +738,11 @@
   (editorconfig-mode 1)
   :mode
   ("\\.editorconfig\\'" . editorconfig-conf-mode))
+
+
+;; 📦 EF-THEMES
+;;
+(quelpa '(ef-themes))
 
 
 ;; 📦 ELDOC-MODE
@@ -1321,7 +1326,6 @@
 ;; 📦 MODUS-THEMES
 ;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
 (quelpa '(modus-themes))
-(load-theme 'modus-vivendi-tinted)
 
 
 ;; 📦 MULTIPLE CURSORS
@@ -1915,6 +1919,8 @@
 (put 'upcase-region 'disabled nil)
 
 (setup-gui-settings (selected-frame))
+
+(load-theme 'ef-elea-dark)
 
 ;; 📦 CUSTOM FILE
 ;; Пользовательские настройки, сделанные через CUSTOMIZE

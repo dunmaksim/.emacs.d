@@ -41,7 +41,7 @@
     (make-directory init-el-dir)
     (message (format "Создан каталог %s" init-el-dir))))
 
-(defconst init-el-font-height 20 "Размер шрифта по умолчанию.")
+(defconst init-el-font-height 16 "Размер шрифта по умолчанию.")
 
 (require 'custom)
 (customize-set-variable
@@ -1414,12 +1414,11 @@
 ;; 📦 PO-MODE
 ;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
 ;; Работа с файлами локализации.
-;; Необходимо установить в систему утилиты из набора gettext, иначе
-;; работать не будет.
+;; Необходимо установить в систему эти пакеты:
+;; * gettext
+;; * gettext-el
 (use-package po-mode
-  :pin "melpa"
   :ensure t
-  :defer t
   :mode
   ("\\.po\\'\\|\\.po\\." . po-mode))
 

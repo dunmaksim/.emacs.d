@@ -390,7 +390,6 @@
 (when (emacs-version-not-less-than 27 1)
   (use-package buffer-env
     :ensure t
-    :after (files)
     :hook
     ((
       hack-local-variables
@@ -1288,22 +1287,16 @@
 ;; 📦 MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
-(use-package multiple-cursors
-  :ensure t
-  :bind (:map global-map
-              ("C-S-c C-S-c" . mc/edit-lines)
-              ("C->" . mc/mark-next-like-this)
-              ("C-<" . mc/mark-previous-like-this)
-              ("C-c C-<" . mc/mark-all-like-this))
-  :config
-  (add-to-list
-   'after-make-frame-functions
-   (lambda ()
-     (when (display-graphic-p)
-       ;; Если режим графический, то курсоры можно расставлять с помощью Alt+Click
-       (progn
-         (global-unset-key (kbd "M-<down-mouse-1>"))
-         (global-set-key (kbd "M-<mouse-1>") 'mc/add-cursor-on-click))))))
+;; (use-package multiple-cursors
+;;   :ensure t
+;;   :bind (:map global-map
+;;               ("C-S-c C-S-c" . mc/edit-lines)
+;;               ("C->" . mc/mark-next-like-this)
+;;               ("C-<" . mc/mark-previous-like-this)
+;;               ("C-c C-<" . mc/mark-all-like-this))
+;;   :config
+;;   (global-unset-key (kbd "M-<down-mouse-1>"))
+;;   (global-set-key (kbd "M-<mouse-1>" #'mc/add-cursor-on-click)))
 
 
 ;; 📦 NERD-ICONS

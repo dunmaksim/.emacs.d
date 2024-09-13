@@ -7,7 +7,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
 (defun emacs-version-not-less-than (major minor)
-  "True when Emacs version is not less than VERSION."
+  "True when Emacs version is not less than MAJOR MINOR version"
   (or
     (> emacs-major-version major)
     (and (= emacs-major-version major)

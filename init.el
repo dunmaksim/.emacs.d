@@ -610,6 +610,7 @@
     csv-mode
     dockerfile-mode
     emacs-lisp-mode
+    html-mode
     json-mode
     latex-mode
     lisp-data-mode

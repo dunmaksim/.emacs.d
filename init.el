@@ -7,7 +7,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
 (defun emacs-version-not-less-than (major minor)
-  "True when Emacs version is not less than MAJOR MINOR version"
+  "True when Emacs version is not less than MAJOR MINOR version."
   (or
    (> emacs-major-version major)
    (and (= emacs-major-version major)
@@ -415,9 +415,9 @@
   :hook (emacs-lisp-mode . checkdoc-minor-mode))
 
 
-;; COLORFUL-MODE
+;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
-;; Отображение цветов прямо в буфере
+;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
   :ensure t
   :vc (
@@ -643,35 +643,6 @@
   ("\\Dockerfile\\'" . dockerfile-mode))
 
 
-;; 📦 DOOM-MODELINE
-;; https://github.com/seagle0128/doom-modeline
-;; Красивая статусная строка
-(use-package doom-modeline
-  :ensure t
-  :vc (
-       :url "https://github.com/seagle0128/doom-modeline.git"
-       :rev "v4.1.0")
-  :custom
-  (doom-modeline-buffer-encoding t "Отображение кодировки.")
-  (doom-modeline-buffer-name t "Отображение названия буфера.")
-  (doom-modeline-buffer-state-icon t "Отображение иконки со статусом буфера.")
-  (doom-modeline-env-version t "Отображение версии окружения.")
-  (doom-modeline-highlight-modified-buffer-name t "Подсветка названия измененного буфера.")
-  (doom-modeline-icon t "Отображение иконок.")
-  (doom-modeline-indent-info t "Отображение информации об отступах.")
-  (doom-modeline-lsp t "Отображение статуса LSP-сервера.")
-  (doom-modeline-lsp-icon t "Отображение иконки со статусом LSP-сервера.")
-  (doom-modeline-major-mode-color-icon t "Отображение иконки основного режима.")
-  (doom-modeline-major-mode-icon t "Отображение иконки основного режима.")
-  (doom-modeline-minor-modes t "Отображение списка дополнительных режимов.")
-  (doom-modeline-project-detection 'auto "Автоматическое определение проектов.")
-  (doom-modeline-total-line-number t "Отображение общего количества строк.")
-  (doom-modeline-vcs-max-length 40 "Максимальная длина названия ветки VCS.")
-  (doom-modeline-workspace-name t "Отображение названия рабочего пространства.")
-  :config
-  (doom-modeline-mode 1))
-
-
 ;; 📦 DOOM-THEMES
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
@@ -732,6 +703,41 @@
        :rev "1.8.0"))
 
 
+;; 📦 EGLOT
+;; Пакет для поддержки LSP.
+;; https://elpa.gnu.org/packages/eglot.html
+;;
+;; ПОДГОТОВКА К РАБОТЕ
+;; Установка серверов:
+;; - Ansible:    sudo npm install -g @ansible/ansible-language-server
+;; - Dockerfile: sudo npm -g install dockerfile-language-server-nodejs
+;; - HTML:       npm install -g vscode-langservers-extracted
+;; - Markdown:   sudo snap install marksman
+;; - Python:     pip3 install jedi-language-server
+;; - YAML:       sudo npm -g install yaml-language-server
+(when (emacs-version-not-less-than 26 3)
+  (use-package eglot
+    :ensure t
+    :vc (
+         :url "https://github.com/joaotavora/eglot.git"
+         :rev "1.17")
+    :defer t
+    :config
+    (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '(dockerfile-mode . ("docker-langserver" "--stdio")))
+    (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+    (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+    (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
+    (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server")))
+    :hook
+    ((ansible-mode
+      dockerfile-mode
+      markdown-mode
+      python-mode
+      ruby-mode
+      ) . eglot-ensure)))
+
+
 ;; 📦 ELDOC-MODE
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Programming-Language-Doc.html
 ;; Отображение подсказок при работе с Emacs Lisp
@@ -778,41 +784,6 @@
   :config (electric-indent-mode -1)
   :custom (electric-indent-inhibit t "Не выравнивать предыдущую строку по нажатию Enter.")
   :hook (emacs-lisp-mode . electric-indent-local-mode))
-
-
-;; 📦 EGLOT
-;; Пакет для поддержки LSP.
-;; https://elpa.gnu.org/packages/eglot.html
-;;
-;; ПОДГОТОВКА К РАБОТЕ
-;; Установка серверов:
-;; - Ansible:    sudo npm install -g @ansible/ansible-language-server
-;; - Dockerfile: sudo npm -g install dockerfile-language-server-nodejs
-;; - HTML:       npm install -g vscode-langservers-extracted
-;; - Markdown:   sudo snap install marksman
-;; - Python:     pip3 install jedi-language-server
-;; - YAML:       sudo npm -g install yaml-language-server
-(when (emacs-version-not-less-than 26 3)
-  (use-package eglot
-    :ensure t
-    :vc (
-         :url "https://github.com/joaotavora/eglot.git"
-         :rev "1.17")
-    :defer t
-    :config
-    (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
-    (add-to-list 'eglot-server-programs '(dockerfile-mode . ("docker-langserver" "--stdio")))
-    (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
-    (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
-    (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
-    (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server")))
-    :hook
-    ((ansible-mode
-      dockerfile-mode
-      markdown-mode
-      python-mode
-      ruby-mode
-      ) . eglot-ensure)))
 
 
 ;; 📦 EMACS-LISP-MODE
@@ -1122,6 +1093,7 @@
       ("CONF / INI"
        (or
         (mode . conf-mode)
+        (mode . editorconfig-conf-mode)
         (name . "\\.conf\\'")
         (name . "\\.editorconfig\\'")
         (name . "\\.ini\\'")))
@@ -1379,8 +1351,7 @@
   (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
   :commands nxml-mode
   :mode
-  (
-   "\\.pom\\'"
+  ("\\.pom\\'"
    "\\.xml\\'"))
 
 
@@ -1389,9 +1360,6 @@
 ;; Органайзер, заметки и так далее
 (use-package org
   :ensure t
-  :vc (
-       :url "https://git.savannah.gnu.org/git/emacs/org-mode.git"
-       :rev "9.7.11")
   :defer t
   :config
   (setq-local
@@ -1439,6 +1407,13 @@
   :ensure t
   :mode
   ("\\.po\\'\\|\\.po\\." . po-mode))
+
+
+;; 📦 PROJECT
+;; https://elpa.gnu.org/packages/project.html
+;; Встроенный пакет, который можно обновить из GNU ELPA
+(use-package project
+  :ensure t)
 
 
 ;; 📦 PROJECTILE
@@ -1523,20 +1498,6 @@
     web-mode
     yaml-mode
     ) . rainbow-delimiters-mode))
-
-
-;; 📦 RAINBOW-MODE
-;; https://elpa.gnu.org/packages/rainbow-mode.html
-;; Подсветка строк с цветами нужным цветом, например #153415, #223956
-(use-package rainbow-mode
-  :ensure t
-  :delight ""
-  :hook
-  ((
-    css-mode
-    emacs-lisp-mode
-    web-mode
-    ) . rainbow-mode))
 
 
 ;; 📦 REPLACE
@@ -1657,6 +1618,13 @@
   :bind (:map global-map ([f9] . sort-lines)))
 
 
+;; 📦 STANDARD-THEME
+;; https://github.com/protesilaos/standard-themes
+;; Почти как встроенные темы, только немного доработанные
+(use-package standard-themes
+  :ensure t)
+
+
 ;; 📦 SWIPER
 ;; https://elpa.gnu.org/packages/swiper.html
 ;; Умный поиск и отличная замена `isearch-forward' и
@@ -1772,6 +1740,7 @@
     css-mode
     dockerfile-mode
     emacs-lisp-mode
+    html-mode
     json-mode
     latex-mode
     lisp-data-mode
@@ -1836,6 +1805,7 @@
   :defer t
   :mode
   ("\\.ansible\\-lint\\'"
+   "\\.clang\\-tidy\\'"
    "\\.pre\\-commit\\-config\\.yaml\\'"
    "\\.yaml\\'"
    "\\.yamllint\\'"

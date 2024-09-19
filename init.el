@@ -383,6 +383,18 @@
   :defer t)
 
 
+;; 📦 BREADCRUMB
+;; https://elpa.gnu.org/packages/breadcrumb.html
+;; Упрощает навигацию по сложным документам: показывает хлебные
+;; крошки в заголовках окон и позволяет быстро перейти в нужное место
+;; с помощью `breadcrumb-jump'.
+(use-package breadcrumb
+  :ensure t
+  :hook
+  ((emacs-lisp-mode
+    rst-mode) . breadcrumb-local-mode))
+
+
 ;; 📦 BUFFER-ENV
 ;; https://github.com/astoff/buffer-env
 ;; Настройка окружения отдельно для каждого буфера.
@@ -709,11 +721,14 @@
 ;;
 ;; ПОДГОТОВКА К РАБОТЕ
 ;; Установка серверов:
-;; - Ansible:    sudo npm install -g @ansible/ansible-language-server
+;; - Ansible:    sudo npm -g install @ansible/ansible-language-server
 ;; - Dockerfile: sudo npm -g install dockerfile-language-server-nodejs
-;; - HTML:       npm install -g vscode-langservers-extracted
+;; - HTML:       sudo npm -g install vscode-langservers-extracted
 ;; - Markdown:   sudo snap install marksman
 ;; - Python:     pip3 install jedi-language-server
+;; - ReST        pip3 install esbonio
+;;               Создать в корне проекта файл pyproject.toml и описать
+;;               в нём все переменные
 ;; - YAML:       sudo npm -g install yaml-language-server
 (when (emacs-version-not-less-than 26 3)
   (use-package eglot
@@ -728,12 +743,14 @@
     (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
     (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
     (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
+    (add-to-list 'eglot-server-programs '(rst-mode . ("esbonio")))
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server")))
     :hook
     ((ansible-mode
       dockerfile-mode
       markdown-mode
       python-mode
+      rst-mode
       ruby-mode
       ) . eglot-ensure)))
 
@@ -918,6 +935,7 @@
   ;; Нужно использовать ispell-mode только в том случае, когда есть
   ;; чем проверять орфографию.
   (if text-spell-program
+      ;; Программа для проверки орфографии найдена
       (progn
         (message (format "Для проверки орфографии используется %s" text-spell-program))
         (use-package flyspell
@@ -927,10 +945,7 @@
             markdown-mode
             rst-mode
             text-mode) . flyspell-mode)
-          (emacs-lisp-mode . flyspell-prog-mode)
-          :bind
-          (:map global-map
-                ([f5] . ispell-buffer))))
+          (emacs-lisp-mode . flyspell-prog-mode)))
     ;; Не найдено программ для проверки орфографии
     (message "Не найдено программ для проверки орфографии.")))
 
@@ -1200,6 +1215,7 @@
   (lsp-keymap-prefix "C-c l")
   :commands lsp
   :hook
+  (markdown-mode . lsp)
   (lsp-mode . lsp-enable-which-key-integration)
   (python-mode . lsp)
   (yaml-mode . lsp))
@@ -1220,15 +1236,17 @@
 
 ;; 📦 MAGIT
 ;; https://magit.vc/
-;; Magic + Git + Git-gutter. Лучшее средство для управления Git.
+;; Magic + Git + Diff-HL.
+;; Лучшее средство для работы с Git.
 (use-package magit
   :ensure t
-  ;;  :vc (
-  ;;        :url "https://github.com/magit/magit.git"
-  ;;        :rev "v4.1.0"
-  ;;        :lisp "lisp")
+  :vc (
+       :url "https://github.com/magit/magit.git"
+       :rev "v4.1.0"
+       :lisp "lisp")
   :demand t
   :custom
+  (magit-auto-revert-mode t "Автоматически обновлять файлы в буферах при изменениях на диске.")
   (magit-define-global-key-bindings t "Включить глобальные сочетания Magit.")
   :config
   (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
@@ -1505,7 +1523,9 @@
 ;; Функции поиска и замены текста.
 (use-package replace
   :bind
-  (:map global-map ([f3] . replace-string)))
+  (:map global-map
+        ([f3] . replace-string)
+        ([f4] . replace-regexp)))
 
 
 ;; 📦 REVERSE-IM

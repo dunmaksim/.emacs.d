@@ -8,6 +8,18 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
+(defconst init-el-autosave-dir
+  (expand-file-name "saves" user-emacs-directory)
+  "Каталог для файлов автосохранения.")
+(unless (file-directory-p init-el-autosave-dir)
+  (make-directory init-el-autosave-dir))
+
+(defconst init-el-package-user-dir
+  (expand-file-name "elpa" user-emacs-directory)
+  "Пользовательский каталог с пакетами.")
+(unless (file-directory-p init-el-package-user-dir)
+  (make-directory init-el-package-user-dir))
+
 ;; Если используется старая версия EMACS, нужно указать параметры протокола TLS.
 ;; В противном случае будут проблемы при загрузке архива пакетов.
 (when (< emacs-major-version 27)
@@ -193,6 +205,7 @@
 (add-hook 'dockerfile-mode-hook 'display-line-numbers-mode)
 (add-hook 'emacs-lisp-mode-hook 'display-line-numbers-mode)
 (add-hook 'html-mode-hook 'display-line-numbers-mode)
+(add-hook 'javascript-mode-hook 'display-line-numbers-mode)
 (add-hook 'json-mode-hook 'display-line-numbers-mode)
 (add-hook 'latex-mode-hook 'display-line-numbers-mode)
 (add-hook 'lisp-data-mode-hook 'display-line-numbers-mode)

@@ -22,6 +22,10 @@
   user-emacs-directory)
  "Файл для сохранения пользовательских настроек, сделанных в customize.")
 
+;;; Здесь находятся настройки базовой функциональности Emacs.
+;;; Даже если будут какие-то проблемы со сторонними пакетами, этот код всё
+;;; равно будет выполнен.
+;;; По этой же причине здесь нет ничего, что могло бы сломаться.
 
 ;; Настройки, специфичные для графического режима
 (defun setup-gui-settings (frame-name)
@@ -64,12 +68,7 @@
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
 
-
-;;; Commentary:
-;;; Здесь находятся настройки базовой функциональности Emacs.
-;;; Даже если будут какие-то проблемы со сторонними пакетами, этот код всё
-;;; равно будет выполнен.
-;;; По этой же причине здесь нет ничего, что могло бы сломаться.
+(setup-gui-settings (selected-frame))
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
@@ -763,13 +762,9 @@
 (keymap-global-set "C-S-<iso-lefttab>" 'next-buffer)           ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
 (keymap-global-set "C-<tab>" 'previous-buffer)                 ;; [Ctrl+Shift+Tab] Следующий буфер
 
-;;;;;; Здесь заканчиваются настройки встроенных пакетов ;;;;;;
+;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
+;;;;;; настройки пакетов, полученных от чертей из интернета.
 
-
-;;; site.el --- Настройки сторонних пакетов
-;;; Commentary:
-;;; Этот код может выполняться, а может и упасть.
-;;; Code:
 
 (unless package-archive-contents
   (message "Обновление списка архивов...")
@@ -798,7 +793,7 @@
   (custom-set-variables
    '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")
    '(use-package-compute-statistics t "Сбор статистики `use-package'.")
-   '(use-package-expand-minimally t "TODO: ???")
+   '(use-package-expand-minimally t "Минимальное раскрытие кода.")
    '(use-package-verbose t "Подробный режим работы `use-package'.")))
 
 
@@ -1732,8 +1727,6 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(setup-gui-settings (selected-frame))
-
 (load-theme init-el-theme t)
 
 (when (file-exists-p custom-file)

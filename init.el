@@ -268,7 +268,7 @@
 (add-hook 'dockerfile-mode-hook 'display-line-numbers-mode)
 (add-hook 'emacs-lisp-mode-hook 'display-line-numbers-mode)
 (add-hook 'html-mode-hook 'display-line-numbers-mode)
-(add-hook 'javascript-mode-hook 'display-line-numbers-mode)
+(add-hook 'js-mode-hook 'display-line-numbers-mode)
 (add-hook 'json-mode-hook 'display-line-numbers-mode)
 (add-hook 'latex-mode-hook 'display-line-numbers-mode)
 (add-hook 'lisp-data-mode-hook 'display-line-numbers-mode)
@@ -807,7 +807,12 @@
   :ensure t
   :vc (
        :url "https://git.savannah.nongnu.org/git/delight.git"
-       :rev "1.7"))
+       :rev "1.7")
+  :config
+  (delight '((checkdoc-minor-mode)
+             (global-visual-line-mode)
+             (global-whitespace-mode)
+             (whitespace-mode))))
 
 
 ;; 📦 ACE-WINDOW
@@ -876,15 +881,14 @@
        :url "https://github.com/Malabarba/aggressive-indent-mode.git"
        :rev "1.10.0")
   :defer t
-  :hook
-  ((emacs-lisp-mode
-    json-mode
-    latex-mode
-    lisp-data-mode
-    nxml-mode
-    sh-mode
-    sql-mode
-    ) . aggressive-indent-mode))
+  :hook ((emacs-lisp-mode
+          json-mode
+          latex-mode
+          lisp-data-mode
+          nxml-mode
+          sh-mode
+          sql-mode
+          ) . aggressive-indent-mode))
 
 
 ;; 📦 ANACONDA-MODE
@@ -942,9 +946,8 @@
 ;; с помощью `breadcrumb-jump'.
 (use-package breadcrumb
   :ensure t
-  :hook
-  ((emacs-lisp-mode
-    rst-mode) . breadcrumb-local-mode))
+  :hook ((emacs-lisp-mode
+          rst-mode) . breadcrumb-local-mode))
 
 
 ;; 📦 BUFFER-ENV
@@ -957,11 +960,9 @@
 (when (emacs-version-not-less-than 27 1)
   (use-package buffer-env
     :ensure t
-    :hook
-    ((
-      hack-local-variables
-      comint-mode
-      ) . buffer-env-update)))
+    :hook ((hack-local-variables
+            comint-mode
+            ) . buffer-env-update)))
 
 
 ;; 📦 COLORFUL-MODE
@@ -972,8 +973,8 @@
   :vc (
        :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
        :rev "v1.0.4")
-  :hook (css-mode
-         web-mode))
+  :hook ((css-mode
+          web-mode) . colorful-mode))
 
 
 ;; 📦 COMPANY-MODE
@@ -993,21 +994,20 @@
   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
   (company-tooltip-limit 15 "Ограничение на число подсказок")
-  :hook
-  ((css-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    html-mode
-    latex-mode
-    lisp-data-mode
-    minibufer-mode
-    nxml-mode
-    org-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    web-mode
-    ) . company-mode)
+  :hook ((css-mode
+          dockerfile-mode
+          emacs-lisp-mode
+          html-mode
+          latex-mode
+          lisp-data-mode
+          minibufer-mode
+          nxml-mode
+          org-mode
+          python-mode
+          rst-mode
+          ruby-mode
+          web-mode
+          ) . company-mode)
   :bind
   (:map company-active-map
         ("TAB" . company-complete-common-or-cycle)
@@ -1109,7 +1109,8 @@
   :ensure t
   :vc (
        :url "https://github.com/editorconfig/editorconfig-emacs.git"
-       :rev "v0.11.0")
+       :rev "v0.11.0"
+       :doc "doc")
   :delight ""
   :config
   (editorconfig-mode 1)
@@ -1157,15 +1158,14 @@
     (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(rst-mode . ("esbonio")))
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
-    :hook
-    ((ansible-mode
-      dockerfile-mode
-      markdown-mode
-      python-mode
-      rst-mode
-      ruby-mode
-      yaml-mode
-      ) . eglot-ensure)))
+    :hook ((ansible-mode
+            dockerfile-mode
+            markdown-mode
+            python-mode
+            rst-mode
+            ruby-mode
+            yaml-mode
+            ) . eglot-ensure)))
 
 
 ;; 📦 ELDOC-MODE
@@ -1176,10 +1176,9 @@
   ;; Глобально этот режим не нужен
   (global-eldoc-mode nil)
   :delight ""
-  :hook
   ;; Включаем только там, где это действительно необходимо
-  (emacs-lisp-mode . eldoc-mode)
-  (python-mode . eldoc-mode))
+  :hook ((emacs-lisp-mode
+          python-mode) . eldoc-mode)
 
 
 ;; 📦 FLYCHECK
@@ -1202,28 +1201,26 @@
                                            flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
-  :hook
-  ((
-    adoc-mode
-    conf-mode
-    css-mode
-    dockerfile-mode
-    emacs-lisp-mode
-    json-mode
-    latex-mode
-    lisp-data-mode
-    makefile-mode
-    markdown-mode
-    nxml-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    sh-mode
-    sql-mode
-    terraform-mode
-    web-mode
-    yaml-mode
-    ) . flycheck-mode))
+  :hook ((adoc-mode
+          conf-mode
+          css-mode
+          dockerfile-mode
+          emacs-lisp-mode
+          json-mode
+          latex-mode
+          lisp-data-mode
+          makefile-mode
+          markdown-mode
+          nxml-mode
+          python-mode
+          rst-mode
+          ruby-mode
+          sh-mode
+          sql-mode
+          terraform-mode
+          web-mode
+          yaml-mode
+          ) . flycheck-mode))
 
 
 ;; 📦 FLYLISP
@@ -1231,8 +1228,7 @@
 ;; Подсвекта непарных или неправильно выровненных скобок
 (use-package flylisp
   :ensure t
-  :hook
-  (emacs-lisp-mode . flylisp-mode))
+  :hook (emacs-lisp-mode . flylisp-mode))
 
 
 ;; 📦 FLYMAKE
@@ -1241,10 +1237,8 @@
 ;; https://elpa.gnu.org/packages/flymake.html
 (use-package flymake
   :ensure t
-  :hook
-  ((emacs-lisp-mode
-    lisp-data-mode
-    ) . flymake-mode))
+  :hook ((emacs-lisp-mode
+          lisp-data-mode) . flymake-mode))
 
 
 ;; 📦 FORMAT-ALL
@@ -1305,14 +1299,32 @@
   :config (global-hl-todo-mode t))
 
 
+;; 📦 INDENT-BARS
+;; https://github.com/jdtsmith/indent-bars
+;; Красивая подсветка отступов
+(use-package indent-bars
+  :ensure t
+  :vc (
+       :url "https://github.com/jdtsmith/indent-bars.git"
+       :rev "v0.7.5")
+  :hook ((emacs-lisp-mode
+          makefile-mode
+          markdown-mode
+          python-mode
+          rst-mode
+          yaml-mode
+          ) . indent-bars-mode))
+
+
 ;; 📦 IVY
 ;; https://elpa.gnu.org/packages/ivy.html
 ;; https://elpa.gnu.org/packages/doc/ivy.html
-;; Функции фильтрации и выбора элементов. Как Helm, но теперь в
-;; составе Emacs
+;; Функции фильтрации и выбора элементов. Как Helm, но теперь в составе Emacs.
+;; При переименовании файлов рекомендуется использовать `ivy-immediate-done'.
 (use-package ivy
   :ensure t
   :demand t
+  :delight 'ivy-mode
   :config
   (ivy-mode 1)
   :bind
@@ -1320,6 +1332,16 @@
         ("C-x b" . ivy-switch-buffer)
         ("C-c v" . ivy-push-view)
         ("C-c V" . ivy-pup-view)))
+
+
+;; 📦 IVY-HYDRA
+;; https://elpa.gnu.org/packages/ivy-hydra.html
+;; Дополнительные сочетания клавиш для IVY.
+(use-package ivy-hydra
+  :ensure t
+  :demand t
+  :after ivy
+  :requires ivy)
 
 
 ;; 📦 JSON-MODE
@@ -1381,13 +1403,12 @@
   (global-diff-hl-mode 1)
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-  :hook
-  ((adoc-mode
-    emacs-lisp-mode
-    markdown-mode
-    python-mode
-    rst-mode
-    yaml-mode). diff-hl-mode))
+  :hook ((adoc-mode
+          emacs-lisp-mode
+          markdown-mode
+          python-mode
+          rst-mode
+          yaml-mode). diff-hl-mode))
 
 
 ;; 📦 MARKDOWN MODE
@@ -1635,7 +1656,7 @@
 
 ;; 📦 SWIPER
 ;; https://elpa.gnu.org/packages/swiper.html
-;; Умный поиск и отличная замена `isearch-forward' и
+;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
 ;; `isearch-backward'.
 (use-package swiper
   :ensure t

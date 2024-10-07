@@ -4,6 +4,8 @@
 
 ;;; Code:
 
+(defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
+
 (defun emacs-version-not-less-than (major minor)
   "True when Emacs version is not less than MAJOR MINOR version."
   (or
@@ -69,8 +71,6 @@
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
 
 (setup-gui-settings (selected-frame))
-
-(defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
 (defconst init-el-autosave-dir
   (expand-file-name "saves" user-emacs-directory)
@@ -431,7 +431,7 @@
 ;; Встроенный пакет.
 ;; Подсветка текущей строки.
 (require 'hl-line)
-(global-hl-line-mode 1)
+;; (global-hl-line-mode 1)
 
 
 ;; 📦 IBUFFER
@@ -442,8 +442,8 @@
 (require 'ibuffer)
 (custom-set-variables
  '(ibuffer-formats ;; Форматирование вывода
-   '((;; Полный формат
-      mark      ;; Отметка
+   ;; Полный формат
+   '((mark      ;; Отметка
       modified  ;; Буфер изменён?
       read-only ;; Только чтение?
       locked    ;; Заблокирован?
@@ -453,8 +453,8 @@
       (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
       " "
       filename-and-process)     ;; Имя файла и процесс
-     ( ;; Сокращённый формат
-      mark      ;; Отметка?
+     ;; Сокращённый формат
+     (mark      ;; Отметка?
       " "
       (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
       " "
@@ -513,7 +513,6 @@
       ("SQL" (mode . sql-mode))
       ("Web"
        (or
-        (mode . javascript-mode)
         (mode . js-mode)
         (mode . web-mode)))
       ("Magit"
@@ -577,20 +576,6 @@
 (add-to-list 'auto-mode-alist '("\\.pom\\'" . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
 
-
-;; 📦 PACKAGE
-(require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-(package-initialize)
-
-(customize-set-variable 'package-archive-priorities
-                        '(("gnu" . 40)
-                          ("nongnu" . 30)
-                          ("melpa-stable" . 20)
-                          ("melpa" . 10)))
 
 ;; 📦 PAREN
 ;; Встроенный режим
@@ -765,6 +750,19 @@
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
 
+;; 📦 PACKAGE
+(require 'package)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+(package-initialize)
+
+(customize-set-variable 'package-archive-priorities
+                        '(("gnu" . 40)
+                          ("nongnu" . 30)
+                          ("melpa-stable" . 20)
+                          ("melpa" . 10)))
 
 (unless package-archive-contents
   (message "Обновление списка архивов...")
@@ -788,7 +786,7 @@
 
 (require 'use-package)
 
-;; ;; Настройки отладочного режима
+;; Настройки отладочного режима
 (when init-file-debug
   (custom-set-variables
    '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")
@@ -1178,7 +1176,7 @@
   :delight ""
   ;; Включаем только там, где это действительно необходимо
   :hook ((emacs-lisp-mode
-          python-mode) . eldoc-mode)
+          python-mode) . eldoc-mode))
 
 
 ;; 📦 FLYCHECK
@@ -1302,18 +1300,18 @@
 ;; 📦 INDENT-BARS
 ;; https://github.com/jdtsmith/indent-bars
 ;; Красивая подсветка отступов
-(use-package indent-bars
-  :ensure t
-  :vc (
-       :url "https://github.com/jdtsmith/indent-bars.git"
-       :rev "v0.7.5")
-  :hook ((emacs-lisp-mode
-          makefile-mode
-          markdown-mode
-          python-mode
-          rst-mode
-          yaml-mode
-          ) . indent-bars-mode))
+;; (use-package indent-bars
+;;   :ensure t
+;;   :vc (
+;;        :url "https://github.com/jdtsmith/indent-bars.git"
+;;        :rev "v0.7.5")
+;;   :hook ((emacs-lisp-mode
+;;           makefile-mode
+;;           markdown-mode
+;;           python-mode
+;;           rst-mode
+;;           yaml-mode
+;;           ) . indent-bars-mode))
 
 
 ;; 📦 IVY
@@ -1360,12 +1358,18 @@
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
+(package-vc-install
+ '(magit
+   :url "https://github.com/magit/magit.git"
+   :branch "v4.1.1"
+   :lisp-dir "lisp"
+   :doc "docs"))
 (use-package magit
   :ensure t
-  :vc (
-       :url "https://github.com/magit/magit.git"
-       :rev "v4.1.0"
-       :lisp "lisp")
+  ;; :vc (
+  ;;      :url "https://github.com/magit/magit.git"
+  ;;      :rev "v4.1.1"
+  ;;      :lisp "lisp")
   :demand t
   :custom
   (magit-auto-revert-mode t "Автоматически обновлять файлы в буферах при изменениях на диске.")

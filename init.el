@@ -24,6 +24,8 @@
   user-emacs-directory)
  "Файл для сохранения пользовательских настроек, сделанных в customize.")
 
+(require 'derived) ;; derived-mode-hook-name
+
 ;;; Здесь находятся настройки базовой функциональности Emacs.
 ;;; Даже если будут какие-то проблемы со сторонними пакетами, этот код всё
 ;;; равно будет выполнен.
@@ -260,31 +262,33 @@
 ;; Встроенный пакет
 ;; Показывает номера строк
 (require 'display-line-numbers)
-(add-hook 'adoc-mode-hook 'display-line-numbers-mode)
-(add-hook 'c-mode-hook 'display-line-numbers-mode)
-(add-hook 'conf-mode-hook 'display-line-numbers-mode)
-(add-hook 'css-mode-hook 'display-line-numbers-mode)
-(add-hook 'csv-mode-hook 'display-line-numbers-mode)
-(add-hook 'dockerfile-mode-hook 'display-line-numbers-mode)
-(add-hook 'emacs-lisp-mode-hook 'display-line-numbers-mode)
-(add-hook 'html-mode-hook 'display-line-numbers-mode)
-(add-hook 'js-mode-hook 'display-line-numbers-mode)
-(add-hook 'json-mode-hook 'display-line-numbers-mode)
-(add-hook 'latex-mode-hook 'display-line-numbers-mode)
-(add-hook 'lisp-data-mode-hook 'display-line-numbers-mode)
-(add-hook 'makefile-mode-hook 'display-line-numbers-mode)
-(add-hook 'markdown-mode-hook 'display-line-numbers-mode)
-(add-hook 'nxml-mode-hook 'display-line-numbers-mode)
-(add-hook 'po-mode-hook 'display-line-numbers-mode)
-(add-hook 'python-mode-hook 'display-line-numbers-mode)
-(add-hook 'rst-mode-hook 'display-line-numbers-mode)
-(add-hook 'ruby-mode-hook 'display-line-numbers-mode)
-(add-hook 'sh-mode-hook 'display-line-numbers-mode)
-(add-hook 'shell-script-mode-hook 'display-line-numbers-mode)
-(add-hook 'terraform-mode-hook 'display-line-numbers-mode)
-(add-hook 'tex-mode-hook 'display-line-numbers-mode)
-(add-hook 'web-mode-hook 'display-line-numbers-mode)
-(add-hook 'yaml-mode-hook 'display-line-numbers-mode)
+(dolist
+    (hook '(adoc-mode
+            c-mode
+            conf-mode
+            css-mode
+            csv-mode
+            dockerfile-mode
+            emacs-lisp-mode
+            html-mode
+            js-mode
+            json-mode
+            latex-mode
+            lisp-data-mode
+            makefile-mode
+            markdown-mode
+            nxml-mode
+            po-mode
+            python-mode
+            rst-mode
+            ruby-mode
+            sh-mode
+            shell-script-mode
+            terraform-mode
+            tex-mode
+            web-mode
+            yaml-mode))
+  (add-hook (derived-mode-hook-name hook) #'display-line-numbers-mode))
 
 
 ;; 📦 ELECTRIC-INDENT MODE
@@ -308,14 +312,15 @@
 (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
 (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”
 
-(add-hook 'adoc-mode-hook 'electric-pair-local-mode)
-(add-hook 'conf-mode-hook 'electric-pair-local-mode)
-(add-hook 'emacs-lisp-data-mode-hook 'electric-pair-local-mode)
-(add-hook 'emacs-lisp-mode-hook 'electric-pair-local-mode)
-(add-hook 'lisp-data-mode-hook 'electric-pair-local-mode)
-(add-hook 'markdown-mode-hook 'electric-pair-local-mode)
-(add-hook 'python-mode-hook 'electric-pair-local-mode)
-(add-hook 'ruby-mode-hook 'electric-pair-local-mode)
+(dolist (hook '(adoc-mode
+                conf-mode
+                emacs-lisp-data-mode
+                emacs-lisp-mode
+                lisp-data-mode
+                markdown-mode
+                python-mode
+                ruby-mode))
+  (add-hook (derived-mode-hook-name hook) #'electric-pair-local-mode))
 
 
 ;; 📦 EMACS-LISP-MODE
@@ -344,15 +349,16 @@
  '(large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
  '(make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
  '(save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
-(add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
-(add-to-list 'safe-local-variable-values '(electric-pair-preserve-balance . t))
-(add-to-list 'safe-local-variable-values '(emacs-lisp-docstring-fill-column . 80))
-(add-to-list 'safe-local-variable-values '(fill-column . 120))
-(add-to-list 'safe-local-variable-values '(fill-column . 80))
-(add-to-list 'safe-local-variable-values '(frozen_string_literal . true))
-(add-to-list 'safe-local-variable-values '(lexical-binding . t))
-(add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
-(add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all"))
+(dolist (safe-var '((buffer-env-script-name . ".venv/bin/activate")
+                    (electric-pair-preserve-balance . t)
+                    (emacs-lisp-docstring-fill-column . 80)
+                    (fill-column . 120)
+                    (fill-column . 80)
+                    (frozen_string_literal . true)
+                    (lexical-binding . t)
+                    (projectile-project-compilation-cmd . "make dirhtml")
+                    (projectile-project-test-cmd . "pre-commit run --all")))
+  (add-to-list 'safe-local-variable-values safe-var))
 
 
 ;; 📦 FILL-COLUMN
@@ -386,11 +392,12 @@
         (message (format "Для проверки орфографии используется %s" text-spell-program))
         (require 'flyspell)
         (customize-set-variable 'ispell-program-name text-spell-program)
-        (add-hook 'adoc-mode-hook 'flyspell-mode)
-        (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
-        (add-hook 'markdown-mode-hook 'flyspell-mode)
-        (add-hook 'rst-mode-hook 'flyspell-mode)
-        (add-hook 'text-mode-hook 'flyspell-mode))
+        (dolist (hook '(adoc-mode
+                        emacs-lisp-mode
+                        markdown-mode
+                        rst-mode
+                        text-mode))
+          (add-hook (derived-mode-hook-name hook) 'flyspell-mode)))
     ;; Не найдено программ для проверки орфографии
     (message "Не найдено программ для проверки орфографии.")))
 
@@ -412,12 +419,13 @@
 ;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
 ;; Возможны варианты (зависит от основного режима).
 (require 'goto-addr)
-(add-hook 'adoc-mode-hook 'goto-address-mode)
-(add-hook 'emacs-lisp-mode-hook 'goto-address-mode)
-(add-hook 'markdown-mode-hook 'goto-address-mode)
-(add-hook 'rst-mode-hook 'goto-address-mode)
-(add-hook 'text-mode-hook 'goto-address-mode)
-(add-hook 'web-mode-hook 'goto-address-mode)
+(dolist (hook '(adoc-mode
+                emacs-lisp-mode
+                html-mode
+                markdown-mode
+                rst-mode
+                web-mode))
+  (add-hook (derived-mode-hook-name hook) 'goto-address-mode))
 
 
 ;; 📦 GREP
@@ -693,30 +701,31 @@
      (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
      (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
  '(whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать."))
-(add-hook 'adoc-mode-hook 'whitespace-mode)
-(add-hook 'conf-mode-hook 'whitespace-mode)
-(add-hook 'css-mode-hook 'whitespace-mode)
-(add-hook 'dockerfile-mode-hook 'whitespace-mode)
-(add-hook 'emacs-lisp-mode-hook 'whitespace-mode)
-(add-hook 'html-mode-hook 'whitespace-mode)
-(add-hook 'json-mode-hook 'whitespace-mode)
-(add-hook 'latex-mode-hook 'whitespace-mode)
-(add-hook 'lisp-data-mode-hook 'whitespace-mode)
-(add-hook 'makefile-gmake-mode-hook 'whitespace-mode)
-(add-hook 'makefile-mode-hook 'whitespace-mode)
-(add-hook 'markdown-mode-hook 'whitespace-mode)
-(add-hook 'nxml-mode-hook 'whitespace-mode)
-(add-hook 'org-mode-hook 'whitespace-mode)
-(add-hook 'po-mode-hook 'whitespace-mode)
-(add-hook 'python-mode-hook 'whitespace-mode)
-(add-hook 'rst-mode-hook 'whitespace-mode)
-(add-hook 'ruby-mode-hook 'whitespace-mode)
-(add-hook 'sh-mode-hook 'whitespace-mode)
-(add-hook 'sql-mode-hook 'whitespace-mode)
-(add-hook 'terraform-mode-hook 'whitespace-mode)
-(add-hook 'tex-mode-hook 'whitespace-mode)
-(add-hook 'web-mode-hook 'whitespace-mode)
-(add-hook 'yaml-mode-hook 'whitespace-mode)
+(dolist (hook '(adoc-mode
+                conf-mode
+                css-mode
+                dockerfile-mode
+                emacs-lisp-mode
+                html-mode
+                json-mode
+                latex-mode
+                lisp-data-mode
+                makefile-gmake-mode
+                makefile-mode
+                markdown-mode
+                nxml-mode
+                org-mode
+                po-mode
+                python-mode
+                rst-mode
+                ruby-mode
+                sh-mode
+                sql-mode
+                terraform-mode
+                tex-mode
+                web-mode
+                yaml-mode))
+  (add-hook (derived-mode-hook-name hook) 'whitespace-mode))
 
 
 ;; 📦 WINDMOVE
@@ -1289,29 +1298,33 @@
 ;; 📦 HL-TODO
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
+(unless (package-installed-p 'hl-todo)
+  (package-vc-install
+   '(hl-todo
+     :url "https://github.com/tarsius/hl-todo.git"
+     branch: "v3.8.1")))
 (use-package hl-todo
   :ensure t
-  :vc (
-       :url "https://github.com/tarsius/hl-todo.git"
-       :rev "v3.8.1")
   :config (global-hl-todo-mode t))
 
 
 ;; 📦 INDENT-BARS
 ;; https://github.com/jdtsmith/indent-bars
 ;; Красивая подсветка отступов
-;; (use-package indent-bars
-;;   :ensure t
-;;   :vc (
-;;        :url "https://github.com/jdtsmith/indent-bars.git"
-;;        :rev "v0.7.5")
-;;   :hook ((emacs-lisp-mode
-;;           makefile-mode
-;;           markdown-mode
-;;           python-mode
-;;           rst-mode
-;;           yaml-mode
-;;           ) . indent-bars-mode))
+(unless (package-installed-p 'indent-bars)
+  (package-vc-install
+   '(indent-bars
+     :url "https://github.com/jdtsmith/indent-bars.git"
+     :branch "v0.7.5")))
+(use-package indent-bars
+  :ensure t
+  :hook ((makefile-mode
+          markdown-mode
+          python-mode
+          rst-mode
+          ruby-mode
+          yaml-mode
+          ) . indent-bars-mode))
 
 
 ;; 📦 IVY
@@ -1345,11 +1358,12 @@
 ;; 📦 JSON-MODE
 ;; https://github.com/json-emacs/json-mode
 ;; Поддержка JSON
+(unless (package-installed-p 'json-mode)
+  (package-vc-install '(json-mode
+                        :url "https://github.com/json-emacs/json-mode.git"
+                        :branch "v1.9.2")))
 (use-package json-mode
   :ensure t
-  :vc (
-       :url "https://github.com/json-emacs/json-mode.git"
-       :rev "v1.9.2")
   :defer t
   :mode ("\\.json\\'" . json-mode))
 
@@ -1358,14 +1372,18 @@
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
-(package-vc-install
- '(magit
-   :url "https://github.com/magit/magit.git"
-   :branch "v4.1.1"
-   :lisp-dir "lisp"
-   :doc "docs"))
+(unless (package-installed-p 'magit)
+  (package-install 'el-patch) ;; Зависимость Magit
+  (package-vc-install
+   '(magit
+     :url "https://github.com/magit/magit.git"
+     :branch "v4.1.1"
+     :lisp-dir "lisp"
+     :doc "docs")))
 (use-package magit
   :ensure t
+  ;; Время этого кода ещё не пришло. Сейчас он работает нестабильно, поэтому
+  ;; лучше через package-vc-install.
   ;; :vc (
   ;;      :url "https://github.com/magit/magit.git"
   ;;      :rev "v4.1.1"
@@ -1419,11 +1437,17 @@
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (when (emacs-version-not-less-than 27 1)
+  (unless (package-installed-p 'markdown-mode)
+    (package-vc-install '(markdown-mode
+                          :url "https://github.com/jrblevin/markdown-mode.git"
+                          branch "v2.6")))
   (use-package markdown-mode
     :ensure t
-    :vc (
-         :url "https://github.com/jrblevin/markdown-mode.git"
-         :rev "v2.6")
+    ;; Сейчас этот код работает плохо. Возможно, в следующей версии
+    ;; `use-package' он начнёт работать так, как ожидается.
+    ;; :vc (
+    ;;      :url "https://github.com/jrblevin/markdown-mode.git"
+    ;;      :rev "v2.6")
     :defer t
     :custom
     (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
@@ -1505,22 +1529,33 @@
 ;; 📦 PACKAGE-LINT
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
+(unless (package-installed-p 'package-lint)
+  (package-vc-install '(package-lint
+                        :url "https://github.com/purcell/package-lint.git"
+                        :branch "0.23")))
 (use-package package-lint
   :ensure t
-  :vc (
-       :url "https://github.com/purcell/package-lint.git"
-       :rev "0.23")
+  ;; Ждём выхода новой версии `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/purcell/package-lint.git"
+  ;;      :rev "0.23")
   :defer t)
 
 
 ;; 📦 PHP-MODE
 ;; https://github.com/emacs-php/php-mode
 ;; Работа с файлами PHP
+(unless (package-installed-p 'php-mode)
+  (package-vc-install '(php-mode
+                        :url "https://github.com/emacs-php/php-mode.git"
+                        :branch "v1.26.1"
+                        :lisp-dir "lisp")))
 (use-package php-mode
   :ensure t
-  :vc (
-       :url "https://github.com/emacs-php/php-mode.git"
-       :rev "v1.25.1")
+  ;; Возможно, в следующей версии `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/emacs-php/php-mode.git"
+  ;;      :rev "v1.26.1")
   :mode("\\.php\\'" . php-mode))
 
 
@@ -1542,11 +1577,18 @@
 ;; под контролем любой системы версионирования, либо содержать специальные
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
+(unless (package-installed-p 'projectile)
+  (package-install 'buttercup)
+  (package-vc-install '(projectile
+                        :url "https://github.com/bbatsov/projectile.git"
+                        :branch "v2.8.0"
+                        :doc "doc")))
 (use-package projectile
   :ensure t
-  :vc (
-       :url "https://github.com/bbatsov/projectile.git"
-       :rev "v2.8.0")
+  ;; Ждём обновления `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/bbatsov/projectile.git"
+  ;;      :rev "v2.8.0")
   :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
@@ -1561,11 +1603,16 @@
 ;; https://github.com/protesilaos/pulsar
 ;; Этот пакет требует Emacs версии 27.1 или новее
 (when (emacs-version-not-less-than 27 1)
+  (unless (package-installed-p 'pulsar)
+    (package-vc-install '(pulsar
+                          :url "https://github.com/protesilaos/pulsar.git"
+                          :branch "1.1.0")))
   (use-package pulsar
     :ensure t
-    :vc (
-         :url "https://github.com/protesilaos/pulsar.git"
-         :rev "1.1.0")
+    ;; Ждём обновления `use-package'.
+    ;; :vc (
+    ;;      :url "https://github.com/protesilaos/pulsar.git"
+    ;;      :rev "1.1.0")
     :custom (pulsar-pulse t)
     :hook
     (after-init . pulsar-global-mode)

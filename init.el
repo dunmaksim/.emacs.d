@@ -157,6 +157,8 @@
 (keymap-global-unset "<insert>") ;; Режим перезаписи не нужен
 (keymap-global-unset "M-,")      ;; Такие маркеры не нужны
 (keymap-global-unset "C-z")      ;; Такой Ctrl+Z нам не нужен
+(keymap-global-unset "C-x C-z")  ;; `suspend-emacs' тоже не нужен
+(keymap-global-unset "C-x C-p")  ;; `mark-page' не нужна, часто конфликтует с Projectile
 (keymap-global-set "C-x k"       ;; Закрыть буфер по нажатию [C-x k]
                    (lambda()
                      (interactive)
@@ -209,10 +211,12 @@
 ;; Встроенный пакет.
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF
 (require 'conf-mode)
-(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.ini\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.pylintrc\\'" . conf-mode))
+(dolist (mode '(("\\.env\\'" . conf-mode)
+                ("\\.flake8\\'" . conf-mode)
+                ("\\.ini\\'" . conf-mode)
+                ("\\.pylintrc\\'" . conf-mode)
+                ("\\inventory\\'" . conf-mode)))
+  (add-to-list 'auto-mode-alist mode))
 
 
 ;; 📦 CSS-MODE
@@ -304,14 +308,14 @@
 ;; Автоматически вставляет при вводе одной скобки или кавычки парную ей. Если
 ;; выделен регион, то в скобки обрамляется он.
 (require 'elec-pair)
-(add-to-list 'electric-pair-pairs '(?\( . ?\))) ;; ()
-(add-to-list 'electric-pair-pairs '(?\[ . ?\])) ;; []
-(add-to-list 'electric-pair-pairs '(?{ . ?}))   ;; {}
-(add-to-list 'electric-pair-pairs '(?« . ?»))   ;; «»
-(add-to-list 'electric-pair-pairs '(?‘ . ’?))   ;; ‘’
-(add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
-(add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”
-
+(dolist (pair '((?\( . ?\)) ;; ()
+                (?\[ . ?\]) ;; []
+                (?{ . ?})   ;; {}
+                (?« . ?»)   ;; «»
+                (?‘ . ’?)   ;; ‘’
+                (?‚ . ‘?)   ;; ‚‘
+                (?“ . ”?))) ;; “”))
+  (add-to-list 'electric-pair-pairs pair))
 (dolist (hook '(adoc-mode
                 conf-mode
                 emacs-lisp-data-mode
@@ -509,7 +513,7 @@
         (name . "^Makefile$")))
       ("Python"
        (or
-        (mode . anaconda-mode)
+        ;; (mode . anaconda-mode)
         (mode . python-mode)))
       ("Ruby" (mode . ruby-mode))
       ("SSH keys" (or (name . "^\\*.pub$")))
@@ -635,10 +639,11 @@
 ;; Встроенный пакет.
 ;; Работа со скриптами Shell.
 (require 'sh-script)
-(add-to-list 'auto-mode-alist '("\\.bashrc\\'" . shell-script-mode))
-(add-to-list 'auto-mode-alist '("\\.envrc\\'" . shell-script-mode))
-(add-to-list 'auto-mode-alist '("\\.profile\\'" . shell-script-mode))
-(add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-script-mode))
+(dolist (mode '(("\\.bashrc\\'" . shell-script-mode)
+                ("\\.envrc\\'" . shell-script-mode)
+                ("\\.profile\\'" . shell-script-mode)
+                ("\\.sh\\'" . shell-script-mode)))
+  (add-to-list 'auto-mode-alist mode))
 
 
 ;; 📦 SIMPLE
@@ -761,17 +766,19 @@
 
 ;; 📦 PACKAGE
 (require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+(dolist (archive '(("gnu" . "https://elpa.gnu.org/packages/")
+                   ("melpa" . "https://melpa.org/packages/")
+                   ("melpa-stable" . "https://stable.melpa.org/packages/")
+                   ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+  (add-to-list 'package-archives archive t))
 (package-initialize)
 
-(customize-set-variable 'package-archive-priorities
-                        '(("gnu" . 40)
-                          ("nongnu" . 30)
-                          ("melpa-stable" . 20)
-                          ("melpa" . 10)))
+(customize-set-variable
+ 'package-archive-priorities
+ '(("gnu" . 40)
+   ("nongnu" . 30)
+   ("melpa-stable" . 20)
+   ("melpa" . 10)))
 
 (unless package-archive-contents
   (message "Обновление списка архивов...")
@@ -825,11 +832,16 @@
 ;; 📦 ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
 ;; Быстрое переключение между окнами по M+o
+(unless (package-installed-p 'ace-window)
+  (package-vc-install '(ace-window
+                        :url "https://github.com/abo-abo/ace-window.git"
+                        :branch "0.10.0")))
 (use-package ace-window
   :ensure t
-  :vc (
-       :url "https://github.com/abo-abo/ace-window.git"
-       :rev "0.10.0")
+  ;; Ждём обновления `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/abo-abo/ace-window.git"
+  ;;      :rev "0.10.0")
   :bind (:map global-map
               ("M-o" . ace-window)))
 
@@ -837,11 +849,16 @@
 ;; 📦 ACTIVITIES
 ;; https://elpa.gnu.org/packages/activities.html
 ;; Управление наборами окон, вкладок, фреймов и буферов
+(unless (package-installed-p 'activities)
+  (package-vc-install '(activities
+                        :url "https://github.com/alphapapa/activities.el.git"
+                        :branch "v0.7.1")))
 (use-package activities
   :ensure t
-  :vc (
-       :url "https://github.com/alphapapa/activities.el.git"
-       :rev "v0.7.1")
+  ;; Ждём обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/alphapapa/activities.el.git"
+  ;;      :rev "v0.7.1")
   :config
   (activities-mode 1)
   :bind
@@ -882,11 +899,16 @@
 ;; 📦 AGGRESSIVE-INDENT
 ;; https://github.com/Malabarba/aggressive-indent-mode
 ;; Принудительное выравнивание кода
+(unless (package-installed-p 'aggressive-indent)
+  (package-vc-install '(aggressive-indent
+                        :url "https://github.com/Malabarba/aggressive-indent-mode.git"
+                        :branch "1.10.0")))
 (use-package aggressive-indent
   :ensure t
-  :vc (
-       :url "https://github.com/Malabarba/aggressive-indent-mode.git"
-       :rev "1.10.0")
+  ;; TODO: раскомментировать после обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/Malabarba/aggressive-indent-mode.git"
+  ;;      :rev "1.10.0")
   :defer t
   :hook ((emacs-lisp-mode
           json-mode
@@ -898,40 +920,63 @@
           ) . aggressive-indent-mode))
 
 
+;; 📦 ALL
+;; https://elpa.gnu.org/packages/all.html
+;; Это аналог `occur', только все найденные строки помещаются в отдельный буфер,
+;; где их можно отредактировать, не прыгая по всему буферу. После изменений
+;; достаточно нажать C-c C-c, и изменения отразятся в основном буфере
+(use-package all
+  :ensure t)
+
+
 ;; 📦 ANACONDA-MODE
 ;; https://github.com/pythonic-emacs/anaconda-mode
 ;; Расширенная поддержка Python.
-(use-package anaconda-mode
-  :ensure t
-  :vc (
-       :url "https://github.com/pythonic-emacs/anaconda-mode.git"
-       :rev "v0.1.16"
-       )
-  :hook
-  (python-mode . anaconda-mode)
-  (python-mode . anaconda-eldoc-mode))
+;; (unless (package-installed-p 'anaconda-mode)
+;;   (package-install 'cask)
+;;   (package-vc-install '(anaconda-mode
+;;                         :url "https://github.com/pythonic-emacs/anaconda-mode.git"
+;;                         :branch "v0.1.16")))
+;; (use-package anaconda-mode
+;;   :ensure t
+;;   ;; TODO: раскомментировать после обновления `use-package'.
+;;   ;; :vc (
+;;   ;;      :url "https://github.com/pythonic-emacs/anaconda-mode.git"
+;;   ;;      :rev "v0.1.16")
+;;   :hook
+;;   (python-mode . anaconda-mode)
+;;   (python-mode . anaconda-eldoc-mode))
 
 
 ;; 📦 ANSIBLE
 ;; https://gitlab.com/emacs-ansible/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
+(unless (package-installed-p 'ansible)
+  (package-vc-install '(ansible
+                        :url "https://gitlab.com/emacs-ansible/emacs-ansible.git"
+                        :branch "0.3.2")))
 (use-package ansible
   :ensure t
-  :vc (
-       :url "https://gitlab.com/emacs-ansible/emacs-ansible.git"
-       :rev "0.3.2"
-       )
+  ;; TODO: раскомментировать после обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://gitlab.com/emacs-ansible/emacs-ansible.git"
+  ;;      :rev "0.3.2")
   :defer t)
 
 
 ;; 📦 APHELEIA
 ;; https://github.com/radian-software/apheleia
 ;; Форматирование содержимого буфера с помощью внешних средств
+(unless (package-installed-p 'apheleia)
+  (package-vc-install '(apheleia
+                        :url "https://github.com/radian-software/apheleia.git"
+                        :branch "v4.2")))
 (use-package apheleia
   :ensure t
-  :vc (
-       :url "https://github.com/radian-software/apheleia.git"
-       :rev "v4.2")
+  ;; TODO: раскомментировать после обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/radian-software/apheleia.git"
+  ;;      :rev "v4.2")
   :delight "")
 
 
@@ -987,12 +1032,17 @@
 ;; 📦 COMPANY-MODE
 ;; https://company-mode.github.io/
 ;; Автодополнение
+(unless (package-installed-p 'company)
+  (package-vc-install '(company
+                        :url "https://github.com/company-mode/company-mode.git"
+                        :branch "1.0.2")))
 (use-package company
   :ensure t
-  :vc (
-       :url "https://github.com/company-mode/company-mode.git"
-       :rev "1.0.2"
-       )
+  ;; TODO: ждём обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/company-mode/company-mode.git"
+  ;;      :rev "1.0.2"
+  ;;      )
   :delight ""
   :demand t
   :custom
@@ -1024,6 +1074,7 @@
 
 ;; 📦 COUNSEL
 ;; https://elpa.gnu.org/packages/counsel.html
+;; Автодополнение на основе Ivy
 (use-package counsel
   :ensure t
   :bind
@@ -1051,11 +1102,16 @@
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
 (when (emacs-version-not-less-than 28 1)
+  (unless (package-installed-p 'denote)
+    (package-vc-install '(denote
+                          :url "https://github.com/protesilaos/denote.git"
+                          :branch "3.1.0")))
   (use-package denote
     :ensure t
-    :vc (
-         :url "https://github.com/protesilaos/denote.git"
-         :rev "3.1.0")
+    ;; TODO: ждём обновления `use-package'
+    ;; :vc (
+    ;;      :url "https://github.com/protesilaos/denote.git"
+    ;;      :rev "3.1.0")
     :custom
     (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
 
@@ -1081,11 +1137,17 @@
 ;;   :custom
 ;;   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
 ;;   (doom-themes-enable-italic t "Включить поддержку наклонного начертания."))
+(unless (package-installed-p 'doom-themes)
+  (package-vc-install '(doom-themes
+                        :url "https://github.com/doomemacs/themes.git"
+                        :branch "v2.3.0")))
 (use-package doom-themes
   :ensure t
-  :vc (
-       :url "https://github.com/doomemacs/themes.git"
-       :rev "v2.3.0"))
+  ;; TODO: раскомментировать после обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/doomemacs/themes.git"
+  ;;      :rev "v2.3.0")
+  )
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1251,11 +1313,16 @@
 ;; 📦 FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода с помощью разных внешних средств.
+(unless (package-installed-p 'format-all)
+  (package-vc-install '(format-all
+                        :url "https://github.com/lassik/emacs-format-all-the-code.git"
+                        :branch "0.6.0")))
 (use-package format-all
   :ensure t
-  :vc (
-       :url "https://github.com/lassik/emacs-format-all-the-code.git"
-       :rev "0.6.0")
+  ;; TODO: Ждём обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/lassik/emacs-format-all-the-code.git"
+  ;;      :rev "0.6.0")
   :defer t
   :bind (:map global-map
               ([f12] . format-all-buffer)))
@@ -1315,7 +1382,7 @@
   (package-vc-install
    '(indent-bars
      :url "https://github.com/jdtsmith/indent-bars.git"
-     :branch "v0.7.5")))
+     :branch "v0.8")))
 (use-package indent-bars
   :ensure t
   :hook ((makefile-mode
@@ -1718,21 +1785,32 @@
 ;; 📦 TEMPEL
 ;; https://github.com/minad/tempel
 ;; Система шаблонов.
+(unless (package-installed-p 'tempel)
+  (package-vc-install '(tempel
+                        :url "https://github.com/minad/tempel.git"
+                        :branch "1.2")))
 (use-package tempel
   :ensure t
-  :vc (
-       :url "https://github.com/minad/tempel.git"
-       :rev "1.2"))
+  ;; TODO: Ждём обновления `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/minad/tempel.git"
+  ;;      :rev "1.2")
+  )
 
 
 ;; 📦 TERRAFORM-MODE
 ;; https://github.com/hcl-emacs/terraform-mode
 ;; Работа с файлами конфигурации Terraform
+(unless (package-installed-p 'terraform-mode)
+  (package-vc-install '(terraform-mode
+                        :url "https://github.com/hcl-emacs/terraform-mode.git"
+                        :branch "1.0.1")))
 (use-package terraform-mode
   :ensure t
-  :vc (
-       :url "https://github.com/hcl-emacs/terraform-mode.git"
-       :rev "1.0.1")
+  ;; TODO: ждём обновления `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/hcl-emacs/terraform-mode.git"
+  ;;      :rev "1.0.1")
   :defer t
   :mode
   ("\\.terraformrc\\'" . terraform-mode)

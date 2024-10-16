@@ -369,7 +369,9 @@
 ;; Встроенный пакет.
 ;; Отображение рекомендуемой границы символов.
 (require 'display-fill-column-indicator)
+(add-hook 'ansible-mode-hook 'display-fill-column-indicator-mode)
 (add-hook 'emacs-lisp-mode-hook 'display-fill-column-indicator-mode)
+(add-hook 'yaml-mode-hook 'display-fill-column-indicator-mode)
 
 
 ;; 📦 FLYSPELL-MODE

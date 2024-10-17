@@ -359,9 +359,7 @@
                     (fill-column . 120)
                     (fill-column . 80)
                     (frozen_string_literal . true)
-                    (lexical-binding . t)
-                    (projectile-project-compilation-cmd . "make dirhtml")
-                    (projectile-project-test-cmd . "pre-commit run --all")))
+                    (lexical-binding . t)))
   (add-to-list 'safe-local-variable-values safe-var))
 
 
@@ -369,9 +367,9 @@
 ;; Встроенный пакет.
 ;; Отображение рекомендуемой границы символов.
 (require 'display-fill-column-indicator)
-(add-hook 'ansible-mode-hook 'display-fill-column-indicator-mode)
-(add-hook 'emacs-lisp-mode-hook 'display-fill-column-indicator-mode)
-(add-hook 'yaml-mode-hook 'display-fill-column-indicator-mode)
+(dolist (mode-name '(emacs-lisp-mode
+                     yaml-mode))
+  (add-hook (derived-mode-hook-name mode-name) 'display-fill-column-indicator-mode))
 
 
 ;; 📦 FLYSPELL-MODE
@@ -441,13 +439,6 @@
 (keymap-global-set "<f6>" 'find-grep) ;; Запуск `find-grep' по нажатию [F6].
 
 
-;; 📦 HL-LINE
-;; Встроенный пакет.
-;; Подсветка текущей строки.
-(require 'hl-line)
-;; (global-hl-line-mode 1)
-
-
 ;; 📦 IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 ;; По нажатию F2 выводит список открытых буферов.
@@ -475,6 +466,7 @@
       filename)))  ;; Имя файла)
  '(ibuffer-default-sorting-mode 'filename/process "Сортировать файлы по имени / процессу")
  '(ibuffer-expert 1 "Не запрашивать подтверждение для опасных операций")
+ '(ibuffer-shrink-to-minimum-size t "Минимальный размер буфера по умолчанию")
  '(ibuffer-truncate-lines nil "Не обкусывать длинные строки")
  '(ibuffer-use-other-window t "Открывать буфер *Ibuffer* в отдельном окне"))
 (defalias 'list-buffers 'ibuffer "Замена стандартной функции на ibuffer.")
@@ -1400,7 +1392,8 @@
 ;; https://elpa.gnu.org/packages/ivy.html
 ;; https://elpa.gnu.org/packages/doc/ivy.html
 ;; Функции фильтрации и выбора элементов. Как Helm, но теперь в составе Emacs.
-;; При переименовании файлов рекомендуется использовать `ivy-immediate-done'.
+;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
+;; Это последовательность [C-M-j].
 (use-package ivy
   :ensure t
   :demand t
@@ -1549,6 +1542,23 @@
 ;;   (global-set-key (kbd "M-<mouse-1>" #'mc/add-cursor-on-click)))
 
 
+;; 📦 NANO-MODELINE
+;; https://elpa.gnu.org/packages/nano-modeline.html
+;; Статусная строка маленькая вообще жестб
+(use-package nano-modeline
+  :ensure t
+  :custom
+  (nano-modeline-position 'nano-modeline-footer "Показывать внизу")
+  :hook
+  (messages-buffer-mode . nano-modeline-message-mode)
+  (org-agenda-mode . nano-modeline-org-agenda-mode)
+  (org-capture-mode . nano-modeline-org-capture-mode)
+  (org-mode . nano-modeline-org-mode)
+  (prog-mode . nano-modeline-prog-mode)
+  (term-mode . nano-modeline-term-mode)
+  (text-mode . nano-modeline-text-mode))
+
+
 ;; 📦 NERD-ICONS
 ;; https://github.com/rainstormstudio/nerd-icons.el
 ;; Требуется для корректной работы `doom-modeline'.
@@ -1663,6 +1673,9 @@
   ("C-x p" . projectile-command-map)
   :bind
   ([f7] . projectile-compile-project)
+  :init
+  (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
+  (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all"))
   :config
   (projectile-mode 1))
 

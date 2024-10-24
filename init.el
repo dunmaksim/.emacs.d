@@ -719,6 +719,7 @@
                 rst-mode
                 ruby-mode
                 sh-mode
+                snippet-mode ;; Yasnippet
                 sql-mode
                 terraform-mode
                 tex-mode
@@ -977,11 +978,16 @@
 ;; 📦 BBCODE-MODE
 ;; https://github.com/lassik/emacs-bbcode-mode
 ;; Режим редактирования BB-кодов
+(unless (package-installed-p 'bbcode-mode)
+  (package-vc-install '(bbcode-mode
+                        :url "https://github.com/lassik/emacs-bbcode-mode.git"
+                        :branch "v2.3.0")))
 (use-package bbcode-mode
   :ensure t
-  :vc (
-       :url "https://github.com/lassik/emacs-bbcode-mode.git"
-       :rev "v2.3.0")
+  ;; TODO: Ждём обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/lassik/emacs-bbcode-mode.git"
+  ;;      :rev "v2.3.0")
   :defer t)
 
 
@@ -1045,7 +1051,8 @@
   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
   (company-tooltip-limit 15 "Ограничение на число подсказок")
-  :hook ((css-mode
+  :hook ((adoc-mode
+          css-mode
           dockerfile-mode
           emacs-lisp-mode
           html-mode
@@ -1110,14 +1117,51 @@
     (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
 
 
+;; 📦 DIRENV
+;; https://github.com/wbolster/emacs-direnv
+;; Поддержка `direnv' в Emacs. Для корректной работы нужно выполнить несколько
+;; дополнительных действий:
+;; 1. Установить в систему direnv
+;; 2. Для поддержки Ruby установить ruby-install: https://direnv.net/docs/ruby.html
+;; 3. Создать в каталоге ~/.config/direnv/direnvrc файл:
+;;
+;; # Usage: use ruby <version>
+;; #
+;; # Loads the specified ruby version into the environment
+;; #
+;; use_ruby() {
+;;   local ruby_dir=$HOME/.rubies/$1
+;;   load_prefix $ruby_dir
+;;   layout ruby
+;; }
+;; 4. Создать в каталоге проекта файл `.envrc':
+;;
+;; source .venv/bin/activate
+;; use ruby 3.3.5
+;;
+;; 5. Разрешить использование этого файла:
+;;
+;; cd  ~/<project>
+;; direnv allow
+(use-package direnv
+  :ensure t
+  :config
+  (direnv-mode))
+
+
 ;; 📦 DOCKERFILE-MODE
 ;; https://github.com/spotify/dockerfile-mode
 ;; Работа с файлами `Dockerfile'.
+(unless (package-installed-p 'dockerfile-mode)
+  (package-vc-install '(dockerfile-mode
+                        :url "https://github.com/spotify/dockerfile-mode.git"
+                        :branch "v1.9")))
 (use-package dockerfile-mode
   :ensure t
-  :vc (
-       :url "https://github.com/spotify/dockerfile-mode.git"
-       :rev "v1.9")
+  ;; TODO: ждём обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/spotify/dockerfile-mode.git"
+  ;;      :rev "v1.9")
   :defer t
   :mode
   ("\\Dockerfile\\'" . dockerfile-mode))
@@ -1183,11 +1227,16 @@
 
 ;; 📦 EF-THEMES
 ;; https://github.com/protesilaos/ef-themes.git
+(unless (package-installed-p 'ef-themes)
+  (package-vc-install '(ef-themes
+                        :url "https://github.com/protesilaos/ef-themes.git"
+                        :branch "1.8.0")))
 (use-package ef-themes
-  :ensure t
-  :vc (
-       :url "https://github.com/protesilaos/ef-themes.git"
-       :rev "1.8.0"))
+  :ensure t)
+;; TODO ждём релиза `use-package'
+;; :vc (
+;;      :url "https://github.com/protesilaos/ef-themes.git"
+;;      :rev "1.8.0"))
 (setq init-el-theme 'ef-elea-dark)
 
 
@@ -1247,7 +1296,6 @@
 ;; 📦 FLYCHECK
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
-(defconst flycheck-default-margin-str "⮾")
 (use-package flycheck
   :ensure t
   :vc (
@@ -1257,12 +1305,12 @@
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
-  (setq flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
-  (flycheck-locate-config-file-functions '(
-                                           flycheck-locate-config-file-by-path
+  (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
+  (flycheck-locate-config-file-functions '(flycheck-locate-config-file-by-path
                                            flycheck-locate-config-file-ancestor-directories
                                            flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
+  (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook ((adoc-mode
           conf-mode
@@ -1326,11 +1374,17 @@
 ;; https://github.com/emacs-helm/helm
 ;; Подсказки и автодополнение ввода.
 ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
+(unless (package-installed-p 'helm)
+  (package-vc-install '(helm
+                        :url "https://github.com/emacs-helm/helm.git"
+                        :branch "v4.0")))
 (use-package helm
   :ensure t
-  :vc (
-       :url "https://github.com/emacs-helm/helm.git"
-       :rev "v4.0")
+  ;; TODO: ждём обновления `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/emacs-helm/helm.git"
+  ;;      :rev "v4.0"
+  ;;      )
   :delight ""
   :config
   (helm-mode 1)
@@ -1376,10 +1430,12 @@
   (package-vc-install
    '(indent-bars
      :url "https://github.com/jdtsmith/indent-bars.git"
-     :branch "v0.8")))
+     :branch "v0.8.1"
+     )))
 (use-package indent-bars
   :ensure t
-  :hook ((makefile-mode
+  :hook ((emacs-lisp-mode
+          makefile-mode
           markdown-mode
           python-mode
           rst-mode
@@ -1404,7 +1460,7 @@
   (:map global-map
         ("C-x b" . ivy-switch-buffer)
         ("C-c v" . ivy-push-view)
-        ("C-c V" . ivy-pup-view)))
+        ("C-c V" . ivy-pop-view)))
 
 
 ;; 📦 IVY-HYDRA
@@ -1416,6 +1472,21 @@
   :after ivy
   :requires ivy)
 
+
+;; 📦 JINX
+;; https://github.com/minad/jinx
+;; Проверка орфографии не только для слова под курсором, как во `flyspell',
+;; а вообще во всём буфере.
+;; В Debian требует для работы `libenchant2-dev' и `pkgconf'.
+(unless (package-installed-p 'jinx)
+  (package-vc-install '(jinx
+                        :url "https://github.com/minad/jinx.git"
+                        :branch "1.10")))
+(use-package jinx
+  :hook ((adoc-mode
+          markdown-mode
+          rst-mode
+          text-mode). jinx-mode))
 
 ;; 📦 JSON-MODE
 ;; https://github.com/json-emacs/json-mode
@@ -1596,8 +1667,12 @@
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
+(unless (and (package-installed-p 'org)
+             (package-built-in-p 'org '(9 7 13)))
+  (customize-set-variable 'package-install-upgrade-built-in t)
+  (package-install 'org)
+  (customize-set-variable 'package-install-upgrade-built-in nil))
 (use-package org
-  :ensure t
   :defer t
   :config
   (setq-local
@@ -1749,6 +1824,15 @@
     ) . rainbow-delimiters-mode))
 
 
+;; 📦 RBENV
+;; https://github.com/senny/rbenv.el
+;; Управление версиями Ruby через rbenv: https://github.com/rbenv/rbenv
+(use-package rbenv
+  :ensure t
+  :config
+  (global-rbenv-mode 1))
+
+
 ;; 📦 RUSSIAN-TECHWRITER
 ;; Метод ввода для технических писателей
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
@@ -1785,6 +1869,26 @@
 ;; Почти как встроенные темы, только немного доработанные
 (use-package standard-themes
   :ensure t)
+
+
+;; 📦 SYMBOLS-OUTLINE
+;; https://github.com/liushihao456/symbols-outline.el
+;; Показывает переменные, функции, заголовки и другие части файла на панели
+;; Требует наличия в системе `ctags'. В Debian рекомендуется использовать
+;; пакет `universal-ctags'
+(use-package symbols-outline
+  :ensure t
+  :custom
+  (symbols-outline-window-width 40 "Ширина окна")
+  :bind (:map global-map
+              ("C-c i" . symbols-outline-show))
+  :hook
+  ((adoc-mode
+    emacs-lisp-mode
+    python-mode
+    rst-mode
+    ) . symbols-outline-follow-mode))
+
 
 
 ;; 📦 SWIPER
@@ -1888,6 +1992,28 @@
    "\\.yamllint\\-config\\.yaml\\'"
    "\\.yfm\\'"
    "\\.yml\\'"))
+
+
+;; 📦 YASNIPPET
+;; https://elpa.gnu.org/packages/yasnippet.html
+;; Библиотека для управления сниппетами. Требуется для расширения функций Eglot.
+(use-package yasnippet
+  :ensure t
+  :init
+  (progn
+    (defvar init-el-yasnippet-snippets-dir (expand-file-name "snippets" user-emacs-directory))
+    (unless (file-directory-p init-el-yasnippet-snippets-dir)
+      (make-directory init-el-yasnippet-snippets-dir))
+    (unless (file-directory-p init-el-autosave-dir)
+      (make-directory init-el-autosave-dir)))
+  :config (yas-global-mode 1))
+
+
+;; 📦 YASNIPPET-SNIPPETS
+;; https://github.com/AndreaCrotti/yasnippet-snippets
+;; Набор сниппетов для `yasnippet'
+(use-package yasnippet-snippets
+  :ensure t)
 
 
 (put 'downcase-region 'disabled nil)

@@ -399,6 +399,7 @@
         (dolist (hook '(adoc-mode
                         emacs-lisp-mode
                         markdown-mode
+                        org-mode
                         rst-mode
                         text-mode))
           (add-hook (derived-mode-hook-name hook) 'flyspell-mode)))
@@ -1199,12 +1200,16 @@
 ;; 3. Редактируем.
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
+(unless (package-installed-p 'edit-indirect)
+  (package-vc-install '(edit-indirect
+                        :url "https://github.com/Fanael/edit-indirect.git"
+                        :branch "0.1.13")))
 (use-package edit-indirect
   :ensure t
-  :vc (
-       :url "https://github.com/Fanael/edit-indirect.git"
-       :rev "0.1.13")
-  :defer t
+  ;; TODO: ждём обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/Fanael/edit-indirect.git"
+  ;;      :rev "0.1.13")
   :bind (:map global-map
               ("C-c '" . edit-indirect-region)))
 
@@ -1212,12 +1217,18 @@
 ;; 📦 EDITORCONFIG
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
+(unless (package-installed-p 'editorconfig)
+  (package-vc-install '(editorconfig
+                        :url "https://github.com/editorconfig/editorconfig-emacs.git"
+                        :branch "v0.11.0"
+                        :doc "doc")))
 (use-package editorconfig
   :ensure t
-  :vc (
-       :url "https://github.com/editorconfig/editorconfig-emacs.git"
-       :rev "v0.11.0"
-       :doc "doc")
+  ;; TODO: Ждём обновления `use-package'.
+  ;; :vc (
+  ;;      :url "https://github.com/editorconfig/editorconfig-emacs.git"
+  ;;      :rev "v0.11.0"
+  ;;      :doc "doc")
   :delight ""
   :config
   (editorconfig-mode 1)
@@ -1485,6 +1496,7 @@
 (use-package jinx
   :hook ((adoc-mode
           markdown-mode
+          org-mode
           rst-mode
           text-mode). jinx-mode))
 

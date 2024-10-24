@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: version-added
+# key: va
+# --
+.. versionadded:: ${1:version}
+
+$0

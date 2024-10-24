@@ -20,7 +20,6 @@ customize.el
 elpa/
 server/
 settings.el
-snippets/
 transient/
 url/
 /elpy/

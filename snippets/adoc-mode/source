@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: source
+# key: src
+# --
+.${1:title}
+[source,${2:language}]
+----
+${3:code}
+----

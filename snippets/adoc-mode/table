@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: table
+# key: |===
+# --
+.${1:title}
+[cols="$2"]
+|===
+| ${3:headers}
+
+| $4
+
+|===
+$0

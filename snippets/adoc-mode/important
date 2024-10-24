@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: important
+# key: important
+# --
+[IMPORTANT]
+====
+$1
+====
+$0

@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: Header level 2
+# key: h2
+# --
+
+.. _${1:href}:
+
+${2:Title}
+${2:$(make-string (string-width yas-text) ?\=)}
+
+$0

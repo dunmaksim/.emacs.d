@@ -1014,12 +1014,12 @@
 ;; Во первом случае в файле должна быть указана команда для активации окружения, например:
 ;; source .venv/bin/activate
 ;; Во втором достаточно задать значение переменной `buffer-env-script-name'.
-(when (emacs-version-not-less-than 27 1)
-  (use-package buffer-env
-    :ensure t
-    :hook ((hack-local-variables
-            comint-mode
-            ) . buffer-env-update)))
+;; (when (emacs-version-not-less-than 27 1)
+;;   (use-package buffer-env
+;;     :ensure t
+;;     :hook ((hack-local-variables
+;;             comint-mode
+;;             ) . buffer-env-update)))
 
 
 ;; 📦 COLORFUL-MODE
@@ -1132,7 +1132,7 @@
 ;; дополнительных действий:
 ;; 1. Установить в систему direnv
 ;; 2. Для поддержки Ruby установить ruby-install: https://direnv.net/docs/ruby.html
-;; 3. Создать в каталоге ~/.config/direnv/direnvrc файл:
+;; 3. Создать в каталоге ~/.config/direnv/ файл direnvrc:
 ;;
 ;; # Usage: use ruby <version>
 ;; #
@@ -1152,10 +1152,10 @@
 ;;
 ;; cd  ~/<project>
 ;; direnv allow
-(use-package direnv
-  :ensure t
-  :config
-  (direnv-mode))
+;; (use-package direnv
+;;   :ensure t
+;;   :config
+;;   (direnv-mode))
 
 
 ;; 📦 DOCKERFILE-MODE
@@ -1324,6 +1324,17 @@
   ;; Включаем только там, где это действительно необходимо
   :hook ((emacs-lisp-mode
           python-mode) . eldoc-mode))
+
+
+;; 📦 ENVRC
+;; https://github.com/purcell/envrc
+;; Загрузка переменных окружения из `.envrc'.
+(unless (package-installed-p 'envrc)
+  (package-vc-install '(envrc
+                        :url "https://github.com/purcell/envrc.git"
+                        :branch "0.12")))
+(use-package envrc
+  :hook (after-init . envrc-global-mode))
 
 
 ;; 📦 FLYCHECK
@@ -1545,15 +1556,14 @@
   :mode ("\\.json\\'" . json-mode))
 
 
-;; 📦 TRANSIENT
-;; https://github.com/magit/transient
+;; 📦 DASH
+;; https://github.com/magnars/dash.el
 ;; Зависимость MAGIT
-(unless (package-installed-p 'transient)
-  (package-vc-install '(transient
-                        :url "https://github.com/magit/transient.git"
-                        :branch "v0.7.6"
-                        :lisp-dir "lisp"
-                        :doc "docs")))
+(unless (package-installed-p 'dash)
+  (package-vc-install '(dash
+                        :url "https://github.com/magnars/dash.el.git"
+                        :branch "2.19.1"
+                        :doc "doc")))
 
 
 ;; 📦 WITH-EDITOR
@@ -1571,6 +1581,7 @@
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
+;; TODO: добавить код для установки новой версии `transient'.
 (unless (package-installed-p 'magit)
   (package-vc-install
    '(magit

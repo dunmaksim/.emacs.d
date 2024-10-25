@@ -1545,15 +1545,26 @@
   :mode ("\\.json\\'" . json-mode))
 
 
+;; 📦 TRANSIENT
+;; https://github.com/magit/transient
+;; Зависимость MAGIT
+(unless (package-installed-p 'transient)
+  (package-vc-install '(transient
+                        :url "https://github.com/magit/transient.git"
+                        :branch "v0.7.6"
+                        :lisp-dir "lisp"
+                        :doc "docs")))
+
+
 ;; 📦 WITH-EDITOR
 ;; https://github.com/magit/with-editor
 ;; Зависимость MAGIT
 (unless (package-installed-p 'with-editor)
   (package-vc-install '(with-editor
-                        :url "https://github.com/magit/with-editor.git"
-                        :branch "v3.4.2"
-                        :lisp-dir "lisp"
-                        :doc "docs")))
+                         :url "https://github.com/magit/with-editor.git"
+                         :branch "v3.4.2"
+                         :lisp-dir "lisp"
+                         :doc "docs")))
 
 
 ;; 📦 MAGIT
@@ -1891,15 +1902,6 @@
     web-mode
     yaml-mode
     ) . rainbow-delimiters-mode))
-
-
-;; 📦 RBENV
-;; https://github.com/senny/rbenv.el
-;; Управление версиями Ruby через rbenv: https://github.com/rbenv/rbenv
-(use-package rbenv
-  :ensure t
-  :config
-  (global-rbenv-mode 1))
 
 
 ;; 📦 RUSSIAN-TECHWRITER

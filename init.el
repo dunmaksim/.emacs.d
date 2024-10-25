@@ -813,11 +813,15 @@
 ;; Эти строки находятся здесь потому, что `use-package' активно
 ;; использует возможности этого пакета далее, поэтому он должен быть
 ;; загружен как можно раньше.
+(unless (package-installed-p 'delight)
+  (package-vc-install '(delight
+                        :url "https://git.savannah.nongnu.org/git/delight.git"
+                        :branch "1.7"       )))
 (use-package delight
   :ensure t
-  :vc (
-       :url "https://git.savannah.nongnu.org/git/delight.git"
-       :rev "1.7")
+  ;; :vc (
+  ;;      :url "https://git.savannah.nongnu.org/git/delight.git"
+  ;;      :rev "1.7")
   :config
   (delight '((checkdoc-minor-mode)
              (global-visual-line-mode)
@@ -1021,11 +1025,15 @@
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
+(unless (package-installed-p 'colorful-mode)
+  (package-vc-install '(colorful-mode
+                        :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
+                        :branch "v1.0.4")))
 (use-package colorful-mode
   :ensure t
-  :vc (
-       :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
-       :rev "v1.0.4")
+  ;; :vc (
+  ;;      :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
+  ;;      :rev "v1.0.4")
   :hook ((css-mode
           web-mode) . colorful-mode))
 
@@ -1267,11 +1275,16 @@
 ;;               переменной `eglot-workspace-configuration'.
 ;; - YAML:       sudo npm -g install yaml-language-server
 (when (emacs-version-not-less-than 26 3)
+  (unless (package-installed-p 'eglot)
+    (package-vc-install '(eglot
+                          :url "https://github.com/joaotavora/eglot.git"
+                          :branch "1.17")))
   (use-package eglot
     :ensure t
-    :vc (
-         :url "https://github.com/joaotavora/eglot.git"
-         :rev "1.17")
+    ;; TODO: ждём обновления `use-package'
+    ;; :vc (
+    ;;      :url "https://github.com/joaotavora/eglot.git"
+    ;;      :rev "1.17")
     :defer t
     :config
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
@@ -1291,6 +1304,15 @@
             ) . eglot-ensure)))
 
 
+;; 📦 EL-PATCH
+;; https://github.com/radian-software/el-patch
+;; Зависимость Magit
+(unless (package-installed-p 'el-patch)
+  (package-vc-install '(el-patch
+                        :url "https://github.com/radian-software/el-patch.git"
+                        :branch "3.1")))
+
+
 ;; 📦 ELDOC-MODE
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Programming-Language-Doc.html
 ;; Отображение подсказок при работе с Emacs Lisp
@@ -1307,12 +1329,17 @@
 ;; 📦 FLYCHECK
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
+(unless (package-installed-p 'flycheck)
+  (package-vc-install '(flycheck
+                        :url "https://github.com/flycheck/flycheck.git"
+                        :branch "34.1"
+                        :doc "doc")))
 (use-package flycheck
   :ensure t
-  :vc (
-       :url "https://github.com/flycheck/flycheck.git"
-       :rev "34.1")
-  :defer t
+  ;; TODO: ждём обновления `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/flycheck/flycheck.git"
+  ;;      :rev "34.1")
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
@@ -1409,16 +1436,21 @@
 ;; 📦 HELM-PROJECTILE
 ;; https://github.com/bbatsov/helm-projectile
 ;; Интеграция HELM с PROJECTILE
-(use-package helm-projectile
-  :ensure t
-  :vc (
-       :url "https://github.com/bbatsov/helm-projectile.git"
-       :rev "v1.0.0")
-  :delight ""
-  :requires (helm projectile)
-  :after (helm projectile)
-  :config
-  (helm-projectile-on))
+;; (unless (package-installed-p 'helm-projectile)
+;;   (package-vc-install '(helm-projectile
+;;                         :url "https://github.com/bbatsov/helm-projectile.git"
+;;                         :branch "v1.0.0")))
+;; (use-package helm-projectile
+;;   :ensure t
+;;   ;; TODO Ждём обновления `use-package'
+;;   ;; :vc (
+;;   ;;      :url "https://github.com/bbatsov/helm-projectile.git"
+;;   ;;      :rev "v1.0.0")
+;;   :delight ""
+;;   :requires (helm projectile)
+;;   :after (helm projectile)
+;;   :config
+;;   (helm-projectile-on))
 
 
 ;; 📦 HL-TODO
@@ -1513,12 +1545,22 @@
   :mode ("\\.json\\'" . json-mode))
 
 
+;; 📦 WITH-EDITOR
+;; https://github.com/magit/with-editor
+;; Зависимость MAGIT
+(unless (package-installed-p 'with-editor)
+  (package-vc-install '(with-editor
+                        :url "https://github.com/magit/with-editor.git"
+                        :branch "v3.4.2"
+                        :lisp-dir "lisp"
+                        :doc "docs")))
+
+
 ;; 📦 MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
 (unless (package-installed-p 'magit)
-  (package-install 'el-patch) ;; Зависимость Magit
   (package-vc-install
    '(magit
      :url "https://github.com/magit/magit.git"
@@ -1544,12 +1586,17 @@
 ;; 📦 MAGIT-FILE-ICONS
 ;; https://github.com/gekoke/magit-file-icons
 ;; Иконки в буферах Magit
+(unless (package-installed-p 'magit-file-icons)
+  (package-vc-install '(magit-file-icons
+                        :url "https://github.com/gekoke/magit-file-icons.git"
+                        :branch "v2.0.0")))
 (use-package magit-file-icons
-  :requires magit
-  :after magit
-  :vc (
-       :url "https://github.com/gekoke/magit-file-icons.git"
-       :rev "v2.0.0")
+  ;; :requires magit
+  ;; :after magit
+  ;; TODO: ждём релиза `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/gekoke/magit-file-icons.git"
+  ;;      :rev "v2.0.0")
   :config
   (magit-file-icons-mode 1))
 
@@ -1558,13 +1605,18 @@
 ;; https://github.com/dgutov/diff-hl
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
+(unless (package-installed-p 'diff-hl)
+  (package-vc-install '(diff-hl
+                        :url "https://github.com/dgutov/diff-hl.git"
+                        :branch "1.10.0")))
 (use-package diff-hl
   :requires magit
   :after magit
   :ensure t
-  :vc (
-       :url "https://github.com/dgutov/diff-hl.git"
-       :rev "1.10.0")
+  ;; TODO: ждём обновления `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/dgutov/diff-hl.git"
+  ;;      :rev "1.10.0")
   :commands (diff-hl-mode diff-hl-dired-mode)
   :config
   (global-diff-hl-mode 1)
@@ -1807,11 +1859,16 @@
 ;; 📦 RAINBOW-DELIMITERS-MODE
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
+(unless (package-installed-p 'rainbow-delimiters)
+  (package-vc-install '(rainbow-delimiters
+                        :url "https://github.com/Fanael/rainbow-delimiters"
+                        :branch "2.1.5")))
 (use-package rainbow-delimiters
   :ensure t
-  :vc (
-       :url "https://github.com/Fanael/rainbow-delimiters"
-       :rev "2.1.5")
+  ;; TODO: ждём релиза `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/Fanael/rainbow-delimiters"
+  ;;      :rev "2.1.5")
   :delight ""
   :hook
   ((
@@ -1951,11 +2008,16 @@
 ;; 📦 WEB-MODE
 ;; https://web-mode.org/
 ;; Режим для редактирования HTML и не только.
+(unless (package-installed-p 'web-mode)
+  (package-vc-install '(web-mode
+                        :url "https://github.com/fxbois/web-mode.git"
+                        :branch "v17.3.13")))
 (use-package web-mode
   :ensure t
-  :vc (
-       :url "https://github.com/fxbois/web-mode.git"
-       :rev "v17.3.13")
+  ;; TODO
+  ;; :vc (
+  ;;      :url "https://github.com/fxbois/web-mode.git"
+  ;;      :rev "v17.3.13")
   :custom
   (major-mode 'web-mode)
   (web-mode-attr-indent-offset 4 "4 пробела при выравнивании")
@@ -1989,11 +2051,16 @@
 ;; 📦 YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
+(unless (package-installed-p 'yaml-mode)
+  (package-vc-install '(yaml-mode
+                        :url "https://github.com/yoshiki/yaml-mode.git"
+                        :branch "0.0.16")))
 (use-package yaml-mode
   :ensure t
-  :vc (
-       :url "https://github.com/yoshiki/yaml-mode.git"
-       :rev "0.0.16")
+  ;; TODO: Ждём обновления `use-package'
+  ;; :vc (
+  ;;      :url "https://github.com/yoshiki/yaml-mode.git"
+  ;;      :rev "0.0.16")
   :defer t
   :mode
   ("\\.ansible\\-lint\\'"

@@ -893,7 +893,7 @@
   :defer t
   :custom
   (adoc-fontify-code-blocks-natively 10000)
-  :mode ("\\.adoc\\'" . adoc-mode))
+  :mode "\\.adoc\\'")
 
 
 ;; 📦 AGGRESSIVE-INDENT
@@ -1172,8 +1172,7 @@
   ;;      :url "https://github.com/spotify/dockerfile-mode.git"
   ;;      :rev "v1.9")
   :defer t
-  :mode
-  ("\\Dockerfile\\'" . dockerfile-mode))
+  :mode "\\Dockerfile\\'")
 
 
 ;; 📦 DOOM-THEMES
@@ -1256,7 +1255,6 @@
 ;; :vc (
 ;;      :url "https://github.com/protesilaos/ef-themes.git"
 ;;      :rev "1.8.0"))
-(setq init-el-theme 'ef-elea-dark)
 
 
 ;; 📦 EGLOT
@@ -1318,11 +1316,9 @@
 ;; Отображение подсказок при работе с Emacs Lisp
 (use-package eldoc
   :config
-  ;; Глобально этот режим не нужен
-  (global-eldoc-mode nil)
-  :delight ""
-  ;; Включаем только там, где это действительно необходимо
-  :hook ((emacs-lisp-mode
+  (global-eldoc-mode nil) ;; Глобально этот режим не нужен
+  :delight ""             ;; Выводить в статус-баре тоже не нужно
+  :hook ((emacs-lisp-mode ;; Включаем только там, где это действительно необходимо
           python-mode) . eldoc-mode))
 
 
@@ -1553,7 +1549,7 @@
 (use-package json-mode
   :ensure t
   :defer t
-  :mode ("\\.json\\'" . json-mode))
+  :mode "\\.json\\'")
 
 
 ;; 📦 DASH
@@ -1675,13 +1671,21 @@
     :config (setq-local word-wrap t)
     :bind (:map markdown-mode-map
                 ("M-." . markdown-follow-thing-at-point))
-    :mode ("\\.md\\'" . markdown-mode)))
+    :mode "\\.md\\'"))
 
 
 ;; 📦 MODUS-THEMES
 ;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
 (use-package modus-themes
   :ensure t)
+
+
+;; 📦 MONOKAI-EMACS
+;; https://github.com/oneKelvinSmith/monokai-emacs
+;; Тема из редактора Sublime Text
+(use-package monokai-theme
+  :ensure t)
+(setq init-el-theme 'monokai)
 
 
 ;; 📦 MULTIPLE CURSORS
@@ -1796,7 +1800,7 @@
   ;; :vc (
   ;;      :url "https://github.com/emacs-php/php-mode.git"
   ;;      :rev "v1.26.1")
-  :mode("\\.php\\'" . php-mode))
+  :mode "\\.php\\'")
 
 
 ;; 📦 PO-MODE
@@ -1807,8 +1811,7 @@
 ;; * gettext-el: если po-mode из архивов не работает
 (use-package po-mode
   :ensure t
-  :mode
-  ("\\.po\\'\\|\\.po\\." . po-mode))
+  :mode "\\.po\\'\\|\\.po\\.")
 
 
 ;; 📦 PROJECTILE
@@ -2014,8 +2017,8 @@
   ;;      :rev "1.0.1")
   :defer t
   :mode
-  ("\\.terraformrc\\'" . terraform-mode)
-  ("\\.tf\\'" . terraform-mode))
+  ("\\.terraformrc\\'"
+   "\\.tf\\'"))
 
 
 ;; 📦 WEB-MODE

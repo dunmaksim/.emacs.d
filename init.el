@@ -349,9 +349,10 @@
  '(auto-save-file-name-transforms `((".*" , init-el-autosave-dir) t))
  '(delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
  '(enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
- '(enable-local-variables t "Считать все переменные из файлов `.dir-locals.el' безопасными")
+ '(enable-local-variables :all "Считать все переменные из файлов `.dir-locals.el' безопасными")
  '(large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
  '(make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
+ '(require-final-newline t "Требовать новую строку в конце файлов")
  '(save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
 (dolist (safe-var '((buffer-env-script-name . ".venv/bin/activate")
                     (electric-pair-preserve-balance . t)
@@ -1758,7 +1759,7 @@
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (unless (and (package-installed-p 'org)
-             (package-built-in-p 'org '(9 7 13)))
+             (package-built-in-p 'org '(9 7 14)))
   (customize-set-variable 'package-install-upgrade-built-in t)
   (package-install 'org)
   (customize-set-variable 'package-install-upgrade-built-in nil))

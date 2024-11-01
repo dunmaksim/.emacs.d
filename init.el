@@ -120,7 +120,7 @@
  '(compilation-scroll-output t "Автоматическая прокрутка буфера *compilation*")
  '(create-lockfiles nil "Не создавать lock-файлы")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
- '(custom-safe-themes t "Считать все темы безопасными")
+ ;; '(custom-safe-themes t "Считать все темы безопасными")
  '(default-input-method "russian-computer" "Метод ввода по умолчанию")
  '(default-transient-input-method "russian-computer")
  '(delete-by-moving-to-trash t "Удалять файлы в Корзину")
@@ -154,11 +154,18 @@
 
 (require 'keymap)
 
-(keymap-global-unset "<insert>") ;; Режим перезаписи не нужен
-(keymap-global-unset "M-,")      ;; Такие маркеры не нужны
-(keymap-global-unset "C-z")      ;; Такой Ctrl+Z нам не нужен
-(keymap-global-unset "C-x C-z")  ;; `suspend-emacs' тоже не нужен
-(keymap-global-unset "C-x C-p")  ;; `mark-page' не нужна, часто конфликтует с Projectile
+(keymap-global-unset "<insert>")  ;; Режим перезаписи не нужен
+(keymap-global-unset "M-,")       ;; Такие маркеры не нужны
+(keymap-global-unset "C-z")       ;; Такой Ctrl+Z нам не нужен
+(keymap-global-unset "C-x C-z")   ;; `suspend-emacs' тоже не нужен
+(keymap-global-unset "C-x C-p")   ;; `mark-page' не нужна, часто конфликтует с Projectile
+
+;; Включим переключение буферов по Ctrl+PgUp и Ctrl+PgDn
+(keymap-global-unset "C-<next>")  ;; Ни разу не видел, что это было нужно
+(keymap-global-unset "C-<prior>") ;; Это сочетание тоже не нужно.
+(keymap-global-set "C-<next>" 'next-buffer)
+(keymap-global-set "C-<prior>" 'previous-buffer)
+
 (keymap-global-set "C-x k"       ;; Закрыть буфер по нажатию [C-x k]
                    (lambda()
                      (interactive)
@@ -1002,10 +1009,10 @@
 ;; Упрощает навигацию по сложным документам: показывает хлебные
 ;; крошки в заголовках окон и позволяет быстро перейти в нужное место
 ;; с помощью `breadcrumb-jump'.
-(use-package breadcrumb
-  :ensure t
-  :hook ((emacs-lisp-mode
-          rst-mode) . breadcrumb-local-mode))
+;; (use-package breadcrumb
+;;   :ensure t
+;;   :hook ((emacs-lisp-mode
+;;           rst-mode) . breadcrumb-local-mode))
 
 
 ;; 📦 BUFFER-ENV

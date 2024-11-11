@@ -1375,6 +1375,7 @@
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook ((adoc-mode
+          asciidoc-mode
           conf-mode
           css-mode
           dockerfile-mode
@@ -1452,26 +1453,6 @@
   (helm-mode 1)
   :bind (:map global-map
               ("M-y" . helm-show-kill-ring)))
-
-
-;; 📦 HELM-PROJECTILE
-;; https://github.com/bbatsov/helm-projectile
-;; Интеграция HELM с PROJECTILE
-;; (unless (package-installed-p 'helm-projectile)
-;;   (package-vc-install '(helm-projectile
-;;                         :url "https://github.com/bbatsov/helm-projectile.git"
-;;                         :branch "v1.0.0")))
-;; (use-package helm-projectile
-;;   :ensure t
-;;   ;; TODO Ждём обновления `use-package'
-;;   ;; :vc (
-;;   ;;      :url "https://github.com/bbatsov/helm-projectile.git"
-;;   ;;      :rev "v1.0.0")
-;;   :delight ""
-;;   :requires (helm projectile)
-;;   :after (helm projectile)
-;;   :config
-;;   (helm-projectile-on))
 
 
 ;; 📦 HL-TODO

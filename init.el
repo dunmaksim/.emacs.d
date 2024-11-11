@@ -1602,8 +1602,11 @@
   :custom
   (magit-auto-revert-mode t "Автоматически обновлять файлы в буферах при изменениях на диске.")
   (magit-define-global-key-bindings t "Включить глобальные сочетания Magit.")
-  :config
-  (add-hook 'after-save-hook 'magit-after-save-refresh-status t))
+  :init
+  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  :hook
+  (after-save . magit-after-save-refresh-status))
 
 
 ;; 📦 MAGIT-FILE-ICONS
@@ -1645,13 +1648,15 @@
   (global-diff-hl-mode 1)
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-  :hook ((adoc-mode
-          asciidoc-mode
-          emacs-lisp-mode
-          markdown-mode
-          python-mode
-          rst-mode
-          yaml-mode). diff-hl-mode))
+  :hook
+  ((adoc-mode
+    asciidoc-mode
+    emacs-lisp-mode
+    markdown-mode
+    python-mode
+    rst-mode
+    yaml-mode). diff-hl-margin-mode)
+  ((dired-mode . diff-hl-dired-mode)))
 
 
 ;; 📦 MARKDOWN MODE

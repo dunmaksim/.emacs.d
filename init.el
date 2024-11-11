@@ -65,7 +65,6 @@
                default-font-family
                init-el-font-height) nil t)
       (set-face-attribute 'default nil :family default-font-family))
-
     (set-face-attribute 'default nil :height (* init-el-font-height 10))))
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
@@ -275,6 +274,7 @@
 (require 'display-line-numbers)
 (dolist
     (hook '(adoc-mode
+            asciidoc-mode
             c-mode
             conf-mode
             css-mode
@@ -496,7 +496,9 @@
         (mode . lisp-data-mode)))
       ("Org" (mode . org-mode))
       ("Markdown" (mode . markdown-mode))
-      ("AsciiDoc" (mode . adoc-mode))
+      ("AsciiDoc" (or
+                   (mode . adoc-mode)
+                   (mode . asciidoc-mode)))
       ("ReStructured Text" (mode . rst-mode))
       ("CONF / INI"
        (or
@@ -770,6 +772,7 @@
 
 ;; 📦 PACKAGE
 (require 'package)
+(customize-set-variable 'package-enable-at-startup nil "Prevent double loading of libraries")
 (dolist (archive '(("gnu" . "https://elpa.gnu.org/packages/")
                    ("melpa" . "https://melpa.org/packages/")
                    ("melpa-stable" . "https://stable.melpa.org/packages/")
@@ -896,12 +899,16 @@
 ;; 📦 ADOC-MODE
 ;; https://github.com/bbatsov/adoc-mode
 ;; Работа с AsciiDoc
-(use-package adoc-mode
-  :ensure t
-  :defer t
-  :custom
-  (adoc-fontify-code-blocks-natively 10000)
-  :mode "\\.adoc\\'")
+;; (use-package adoc-mode
+;;   :ensure t
+;;   :defer t
+;;   :custom
+;;   (adoc-fontify-code-blocks-natively 10000)
+;;   :mode "\\.adoc\\'")
+
+(use-package asciidoc-mode
+  :load-path "~/repo/asciidoc-mode/"
+  :mode ("\\.adoc\\'" . asciidoc-mode))
 
 
 ;; 📦 AGGRESSIVE-INDENT
@@ -1043,6 +1050,7 @@
   ;;      :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
   ;;      :rev "v1.0.4")
   :hook ((css-mode
+          emacs-lisp-mode
           web-mode) . colorful-mode))
 
 
@@ -1247,6 +1255,7 @@
   :delight ""
   :config
   (editorconfig-mode 1)
+  (add-hook 'before-save-hook 'editorconfig-format-buffer)
   :mode
   ("\\.editorconfig\\'" . editorconfig-conf-mode))
 
@@ -1442,9 +1451,6 @@
   :config
   (helm-mode 1)
   :bind (:map global-map
-              ;; ("C-x C-f" . helm-find-files)
-              ;; ("C-x b" . helm-buffers-list)
-              ;; ("M-x" . helm-M-x)
               ("M-y" . helm-show-kill-ring)))
 
 
@@ -1479,6 +1485,14 @@
 (use-package hl-todo
   :ensure t
   :config (global-hl-todo-mode t))
+
+
+;; 📦 HYPERBOLE
+;; https://www.gnu.org/software/hyperbole/
+;; Распознаёт текст в буферах и автоматически превращает в кнопки и ссылки.
+(use-package hyperbole
+  :ensure t)
+
 
 
 ;; 📦 INDENT-BARS
@@ -1766,7 +1780,7 @@
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (unless (and (package-installed-p 'org)
-             (package-built-in-p 'org '(9 7 14)))
+             (package-built-in-p 'org '(9 7 16)))
   (customize-set-variable 'package-install-upgrade-built-in t)
   (package-install 'org)
   (customize-set-variable 'package-install-upgrade-built-in nil))
@@ -1804,7 +1818,7 @@
                         :lisp-dir "lisp")))
 (use-package php-mode
   :ensure t
-  ;; Возможно, в следующей версии `use-package'.
+  ;; TODO: Возможно, в следующей версии `use-package'.
   ;; :vc (
   ;;      :url "https://github.com/emacs-php/php-mode.git"
   ;;      :rev "v1.26.1")

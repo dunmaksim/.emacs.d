@@ -1537,10 +1537,12 @@
                         :branch "1.10")))
 (use-package jinx
   :hook ((adoc-mode
+          asciidoc-mode
           markdown-mode
           org-mode
           rst-mode
           text-mode). jinx-mode))
+
 
 ;; 📦 JSON-MODE
 ;; https://github.com/json-emacs/json-mode
@@ -1644,6 +1646,7 @@
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook ((adoc-mode
+          asciidoc-mode
           emacs-lisp-mode
           markdown-mode
           python-mode
@@ -1899,7 +1902,7 @@
   ;;      :rev "2.1.5")
   :delight ""
   :hook
-  ((
+  ((asciidoc-mode
     adoc-mode
     conf-mode
     css-mode
@@ -1971,7 +1974,8 @@
   :bind (:map global-map
               ("C-c i" . symbols-outline-show))
   :hook
-  ((adoc-mode
+  ((asciidoc-mode
+    adoc-mode
     emacs-lisp-mode
     python-mode
     rst-mode

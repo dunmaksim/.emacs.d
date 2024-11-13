@@ -230,7 +230,7 @@
 ;; Поддержка CSS.
 (require 'css-mode)
 (customize-set-variable 'css-indent-offset 2)
-(add-to-list 'auto-mode-alist '("\\.css" . css-mode))
+(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
 
 
 ;; 📦 DELSEL
@@ -263,8 +263,9 @@
 ;; [C-x C-f] - создание файла с последующим открытием буфера.
 (require 'dired)
 (custom-set-variables
- '(dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог.")
- '(dired-listing-switches "-l --human-readable --all --group-directories-first"))
+ '(dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
+ '(dired-listing-switches "-l --human-readable --all --group-directories-first")
+ '(dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке"))
 (add-hook 'dired-mode-hook 'dired-hide-details-mode)
 
 
@@ -711,7 +712,8 @@
      (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
      (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
  '(whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать."))
-(dolist (hook '(adoc-mode
+(dolist (hook '(asciidoc-mode
+                adoc-mode
                 conf-mode
                 css-mode
                 dockerfile-mode
@@ -827,7 +829,7 @@
 (unless (package-installed-p 'delight)
   (package-vc-install '(delight
                         :url "https://git.savannah.nongnu.org/git/delight.git"
-                        :branch "1.7"       )))
+                        :branch "1.7")))
 (use-package delight
   :ensure t
   ;; :vc (
@@ -836,9 +838,11 @@
   :config
   (delight '((checkdoc-minor-mode)
              (global-visual-line-mode)
-             (global-whitespace-mode)
-             (whitespace-mode))))
+             (global-whitespace-mode))))
 
+(use-package emacs
+  :delight
+  (whitespace-mode " ¶"))
 
 ;; 📦 ACE-WINDOW
 ;; https://github.com/abo-abo/ace-window
@@ -1405,16 +1409,6 @@
   :hook (emacs-lisp-mode . flylisp-mode))
 
 
-;; 📦 FLYMAKE
-;; Более свежая версия встроенного пакета из репозитория gnu
-;; Используется для проверки `init.el'.
-;; https://elpa.gnu.org/packages/flymake.html
-(use-package flymake
-  :ensure t
-  :hook ((emacs-lisp-mode
-          lisp-data-mode) . flymake-mode))
-
-
 ;; 📦 FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода с помощью разных внешних средств.
@@ -1483,8 +1477,7 @@
   (package-vc-install
    '(indent-bars
      :url "https://github.com/jdtsmith/indent-bars.git"
-     :branch "v0.8.1"
-     )))
+     :branch "v0.8.2")))
 (use-package indent-bars
   :ensure t
   :hook ((emacs-lisp-mode
@@ -1717,18 +1710,18 @@
 ;; 📦 NANO-MODELINE
 ;; https://elpa.gnu.org/packages/nano-modeline.html
 ;; Статусная строка маленькая вообще жестб
-(use-package nano-modeline
-  :ensure t
-  :custom
-  (nano-modeline-position 'nano-modeline-footer "Показывать внизу")
-  :hook
-  (messages-buffer-mode . nano-modeline-message-mode)
-  (org-agenda-mode . nano-modeline-org-agenda-mode)
-  (org-capture-mode . nano-modeline-org-capture-mode)
-  (org-mode . nano-modeline-org-mode)
-  (prog-mode . nano-modeline-prog-mode)
-  (term-mode . nano-modeline-term-mode)
-  (text-mode . nano-modeline-text-mode))
+;; (use-package nano-modeline
+;;   :ensure t
+;;   :custom
+;;   (nano-modeline-position 'nano-modeline-footer "Показывать внизу")
+;;   :hook
+;;   (messages-buffer-mode . nano-modeline-message-mode)
+;;   (org-agenda-mode . nano-modeline-org-agenda-mode)
+;;   (org-capture-mode . nano-modeline-org-capture-mode)
+;;   (org-mode . nano-modeline-org-mode)
+;;   (prog-mode . nano-modeline-prog-mode)
+;;   (term-mode . nano-modeline-term-mode)
+;;   (text-mode . nano-modeline-text-mode))
 
 
 ;; 📦 NERD-ICONS

@@ -1269,7 +1269,7 @@
 (unless (package-installed-p 'ef-themes)
   (package-vc-install '(ef-themes
                         :url "https://github.com/protesilaos/ef-themes.git"
-                        :branch "1.8.0")))
+                        :branch "1.9.0")))
 (use-package ef-themes
   :ensure t)
 ;; TODO ждём релиза `use-package'
@@ -1710,18 +1710,18 @@
 ;; 📦 NANO-MODELINE
 ;; https://elpa.gnu.org/packages/nano-modeline.html
 ;; Статусная строка маленькая вообще жестб
-;; (use-package nano-modeline
-;;   :ensure t
-;;   :custom
-;;   (nano-modeline-position 'nano-modeline-footer "Показывать внизу")
-;;   :hook
-;;   (messages-buffer-mode . nano-modeline-message-mode)
-;;   (org-agenda-mode . nano-modeline-org-agenda-mode)
-;;   (org-capture-mode . nano-modeline-org-capture-mode)
-;;   (org-mode . nano-modeline-org-mode)
-;;   (prog-mode . nano-modeline-prog-mode)
-;;   (term-mode . nano-modeline-term-mode)
-;;   (text-mode . nano-modeline-text-mode))
+(use-package nano-modeline
+  :ensure t
+  :custom
+  (nano-modeline-position 'nano-modeline-footer "Показывать внизу")
+  :hook
+  (messages-buffer-mode . nano-modeline-message-mode)
+  (org-agenda-mode . nano-modeline-org-agenda-mode)
+  (org-capture-mode . nano-modeline-org-capture-mode)
+  (org-mode . nano-modeline-org-mode)
+  (prog-mode . nano-modeline-prog-mode)
+  (term-mode . nano-modeline-term-mode)
+  (text-mode . nano-modeline-text-mode))
 
 
 ;; 📦 NERD-ICONS
@@ -1814,6 +1814,7 @@
 ;; * gettext
 ;; * gettext-el: если po-mode из архивов не работает
 (use-package po-mode
+  :pin "melpa"
   :ensure t
   :mode "\\.po\\'\\|\\.po\\.")
 
@@ -1988,7 +1989,8 @@
 (use-package swiper
   :ensure t
   :bind (:map global-map
-              ("C-s" . swiper-isearch)))
+              ("C-s" . swiper-isearch)
+              ("C-r" . swiper-isearch-backward)))
 
 
 ;; 📦 TEMPEL

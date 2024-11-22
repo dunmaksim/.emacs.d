@@ -1695,16 +1695,15 @@
 ;; 📦 MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
-;; (use-package multiple-cursors
-;;   :ensure t
-;;   :bind (:map global-map
-;;               ("C-S-c C-S-c" . mc/edit-lines)
-;;               ("C->" . mc/mark-next-like-this)
-;;               ("C-<" . mc/mark-previous-like-this)
-;;               ("C-c C-<" . mc/mark-all-like-this))
-;;   :config
-;;   (global-unset-key (kbd "M-<down-mouse-1>"))
-;;   (global-set-key (kbd "M-<mouse-1>" #'mc/add-cursor-on-click)))
+(use-package multiple-cursors
+  :ensure t
+  :custom (mc/always-run-for-all t "Не задавать лишних вопросов.")
+  :bind (:map global-map
+              ("C-S-c C-S-c" . mc/edit-lines)
+              ("C->" . mc/mark-next-like-this)
+              ("C-<" . mc/mark-previous-like-this)
+              ("C-c C-<" . mc/mark-all-like-this)
+              ("M-<down-mouse-1>" . mc/add-cursor-on-click)))
 
 
 ;; 📦 NANO-MODELINE

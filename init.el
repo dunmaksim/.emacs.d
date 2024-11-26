@@ -153,6 +153,7 @@
 
 (require 'keymap)
 
+
 (keymap-global-unset "<insert>")  ;; Режим перезаписи не нужен
 (keymap-global-unset "M-,")       ;; Такие маркеры не нужны
 (keymap-global-unset "C-z")       ;; Такой Ctrl+Z нам не нужен
@@ -249,9 +250,11 @@
  '(desktop-auto-save-timeout 20 "Автосохранение каждые 20 секунд.")
  '(desktop-dirname user-emacs-directory "Каталог для хранения файла .desktop.")
  '(desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
- '(desktop-modes-not-to-save '(dired-mode Info-mode info-lookup-mode)) ; А вот эти не сохранять
  '(desktop-restore-frames t "Восстанавливать фреймы.")
  '(desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов."))
+(add-to-list 'desktop-modes-not-to-save 'dired-mode)
+(add-to-list 'desktop-modes-not-to-save 'Info-mode)
+(add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
 (desktop-save-mode 1)
 (add-hook 'server-after-make-frame-hook 'desktop-read)
 
@@ -664,7 +667,7 @@
 (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
 (global-visual-line-mode 1) ;; Деление логических строк на видимые
 (line-number-mode t)        ;; Показывать номер строки в статусной строке
-(overwrite-mode -1)        ;; Отключить режим перезаписи текста
+(overwrite-mode -1)         ;; Отключить режим перезаписи текста
 (size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
 (keymap-global-set "C-z" 'undo)               ;; Отмена
 (keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
@@ -2027,6 +2030,18 @@
   :mode
   ("\\.terraformrc\\'"
    "\\.tf\\'"))
+
+
+;; 📦 UNDO-TREE
+;; https://elpa.gnu.org/packages/undo-tree.html
+;; Расширенная отмена
+(use-package undo-tree
+  :ensure t
+  :config
+  (global-undo-tree-mode 1)
+  :bind (:map global-map
+              ("C-z" . undo-tree-undo)
+              ("C-S-z" . undo-tree-redo)))
 
 
 ;; 📦 WEB-MODE

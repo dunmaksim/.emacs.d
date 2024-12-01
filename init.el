@@ -166,14 +166,11 @@
 (keymap-global-set "C-<next>" 'next-buffer)
 (keymap-global-set "C-<prior>" 'previous-buffer)
 
-(keymap-global-set "C-x k"       ;; Закрыть буфер по нажатию [C-x k]
-                   (lambda()
-                     (interactive)
-                     (kill-buffer (current-buffer))))
-(keymap-global-set "M--"         ;; Вставка длинного тире
-                   (lambda()
-                     (interactive)
-                     (insert "—")))
+;; Закрыть буфер по нажатию [C-x k]
+(keymap-global-set "C-x k" (lambda() (interactive) (kill-buffer (current-buffer))))
+
+;; Вставка длинного тире по нажатию [M--]
+(keymap-global-set "M--" (lambda() (interactive) (insert "—")))
 
 
 ;; 📦 ABBREV-MODE
@@ -266,9 +263,21 @@
 ;; [C-x C-f] - создание файла с последующим открытием буфера.
 (require 'dired)
 (custom-set-variables
+ '(dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
+ '(dired-garbage-files-regexp
+   (concat (regexp-opt
+            '(".aux"
+              ".bak"
+              ".dvi"
+              ".log"
+              ".orig"
+              ".rej"
+              ".toc"
+              ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
+           "\\'"))
  '(dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
  '(dired-listing-switches "-l --human-readable --all --group-directories-first")
- '(dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке"))
+ '(dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов"))
 (add-hook 'dired-mode-hook 'dired-hide-details-mode)
 
 
@@ -426,7 +435,6 @@
 (custom-set-variables
  '(window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
  '(window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон"))
-(window-divider-mode t) ;; Отображать разделитель между окнами
 (keymap-global-set "C-x O" 'previous-multiframe-window) ;; Перейти в предыдущее окно
 (keymap-global-set "C-x o" 'next-multiframe-window)     ;; Перейти в следующее окно
 
@@ -1002,6 +1010,23 @@
   :delight "")
 
 
+;; 📦 AVY
+;; https://github.com/abo-abo/avy
+;; Множество функций для быстрого перехода к нужной строке, слову, символу и
+;; так далее.
+(unless (package-installed-p 'avy)
+  (package-vc-install '(avy
+                        :url "https://github.com/abo-abo/avy.git"
+                        :branch "0.5.0")))
+(use-package avy
+  :ensure t
+  :delight ""
+  :bind (:map global-map
+              ("M-g f" . avy-goto-line)
+              ("M-g w" . avy-goto-word)
+              ("C-:" . avy-goto-char)))
+
+
 ;; 📦 BBCODE-MODE
 ;; https://github.com/lassik/emacs-bbcode-mode
 ;; Режим редактирования BB-кодов
@@ -1316,6 +1341,10 @@
     (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(rst-mode . ("esbonio")))
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
+    :bind (:map eglot-mode-map
+                ("C-c C-d" . eldoc)
+                ("C-c C-r" . eglot-rename)
+                ("C-c C-f" . eglot-format-buffer))
     :hook ((ansible-mode
             dockerfile-mode
             markdown-mode
@@ -2005,12 +2034,7 @@
                         :url "https://github.com/minad/tempel.git"
                         :branch "1.2")))
 (use-package tempel
-  :ensure t
-  ;; TODO: Ждём обновления `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/minad/tempel.git"
-  ;;      :rev "1.2")
-  )
+  :ensure t)
 
 
 ;; 📦 TERRAFORM-MODE
@@ -2030,18 +2054,6 @@
   :mode
   ("\\.terraformrc\\'"
    "\\.tf\\'"))
-
-
-;; 📦 UNDO-TREE
-;; https://elpa.gnu.org/packages/undo-tree.html
-;; Расширенная отмена
-(use-package undo-tree
-  :ensure t
-  :config
-  (global-undo-tree-mode 1)
-  :bind (:map global-map
-              ("C-z" . undo-tree-undo)
-              ("C-S-z" . undo-tree-redo)))
 
 
 ;; 📦 WEB-MODE

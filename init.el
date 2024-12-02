@@ -418,6 +418,7 @@
         (require 'flyspell)
         (customize-set-variable 'ispell-program-name text-spell-program)
         (dolist (hook '(adoc-mode
+                        asciidoc-mode
                         emacs-lisp-mode
                         markdown-mode
                         org-mode

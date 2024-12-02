@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Reference
+# key: ref
+# --
+
+:ref:\`${1:text} <${2:href}>\`$0

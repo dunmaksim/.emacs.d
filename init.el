@@ -1611,6 +1611,12 @@
 ;; TODO: добавить код для установки новой версии `transient'.
 (unless (package-installed-p 'magit)
   (package-vc-install
+   '(transient
+     :url "https://github.com/magit/transient.git"
+     :branch "v0.8.1"
+     :lisp-dir "lisp"
+     :doc "docs"))
+  (package-vc-install
    '(magit
      :url "https://github.com/magit/magit.git"
      :branch "v4.1.1"
@@ -1796,7 +1802,7 @@
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (unless (and (package-installed-p 'org)
-             (package-built-in-p 'org '(9 7 16)))
+             (package-built-in-p 'org '(9 7 17)))
   (customize-set-variable 'package-install-upgrade-built-in t)
   (package-install 'org)
   (customize-set-variable 'package-install-upgrade-built-in nil))
@@ -1891,7 +1897,7 @@
   (unless (package-installed-p 'pulsar)
     (package-vc-install '(pulsar
                           :url "https://github.com/protesilaos/pulsar.git"
-                          :branch "1.1.0")))
+                          :branch "1.2.0")))
   (use-package pulsar
     :ensure t
     ;; Ждём обновления `use-package'.
@@ -1906,7 +1912,6 @@
     (add-to-list 'pulsar-pulse-functions 'ace-window)
     (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
     (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
-    (add-to-list 'pulsar-pulse-functions 'next-multiframe-window)
     (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)))
 
 

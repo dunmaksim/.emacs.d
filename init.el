@@ -1340,7 +1340,6 @@
     (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
     (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
     (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
-    (add-to-list 'eglot-server-programs '(rst-mode . ("esbonio")))
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
     :bind (:map eglot-mode-map
                 ("C-c C-d" . eldoc)
@@ -1458,6 +1457,8 @@
   :defer t
   :bind (:map global-map
               ([f12] . format-all-buffer)))
+
+(hl-line-mode)
 
 
 ;; 📦 HELM
@@ -2045,7 +2046,7 @@
 
 ;; 📦 TERRAFORM-MODE
 ;; https://github.com/hcl-emacs/terraform-mode
-;; Работа с файлами конфигурации Terraform
+;; Работа с файлами конфигурации Terraform и OpenTofu
 (unless (package-installed-p 'terraform-mode)
   (package-vc-install '(terraform-mode
                         :url "https://github.com/hcl-emacs/terraform-mode.git"
@@ -2057,9 +2058,10 @@
   ;;      :url "https://github.com/hcl-emacs/terraform-mode.git"
   ;;      :rev "1.0.1")
   :defer t
-  :mode
-  ("\\.terraformrc\\'"
-   "\\.tf\\'"))
+  :mode ("\\.terraformrc\\'"
+         "\\.tf\\'"
+         "\\.tofurc\\'"
+         "tofu\\.rc\\'"))
 
 
 ;; 📦 WEB-MODE

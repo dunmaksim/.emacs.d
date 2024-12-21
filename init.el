@@ -879,13 +879,9 @@
 (unless (package-installed-p 'activities)
   (package-vc-install '(activities
                         :url "https://github.com/alphapapa/activities.el.git"
-                        :branch "v0.7.1")))
+                        :branch "v0.7.2")))
 (use-package activities
   :ensure t
-  ;; Ждём обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/alphapapa/activities.el.git"
-  ;;      :rev "v0.7.1")
   :config
   (activities-mode 1)
   :bind
@@ -1300,11 +1296,9 @@
                         :url "https://github.com/protesilaos/ef-themes.git"
                         :branch "1.9.0")))
 (use-package ef-themes
-  :ensure t)
-;; TODO ждём релиза `use-package'
-;; :vc (
-;;      :url "https://github.com/protesilaos/ef-themes.git"
-;;      :rev "1.8.0"))
+  :ensure t
+  :config
+  (setq init-el-theme 'ef-autumn))
 
 
 ;; 📦 EGLOT
@@ -1729,7 +1723,7 @@
 ;; Тема из редактора Sublime Text
 (use-package monokai-theme
   :ensure t)
-(setq init-el-theme 'monokai)
+;; (setq init-el-theme 'monokai)
 
 
 ;; 📦 MULTIPLE CURSORS

@@ -119,7 +119,6 @@
  '(compilation-scroll-output t "Автоматическая прокрутка буфера *compilation*")
  '(create-lockfiles nil "Не создавать lock-файлы")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
- ;; '(custom-safe-themes t "Считать все темы безопасными")
  '(default-input-method "russian-computer" "Метод ввода по умолчанию")
  '(default-transient-input-method "russian-computer")
  '(delete-by-moving-to-trash t "Удалять файлы в Корзину")
@@ -139,11 +138,11 @@
  '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
  '(truncate-lines 1 "Обрезать длинные строки")
  '(use-dialog-box nil "Диалоговые окна ОС не нужны")
+ '(use-short-answers t "Краткие ответы вместо длинных")
  '(user-full-name "Dunaevsky Maxim" "Имя пользователя")
  '(user-mail-address "dunmaksim@yandex.ru" "Адрес электронной почты")
  '(vc-follow-symlinks t "Переходить по ссылкам без лишних вопросов")
  '(visible-bell t "Мигать буфером при переходе в него"))
-
 
 (when (fboundp 'menu-bar-mode)
   (customize-set-variable 'menu-bar-mode nil "Выключить отображение меню"))
@@ -1075,9 +1074,6 @@
                         :branch "v1.0.4")))
 (use-package colorful-mode
   :ensure t
-  ;; :vc (
-  ;;      :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
-  ;;      :rev "v1.0.4")
   :hook ((css-mode
           emacs-lisp-mode
           web-mode) . colorful-mode))
@@ -1092,11 +1088,6 @@
                         :branch "1.0.2")))
 (use-package company
   :ensure t
-  ;; TODO: ждём обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/company-mode/company-mode.git"
-  ;;      :rev "1.0.2"
-  ;;      )
   :delight ""
   :demand t
   :custom
@@ -1974,7 +1965,8 @@
   :custom
   (reverse-im-input-methods '("russian-computer"
                               "russian-techwriter"))
-  :config (reverse-im-mode 1))
+  :config
+  (reverse-im-mode 1))
 
 
 ;; 📦 RUBY-MODE

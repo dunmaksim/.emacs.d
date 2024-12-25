@@ -181,6 +181,9 @@
 ;; yc → Yandex Cloud
 ;; Это встроенный пакет
 (require 'abbrev)
+(add-hook 'asciidoc-mode-hook 'abbrev-mode)
+(add-hook 'markdown-mode-hook 'abbrev-mode)
+(add-hook 'rst-mode-hook 'abbrev-mode)
 
 
 ;; 📦 AUTOREVERT

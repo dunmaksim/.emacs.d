@@ -131,7 +131,7 @@
  '(ring-bell-function 'ignore "Отключить звуковое сопровождение событий")
  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
  '(scroll-bar-mode nil "Отключить полосы прокрутки")
- '(scroll-conservatively 101 "TODO: проверить что это такое")
+ ;; '(scroll-conservatively 101 "TODO: проверить что это такое")
  '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
  '(show-trailing-whitespace t "Подсветка висячих пробелов")
  '(standard-indent 4 "Отступ по умолчанию")
@@ -616,6 +616,15 @@
 (show-paren-mode 1) ;; Подсвечивать парные скобки
 
 
+;; 📦 PIXEL-SCROLL
+;; Встроенный пакет
+;; Позволяет плавно прокручивать текст
+(when (package-installed-p 'pixel-scroll)
+  (require 'pixel-scroll)
+  (pixel-scroll-mode 1)
+  (pixel-scroll-precision-mode))
+
+
 ;; 📦 REPLACE
 ;; Встроенный пакет.
 ;; Функции поиска и замены текста.
@@ -673,7 +682,6 @@
 (custom-set-variables
  '(backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
  '(blink-matching-paren t "Мигать, когда скобки парные")
- '(blink-matching-paren-on-screen t " TODO: ???")
  '(suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды"))
 (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
 (global-visual-line-mode 1) ;; Деление логических строк на видимые
@@ -934,10 +942,6 @@
                         :branch "1.10.0")))
 (use-package aggressive-indent
   :ensure t
-  ;; TODO: раскомментировать после обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/Malabarba/aggressive-indent-mode.git"
-  ;;      :rev "1.10.0")
   :defer t
   :hook ((emacs-lisp-mode
           json-mode
@@ -958,25 +962,6 @@
   :ensure t)
 
 
-;; 📦 ANACONDA-MODE
-;; https://github.com/pythonic-emacs/anaconda-mode
-;; Расширенная поддержка Python.
-;; (unless (package-installed-p 'anaconda-mode)
-;;   (package-install 'cask)
-;;   (package-vc-install '(anaconda-mode
-;;                         :url "https://github.com/pythonic-emacs/anaconda-mode.git"
-;;                         :branch "v0.1.16")))
-;; (use-package anaconda-mode
-;;   :ensure t
-;;   ;; TODO: раскомментировать после обновления `use-package'.
-;;   ;; :vc (
-;;   ;;      :url "https://github.com/pythonic-emacs/anaconda-mode.git"
-;;   ;;      :rev "v0.1.16")
-;;   :hook
-;;   (python-mode . anaconda-mode)
-;;   (python-mode . anaconda-eldoc-mode))
-
-
 ;; 📦 ANSIBLE
 ;; https://gitlab.com/emacs-ansible/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
@@ -986,10 +971,6 @@
                         :branch "0.3.2")))
 (use-package ansible
   :ensure t
-  ;; TODO: раскомментировать после обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://gitlab.com/emacs-ansible/emacs-ansible.git"
-  ;;      :rev "0.3.2")
   :defer t)
 
 
@@ -1002,10 +983,6 @@
                         :branch "v4.2")))
 (use-package apheleia
   :ensure t
-  ;; TODO: раскомментировать после обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/radian-software/apheleia.git"
-  ;;      :rev "v4.2")
   :delight "")
 
 
@@ -1035,10 +1012,6 @@
                         :branch "v2.3.0")))
 (use-package bbcode-mode
   :ensure t
-  ;; TODO: Ждём обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/lassik/emacs-bbcode-mode.git"
-  ;;      :rev "v2.3.0")
   :defer t)
 
 
@@ -1157,10 +1130,6 @@
                           :branch "3.1.0")))
   (use-package denote
     :ensure t
-    ;; TODO: ждём обновления `use-package'
-    ;; :vc (
-    ;;      :url "https://github.com/protesilaos/denote.git"
-    ;;      :rev "3.1.0")
     :custom
     (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
 
@@ -1206,10 +1175,6 @@
                         :branch "v1.9")))
 (use-package dockerfile-mode
   :ensure t
-  ;; TODO: ждём обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/spotify/dockerfile-mode.git"
-  ;;      :rev "v1.9")
   :defer t
   :mode "\\Dockerfile\\'")
 
@@ -1227,12 +1192,7 @@
                         :url "https://github.com/doomemacs/themes.git"
                         :branch "v2.3.0")))
 (use-package doom-themes
-  :ensure t
-  ;; TODO: раскомментировать после обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/doomemacs/themes.git"
-  ;;      :rev "v2.3.0")
-  )
+  :ensure t)
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1252,10 +1212,6 @@
                         :branch "0.1.13")))
 (use-package edit-indirect
   :ensure t
-  ;; TODO: ждём обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/Fanael/edit-indirect.git"
-  ;;      :rev "0.1.13")
   :bind (:map global-map
               ("C-c '" . edit-indirect-region)))
 
@@ -1270,11 +1226,6 @@
                         :doc "doc")))
 (use-package editorconfig
   :ensure t
-  ;; TODO: Ждём обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/editorconfig/editorconfig-emacs.git"
-  ;;      :rev "v0.11.0"
-  ;;      :doc "doc")
   :delight ""
   :config
   (editorconfig-mode 1)
@@ -1317,10 +1268,6 @@
                           :branch "1.17")))
   (use-package eglot
     :ensure t
-    ;; TODO: ждём обновления `use-package'
-    ;; :vc (
-    ;;      :url "https://github.com/joaotavora/eglot.git"
-    ;;      :rev "1.17")
     :defer t
     :config
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
@@ -1384,10 +1331,6 @@
                         :doc "doc")))
 (use-package flycheck
   :ensure t
-  ;; TODO: ждём обновления `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/flycheck/flycheck.git"
-  ;;      :rev "34.1")
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
@@ -1438,10 +1381,6 @@
                         :branch "0.6.0")))
 (use-package format-all
   :ensure t
-  ;; TODO: Ждём обновления `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/lassik/emacs-format-all-the-code.git"
-  ;;      :rev "0.6.0")
   :defer t
   :bind (:map global-map
               ([f12] . format-all-buffer)))
@@ -1459,11 +1398,6 @@
                         :branch "v4.0")))
 (use-package helm
   :ensure t
-  ;; TODO: ждём обновления `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/emacs-helm/helm.git"
-  ;;      :rev "v4.0"
-  ;;      )
   :delight ""
   :config
   (helm-mode 1)
@@ -1597,7 +1531,6 @@
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
-;; TODO: добавить код для установки новой версии `transient'.
 (unless (package-installed-p 'magit)
   (package-vc-install
    '(transient
@@ -1638,12 +1571,6 @@
                         :url "https://github.com/gekoke/magit-file-icons.git"
                         :branch "v2.0.0")))
 (use-package magit-file-icons
-  ;; :requires magit
-  ;; :after magit
-  ;; TODO: ждём релиза `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/gekoke/magit-file-icons.git"
-  ;;      :rev "v2.0.0")
   :config
   (magit-file-icons-mode 1))
 
@@ -1660,10 +1587,6 @@
   :requires magit
   :after magit
   :ensure t
-  ;; TODO: ждём обновления `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/dgutov/diff-hl.git"
-  ;;      :rev "1.10.0")
   :commands (diff-hl-mode diff-hl-dired-mode)
   :config
   (global-diff-hl-mode 1)
@@ -1791,7 +1714,7 @@
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (unless (and (package-installed-p 'org)
-             (package-built-in-p 'org '(9 7 17)))
+             (package-built-in-p 'org '(9 7 18)))
   (customize-set-variable 'package-install-upgrade-built-in t)
   (package-install 'org)
   (customize-set-variable 'package-install-upgrade-built-in nil))
@@ -1812,10 +1735,6 @@
                         :branch "0.23")))
 (use-package package-lint
   :ensure t
-  ;; Ждём выхода новой версии `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/purcell/package-lint.git"
-  ;;      :rev "0.23")
   :defer t)
 
 
@@ -1829,10 +1748,6 @@
                         :lisp-dir "lisp")))
 (use-package php-mode
   :ensure t
-  ;; TODO: Возможно, в следующей версии `use-package'.
-  ;; :vc (
-  ;;      :url "https://github.com/emacs-php/php-mode.git"
-  ;;      :rev "v1.26.1")
   :mode "\\.php\\'")
 
 
@@ -1862,10 +1777,6 @@
                         :doc "doc")))
 (use-package projectile
   :ensure t
-  ;; Ждём обновления `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/bbatsov/projectile.git"
-  ;;      :rev "v2.8.0")
   :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
@@ -1889,10 +1800,6 @@
                           :branch "1.2.0")))
   (use-package pulsar
     :ensure t
-    ;; Ждём обновления `use-package'.
-    ;; :vc (
-    ;;      :url "https://github.com/protesilaos/pulsar.git"
-    ;;      :rev "1.1.0")
     :custom (pulsar-pulse t)
     :hook
     (after-init . pulsar-global-mode)
@@ -1923,10 +1830,6 @@
                         :branch "2.1.5")))
 (use-package rainbow-delimiters
   :ensure t
-  ;; TODO: ждём релиза `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/Fanael/rainbow-delimiters"
-  ;;      :rev "2.1.5")
   :delight ""
   :hook
   ((asciidoc-mode
@@ -2042,10 +1945,6 @@
                         :branch "1.0.1")))
 (use-package terraform-mode
   :ensure t
-  ;; TODO: ждём обновления `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/hcl-emacs/terraform-mode.git"
-  ;;      :rev "1.0.1")
   :defer t
   :mode ("\\.terraformrc\\'"
          "\\.tf\\'"
@@ -2062,10 +1961,6 @@
                         :branch "v17.3.13")))
 (use-package web-mode
   :ensure t
-  ;; TODO
-  ;; :vc (
-  ;;      :url "https://github.com/fxbois/web-mode.git"
-  ;;      :rev "v17.3.13")
   :custom
   (major-mode 'web-mode)
   (web-mode-attr-indent-offset 4 "4 пробела при выравнивании")
@@ -2105,10 +2000,6 @@
                         :branch "0.0.16")))
 (use-package yaml-mode
   :ensure t
-  ;; TODO: Ждём обновления `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/yoshiki/yaml-mode.git"
-  ;;      :rev "0.0.16")
   :defer t
   :mode
   ("\\.ansible\\-lint\\'"

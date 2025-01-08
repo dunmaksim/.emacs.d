@@ -1,7 +1,7 @@
 ;;-*-coding: utf-8;-*-
-(define-abbrev-table 'global-abbrev-table
+(define-abbrev-table 'asciidoc-mode-abbrev-table
   '(
-    ("alse" "Astra Linux Special Edition" nil :count 1)
-    ("tf" "Terraform" nil :count 1)
-    ("yc" "Yandex Cloud" nil :count 1)
+    ("rst" "ReStructured Text" nil :count 7)
+    ("тд" "так далее" nil :count 0)
+    ("тп" "тому подобное" nil :count 0)
    ))

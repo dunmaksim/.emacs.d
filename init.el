@@ -246,7 +246,6 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
 (require 'desktop)
 (custom-set-variables
- '(desktop-auto-save-timeout 20 "Автосохранение каждые 20 секунд.")
  '(desktop-dirname user-emacs-directory "Каталог для хранения файла .desktop.")
  '(desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
  '(desktop-restore-frames t "Восстанавливать фреймы.")
@@ -854,9 +853,6 @@
                         :branch "1.7")))
 (use-package delight
   :ensure t
-  ;; :vc (
-  ;;      :url "https://git.savannah.nongnu.org/git/delight.git"
-  ;;      :rev "1.7")
   :config
   (delight '((checkdoc-minor-mode)
              (global-visual-line-mode)
@@ -875,10 +871,6 @@
                         :branch "0.10.0")))
 (use-package ace-window
   :ensure t
-  ;; Ждём обновления `use-package'
-  ;; :vc (
-  ;;      :url "https://github.com/abo-abo/ace-window.git"
-  ;;      :rev "0.10.0")
   :bind (:map global-map
               ("M-o" . ace-window)))
 
@@ -1546,12 +1538,6 @@
      :doc "docs")))
 (use-package magit
   :ensure t
-  ;; Время этого кода ещё не пришло. Сейчас он работает нестабильно, поэтому
-  ;; лучше через package-vc-install.
-  ;; :vc (
-  ;;      :url "https://github.com/magit/magit.git"
-  ;;      :rev "v4.1.1"
-  ;;      :lisp "lisp")
   :demand t
   :custom
   (magit-auto-revert-mode t "Автоматически обновлять файлы в буферах при изменениях на диске.")
@@ -1613,11 +1599,6 @@
                           branch "v2.6")))
   (use-package markdown-mode
     :ensure t
-    ;; Сейчас этот код работает плохо. Возможно, в следующей версии
-    ;; `use-package' он начнёт работать так, как ожидается.
-    ;; :vc (
-    ;;      :url "https://github.com/jrblevin/markdown-mode.git"
-    ;;      :rev "v2.6")
     :defer t
     :custom
     (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
@@ -1873,6 +1854,16 @@
                               "russian-techwriter"))
   :config
   (reverse-im-mode 1))
+
+
+;; 📦 RG
+;; https://github.com/dajva/rg.el
+;; Фронтенд для `ripgrep', утилиты для поиска (должна быть установлена).
+(use-package rg
+  :ensure t
+  :config
+  (rg-enable-default-bindings))
+
 
 
 ;; 📦 RUBY-MODE

@@ -341,6 +341,7 @@
                 conf-mode
                 emacs-lisp-data-mode
                 emacs-lisp-mode
+                js-mode
                 lisp-data-mode
                 markdown-mode
                 python-mode
@@ -740,6 +741,7 @@
                 dockerfile-mode
                 emacs-lisp-mode
                 html-mode
+                js-mode
                 json-mode
                 latex-mode
                 lisp-data-mode
@@ -936,6 +938,7 @@
   :ensure t
   :defer t
   :hook ((emacs-lisp-mode
+          js-mode
           json-mode
           latex-mode
           lisp-data-mode
@@ -1339,6 +1342,7 @@
           css-mode
           dockerfile-mode
           emacs-lisp-mode
+          js-mode
           json-mode
           latex-mode
           lisp-data-mode
@@ -1429,6 +1433,7 @@
 (use-package indent-bars
   :ensure t
   :hook ((emacs-lisp-mode
+          js-mode
           makefile-mode
           markdown-mode
           python-mode

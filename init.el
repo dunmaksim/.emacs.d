@@ -338,14 +338,17 @@
                 (?“ . ”?))) ;; “”))
   (add-to-list 'electric-pair-pairs pair))
 (dolist (hook '(adoc-mode
+                asciidoc-mode
                 conf-mode
                 emacs-lisp-data-mode
                 emacs-lisp-mode
+                html-mode
                 js-mode
                 lisp-data-mode
                 markdown-mode
                 python-mode
-                ruby-mode))
+                ruby-mode
+                web-mode))
   (add-hook (derived-mode-hook-name hook) #'electric-pair-local-mode))
 
 
@@ -391,6 +394,7 @@
 ;; Отображение рекомендуемой границы символов.
 (require 'display-fill-column-indicator)
 (dolist (mode-name '(emacs-lisp-mode
+                     js-mode
                      yaml-mode))
   (add-hook (derived-mode-hook-name mode-name) 'display-fill-column-indicator-mode))
 
@@ -690,12 +694,6 @@
 (size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
 (keymap-global-set "C-z" 'undo)               ;; Отмена
 (keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
-
-
-;; 📦 SORT
-;; Встроенный пакет.
-(require 'sort)
-(keymap-global-set "<f9>" 'sort-lines)
 
 
 ;; 📦 TOOLBAR
@@ -1224,7 +1222,6 @@
   :delight ""
   :config
   (editorconfig-mode 1)
-  (add-hook 'before-save-hook 'editorconfig-format-buffer)
   :mode
   ("\\.editorconfig\\'" . editorconfig-conf-mode))
 
@@ -1724,19 +1721,6 @@
   :defer t)
 
 
-;; 📦 PHP-MODE
-;; https://github.com/emacs-php/php-mode
-;; Работа с файлами PHP
-(unless (package-installed-p 'php-mode)
-  (package-vc-install '(php-mode
-                        :url "https://github.com/emacs-php/php-mode.git"
-                        :branch "v1.26.1"
-                        :lisp-dir "lisp")))
-(use-package php-mode
-  :ensure t
-  :mode "\\.php\\'")
-
-
 ;; 📦 PO-MODE
 ;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
 ;; Работа с файлами локализации.
@@ -1766,8 +1750,6 @@
   :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
-  :bind
-  ([f7] . projectile-compile-project)
   :init
   (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
   (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all"))

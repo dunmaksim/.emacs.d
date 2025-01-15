@@ -340,6 +340,7 @@
 (dolist (hook '(adoc-mode
                 asciidoc-mode
                 conf-mode
+                css-mode
                 emacs-lisp-data-mode
                 emacs-lisp-mode
                 html-mode
@@ -452,6 +453,7 @@
 ;; Возможны варианты (зависит от основного режима).
 (require 'goto-addr)
 (dolist (hook '(adoc-mode
+                asciidoc-mode
                 emacs-lisp-mode
                 html-mode
                 markdown-mode
@@ -824,7 +826,7 @@
   (message "Пакет `use-package' встроенный и имеет версию ниже 2.4.6.")
   ;; Сейчас это не работает, потому что в самом пакете `use-package'
   ;; забыли повысить номер версии, и она в 2.4.6 всё ещё 2.4.5.
-  (message "Установка новой версии `use-package` из GNU ELPA...")
+  (message "Установка новой версии `use-package` из GNU ELPA…")
   (customize-set-variable 'package-install-upgrade-built-in t)
   (package-refresh-contents)
   (package-install 'use-package t)
@@ -1006,32 +1008,6 @@
 (use-package bbcode-mode
   :ensure t
   :defer t)
-
-
-;; 📦 BREADCRUMB
-;; https://elpa.gnu.org/packages/breadcrumb.html
-;; Упрощает навигацию по сложным документам: показывает хлебные
-;; крошки в заголовках окон и позволяет быстро перейти в нужное место
-;; с помощью `breadcrumb-jump'.
-;; (use-package breadcrumb
-;;   :ensure t
-;;   :hook ((emacs-lisp-mode
-;;           rst-mode) . breadcrumb-local-mode))
-
-
-;; 📦 BUFFER-ENV
-;; https://github.com/astoff/buffer-env
-;; Настройка окружения отдельно для каждого буфера.
-;; Настройки загружаются из файла `.env' в каталоге проекта или `.dir-locals.el'.
-;; Во первом случае в файле должна быть указана команда для активации окружения, например:
-;; source .venv/bin/activate
-;; Во втором достаточно задать значение переменной `buffer-env-script-name'.
-;; (when (emacs-version-not-less-than 27 1)
-;;   (use-package buffer-env
-;;     :ensure t
-;;     :hook ((hack-local-variables
-;;             comint-mode
-;;             ) . buffer-env-update)))
 
 
 ;; 📦 COLORFUL-MODE

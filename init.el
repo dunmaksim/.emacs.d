@@ -13,7 +13,7 @@
    (and (= emacs-major-version major)
         (>= emacs-minor-version minor))))
 
-(defconst init-el-font-height 16 "Размер шрифта по умолчанию.")
+(defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
 (defvar init-el-theme 'misterioso "Тема по умолчанию.")
 
 (require 'custom)
@@ -768,8 +768,7 @@
 ;; Встроенный пакет.
 ;; Перемещение между окнами Emacs.
 (require 'windmove)
-(keymap-global-set "C-x <up>" 'windmove-up)
-(keymap-global-set "C-x <down>" 'windmove-down)
+(windmove-default-keybindings)
 
 
 ;; 📦 WINNER-MODE
@@ -785,12 +784,8 @@
 ;; 📦 WINDOW
 ;; Встроенный пакет, отвечает за управление размерами окон
 (require 'window)
-(keymap-global-set "C-S-<left>" 'shrink-window-horizontally)   ;; [Ctrl+Shift+←]   Уменьшить размер окна по ширине
-(keymap-global-set "C-S-<right>" 'enlarge-window-horizontally) ;; [Ctrl+Shift+→]   Увеличить размер окна по ширине
-(keymap-global-set "C-S-<down>" 'enlarge-window)               ;; [Ctrl+Shift+↓]   Увеличить размер окна по ширине
-(keymap-global-set "C-S-<up>" 'shrink-window)                  ;; [Ctrl+Shift+↑]   Уменьшить размер окна по высоте
-(keymap-global-set "C-S-<iso-lefttab>" 'next-buffer)           ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
-(keymap-global-set "C-<tab>" 'previous-buffer)                 ;; [Ctrl+Shift+Tab] Следующий буфер
+(keymap-global-set "C-S-<iso-lefttab>" 'next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
+(keymap-global-set "C-<tab>" 'previous-buffer)       ;; [Ctrl+Shift+Tab] Следующий буфер
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
@@ -863,18 +858,6 @@
 (use-package emacs
   :delight
   (whitespace-mode " ¶"))
-
-;; 📦 ACE-WINDOW
-;; https://github.com/abo-abo/ace-window
-;; Быстрое переключение между окнами по M+o
-(unless (package-installed-p 'ace-window)
-  (package-vc-install '(ace-window
-                        :url "https://github.com/abo-abo/ace-window.git"
-                        :branch "0.10.0")))
-(use-package ace-window
-  :ensure t
-  :bind (:map global-map
-              ("M-o" . ace-window)))
 
 
 ;; 📦 ACTIVITIES
@@ -1585,7 +1568,7 @@
     :config (setq-local word-wrap t)
     :bind (:map markdown-mode-map
                 ("M-." . markdown-follow-thing-at-point))
-    :mode "\\.md\\'"))
+    :mode ("\\.md\\'" . markdown-mode)))
 
 
 ;; 📦 MODUS-THEMES

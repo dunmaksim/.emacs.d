@@ -255,6 +255,7 @@
 (add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
 (desktop-save-mode 1)
 (add-hook 'server-after-make-frame-hook 'desktop-read)
+(add-hook 'server-done-hook 'desktop-save)
 
 
 ;; 📦 DIRED
@@ -396,6 +397,7 @@
 (require 'display-fill-column-indicator)
 (dolist (mode-name '(emacs-lisp-mode
                      js-mode
+                     python-mode
                      yaml-mode))
   (add-hook (derived-mode-hook-name mode-name) 'display-fill-column-indicator-mode))
 
@@ -452,14 +454,13 @@
 ;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
 ;; Возможны варианты (зависит от основного режима).
 (require 'goto-addr)
-(dolist (hook '(adoc-mode
-                asciidoc-mode
-                emacs-lisp-mode
-                html-mode
-                markdown-mode
-                rst-mode
-                web-mode))
-  (add-hook (derived-mode-hook-name hook) 'goto-address-mode))
+(add-hook 'adoc-mode-hook 'goto-address-mode)
+(add-hook 'asciidoc-mode-hook 'goto-address-mode)
+(add-hook 'emacs-lisp-mode-hook 'goto-address-mode)
+(add-hook 'html-mode-hook 'goto-address-mode)
+(add-hook 'markdown-mode-hook 'goto-address-mode)
+(add-hook 'rst-mode-hook 'goto-address-mode)
+(add-hook 'web-mode-hook 'goto-address-mode)
 
 
 ;; 📦 GREP
@@ -668,6 +669,7 @@
 ;; Запоминает историю введенных команд
 (require 'savehist)
 (savehist-mode 1)
+(add-hook 'server-done-hook 'savehist-save)
 
 
 ;; 📦 SHELL-SCRIPT-MODE
@@ -696,6 +698,21 @@
 (size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
 (keymap-global-set "C-z" 'undo)               ;; Отмена
 (keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+
+
+;; 📦 TABLE
+;; Встроенный пакет для работы с таблицами
+(require 'table)
+(add-hook 'rst-mode-hook 'table-recognize)
+
+
+;; 📦 TAB-BAR
+;; Встроенный пакет для управления вкладками.
+(require 'tab-bar)
+(custom-set-variables
+ '(tab-bar-show 1 "Показывать вкладки, если их больше одной.")
+ '(tab-bar-close-button-show nil "Показывать кнопку закрытия вкладки."))
+(tab-bar-mode 1)
 
 
 ;; 📦 TOOLBAR
@@ -1131,6 +1148,29 @@
   :mode "\\Dockerfile\\'")
 
 
+;; 📦 DOOM-MODELINE
+;; https://github.com/seagle0128/doom-modeline
+(use-package doom-modeline
+  :ensure t
+  :custom
+  (doom-modeline-buffer-file-name-style 'auto "Стиль названия буфера автоматический")
+  (doom-modeline-buffer-name t "Показывать название буфера")
+  (doom-modeline-buffer-state-icon t "Использовать иконки для показа статуса буфера")
+  (doom-modeline-check-icon t "Иконка статуса Flycheck")
+  (doom-modeline-highlight-modified-buffer-name t "Подсвечивать названия изменённых буферов")
+  (doom-modeline-icon t "Использовать иконочные шрифты")
+  (doom-modeline-indent-info t "Включить показ типа отступов")
+  (doom-modeline-lsp-icon t "Показывать иконку, когда LSP активен")
+  (doom-modeline-major-mode-color-icon t "Использовать цвета для иконок основного режима")
+  (doom-modeline-major-mode-icon t "Использовать иконки для основного режима")
+  (doom-modeline-project-detection 'auto "Автоматически определять тип проекта")
+  (doom-modeline-vcs-icon t "Иконка VCS")
+  (doom-modeline-vcs-max-length 30 "Длина названия ветки")
+  :config
+  (doom-modeline-mode 1))
+
+
+
 ;; 📦 DOOM-THEMES
 ;; https://github.com/doomemacs/themes
 ;; Темы из DOOM Emacs
@@ -1220,6 +1260,12 @@
   (use-package eglot
     :ensure t
     :defer t
+    :custom
+    (eglot-events-buffer-config '(
+                                  :size 0 ;; Выключить ведение буфера событий
+                                  :format 'lisp ;; Формат Lisp для логов
+                                  )
+                                "Настройки буфера событий Eglot")
     :config
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
     (add-to-list 'eglot-server-programs '(dockerfile-mode . ("docker-langserver" "--stdio")))
@@ -1601,21 +1647,21 @@
               ("M-<mouse-1>" . mc/add-cursor-on-click)))
 
 
-;; 📦 NANO-MODELINE
-;; https://elpa.gnu.org/packages/nano-modeline.html
-;; Статусная строка маленькая вообще жестб
-(use-package nano-modeline
-  :ensure t
-  :custom
-  (nano-modeline-position 'nano-modeline-footer "Показывать внизу")
-  :hook
-  (messages-buffer-mode . nano-modeline-message-mode)
-  (org-agenda-mode . nano-modeline-org-agenda-mode)
-  (org-capture-mode . nano-modeline-org-capture-mode)
-  (org-mode . nano-modeline-org-mode)
-  (prog-mode . nano-modeline-prog-mode)
-  (term-mode . nano-modeline-term-mode)
-  (text-mode . nano-modeline-text-mode))
+;; ;; 📦 NANO-MODELINE
+;; ;; https://elpa.gnu.org/packages/nano-modeline.html
+;; ;; Статусная строка маленькая вообще жестб
+;; (use-package nano-modeline
+;;   :ensure t
+;;   :custom
+;;   (nano-modeline-position 'nano-modeline-footer "Показывать внизу")
+;;   :hook
+;;   (messages-buffer-mode . nano-modeline-message-mode)
+;;   (org-agenda-mode . nano-modeline-org-agenda-mode)
+;;   (org-capture-mode . nano-modeline-org-capture-mode)
+;;   (org-mode . nano-modeline-org-mode)
+;;   (prog-mode . nano-modeline-prog-mode)
+;;   (term-mode . nano-modeline-term-mode)
+;;   (text-mode . nano-modeline-text-mode))
 
 
 ;; 📦 NERD-ICONS
@@ -1656,7 +1702,7 @@
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (unless (and (package-installed-p 'org)
-             (package-built-in-p 'org '(9 7 18)))
+             (package-built-in-p 'org '(9 7 20)))
   (customize-set-variable 'package-install-upgrade-built-in t)
   (package-install 'org)
   (customize-set-variable 'package-install-upgrade-built-in nil))
@@ -1848,7 +1894,6 @@
     python-mode
     rst-mode
     ) . symbols-outline-follow-mode))
-
 
 
 ;; 📦 SWIPER

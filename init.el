@@ -785,7 +785,8 @@
 ;; Встроенный пакет.
 ;; Перемещение между окнами Emacs.
 (require 'windmove)
-(windmove-default-keybindings)
+(windmove-default-keybindings 'ctrl)
+(windmove-swap-states-default-keybindings 'meta)
 
 
 ;; 📦 WINNER-MODE
@@ -861,12 +862,14 @@
 ;; Эти строки находятся здесь потому, что `use-package' активно
 ;; использует возможности этого пакета далее, поэтому он должен быть
 ;; загружен как можно раньше.
-(unless (package-installed-p 'delight)
-  (package-vc-install '(delight
-                        :url "https://git.savannah.nongnu.org/git/delight.git"
-                        :branch "1.7")))
+
 (use-package delight
   :ensure t
+  :init
+  (unless (package-installed-p 'delight)
+    (package-vc-install '(delight
+                          :url "https://git.savannah.nongnu.org/git/delight.git"
+                          :branch "1.7")))
   :config
   (delight '((checkdoc-minor-mode)
              (global-visual-line-mode)
@@ -880,12 +883,14 @@
 ;; 📦 ACTIVITIES
 ;; https://elpa.gnu.org/packages/activities.html
 ;; Управление наборами окон, вкладок, фреймов и буферов
-(unless (package-installed-p 'activities)
-  (package-vc-install '(activities
-                        :url "https://github.com/alphapapa/activities.el.git"
-                        :branch "v0.7.2")))
+
 (use-package activities
   :ensure t
+  :init
+  (unless (package-installed-p 'activities)
+    (package-vc-install '(activities
+                          :url "https://github.com/alphapapa/activities.el.git"
+                          :branch "v0.7.2")))
   :config
   (activities-mode 1)
   :bind
@@ -930,12 +935,13 @@
 ;; 📦 AGGRESSIVE-INDENT
 ;; https://github.com/Malabarba/aggressive-indent-mode
 ;; Принудительное выравнивание кода
-(unless (package-installed-p 'aggressive-indent)
-  (package-vc-install '(aggressive-indent
-                        :url "https://github.com/Malabarba/aggressive-indent-mode.git"
-                        :branch "1.10.0")))
 (use-package aggressive-indent
   :ensure t
+  :init
+  (unless (package-installed-p 'aggressive-indent)
+    (package-vc-install '(aggressive-indent
+                          :url "https://github.com/Malabarba/aggressive-indent-mode.git"
+                          :branch "1.10.0")))
   :defer t
   :hook ((emacs-lisp-mode
           js-mode
@@ -960,24 +966,26 @@
 ;; 📦 ANSIBLE
 ;; https://gitlab.com/emacs-ansible/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
-(unless (package-installed-p 'ansible)
-  (package-vc-install '(ansible
-                        :url "https://gitlab.com/emacs-ansible/emacs-ansible.git"
-                        :branch "0.3.2")))
 (use-package ansible
   :ensure t
+  :init
+  (unless (package-installed-p 'ansible)
+    (package-vc-install '(ansible
+                          :url "https://gitlab.com/emacs-ansible/emacs-ansible.git"
+                          :branch "0.3.2")))
   :defer t)
 
 
 ;; 📦 APHELEIA
 ;; https://github.com/radian-software/apheleia
 ;; Форматирование содержимого буфера с помощью внешних средств
-(unless (package-installed-p 'apheleia)
-  (package-vc-install '(apheleia
-                        :url "https://github.com/radian-software/apheleia.git"
-                        :branch "v4.2")))
 (use-package apheleia
   :ensure t
+  :init
+  (unless (package-installed-p 'apheleia)
+    (package-vc-install '(apheleia
+                          :url "https://github.com/radian-software/apheleia.git"
+                          :branch "v4.2")))
   :delight "")
 
 
@@ -985,12 +993,13 @@
 ;; https://github.com/abo-abo/avy
 ;; Множество функций для быстрого перехода к нужной строке, слову, символу и
 ;; так далее.
-(unless (package-installed-p 'avy)
-  (package-vc-install '(avy
-                        :url "https://github.com/abo-abo/avy.git"
-                        :branch "0.5.0")))
 (use-package avy
   :ensure t
+  :init
+  (unless (package-installed-p 'avy)
+    (package-vc-install '(avy
+                          :url "https://github.com/abo-abo/avy.git"
+                          :branch "0.5.0")))
   :delight ""
   :bind (:map global-map
               ("M-g f" . avy-goto-line)
@@ -1001,24 +1010,26 @@
 ;; 📦 BBCODE-MODE
 ;; https://github.com/lassik/emacs-bbcode-mode
 ;; Режим редактирования BB-кодов
-(unless (package-installed-p 'bbcode-mode)
-  (package-vc-install '(bbcode-mode
-                        :url "https://github.com/lassik/emacs-bbcode-mode.git"
-                        :branch "v2.3.0")))
 (use-package bbcode-mode
   :ensure t
+  :init
+  (unless (package-installed-p 'bbcode-mode)
+    (package-vc-install '(bbcode-mode
+                          :url "https://github.com/lassik/emacs-bbcode-mode.git"
+                          :branch "v2.3.0")))
   :defer t)
 
 
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
-(unless (package-installed-p 'colorful-mode)
-  (package-vc-install '(colorful-mode
-                        :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
-                        :branch "v1.0.4")))
 (use-package colorful-mode
   :ensure t
+  :init
+  (unless (package-installed-p 'colorful-mode)
+    (package-vc-install '(colorful-mode
+                          :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
+                          :branch "v1.0.4")))
   :hook ((css-mode
           emacs-lisp-mode
           web-mode) . colorful-mode))
@@ -1027,12 +1038,13 @@
 ;; 📦 COMPANY-MODE
 ;; https://company-mode.github.io/
 ;; Автодополнение
-(unless (package-installed-p 'company)
-  (package-vc-install '(company
-                        :url "https://github.com/company-mode/company-mode.git"
-                        :branch "1.0.2")))
 (use-package company
   :ensure t
+  :init
+  (unless (package-installed-p 'company)
+    (package-vc-install '(company
+                          :url "https://github.com/company-mode/company-mode.git"
+                          :branch "1.0.2")))
   :delight ""
   :demand t
   :custom
@@ -1138,12 +1150,13 @@
 ;; 📦 DOCKERFILE-MODE
 ;; https://github.com/spotify/dockerfile-mode
 ;; Работа с файлами `Dockerfile'.
-(unless (package-installed-p 'dockerfile-mode)
-  (package-vc-install '(dockerfile-mode
-                        :url "https://github.com/spotify/dockerfile-mode.git"
-                        :branch "v1.9")))
 (use-package dockerfile-mode
   :ensure t
+  :init
+  (unless (package-installed-p 'dockerfile-mode)
+    (package-vc-install '(dockerfile-mode
+                          :url "https://github.com/spotify/dockerfile-mode.git"
+                          :branch "v1.9")))
   :defer t
   :mode "\\Dockerfile\\'")
 
@@ -1179,12 +1192,13 @@
 ;;   :custom
 ;;   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
 ;;   (doom-themes-enable-italic t "Включить поддержку наклонного начертания."))
-(unless (package-installed-p 'doom-themes)
-  (package-vc-install '(doom-themes
-                        :url "https://github.com/doomemacs/themes.git"
-                        :branch "v2.3.0")))
 (use-package doom-themes
-  :ensure t)
+  :ensure t
+  :init
+  (unless (package-installed-p 'doom-themes)
+    (package-vc-install '(doom-themes
+                          :url "https://github.com/doomemacs/themes.git"
+                          :branch "v2.3.0"))))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1198,12 +1212,13 @@
 ;; 3. Редактируем.
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
-(unless (package-installed-p 'edit-indirect)
-  (package-vc-install '(edit-indirect
-                        :url "https://github.com/Fanael/edit-indirect.git"
-                        :branch "0.1.13")))
 (use-package edit-indirect
   :ensure t
+  :init
+  (unless (package-installed-p 'edit-indirect)
+    (package-vc-install '(edit-indirect
+                          :url "https://github.com/Fanael/edit-indirect.git"
+                          :branch "0.1.13")))
   :bind (:map global-map
               ("C-c '" . edit-indirect-region)))
 
@@ -1211,13 +1226,14 @@
 ;; 📦 EDITORCONFIG
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
-(unless (package-installed-p 'editorconfig)
-  (package-vc-install '(editorconfig
-                        :url "https://github.com/editorconfig/editorconfig-emacs.git"
-                        :branch "v0.11.0"
-                        :doc "doc")))
 (use-package editorconfig
   :ensure t
+  :init
+  (unless (package-installed-p 'editorconfig)
+    (package-vc-install '(editorconfig
+                          :url "https://github.com/editorconfig/editorconfig-emacs.git"
+                          :branch "v0.11.0"
+                          :doc "doc")))
   :delight ""
   :config
   (editorconfig-mode 1)
@@ -1227,12 +1243,13 @@
 
 ;; 📦 EF-THEMES
 ;; https://github.com/protesilaos/ef-themes.git
-(unless (package-installed-p 'ef-themes)
-  (package-vc-install '(ef-themes
-                        :url "https://github.com/protesilaos/ef-themes.git"
-                        :branch "1.9.0")))
 (use-package ef-themes
   :ensure t
+  :init
+  (unless (package-installed-p 'ef-themes)
+    (package-vc-install '(ef-themes
+                          :url "https://github.com/protesilaos/ef-themes.git"
+                          :branch "1.9.0")))
   :config
   (setq init-el-theme 'ef-autumn))
 
@@ -1256,7 +1273,7 @@
   (unless (package-installed-p 'eglot)
     (package-vc-install '(eglot
                           :url "https://github.com/joaotavora/eglot.git"
-                          :branch "1.17")))
+                          :branch "1.18")))
   (use-package eglot
     :ensure t
     :defer t
@@ -1310,24 +1327,27 @@
 ;; 📦 ENVRC
 ;; https://github.com/purcell/envrc
 ;; Загрузка переменных окружения из `.envrc'.
-(unless (package-installed-p 'envrc)
-  (package-vc-install '(envrc
-                        :url "https://github.com/purcell/envrc.git"
-                        :branch "0.12")))
 (use-package envrc
+  :ensure t
+  :init
+  (unless (package-installed-p 'envrc)
+    (package-vc-install '(envrc
+                          :url "https://github.com/purcell/envrc.git"
+                          :branch "0.12")))
   :hook (after-init . envrc-global-mode))
 
 
 ;; 📦 FLYCHECK
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
-(unless (package-installed-p 'flycheck)
-  (package-vc-install '(flycheck
-                        :url "https://github.com/flycheck/flycheck.git"
-                        :branch "34.1"
-                        :doc "doc")))
 (use-package flycheck
   :ensure t
+  :init
+  (unless (package-installed-p 'flycheck)
+    (package-vc-install '(flycheck
+                          :url "https://github.com/flycheck/flycheck.git"
+                          :branch "34.1"
+                          :doc "doc")))
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
@@ -1370,15 +1390,30 @@
   :hook (emacs-lisp-mode . flylisp-mode))
 
 
+;; 📦 FONT-LOCK-PROFILER
+;; https://github.com/Lindydancer/font-lock-profiler
+;; Отладчик Font Lock
+(use-package font-lock-profiler
+  :ensure t)
+
+
+;; 📦 FONT-LOCK-STUDIO
+;; https://github.com/Lindydancer/font-lock-studio
+;; Ещё больше отладки Font Lock!
+(use-package font-lock-studio
+  :ensure t)
+
+
 ;; 📦 FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода с помощью разных внешних средств.
-(unless (package-installed-p 'format-all)
-  (package-vc-install '(format-all
-                        :url "https://github.com/lassik/emacs-format-all-the-code.git"
-                        :branch "0.6.0")))
 (use-package format-all
   :ensure t
+  :init
+  (unless (package-installed-p 'format-all)
+    (package-vc-install '(format-all
+                          :url "https://github.com/lassik/emacs-format-all-the-code.git"
+                          :branch "0.6.0")))
   :defer t
   :bind (:map global-map
               ([f12] . format-all-buffer)))
@@ -1390,12 +1425,13 @@
 ;; https://github.com/emacs-helm/helm
 ;; Подсказки и автодополнение ввода.
 ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
-(unless (package-installed-p 'helm)
-  (package-vc-install '(helm
-                        :url "https://github.com/emacs-helm/helm.git"
-                        :branch "v4.0")))
 (use-package helm
   :ensure t
+  :init
+  (unless (package-installed-p 'helm)
+    (package-vc-install '(helm
+                          :url "https://github.com/emacs-helm/helm.git"
+                          :branch "v4.0")))
   :delight ""
   :config
   (helm-mode 1)
@@ -1406,13 +1442,14 @@
 ;; 📦 HL-TODO
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
-(unless (package-installed-p 'hl-todo)
-  (package-vc-install
-   '(hl-todo
-     :url "https://github.com/tarsius/hl-todo.git"
-     branch: "v3.8.1")))
 (use-package hl-todo
   :ensure t
+  :init
+  (unless (package-installed-p 'hl-todo)
+    (package-vc-install
+     '(hl-todo
+       :url "https://github.com/tarsius/hl-todo.git"
+       branch: "v3.8.1")))
   :config (global-hl-todo-mode t))
 
 
@@ -1423,17 +1460,17 @@
   :ensure t)
 
 
-
 ;; 📦 INDENT-BARS
 ;; https://github.com/jdtsmith/indent-bars
 ;; Красивая подсветка отступов
-(unless (package-installed-p 'indent-bars)
-  (package-vc-install
-   '(indent-bars
-     :url "https://github.com/jdtsmith/indent-bars.git"
-     :branch "v0.8.2")))
 (use-package indent-bars
   :ensure t
+  :init
+  (unless (package-installed-p 'indent-bars)
+    (package-vc-install
+     '(indent-bars
+       :url "https://github.com/jdtsmith/indent-bars.git"
+       :branch "v0.8.2")))
   :hook ((emacs-lisp-mode
           js-mode
           makefile-mode
@@ -1479,11 +1516,13 @@
 ;; Проверка орфографии не только для слова под курсором, как во `flyspell',
 ;; а вообще во всём буфере.
 ;; В Debian требует для работы `libenchant2-dev' и `pkgconf'.
-(unless (package-installed-p 'jinx)
-  (package-vc-install '(jinx
-                        :url "https://github.com/minad/jinx.git"
-                        :branch "1.10")))
 (use-package jinx
+  :ensure t
+  :init
+  (unless (package-installed-p 'jinx)
+    (package-vc-install '(jinx
+                          :url "https://github.com/minad/jinx.git"
+                          :branch "1.10")))
   :hook ((adoc-mode
           asciidoc-mode
           markdown-mode
@@ -1495,12 +1534,13 @@
 ;; 📦 JSON-MODE
 ;; https://github.com/json-emacs/json-mode
 ;; Поддержка JSON
-(unless (package-installed-p 'json-mode)
-  (package-vc-install '(json-mode
-                        :url "https://github.com/json-emacs/json-mode.git"
-                        :branch "v1.9.2")))
 (use-package json-mode
   :ensure t
+  :init
+  (unless (package-installed-p 'json-mode)
+    (package-vc-install '(json-mode
+                          :url "https://github.com/json-emacs/json-mode.git"
+                          :branch "v1.9.2")))
   :defer t
   :mode "\\.json\\'")
 
@@ -1508,43 +1548,48 @@
 ;; 📦 DASH
 ;; https://github.com/magnars/dash.el
 ;; Зависимость MAGIT
-(unless (package-installed-p 'dash)
-  (package-vc-install '(dash
-                        :url "https://github.com/magnars/dash.el.git"
-                        :branch "2.19.1"
-                        :doc "doc")))
-
+(use-package dash
+  :ensure t
+  :init
+  (unless (package-installed-p 'dash)
+    (package-vc-install '(dash
+                          :url "https://github.com/magnars/dash.el.git"
+                          :branch "2.19.1"
+                          :doc "doc"))))
 
 ;; 📦 WITH-EDITOR
 ;; https://github.com/magit/with-editor
 ;; Зависимость MAGIT
-(unless (package-installed-p 'with-editor)
-  (package-vc-install '(with-editor
-                         :url "https://github.com/magit/with-editor.git"
-                         :branch "v3.4.2"
-                         :lisp-dir "lisp"
-                         :doc "docs")))
-
+(use-package with-editor
+  :ensure t
+  :init
+  (unless (package-installed-p 'with-editor)
+    (package-vc-install '(with-editor
+                           :url "https://github.com/magit/with-editor.git"
+                           :branch "v3.4.2"
+                           :lisp-dir "lisp"
+                           :doc "docs"))))
 
 ;; 📦 MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
-(unless (package-installed-p 'magit)
-  (package-vc-install
-   '(transient
-     :url "https://github.com/magit/transient.git"
-     :branch "v0.8.1"
-     :lisp-dir "lisp"
-     :doc "docs"))
-  (package-vc-install
-   '(magit
-     :url "https://github.com/magit/magit.git"
-     :branch "v4.1.1"
-     :lisp-dir "lisp"
-     :doc "docs")))
 (use-package magit
   :ensure t
+  :init
+  (unless (package-installed-p 'magit)
+    (package-vc-install
+     '(transient
+       :url "https://github.com/magit/transient.git"
+       :branch "v0.8.2"
+       :lisp-dir "lisp"
+       :doc "docs"))
+    (package-vc-install
+     '(magit
+       :url "https://github.com/magit/magit.git"
+       :branch "v4.2.0"
+       :lisp-dir "lisp"
+       :doc "docs")))
   :demand t
   :custom
   (magit-auto-revert-mode t "Автоматически обновлять файлы в буферах при изменениях на диске.")
@@ -1778,7 +1823,6 @@
     (after-init . pulsar-global-mode)
     (next-error . pulsar-pulse-line)
     :config
-    (add-to-list 'pulsar-pulse-functions 'ace-window)
     (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
     (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
     (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)))

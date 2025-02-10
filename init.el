@@ -288,8 +288,7 @@
 ;; Показывает номера строк
 (require 'display-line-numbers)
 (dolist
-    (hook '(adoc-mode
-            asciidoc-mode
+    (hook '(asciidoc-mode
             c-mode
             conf-mode
             css-mode
@@ -338,8 +337,7 @@
                 (?‚ . ‘?)   ;; ‚‘
                 (?“ . ”?))) ;; “”))
   (add-to-list 'electric-pair-pairs pair))
-(dolist (hook '(adoc-mode
-                asciidoc-mode
+(dolist (hook '(asciidoc-mode
                 conf-mode
                 css-mode
                 emacs-lisp-data-mode
@@ -426,8 +424,7 @@
         (message (format "Для проверки орфографии используется %s" text-spell-program))
         (require 'flyspell)
         (customize-set-variable 'ispell-program-name text-spell-program)
-        (dolist (hook '(adoc-mode
-                        asciidoc-mode
+        (dolist (hook '(asciidoc-mode
                         emacs-lisp-mode
                         markdown-mode
                         org-mode
@@ -454,7 +451,6 @@
 ;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
 ;; Возможны варианты (зависит от основного режима).
 (require 'goto-addr)
-(add-hook 'adoc-mode-hook 'goto-address-mode)
 (add-hook 'asciidoc-mode-hook 'goto-address-mode)
 (add-hook 'emacs-lisp-mode-hook 'goto-address-mode)
 (add-hook 'html-mode-hook 'goto-address-mode)
@@ -518,9 +514,7 @@
         (mode . lisp-data-mode)))
       ("Org" (mode . org-mode))
       ("Markdown" (mode . markdown-mode))
-      ("AsciiDoc" (or
-                   (mode . adoc-mode)
-                   (mode . asciidoc-mode)))
+      ("AsciiDoc" (mode . asciidoc-mode))
       ("ReStructured Text" (mode . rst-mode))
       ("CONF / INI"
        (or
@@ -584,7 +578,8 @@
 (require 'js)
 (custom-set-variables
  '(js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
- '(js-chain-indent t "Выравнивание при цепочке вызовов через точку."))
+ '(js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
+ '(js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case."))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 
 
@@ -752,7 +747,6 @@
      (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
  '(whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать."))
 (dolist (hook '(asciidoc-mode
-                adoc-mode
                 conf-mode
                 css-mode
                 dockerfile-mode
@@ -917,16 +911,7 @@
               ("<backtab>" . lisp-dedent-adjust-parens)))
 
 
-;; 📦 ADOC-MODE
-;; https://github.com/bbatsov/adoc-mode
-;; Работа с AsciiDoc
-;; (use-package adoc-mode
-;;   :ensure t
-;;   :defer t
-;;   :custom
-;;   (adoc-fontify-code-blocks-natively 10000)
-;;   :mode "\\.adoc\\'")
-
+;; 📦 ASCIIDOC-MODE
 (use-package asciidoc-mode
   :load-path "~/repo/asciidoc-mode/"
   :mode ("\\.adoc\\'" . asciidoc-mode))
@@ -1024,15 +1009,17 @@
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
-  :ensure t
   :init
   (unless (package-installed-p 'colorful-mode)
     (package-vc-install '(colorful-mode
                           :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
-                          :branch "v1.0.4")))
+                          :branch "v1.1.0")))
+  :ensure t
   :hook ((css-mode
           emacs-lisp-mode
-          web-mode) . colorful-mode))
+          html-mode
+          web-mode
+          yaml-mode) . colorful-mode))
 
 
 ;; 📦 COMPANY-MODE
@@ -1053,7 +1040,7 @@
   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
   (company-tooltip-limit 15 "Ограничение на число подсказок")
-  :hook ((adoc-mode
+  :hook ((asciidoc-mode
           css-mode
           dockerfile-mode
           emacs-lisp-mode
@@ -1082,15 +1069,15 @@
   :ensure t
   :bind
   (:map global-map
-        ("M-x" . counsel-M-x)
-        ("C-x C-f" . counsel-find-file)
-        ("M-y" . counsel-yank-pop)
-        ("C-h f" . counsel-describe-function)
-        ("C-h v" . counsel-describe-variable)
-        ("C-h l" . counsel-find-library)
         ("C-c c" . counsel-compile)
         ("C-c g" . counsel-git)
-        ("C-x 8 RET" . counsel-unicode-char)))
+        ("C-h f" . counsel-describe-function)
+        ("C-h l" . counsel-find-library)
+        ("C-h v" . counsel-describe-variable)
+        ("C-x 8 RET" . counsel-unicode-char)
+        ("C-x C-f" . counsel-find-file)
+        ("M-x" . counsel-M-x)
+        ("M-y" . counsel-yank-pop)))
 
 
 ;; 📦 CSV-MODE
@@ -1105,14 +1092,15 @@
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
 (when (emacs-version-not-less-than 28 1)
-  (unless (package-installed-p 'denote)
-    (package-vc-install '(denote
-                          :url "https://github.com/protesilaos/denote.git"
-                          :branch "3.1.0")))
   (use-package denote
+    :init
+    (unless (package-installed-p 'denote)
+      (package-vc-install '(denote
+                            :url "https://github.com/protesilaos/denote.git"
+                            :branch "3.1.0")))
     :ensure t
     :custom
-    (denote-directory "~/Документы/Notes/" "Каталог для хранения заметок.")))
+    (denote-directory "~/Notes/" "Каталог для хранения заметок.")))
 
 
 ;; 📦 DIRENV
@@ -1270,12 +1258,13 @@
 ;;               переменной `eglot-workspace-configuration'.
 ;; - YAML:       sudo npm -g install yaml-language-server
 (when (emacs-version-not-less-than 26 3)
-  (unless (package-installed-p 'eglot)
-    (package-vc-install '(eglot
-                          :url "https://github.com/joaotavora/eglot.git"
-                          :branch "1.18")))
   (use-package eglot
     :ensure t
+    :init
+    (unless (package-installed-p 'eglot)
+      (package-vc-install '(eglot
+                            :url "https://github.com/joaotavora/eglot.git"
+                            :branch "1.18")))
     :defer t
     :custom
     (eglot-events-buffer-config '(
@@ -1307,10 +1296,13 @@
 ;; 📦 EL-PATCH
 ;; https://github.com/radian-software/el-patch
 ;; Зависимость Magit
-(unless (package-installed-p 'el-patch)
-  (package-vc-install '(el-patch
-                        :url "https://github.com/radian-software/el-patch.git"
-                        :branch "3.1")))
+(use-package el-patch
+  :ensure t
+  :init
+  (unless (package-installed-p 'el-patch)
+    (package-vc-install '(el-patch
+                          :url "https://github.com/radian-software/el-patch.git"
+                          :branch "3.1"))))
 
 
 ;; 📦 ELDOC-MODE
@@ -1358,8 +1350,7 @@
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
-  :hook ((adoc-mode
-          asciidoc-mode
+  :hook ((asciidoc-mode
           conf-mode
           css-mode
           dockerfile-mode
@@ -1453,6 +1444,9 @@
   :config (global-hl-todo-mode t))
 
 
+(require 'sgml-mode)
+
+
 ;; 📦 HYPERBOLE
 ;; https://www.gnu.org/software/hyperbole/
 ;; Распознаёт текст в буферах и автоматически превращает в кнопки и ссылки.
@@ -1523,8 +1517,7 @@
     (package-vc-install '(jinx
                           :url "https://github.com/minad/jinx.git"
                           :branch "1.10")))
-  :hook ((adoc-mode
-          asciidoc-mode
+  :hook ((asciidoc-mode
           markdown-mode
           org-mode
           rst-mode
@@ -1587,7 +1580,7 @@
     (package-vc-install
      '(magit
        :url "https://github.com/magit/magit.git"
-       :branch "v4.2.0"
+       :branch "v4.3.0"
        :lisp-dir "lisp"
        :doc "docs")))
   :demand t
@@ -1599,18 +1592,6 @@
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
   (after-save . magit-after-save-refresh-status))
-
-
-;; 📦 MAGIT-FILE-ICONS
-;; https://github.com/gekoke/magit-file-icons
-;; Иконки в буферах Magit
-(unless (package-installed-p 'magit-file-icons)
-  (package-vc-install '(magit-file-icons
-                        :url "https://github.com/gekoke/magit-file-icons.git"
-                        :branch "v2.0.0")))
-(use-package magit-file-icons
-  :config
-  (magit-file-icons-mode 1))
 
 
 ;; 📦 DIFF-HL
@@ -1631,8 +1612,7 @@
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
-  ((adoc-mode
-    asciidoc-mode
+  ((asciidoc-mode
     emacs-lisp-mode
     markdown-mode
     python-mode
@@ -1850,7 +1830,6 @@
   :delight ""
   :hook
   ((asciidoc-mode
-    adoc-mode
     conf-mode
     css-mode
     emacs-lisp-mode
@@ -1896,10 +1875,15 @@
 ;; https://github.com/dajva/rg.el
 ;; Фронтенд для `ripgrep', утилиты для поиска (должна быть установлена).
 (use-package rg
+  :init
+  (unless (package-installed-p 'rg)
+    (package-vc-install '(rg
+                          :url "https://github.com/dajva/rg.el.git"
+                          :branch "2.3.0"
+                          :doc "docs")))
   :ensure t
   :config
   (rg-enable-default-bindings))
-
 
 
 ;; 📦 RUBY-MODE
@@ -1933,7 +1917,6 @@
               ("C-c i" . symbols-outline-show))
   :hook
   ((asciidoc-mode
-    adoc-mode
     emacs-lisp-mode
     python-mode
     rst-mode
@@ -2020,12 +2003,13 @@
 ;; 📦 YAML-MODE
 ;; https://github.com/yoshiki/yaml-mode
 ;; Работа с YAML-файлами
-(unless (package-installed-p 'yaml-mode)
-  (package-vc-install '(yaml-mode
-                        :url "https://github.com/yoshiki/yaml-mode.git"
-                        :branch "0.0.16")))
 (use-package yaml-mode
   :ensure t
+  :init
+  (unless (package-installed-p 'yaml-mode)
+    (package-vc-install '(yaml-mode
+                          :url "https://github.com/yoshiki/yaml-mode.git"
+                          :branch "0.0.16")))
   :defer t
   :mode
   ("\\.ansible\\-lint\\'"

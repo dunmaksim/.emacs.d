@@ -466,6 +466,11 @@
 (keymap-global-set "<f6>" 'find-grep) ;; Запуск `find-grep' по нажатию [F6].
 
 
+;; 📦 HL-LINE-MODE
+(require 'hl-line)
+(hl-line-mode 1)
+
+
 ;; 📦 IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 ;; По нажатию F2 выводит список открытых буферов.
@@ -1171,24 +1176,6 @@
   (doom-modeline-mode 1))
 
 
-
-;; 📦 DOOM-THEMES
-;; https://github.com/doomemacs/themes
-;; Темы из DOOM Emacs
-;; (use-package doom-themes
-;;   :ensure t
-;;   :custom
-;;   (doom-themes-enable-bold t "Включить поддержку полужирного начертания.")
-;;   (doom-themes-enable-italic t "Включить поддержку наклонного начертания."))
-(use-package doom-themes
-  :ensure t
-  :init
-  (unless (package-installed-p 'doom-themes)
-    (package-vc-install '(doom-themes
-                          :url "https://github.com/doomemacs/themes.git"
-                          :branch "v2.3.0"))))
-
-
 ;; 📦 EDIT-INDIRECT
 ;; https://github.com/Fanael/edit-indirect
 ;; Позволяет редактировать выделенный регион в отдельном буфере.
@@ -1409,8 +1396,6 @@
   :bind (:map global-map
               ([f12] . format-all-buffer)))
 
-(hl-line-mode)
-
 
 ;; 📦 HELM
 ;; https://github.com/emacs-helm/helm
@@ -1442,9 +1427,6 @@
        :url "https://github.com/tarsius/hl-todo.git"
        branch: "v3.8.1")))
   :config (global-hl-todo-mode t))
-
-
-(require 'sgml-mode)
 
 
 ;; 📦 HYPERBOLE
@@ -1598,11 +1580,12 @@
 ;; https://github.com/dgutov/diff-hl
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
-(unless (package-installed-p 'diff-hl)
-  (package-vc-install '(diff-hl
-                        :url "https://github.com/dgutov/diff-hl.git"
-                        :branch "1.10.0")))
 (use-package diff-hl
+  :init
+  (unless (package-installed-p 'diff-hl)
+    (package-vc-install '(diff-hl
+                          :url "https://github.com/dgutov/diff-hl.git"
+                          :branch "1.10.0")))
   :requires magit
   :after magit
   :ensure t
@@ -1726,13 +1709,9 @@
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
-(unless (and (package-installed-p 'org)
-             (package-built-in-p 'org '(9 7 20)))
-  (customize-set-variable 'package-install-upgrade-built-in t)
-  (package-install 'org)
-  (customize-set-variable 'package-install-upgrade-built-in nil))
 (use-package org
   :defer t
+  :ensure t
   :config
   (setq-local
    truncate-lines nil ;; Не обрезать строки
@@ -1742,11 +1721,12 @@
 ;; 📦 PACKAGE-LINT
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
-(unless (package-installed-p 'package-lint)
-  (package-vc-install '(package-lint
-                        :url "https://github.com/purcell/package-lint.git"
-                        :branch "0.23")))
 (use-package package-lint
+  :init
+  (unless (package-installed-p 'package-lint)
+    (package-vc-install '(package-lint
+                          :url "https://github.com/purcell/package-lint.git"
+                          :branch "0.23")))
   :ensure t
   :defer t)
 
@@ -1770,16 +1750,15 @@
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (unless (package-installed-p 'projectile)
-  (package-install 'buttercup)
   (package-vc-install '(projectile
                         :url "https://github.com/bbatsov/projectile.git"
                         :branch "v2.8.0"
                         :doc "doc")))
 (use-package projectile
-  :ensure t
   :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
+  ("C-c p" . projectile-command-map)
   :init
   (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
   (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all"))
@@ -1821,11 +1800,12 @@
 ;; 📦 RAINBOW-DELIMITERS-MODE
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
-(unless (package-installed-p 'rainbow-delimiters)
-  (package-vc-install '(rainbow-delimiters
-                        :url "https://github.com/Fanael/rainbow-delimiters"
-                        :branch "2.1.5")))
 (use-package rainbow-delimiters
+  :init
+  (unless (package-installed-p 'rainbow-delimiters)
+    (package-vc-install '(rainbow-delimiters
+                          :url "https://github.com/Fanael/rainbow-delimiters"
+                          :branch "2.1.5")))
   :ensure t
   :delight ""
   :hook
@@ -1937,22 +1917,24 @@
 ;; 📦 TEMPEL
 ;; https://github.com/minad/tempel
 ;; Система шаблонов.
-(unless (package-installed-p 'tempel)
-  (package-vc-install '(tempel
-                        :url "https://github.com/minad/tempel.git"
-                        :branch "1.2")))
 (use-package tempel
+  :init
+  (unless (package-installed-p 'tempel)
+    (package-vc-install '(tempel
+                          :url "https://github.com/minad/tempel.git"
+                          :branch "1.2")))
   :ensure t)
 
 
 ;; 📦 TERRAFORM-MODE
 ;; https://github.com/hcl-emacs/terraform-mode
 ;; Работа с файлами конфигурации Terraform и OpenTofu
-(unless (package-installed-p 'terraform-mode)
-  (package-vc-install '(terraform-mode
-                        :url "https://github.com/hcl-emacs/terraform-mode.git"
-                        :branch "1.0.1")))
 (use-package terraform-mode
+  :init
+  (unless (package-installed-p 'terraform-mode)
+    (package-vc-install '(terraform-mode
+                          :url "https://github.com/hcl-emacs/terraform-mode.git"
+                          :branch "1.0.1")))
   :ensure t
   :defer t
   :mode ("\\.terraformrc\\'"
@@ -1964,11 +1946,12 @@
 ;; 📦 WEB-MODE
 ;; https://web-mode.org/
 ;; Режим для редактирования HTML и не только.
-(unless (package-installed-p 'web-mode)
-  (package-vc-install '(web-mode
-                        :url "https://github.com/fxbois/web-mode.git"
-                        :branch "v17.3.13")))
 (use-package web-mode
+  :init
+  (unless (package-installed-p 'web-mode)
+    (package-vc-install '(web-mode
+                          :url "https://github.com/fxbois/web-mode.git"
+                          :branch "v17.3.13")))
   :ensure t
   :custom
   (major-mode 'web-mode)

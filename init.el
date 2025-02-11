@@ -803,6 +803,8 @@
 (require 'window)
 (keymap-global-set "C-S-<iso-lefttab>" 'next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
 (keymap-global-set "C-<tab>" 'previous-buffer)       ;; [Ctrl+Shift+Tab] Следующий буфер
+(keymap-global-set "M-o" 'next-window-any-frame)     ;; [Alt+o]          Следующее окно
+(keymap-global-set "M-O" 'previous-window-any-frame) ;; [Alt+O]          Предыдущее окно
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
@@ -1247,11 +1249,6 @@
 (when (emacs-version-not-less-than 26 3)
   (use-package eglot
     :ensure t
-    :init
-    (unless (package-installed-p 'eglot)
-      (package-vc-install '(eglot
-                            :url "https://github.com/joaotavora/eglot.git"
-                            :branch "1.18")))
     :defer t
     :custom
     (eglot-events-buffer-config '(
@@ -1264,6 +1261,7 @@
     (add-to-list 'eglot-server-programs '(dockerfile-mode . ("docker-langserver" "--stdio")))
     (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
     (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+    (add-to-list 'eglot-server-programs '(rst-mode . (,(executable-find "python3") "-m" "esbonio")))
     (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
     :bind (:map eglot-mode-map
@@ -1498,7 +1496,9 @@
   (unless (package-installed-p 'jinx)
     (package-vc-install '(jinx
                           :url "https://github.com/minad/jinx.git"
-                          :branch "1.10")))
+                          :branch "1.12")))
+  :custom
+  (jinx-languages "ru_RU en_US")
   :hook ((asciidoc-mode
           markdown-mode
           org-mode

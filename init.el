@@ -1261,7 +1261,7 @@
     (add-to-list 'eglot-server-programs '(dockerfile-mode . ("docker-langserver" "--stdio")))
     (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
     (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
-    (add-to-list 'eglot-server-programs '(rst-mode . (,(executable-find "python3") "-m" "esbonio")))
+    (add-to-list 'eglot-server-programs '(rst-mode . ("esbonio")))
     (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
     :bind (:map eglot-mode-map

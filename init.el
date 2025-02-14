@@ -348,7 +348,8 @@
                 markdown-mode
                 python-mode
                 ruby-mode
-                web-mode))
+                web-mode
+                yaml-mode))
   (add-hook (derived-mode-hook-name hook) #'electric-pair-local-mode))
 
 
@@ -593,6 +594,12 @@
 ;; Поддержка Makefile.
 (require 'make-mode)
 (add-to-list 'auto-mode-alist '("\\Makefile\\'" . makefile-gmake-mode))
+
+
+;; 📦 MINIBUFFER
+;; Встроенный пакет
+;; Работа с мини-буфером
+(require 'minibuffer)
 
 
 ;; 📦 NEW-COMMENT
@@ -966,19 +973,6 @@
                           :url "https://gitlab.com/emacs-ansible/emacs-ansible.git"
                           :branch "0.3.2")))
   :defer t)
-
-
-;; 📦 APHELEIA
-;; https://github.com/radian-software/apheleia
-;; Форматирование содержимого буфера с помощью внешних средств
-(use-package apheleia
-  :ensure t
-  :init
-  (unless (package-installed-p 'apheleia)
-    (package-vc-install '(apheleia
-                          :url "https://github.com/radian-software/apheleia.git"
-                          :branch "v4.2")))
-  :delight "")
 
 
 ;; 📦 AVY

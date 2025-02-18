@@ -469,7 +469,7 @@
 
 ;; 📦 HL-LINE-MODE
 (require 'hl-line)
-(hl-line-mode 1)
+(global-hl-line-mode 1)
 
 
 ;; 📦 IBUFFER
@@ -1014,7 +1014,7 @@
   (unless (package-installed-p 'colorful-mode)
     (package-vc-install '(colorful-mode
                           :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
-                          :branch "v1.1.0")))
+                          :branch "v1.2.0")))
   :ensure t
   :hook ((css-mode
           emacs-lisp-mode
@@ -1334,6 +1334,7 @@
           css-mode
           dockerfile-mode
           emacs-lisp-mode
+          html-mode
           js-mode
           json-mode
           latex-mode
@@ -1417,7 +1418,7 @@
     (package-vc-install
      '(hl-todo
        :url "https://github.com/tarsius/hl-todo.git"
-       branch: "v3.8.1")))
+       :branch "v3.8.1")))
   :config (global-hl-todo-mode t))
 
 
@@ -1935,6 +1936,26 @@
          "\\.tf\\'"
          "\\.tofurc\\'"
          "tofu\\.rc\\'"))
+
+
+;; 📦 TREE-SITTER
+;; https://github.com/emacs-tree-sitter/elisp-tree-sitter
+;; Подсветка синтаксиса с помощью специального парсера.
+(use-package tree-sitter
+  :ensure t
+  :config
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+  :hook
+  (css-mode . tree-sitter-mode)
+  (csv-mode . tree-sitter-mode)
+  (editorconfig-mode . tree-sitter-mode)
+  (emacs-lisp-mode . tree-sitter-mode)
+  (html-mode . tree-sitter-mode)
+  (rst-mode . tree-sitter-mode)
+  (yaml-mode . tree-sitter-mode))
+
+(use-package tree-sitter-langs
+  :ensure t)
 
 
 ;; 📦 WEB-MODE

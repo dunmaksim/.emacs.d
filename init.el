@@ -1216,11 +1216,6 @@
 ;; https://github.com/protesilaos/ef-themes.git
 (use-package ef-themes
   :ensure t
-  :init
-  (unless (package-installed-p 'ef-themes)
-    (package-vc-install '(ef-themes
-                          :url "https://github.com/protesilaos/ef-themes.git"
-                          :branch "1.9.0")))
   :config
   (setq init-el-theme 'ef-autumn))
 
@@ -1513,6 +1508,17 @@
                           :branch "v1.9.2")))
   :defer t
   :mode "\\.json\\'")
+
+
+;; 📦 LIN
+;; https://github.com/protesilaos/lin
+;; Почти то же самое, что и `hl-line-mode', только подсвечивает активную строку
+;; и при выделении.
+(use-package lin
+  :ensure t
+  :config
+  (global-hl-line-mode nil)
+  (lin-global-mode 1))
 
 
 ;; 📦 DASH

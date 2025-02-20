@@ -1780,8 +1780,8 @@
     :ensure t
     :custom (pulsar-pulse t)
     :hook
-    (after-init . pulsar-global-mode)
-    (next-error . pulsar-pulse-line)
+    ((after-init . pulsar-global-mode)
+     (next-error . pulsar-pulse-line))
     :config
     (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
     (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
@@ -1878,6 +1878,31 @@
    "\\.rb\\'"))
 
 
+;; 📦 SIDELINE
+;; https://github.com/emacs-sideline/sideline
+;; Боковая панель для Emacs. Может показывать много интересной информации.
+(use-package sideline
+  :ensure t
+  :requires (sideline-blame sideline-eglot sideline-flycheck)
+  :custom
+  (sideline-backends-right '(sideline-blame
+                             sideline-eglot
+                             sideline-flycheck))
+  :hook
+  ((flycheck-mode . sideline-mode)
+   (eglot-mode . sideline-flycheck-setup)
+   (after-init . sideline-mode)))
+
+(use-package sideline-blame
+  :ensure t)
+
+(use-package sideline-eglot
+  :ensure t)
+
+(use-package sideline-flycheck
+  :ensure t)
+
+
 ;; 📦 STANDARD-THEME
 ;; https://github.com/protesilaos/standard-themes
 ;; Почти как встроенные темы, только немного доработанные
@@ -1952,13 +1977,13 @@
   :config
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
   :hook
-  (css-mode . tree-sitter-mode)
-  (csv-mode . tree-sitter-mode)
-  (editorconfig-mode . tree-sitter-mode)
-  (emacs-lisp-mode . tree-sitter-mode)
-  (html-mode . tree-sitter-mode)
-  (rst-mode . tree-sitter-mode)
-  (yaml-mode . tree-sitter-mode))
+  ((css-mode . tree-sitter-mode)
+   (csv-mode . tree-sitter-mode)
+   (editorconfig-mode . tree-sitter-mode)
+   (emacs-lisp-mode . tree-sitter-mode)
+   (html-mode . tree-sitter-mode)
+   (rst-mode . tree-sitter-mode)
+   (yaml-mode . tree-sitter-mode)))
 
 (use-package tree-sitter-langs
   :ensure t)

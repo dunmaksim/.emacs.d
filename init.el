@@ -443,8 +443,8 @@
 (custom-set-variables
  '(window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
  '(window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон"))
-(keymap-global-set "C-x O" 'previous-multiframe-window) ;; Перейти в предыдущее окно
-(keymap-global-set "C-x o" 'next-multiframe-window)     ;; Перейти в следующее окно
+(keymap-global-set "C-x O" 'previous-window-any-frame) ;; Перейти в предыдущее окно
+(keymap-global-set "C-x o" 'next-window-any-frame)     ;; Перейти в следующее окно
 
 
 ;; 📦 GOTO-ADDRESS-MODE
@@ -1876,31 +1876,6 @@
   :mode
   ("\\Vagrantfile\\'"
    "\\.rb\\'"))
-
-
-;; 📦 SIDELINE
-;; https://github.com/emacs-sideline/sideline
-;; Боковая панель для Emacs. Может показывать много интересной информации.
-(use-package sideline
-  :ensure t
-  :requires (sideline-blame sideline-eglot sideline-flycheck)
-  :custom
-  (sideline-backends-right '(sideline-blame
-                             sideline-eglot
-                             sideline-flycheck))
-  :hook
-  ((flycheck-mode . sideline-mode)
-   (eglot-mode . sideline-flycheck-setup)
-   (after-init . sideline-mode)))
-
-(use-package sideline-blame
-  :ensure t)
-
-(use-package sideline-eglot
-  :ensure t)
-
-(use-package sideline-flycheck
-  :ensure t)
 
 
 ;; 📦 STANDARD-THEME

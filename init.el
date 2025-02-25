@@ -1054,8 +1054,7 @@
           python-mode
           rst-mode
           ruby-mode
-          web-mode
-          ) . company-mode)
+          web-mode) . company-mode)
   :bind
   (:map company-active-map
         ("TAB" . company-complete-common-or-cycle)
@@ -1521,51 +1520,35 @@
   (lin-global-mode 1))
 
 
-;; 📦 DASH
-;; https://github.com/magnars/dash.el
-;; Зависимость MAGIT
-(use-package dash
-  :ensure t
-  :init
-  (unless (package-installed-p 'dash)
-    (package-vc-install '(dash
-                          :url "https://github.com/magnars/dash.el.git"
-                          :branch "2.19.1"
-                          :doc "doc"))))
-
-;; 📦 WITH-EDITOR
-;; https://github.com/magit/with-editor
-;; Зависимость MAGIT
-(use-package with-editor
-  :ensure t
-  :init
-  (unless (package-installed-p 'with-editor)
-    (package-vc-install '(with-editor
-                           :url "https://github.com/magit/with-editor.git"
-                           :branch "v3.4.2"
-                           :lisp-dir "lisp"
-                           :doc "docs"))))
-
 ;; 📦 MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
 (use-package magit
   :ensure t
-  :init
-  (unless (package-installed-p 'magit)
-    (package-vc-install
-     '(transient
-       :url "https://github.com/magit/transient.git"
-       :branch "v0.8.2"
-       :lisp-dir "lisp"
-       :doc "docs"))
-    (package-vc-install
-     '(magit
-       :url "https://github.com/magit/magit.git"
-       :branch "v4.3.0"
-       :lisp-dir "lisp"
-       :doc "docs")))
+  ;; :init
+  ;; (unless (package-installed-p 'magit)
+  ;;   (progn
+  ;;     (package-vc-install
+  ;;      '(transient
+  ;;        :url "https://github.com/magit/transient.git"
+  ;;        :branch "v0.8.3"
+  ;;        :lisp-dir "lisp"
+  ;;        :doc "docs"))
+
+  ;;     (package-vc-install
+  ;;      '(with-editor
+  ;;         :url "https://github.com/magit/with-editor.git"
+  ;;         :branch "v3.4.3"
+  ;;         :lisp-dir "lisp"
+  ;;         :doc "docs"))
+
+  ;;     (package-vc-install
+  ;;      '(magit
+  ;;        :url "https://github.com/magit/magit.git"
+  ;;        :branch "v4.3.0"
+  ;;        :lisp-dir "lisp"
+  ;;        :doc "docs"))))
   :demand t
   :custom
   (magit-auto-revert-mode t "Автоматически обновлять файлы в буферах при изменениях на диске.")

@@ -281,6 +281,7 @@
  '(dired-listing-switches "-l --human-readable --all --group-directories-first")
  '(dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов"))
 (add-hook 'dired-mode-hook 'dired-hide-details-mode)
+(keymap-set dired-mode-map ":" 'dired-up-directory)
 
 
 ;; 📦 DISPLAY-LINE-NUMBERS-MODE
@@ -348,6 +349,7 @@
                 markdown-mode
                 python-mode
                 ruby-mode
+                terraform-mode
                 web-mode
                 yaml-mode))
   (add-hook (derived-mode-hook-name hook) #'electric-pair-local-mode))
@@ -843,16 +845,6 @@
     (message "Установка `use-package'...")
     (package-install 'use-package t)))
 
-(when (package-built-in-p 'use-package (version-to-list "2.4.6"))
-  (message "Пакет `use-package' встроенный и имеет версию ниже 2.4.6.")
-  ;; Сейчас это не работает, потому что в самом пакете `use-package'
-  ;; забыли повысить номер версии, и она в 2.4.6 всё ещё 2.4.5.
-  (message "Установка новой версии `use-package` из GNU ELPA…")
-  (customize-set-variable 'package-install-upgrade-built-in t)
-  (package-refresh-contents)
-  (package-install 'use-package t)
-  (customize-set-variable 'package-install-upgrade-built-in nil))
-
 (require 'use-package)
 
 ;; Настройки отладочного режима
@@ -870,14 +862,8 @@
 ;; Эти строки находятся здесь потому, что `use-package' активно
 ;; использует возможности этого пакета далее, поэтому он должен быть
 ;; загружен как можно раньше.
-
 (use-package delight
   :ensure t
-  :init
-  (unless (package-installed-p 'delight)
-    (package-vc-install '(delight
-                          :url "https://git.savannah.nongnu.org/git/delight.git"
-                          :branch "1.7")))
   :config
   (delight '((checkdoc-minor-mode)
              (global-visual-line-mode)
@@ -1407,12 +1393,6 @@
 ;; Подсветка TODO, FIXME и т. п.
 (use-package hl-todo
   :ensure t
-  :init
-  (unless (package-installed-p 'hl-todo)
-    (package-vc-install
-     '(hl-todo
-       :url "https://github.com/tarsius/hl-todo.git"
-       :branch "v3.8.1")))
   :config (global-hl-todo-mode t))
 
 
@@ -1511,8 +1491,8 @@
 
 ;; 📦 LIN
 ;; https://github.com/protesilaos/lin
-;; Почти то же самое, что и `hl-line-mode', только подсвечивает активную строку
-;; и при выделении.
+;; Почти то же самое, что и `hl-line-mode', только лучше.
+;; TODO: в чём именно?
 (use-package lin
   :ensure t
   :config
@@ -1535,14 +1515,12 @@
   ;;        :branch "v0.8.3"
   ;;        :lisp-dir "lisp"
   ;;        :doc "docs"))
-
   ;;     (package-vc-install
   ;;      '(with-editor
   ;;         :url "https://github.com/magit/with-editor.git"
   ;;         :branch "v3.4.3"
   ;;         :lisp-dir "lisp"
   ;;         :doc "docs"))
-
   ;;     (package-vc-install
   ;;      '(magit
   ;;        :url "https://github.com/magit/magit.git"
@@ -1552,12 +1530,13 @@
   :demand t
   :custom
   (magit-auto-revert-mode t "Автоматически обновлять файлы в буферах при изменениях на диске.")
-  (magit-define-global-key-bindings t "Включить глобальные сочетания Magit.")
+  (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   :init
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
-  (after-save . magit-after-save-refresh-status))
+  (after-save . magit-after-save-refresh-status)
+  (after-save . magit-after-save-refresh-buffers))
 
 
 ;; 📦 DIFF-HL
@@ -1833,21 +1812,6 @@
                               "russian-techwriter"))
   :config
   (reverse-im-mode 1))
-
-
-;; 📦 RG
-;; https://github.com/dajva/rg.el
-;; Фронтенд для `ripgrep', утилиты для поиска (должна быть установлена).
-(use-package rg
-  :init
-  (unless (package-installed-p 'rg)
-    (package-vc-install '(rg
-                          :url "https://github.com/dajva/rg.el.git"
-                          :branch "2.3.0"
-                          :doc "docs")))
-  :ensure t
-  :config
-  (rg-enable-default-bindings))
 
 
 ;; 📦 RUBY-MODE

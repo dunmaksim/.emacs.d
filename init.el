@@ -127,11 +127,11 @@
  '(inhibit-startup-screen t "Не показывать приветственный экран")
  '(initial-scratch-message nil "Пустой буфер *scratch*")
  '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл.")
+ '(major-mode 'text-mode "Текстовый режим для новых буферов по умолчанию.")
  '(read-file-name-completion-ignore-case t "Игнорировать регистр при вводе имён файлов")
  '(ring-bell-function 'ignore "Отключить звуковое сопровождение событий")
  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
  '(scroll-bar-mode nil "Отключить полосы прокрутки")
- ;; '(scroll-conservatively 101 "TODO: проверить что это такое")
  '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
  '(show-trailing-whitespace t "Подсветка висячих пробелов")
  '(standard-indent 4 "Отступ по умолчанию")
@@ -709,12 +709,6 @@
 (keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
 
 
-;; 📦 TABLE
-;; Встроенный пакет для работы с таблицами
-(require 'table)
-(add-hook 'rst-mode-hook 'table-recognize)
-
-
 ;; 📦 TAB-BAR
 ;; Встроенный пакет для управления вкладками.
 (require 'tab-bar)
@@ -1089,38 +1083,6 @@
     (denote-directory "~/Notes/" "Каталог для хранения заметок.")))
 
 
-;; 📦 DIRENV
-;; https://github.com/wbolster/emacs-direnv
-;; Поддержка `direnv' в Emacs. Для корректной работы нужно выполнить несколько
-;; дополнительных действий:
-;; 1. Установить в систему direnv
-;; 2. Для поддержки Ruby установить ruby-install: https://direnv.net/docs/ruby.html
-;; 3. Создать в каталоге ~/.config/direnv/ файл direnvrc:
-;;
-;; # Usage: use ruby <version>
-;; #
-;; # Loads the specified ruby version into the environment
-;; #
-;; use_ruby() {
-;;   local ruby_dir=$HOME/.rubies/$1
-;;   load_prefix $ruby_dir
-;;   layout ruby
-;; }
-;; 4. Создать в каталоге проекта файл `.envrc':
-;;
-;; source .venv/bin/activate
-;; use ruby 3.3.5
-;;
-;; 5. Разрешить использование этого файла:
-;;
-;; cd  ~/<project>
-;; direnv allow
-;; (use-package direnv
-;;   :ensure t
-;;   :config
-;;   (direnv-mode))
-
-
 ;; 📦 DOCKERFILE-MODE
 ;; https://github.com/spotify/dockerfile-mode
 ;; Работа с файлами `Dockerfile'.
@@ -1400,7 +1362,12 @@
 ;; https://www.gnu.org/software/hyperbole/
 ;; Распознаёт текст в буферах и автоматически превращает в кнопки и ссылки.
 (use-package hyperbole
-  :ensure t)
+  :ensure t
+  :hook
+  ((emacs-lisp-mode
+    markdown-mode
+    rst-mode
+    text-mode) . hyperbole-mode))
 
 
 ;; 📦 INDENT-BARS
@@ -1461,11 +1428,6 @@
 ;; В Debian требует для работы `libenchant2-dev' и `pkgconf'.
 (use-package jinx
   :ensure t
-  :init
-  (unless (package-installed-p 'jinx)
-    (package-vc-install '(jinx
-                          :url "https://github.com/minad/jinx.git"
-                          :branch "1.12")))
   :custom
   (jinx-languages "ru_RU en_US")
   :hook ((asciidoc-mode
@@ -1506,35 +1468,13 @@
 ;; Лучшее средство для работы с Git.
 (use-package magit
   :ensure t
-  ;; :init
-  ;; (unless (package-installed-p 'magit)
-  ;;   (progn
-  ;;     (package-vc-install
-  ;;      '(transient
-  ;;        :url "https://github.com/magit/transient.git"
-  ;;        :branch "v0.8.3"
-  ;;        :lisp-dir "lisp"
-  ;;        :doc "docs"))
-  ;;     (package-vc-install
-  ;;      '(with-editor
-  ;;         :url "https://github.com/magit/with-editor.git"
-  ;;         :branch "v3.4.3"
-  ;;         :lisp-dir "lisp"
-  ;;         :doc "docs"))
-  ;;     (package-vc-install
-  ;;      '(magit
-  ;;        :url "https://github.com/magit/magit.git"
-  ;;        :branch "v4.3.0"
-  ;;        :lisp-dir "lisp"
-  ;;        :doc "docs"))))
-  :demand t
   :custom
-  (magit-auto-revert-mode t "Автоматически обновлять файлы в буферах при изменениях на диске.")
-  (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
+  (setq magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   :init
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
+  (magit-mode . magit-auto-revert-mode)
   (after-save . magit-after-save-refresh-status)
   (after-save . magit-after-save-refresh-buffers))
 
@@ -1878,11 +1818,6 @@
 ;; https://github.com/hcl-emacs/terraform-mode
 ;; Работа с файлами конфигурации Terraform и OpenTofu
 (use-package terraform-mode
-  :init
-  (unless (package-installed-p 'terraform-mode)
-    (package-vc-install '(terraform-mode
-                          :url "https://github.com/hcl-emacs/terraform-mode.git"
-                          :branch "1.0.1")))
   :ensure t
   :defer t
   :mode ("\\.terraformrc\\'"
@@ -1919,10 +1854,9 @@
   (unless (package-installed-p 'web-mode)
     (package-vc-install '(web-mode
                           :url "https://github.com/fxbois/web-mode.git"
-                          :branch "v17.3.13")))
+                          :branch "v17.3.20")))
   :ensure t
   :custom
-  (major-mode 'web-mode)
   (web-mode-attr-indent-offset 4 "4 пробела при выравнивании")
   (web-mode-enable-block-face t "Раскрашивать блок в соответствующий цвет")
   (web-mode-enable-css-colorization t "Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета")

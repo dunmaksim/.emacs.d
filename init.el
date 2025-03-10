@@ -278,6 +278,10 @@
               ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
            "\\'"))
  '(dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
+ ;; Эксперименты
+ ;; '(dired-hide-details-hide-information-lines nil)
+ ;; '(dired-hide-details-hide-symlink-targets nil)
+ ;;
  '(dired-listing-switches "-l --human-readable --all --group-directories-first")
  '(dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов"))
 (add-hook 'dired-mode-hook 'dired-hide-details-mode)
@@ -707,6 +711,7 @@
 (size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
 (keymap-global-set "C-z" 'undo)               ;; Отмена
 (keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+;; (keymap-global-set "M-\"" 'mark-word) ;; Выделить слово (чтобы в RU раскладке тоже работало)
 
 
 ;; 📦 TAB-BAR
@@ -816,17 +821,20 @@
 (require 'package)
 (customize-set-variable 'package-enable-at-startup nil "Prevent double loading of libraries")
 (dolist (archive '(("gnu" . "https://elpa.gnu.org/packages/")
+                   ("jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/")
                    ("melpa" . "https://melpa.org/packages/")
                    ("melpa-stable" . "https://stable.melpa.org/packages/")
-                   ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+                   ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                   ))
   (add-to-list 'package-archives archive t))
 (package-initialize)
 
 (customize-set-variable
  'package-archive-priorities
- '(("gnu" . 40)
-   ("nongnu" . 30)
-   ("melpa-stable" . 20)
+ '(("jcs-elpa" . 20)
+   ("gnu" . 50)
+   ("nongnu" . 40)
+   ("melpa-stable" . 30)
    ("melpa" . 10)))
 
 (unless package-archive-contents
@@ -986,6 +994,13 @@
   :defer t)
 
 
+;; 📦 CODEGPT
+;; https://github.com/emacs-openai/codegpt
+;; Клиент для OpenAI GPT
+(use-package codegpt
+  :ensure t)
+
+
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
@@ -1097,26 +1112,26 @@
   :mode "\\Dockerfile\\'")
 
 
-;; 📦 DOOM-MODELINE
-;; https://github.com/seagle0128/doom-modeline
-(use-package doom-modeline
-  :ensure t
-  :custom
-  (doom-modeline-buffer-file-name-style 'auto "Стиль названия буфера автоматический")
-  (doom-modeline-buffer-name t "Показывать название буфера")
-  (doom-modeline-buffer-state-icon t "Использовать иконки для показа статуса буфера")
-  (doom-modeline-check-icon t "Иконка статуса Flycheck")
-  (doom-modeline-highlight-modified-buffer-name t "Подсвечивать названия изменённых буферов")
-  (doom-modeline-icon t "Использовать иконочные шрифты")
-  (doom-modeline-indent-info t "Включить показ типа отступов")
-  (doom-modeline-lsp-icon t "Показывать иконку, когда LSP активен")
-  (doom-modeline-major-mode-color-icon t "Использовать цвета для иконок основного режима")
-  (doom-modeline-major-mode-icon t "Использовать иконки для основного режима")
-  (doom-modeline-project-detection 'auto "Автоматически определять тип проекта")
-  (doom-modeline-vcs-icon t "Иконка VCS")
-  (doom-modeline-vcs-max-length 30 "Длина названия ветки")
-  :config
-  (doom-modeline-mode 1))
+;; ;; 📦 DOOM-MODELINE
+;; ;; https://github.com/seagle0128/doom-modeline
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :custom
+;;   (doom-modeline-buffer-file-name-style 'auto "Стиль названия буфера автоматический")
+;;   (doom-modeline-buffer-name t "Показывать название буфера")
+;;   (doom-modeline-buffer-state-icon t "Использовать иконки для показа статуса буфера")
+;;   (doom-modeline-check-icon t "Иконка статуса Flycheck")
+;;   (doom-modeline-highlight-modified-buffer-name t "Подсвечивать названия изменённых буферов")
+;;   (doom-modeline-icon t "Использовать иконочные шрифты")
+;;   (doom-modeline-indent-info t "Включить показ типа отступов")
+;;   (doom-modeline-lsp-icon t "Показывать иконку, когда LSP активен")
+;;   (doom-modeline-major-mode-color-icon t "Использовать цвета для иконок основного режима")
+;;   (doom-modeline-major-mode-icon t "Использовать иконки для основного режима")
+;;   (doom-modeline-project-detection 'auto "Автоматически определять тип проекта")
+;;   (doom-modeline-vcs-icon t "Иконка VCS")
+;;   (doom-modeline-vcs-max-length 30 "Длина названия ветки")
+;;   :config
+;;   (doom-modeline-mode 1))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1629,7 +1644,7 @@
   (unless (package-installed-p 'package-lint)
     (package-vc-install '(package-lint
                           :url "https://github.com/purcell/package-lint.git"
-                          :branch "0.23")))
+                          :branch "0.24")))
   :ensure t
   :defer t)
 
@@ -1652,19 +1667,19 @@
 ;; под контролем любой системы версионирования, либо содержать специальные
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
-(unless (package-installed-p 'projectile)
-  (package-vc-install '(projectile
-                        :url "https://github.com/bbatsov/projectile.git"
-                        :branch "v2.8.0"
-                        :doc "doc")))
 (use-package projectile
+  :ensure t
   :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
   ("C-c p" . projectile-command-map)
+  :bind
+  ("<f5>" . projectile-compile-project)
   :init
   (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
   (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all"))
+  :custom
+  (projectile-completion-system 'ivy)
   :config
   (projectile-mode 1))
 
@@ -1831,6 +1846,7 @@
 ;; Подсветка синтаксиса с помощью специального парсера.
 (use-package tree-sitter
   :ensure t
+  :delight " 🌳"
   :config
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
   :hook

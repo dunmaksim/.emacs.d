@@ -1347,22 +1347,22 @@
               ([f12] . format-all-buffer)))
 
 
-;; 📦 HELM
-;; https://github.com/emacs-helm/helm
-;; Подсказки и автодополнение ввода.
-;; [C-o] — переключение между источниками подсказок (история и полный список команд)
-(use-package helm
-  :ensure t
-  :init
-  (unless (package-installed-p 'helm)
-    (package-vc-install '(helm
-                          :url "https://github.com/emacs-helm/helm.git"
-                          :branch "v4.0")))
-  :delight ""
-  :config
-  (helm-mode 1)
-  :bind (:map global-map
-              ("M-y" . helm-show-kill-ring)))
+;; ;; 📦 HELM
+;; ;; https://github.com/emacs-helm/helm
+;; ;; Подсказки и автодополнение ввода.
+;; ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
+;; (use-package helm
+;;   :ensure t
+;;   :init
+;;   (unless (package-installed-p 'helm)
+;;     (package-vc-install '(helm
+;;                           :url "https://github.com/emacs-helm/helm.git"
+;;                           :branch "v4.0")))
+;;   :delight ""
+;;   :config
+;;   (helm-mode 1)
+;;   :bind (:map global-map
+;;               ("M-y" . helm-show-kill-ring)))
 
 
 ;; 📦 HL-TODO
@@ -1378,6 +1378,7 @@
 ;; Распознаёт текст в буферах и автоматически превращает в кнопки и ссылки.
 (use-package hyperbole
   :ensure t
+  :delight ""
   :hook
   ((emacs-lisp-mode
     markdown-mode
@@ -1749,24 +1750,14 @@
 
 
 ;; 📦 RUSSIAN-TECHWRITER
-;; Метод ввода для технических писателей
+;; Метод ввода для технических писателей.
+;; В отличие от russian-computer, позволяет использовать лигатуры.
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
   :ensure t
   :custom
-  (default-input-method 'russian-techwriter))
-
-
-;; 📦 REVERSE-IM
-;; https://github.com/a13/reverse-im.el
-;; Чтобы сочетания клавиш работали в любой раскладке.
-(use-package reverse-im
-  :ensure t
-  :custom
-  (reverse-im-input-methods '("russian-computer"
-                              "russian-techwriter"))
-  :config
-  (reverse-im-mode 1))
+  (default-input-method 'russian-techwriter)
+  (default-transient-input-method 'russian-techwriter))
 
 
 ;; 📦 RUBY-MODE

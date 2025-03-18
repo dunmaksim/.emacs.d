@@ -711,7 +711,6 @@
 (size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
 (keymap-global-set "C-z" 'undo)               ;; Отмена
 (keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
-;; (keymap-global-set "M-\"" 'mark-word) ;; Выделить слово (чтобы в RU раскладке тоже работало)
 
 
 ;; 📦 TAB-BAR
@@ -821,20 +820,17 @@
 (require 'package)
 (customize-set-variable 'package-enable-at-startup nil "Prevent double loading of libraries")
 (dolist (archive '(("gnu" . "https://elpa.gnu.org/packages/")
-                   ("jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/")
                    ("melpa" . "https://melpa.org/packages/")
                    ("melpa-stable" . "https://stable.melpa.org/packages/")
-                   ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                   ))
+                   ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
   (add-to-list 'package-archives archive t))
 (package-initialize)
 
 (customize-set-variable
  'package-archive-priorities
- '(("jcs-elpa" . 20)
-   ("gnu" . 50)
-   ("nongnu" . 40)
-   ("melpa-stable" . 30)
+ '(("gnu" . 40)
+   ("nongnu" . 30)
+   ("melpa-stable" . 20)
    ("melpa" . 10)))
 
 (unless package-archive-contents
@@ -1756,8 +1752,8 @@
 (use-package russian-techwriter
   :ensure t
   :custom
-  (default-input-method 'russian-techwriter)
-  (default-transient-input-method 'russian-techwriter))
+  (default-input-method "russian-techwriter" "Метод ввода по умолчанию")
+  (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
 
 
 ;; 📦 RUBY-MODE
@@ -1812,11 +1808,6 @@
 ;; https://github.com/minad/tempel
 ;; Система шаблонов.
 (use-package tempel
-  :init
-  (unless (package-installed-p 'tempel)
-    (package-vc-install '(tempel
-                          :url "https://github.com/minad/tempel.git"
-                          :branch "1.2")))
   :ensure t)
 
 
@@ -1826,31 +1817,51 @@
 (use-package terraform-mode
   :ensure t
   :defer t
-  :mode ("\\.terraformrc\\'"
-         "\\.tf\\'"
-         "\\.tofurc\\'"
-         "tofu\\.rc\\'"))
+  :mode
+  ("\\.terraformrc\\'"
+   "\\.tf\\'"
+   "\\.tofurc\\'"
+   "tofu\\.rc\\'"))
 
 
 ;; 📦 TREE-SITTER
 ;; https://github.com/emacs-tree-sitter/elisp-tree-sitter
 ;; Подсветка синтаксиса с помощью специального парсера.
+;; Отличная замена подсветке, основанной на разборе регулярных выражений.
+;;
+;; Для корректной установки библиотек необходимы компиляторы:
+;;
+;; C++
+;; Rust
+;;
+;; После установки пакета `tree-sitter' нужно выполнить установки синтаксисов:
+;; 1. `treesit-install-language-grammar'.
+;; 2. Указать язык (лучше выбрать из списка).
+;; 3. (Опционально) Указать версию и целевой каталог.
+;;
+;; ⚠ ПАКЕТ `tree-sitter-languages' НЕ НУЖЕН!
 (use-package tree-sitter
   :ensure t
   :delight " 🌳"
+  :pin "melpa-stable"
+  :init
+  (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
+  (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
+  (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
+  (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1"))
+  (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
+  (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
+  (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
+  ;; Remap major modes
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(javascript-mode . javascript-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
   :config
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-  :hook
-  ((css-mode . tree-sitter-mode)
-   (csv-mode . tree-sitter-mode)
-   (editorconfig-mode . tree-sitter-mode)
-   (emacs-lisp-mode . tree-sitter-mode)
-   (html-mode . tree-sitter-mode)
-   (rst-mode . tree-sitter-mode)
-   (yaml-mode . tree-sitter-mode)))
-
-(use-package tree-sitter-langs
-  :ensure t)
+  (add-hook 'tree-sitter-afer-on-hook #'tree-sitter-hl-mode))
 
 
 ;; 📦 WEB-MODE
@@ -1892,26 +1903,35 @@
   (which-key-setup-side-window-right)) ;; Показывать подсказки справа
 
 
-;; 📦 YAML-MODE
-;; https://github.com/yoshiki/yaml-mode
-;; Работа с YAML-файлами
-(use-package yaml-mode
-  :ensure t
-  :init
-  (unless (package-installed-p 'yaml-mode)
-    (package-vc-install '(yaml-mode
-                          :url "https://github.com/yoshiki/yaml-mode.git"
-                          :branch "0.0.16")))
-  :defer t
-  :mode
-  ("\\.ansible\\-lint\\'"
-   "\\.clang\\-tidy\\'"
-   "\\.pre\\-commit\\-config\\.yaml\\'"
-   "\\.yaml\\'"
-   "\\.yamllint\\'"
-   "\\.yamllint\\-config\\.yaml\\'"
-   "\\.yfm\\'"
-   "\\.yml\\'"))
+;; ;; 📦 YAML-MODE
+;; ;; https://github.com/yoshiki/yaml-mode
+;; ;; Работа с YAML-файлами
+;; (use-package yaml-mode
+;;   :ensure t
+;;   :init
+;;   (unless (package-installed-p 'yaml-mode)
+;;     (package-vc-install '(yaml-mode
+;;                           :url "https://github.com/yoshiki/yaml-mode.git"
+;;                           :branch "0.0.16")))
+;;   :defer t
+;;   :mode
+;;   ("\\.ansible\\-lint\\'"
+;;    "\\.clang\\-tidy\\'"
+;;    "\\.pre\\-commit\\-config\\.yaml\\'"
+;;    "\\.yaml\\'"
+;;    "\\.yamllint\\'"
+;;    "\\.yamllint\\-config\\.yaml\\'"
+;;    "\\.yfm\\'"
+;;    "\\.yml\\'"))
+
+
+;; (use-package yaml-ts-mode
+;;   :mode
+;;   (("\\.yml\\'" . yaml-ts-mode)
+;;    ("\\.yaml\\'" . yaml-ts-mode)
+;;    ("\\.yamllint\\'" . yaml-ts-mode)
+;;    ("\\.yamllint-config\\.yaml\\'" . yaml-ts-mode)
+;;    ("\\.yfm\\'" . yaml-ts-mode)))
 
 
 ;; 📦 YASNIPPET

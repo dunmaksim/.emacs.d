@@ -42,7 +42,7 @@
     (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
     (defvar default-font-family nil "Шрифт по умолчанию.")
 
-    ;; Перебор шрифтов11
+    ;; Перебор шрифтов
     (cond
      ((member "Fire Code Nerd" availiable-fonts)
       (setq default-font-family "Fira Code Nerd"))
@@ -694,6 +694,14 @@
                 ("\\.profile\\'" . shell-script-mode)
                 ("\\.sh\\'" . shell-script-mode)))
   (add-to-list 'auto-mode-alist mode))
+
+
+;; 📦 SHELL-MODE
+;; Встроенный пакет.
+;; Оболочка командной строки внутри Emacs
+(require 'shell)
+(custom-set-variables
+ '(shell-kill-buffer-on-exit t "Закрыть буфер, если работа завершена."))
 
 
 ;; 📦 SIMPLE
@@ -1496,11 +1504,6 @@
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
-  :init
-  (unless (package-installed-p 'diff-hl)
-    (package-vc-install '(diff-hl
-                          :url "https://github.com/dgutov/diff-hl.git"
-                          :branch "1.10.0")))
   :requires magit
   :after magit
   :ensure t
@@ -1838,13 +1841,15 @@
 ;; 1. `treesit-install-language-grammar'.
 ;; 2. Указать язык (лучше выбрать из списка).
 ;; 3. (Опционально) Указать версию и целевой каталог.
-;;
-;; ⚠ ПАКЕТ `tree-sitter-languages' НЕ НУЖЕН!
 (use-package tree-sitter
   :ensure t
   :delight " 🌳"
   :pin "melpa-stable"
   :init
+  (progn
+    (defvar init-el-tree-sitter-dir (expand-file-name "tree-sitter" user-emacs-directory))
+    (unless (file-directory-p init-el-tree-sitter-dir)
+      (make-directory init-el-tree-sitter-dir)))
   (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
   (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
   (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
@@ -1852,16 +1857,18 @@
   (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
   (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
   (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
-  ;; Remap major modes
-  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(javascript-mode . javascript-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.23.2"))
+  ;; TREE-SITTER-GRAMMARS
+  (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
+  (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown/src/"))
+  (add-to-list 'treesit-language-source-alist '(toml "https://github.com/tree-sitter-grammars/tree-sitter-toml.git" "v0.7.0" "src/"))
+  (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
   :config
-  (add-hook 'tree-sitter-afer-on-hook #'tree-sitter-hl-mode))
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+
+(use-package tree-sitter-langs
+  :ensure t)
 
 
 ;; 📦 WEB-MODE
@@ -1903,35 +1910,26 @@
   (which-key-setup-side-window-right)) ;; Показывать подсказки справа
 
 
-;; ;; 📦 YAML-MODE
-;; ;; https://github.com/yoshiki/yaml-mode
-;; ;; Работа с YAML-файлами
-;; (use-package yaml-mode
-;;   :ensure t
-;;   :init
-;;   (unless (package-installed-p 'yaml-mode)
-;;     (package-vc-install '(yaml-mode
-;;                           :url "https://github.com/yoshiki/yaml-mode.git"
-;;                           :branch "0.0.16")))
-;;   :defer t
-;;   :mode
-;;   ("\\.ansible\\-lint\\'"
-;;    "\\.clang\\-tidy\\'"
-;;    "\\.pre\\-commit\\-config\\.yaml\\'"
-;;    "\\.yaml\\'"
-;;    "\\.yamllint\\'"
-;;    "\\.yamllint\\-config\\.yaml\\'"
-;;    "\\.yfm\\'"
-;;    "\\.yml\\'"))
-
-
-;; (use-package yaml-ts-mode
-;;   :mode
-;;   (("\\.yml\\'" . yaml-ts-mode)
-;;    ("\\.yaml\\'" . yaml-ts-mode)
-;;    ("\\.yamllint\\'" . yaml-ts-mode)
-;;    ("\\.yamllint-config\\.yaml\\'" . yaml-ts-mode)
-;;    ("\\.yfm\\'" . yaml-ts-mode)))
+;; 📦 YAML-MODE
+;; https://github.com/yoshiki/yaml-mode
+;; Работа с YAML-файлами
+(use-package yaml-mode
+  :ensure t
+  :init
+  (unless (package-installed-p 'yaml-mode)
+    (package-vc-install '(yaml-mode
+                          :url "https://github.com/yoshiki/yaml-mode.git"
+                          :branch "0.0.16")))
+  :defer t
+  :mode
+  ("\\.ansible\\-lint\\'"
+   "\\.clang\\-tidy\\'"
+   "\\.pre\\-commit\\-config\\.yaml\\'"
+   "\\.yaml\\'"
+   "\\.yamllint\\'"
+   "\\.yamllint\\-config\\.yaml\\'"
+   "\\.yfm\\'"
+   "\\.yml\\'"))
 
 
 ;; 📦 YASNIPPET

@@ -115,6 +115,7 @@
     ;; Каталог не существует
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
 
+
 (custom-set-variables
  '(compilation-scroll-output t "Автоматическая прокрутка буфера *compilation*")
  '(create-lockfiles nil "Не создавать lock-файлы")
@@ -129,6 +130,7 @@
  '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл.")
  '(major-mode 'text-mode "Текстовый режим для новых буферов по умолчанию.")
  '(read-file-name-completion-ignore-case t "Игнорировать регистр при вводе имён файлов")
+ '(read-process-output-max (* 1024 1024) "Увеличим чанк чтения для LSP: по умолчанию 65535")
  '(ring-bell-function 'ignore "Отключить звуковое сопровождение событий")
  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
  '(scroll-bar-mode nil "Отключить полосы прокрутки")
@@ -1250,10 +1252,9 @@
 ;; Отображение подсказок при работе с Emacs Lisp
 (use-package eldoc
   :config
-  (global-eldoc-mode nil) ;; Глобально этот режим не нужен
-  :delight ""             ;; Выводить в статус-баре тоже не нужно
-  :hook ((emacs-lisp-mode ;; Включаем только там, где это действительно необходимо
-          python-mode) . eldoc-mode))
+  (global-eldoc-mode nil)
+  :delight ""
+  :hook ((emacs-lisp-mode) . eldoc-mode))
 
 
 ;; 📦 ENVRC
@@ -1861,10 +1862,21 @@
   ;; TREE-SITTER-GRAMMARS
   (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
   (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown/src/"))
-  (add-to-list 'treesit-language-source-alist '(toml "https://github.com/tree-sitter-grammars/tree-sitter-toml.git" "v0.7.0" "src/"))
   (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
   :config
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+  :hook
+  ((sh-mode
+    css-mode
+    html-mode
+    javascript-mode
+    json-mode
+    python-mode
+    ruby-mode
+    rust-mode
+    makefile-mode
+    markdown-mode
+    xml-mode) . tree-sitter-mode))
 
 
 (use-package tree-sitter-langs

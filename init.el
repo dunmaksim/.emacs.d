@@ -351,6 +351,7 @@
                 emacs-lisp-mode
                 html-mode
                 js-mode
+                json-mode
                 lisp-data-mode
                 markdown-mode
                 python-mode
@@ -1313,6 +1314,16 @@
           web-mode
           yaml-mode
           ) . flycheck-mode))
+
+
+;; 📦 FLYCHECK-EGLOT
+;; https://github.com/flycheck/flycheck-eglot
+;; Интеграция Flycheck с Eglot
+(use-package flycheck-eglot
+  :ensure t
+  :after (flycheck eglot)
+  :config
+  (global-flycheck-eglot-mode 1))
 
 
 ;; 📦 FLYLISP

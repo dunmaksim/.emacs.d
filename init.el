@@ -1093,16 +1093,10 @@
 ;; 📦 DENOTE
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
-(when (emacs-version-not-less-than 28 1)
-  (use-package denote
-    :init
-    (unless (package-installed-p 'denote)
-      (package-vc-install '(denote
-                            :url "https://github.com/protesilaos/denote.git"
-                            :branch "3.1.0")))
-    :ensure t
-    :custom
-    (denote-directory "~/Notes/" "Каталог для хранения заметок.")))
+(use-package denote
+  :ensure t
+  :custom
+  (denote-directory "~/Notes/" "Каталог для хранения заметок."))
 
 
 ;; 📦 DOCKERFILE-MODE
@@ -1117,28 +1111,6 @@
                           :branch "v1.9")))
   :defer t
   :mode "\\Dockerfile\\'")
-
-
-;; ;; 📦 DOOM-MODELINE
-;; ;; https://github.com/seagle0128/doom-modeline
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :custom
-;;   (doom-modeline-buffer-file-name-style 'auto "Стиль названия буфера автоматический")
-;;   (doom-modeline-buffer-name t "Показывать название буфера")
-;;   (doom-modeline-buffer-state-icon t "Использовать иконки для показа статуса буфера")
-;;   (doom-modeline-check-icon t "Иконка статуса Flycheck")
-;;   (doom-modeline-highlight-modified-buffer-name t "Подсвечивать названия изменённых буферов")
-;;   (doom-modeline-icon t "Использовать иконочные шрифты")
-;;   (doom-modeline-indent-info t "Включить показ типа отступов")
-;;   (doom-modeline-lsp-icon t "Показывать иконку, когда LSP активен")
-;;   (doom-modeline-major-mode-color-icon t "Использовать цвета для иконок основного режима")
-;;   (doom-modeline-major-mode-icon t "Использовать иконки для основного режима")
-;;   (doom-modeline-project-detection 'auto "Автоматически определять тип проекта")
-;;   (doom-modeline-vcs-icon t "Иконка VCS")
-;;   (doom-modeline-vcs-max-length 30 "Длина названия ветки")
-;;   :config
-;;   (doom-modeline-mode 1))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1168,12 +1140,6 @@
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
   :ensure t
-  :init
-  (unless (package-installed-p 'editorconfig)
-    (package-vc-install '(editorconfig
-                          :url "https://github.com/editorconfig/editorconfig-emacs.git"
-                          :branch "v0.11.0"
-                          :doc "doc")))
   :delight ""
   :config
   (editorconfig-mode 1)
@@ -1185,7 +1151,7 @@
 ;; https://github.com/protesilaos/ef-themes.git
 (use-package ef-themes
   :ensure t
-  :config
+  :init
   (setq init-el-theme 'ef-elea-dark))
 
 

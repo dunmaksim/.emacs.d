@@ -688,6 +688,12 @@
 (add-hook 'server-done-hook 'savehist-save)
 
 
+;; 📦 SGML-MODE
+;; Встроенный пакет для работы с HTML и SGML.
+(require 'sgml-mode)
+(add-to-list 'auto-mode-alist '("\\.jinja\\'" . html-mode))
+
+
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет.
 ;; Работа со скриптами Shell.
@@ -1150,9 +1156,7 @@
 ;; 📦 EF-THEMES
 ;; https://github.com/protesilaos/ef-themes.git
 (use-package ef-themes
-  :ensure t
-  :init
-  (setq init-el-theme 'ef-elea-dark))
+  :ensure t)
 
 
 ;; 📦 EGLOT
@@ -1527,14 +1531,6 @@
   :ensure t)
 
 
-;; 📦 MONOKAI-EMACS
-;; https://github.com/oneKelvinSmith/monokai-emacs
-;; Тема из редактора Sublime Text
-(use-package monokai-theme
-  :ensure t)
-;; (setq init-el-theme 'monokai)
-
-
 ;; 📦 MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
@@ -1748,13 +1744,6 @@
    "\\.rb\\'"))
 
 
-;; 📦 STANDARD-THEME
-;; https://github.com/protesilaos/standard-themes
-;; Почти как встроенные темы, только немного доработанные
-(use-package standard-themes
-  :ensure t)
-
-
 ;; 📦 SYMBOLS-OUTLINE
 ;; https://github.com/liushihao456/symbols-outline.el
 ;; Показывает переменные, функции, заголовки и другие части файла на панели
@@ -1945,7 +1934,7 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(load-theme init-el-theme t)
+(load-theme 'modus-vivendi-tinted t)
 
 (when (file-exists-p custom-file)
   (load custom-file))

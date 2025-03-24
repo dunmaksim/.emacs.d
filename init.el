@@ -1186,7 +1186,7 @@
 (use-package ef-themes
   :ensure t
   :config
-  (setq init-el-theme 'ef-autumn))
+  (setq init-el-theme 'ef-elea-dark))
 
 
 ;; 📦 EGLOT

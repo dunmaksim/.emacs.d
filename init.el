@@ -123,7 +123,7 @@
  '(default-input-method "russian-computer" "Метод ввода по умолчанию")
  '(default-transient-input-method "russian-computer")
  '(delete-by-moving-to-trash t "Удалять файлы в Корзину")
- '(gc-cons-threshold (* 50 1000 1000) "Увеличить размер памяти для сборщика мусора")
+ '(gc-cons-threshold (* 2 gc-cons-threshold) "Увеличить размер памяти для сборщика мусора")
  '(indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
  '(inhibit-startup-screen t "Не показывать приветственный экран")
  '(initial-scratch-message nil "Пустой буфер *scratch*")
@@ -133,7 +133,6 @@
  '(read-process-output-max (* 1024 1024) "Увеличим чанк чтения для LSP: по умолчанию 65535")
  '(ring-bell-function 'ignore "Отключить звуковое сопровождение событий")
  '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
- '(scroll-bar-mode nil "Отключить полосы прокрутки")
  '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
  '(show-trailing-whitespace t "Подсветка висячих пробелов")
  '(standard-indent 4 "Отступ по умолчанию")
@@ -149,11 +148,14 @@
 (when (fboundp 'menu-bar-mode)
   (customize-set-variable 'menu-bar-mode nil "Выключить отображение меню"))
 
+(when (fboundp 'scroll-bar-mode)
+  (customize-set-variable 'scroll-bar-mode nil "Отключить полосы прокрутки"))
+
 (when (fboundp 'tool-bar-mode)
   (customize-set-variable 'tool-bar-mode nil "Выключить отображение панели инструментов"))
 
-(require 'keymap)
 
+(require 'keymap)
 
 (keymap-global-unset "<insert>")  ;; Режим перезаписи не нужен
 (keymap-global-unset "M-,")       ;; Такие маркеры не нужны
@@ -1491,12 +1493,12 @@
   :ensure t
   :commands (diff-hl-mode diff-hl-dired-mode)
   :config
-  (global-diff-hl-mode 1)
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
   ((asciidoc-mode
     emacs-lisp-mode
+    makefile-mode
     markdown-mode
     python-mode
     rst-mode

@@ -13,8 +13,7 @@
    (and (= emacs-major-version major)
         (>= emacs-minor-version minor))))
 
-(defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
-(defvar init-el-theme 'misterioso "Тема по умолчанию.")
+(defconst init-el-font-height 17 "Размер шрифта по умолчанию.")
 
 (require 'custom)
 (customize-set-variable
@@ -829,8 +828,6 @@
 (require 'window)
 (keymap-global-set "C-S-<iso-lefttab>" 'next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
 (keymap-global-set "C-<tab>" 'previous-buffer)       ;; [Ctrl+Shift+Tab] Следующий буфер
-(keymap-global-set "M-o" 'next-window-any-frame)     ;; [Alt+o]          Следующее окно
-(keymap-global-set "M-O" 'previous-window-any-frame) ;; [Alt+O]          Предыдущее окно
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
@@ -1429,7 +1426,7 @@
 ;; https://github.com/minad/jinx
 ;; Проверка орфографии не только для слова под курсором, как во `flyspell',
 ;; а вообще во всём буфере.
-;; В Debian требует для работы `libenchant2-dev' и `pkgconf'.
+;; В Debian требует для работы пакеты `libenchant2-dev' и `pkgconf'.
 (use-package jinx
   :ensure t
   :custom
@@ -1438,7 +1435,13 @@
           markdown-mode
           org-mode
           rst-mode
-          text-mode). jinx-mode))
+          text-mode). jinx-mode)
+  :bind
+  (:map global-map
+        ("M-$" . jinx-correct)
+        ("C-M-$" . jinx-languages)
+        ("M-n" . jinx-next)
+        ("M-p" . jinx-previous)))
 
 
 ;; 📦 JSON-MODE
@@ -1473,12 +1476,12 @@
 (use-package magit
   :ensure t
   :custom
-  (setq magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
+  (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   :init
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
-  (magit-mode . magit-auto-revert-mode)
+  ;; (magit-mode . magit-auto-revert-mode)
   (after-save . magit-after-save-refresh-status)
   (after-save . magit-after-save-refresh-buffers))
 
@@ -1936,7 +1939,7 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(load-theme 'modus-vivendi-tinted t)
+(load-theme 'standard-dark t)
 
 (when (file-exists-p custom-file)
   (load custom-file))

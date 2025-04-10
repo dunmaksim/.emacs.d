@@ -13,7 +13,7 @@
    (and (= emacs-major-version major)
         (>= emacs-minor-version minor))))
 
-(defconst init-el-font-height 17 "Размер шрифта по умолчанию.")
+(defconst init-el-font-height 16 "Размер шрифта по умолчанию.")
 
 (require 'custom)
 (customize-set-variable
@@ -118,6 +118,7 @@
 (custom-set-variables
  '(compilation-scroll-output t "Автоматическая прокрутка буфера *compilation*")
  '(create-lockfiles nil "Не создавать lock-файлы")
+ '(completion-ignore-case t "Игнорировать регистр при автодополнении")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
  '(default-input-method "russian-computer" "Метод ввода по умолчанию")
  '(default-transient-input-method "russian-computer")
@@ -143,6 +144,7 @@
  '(user-mail-address "dunmaksim@yandex.ru" "Адрес электронной почты")
  '(vc-follow-symlinks t "Переходить по ссылкам без лишних вопросов")
  '(visible-bell t "Мигать буфером при переходе в него"))
+
 
 (when (fboundp 'menu-bar-mode)
   (customize-set-variable 'menu-bar-mode nil "Выключить отображение меню"))
@@ -881,24 +883,15 @@
   :config
   (delight '((checkdoc-minor-mode)
              (global-visual-line-mode)
-             (global-whitespace-mode))))
-
-(use-package emacs
-  :delight
-  (whitespace-mode " ¶"))
+             (global-whitespace-mode)
+             (whitespace-mode " ¶"))))
 
 
 ;; 📦 ACTIVITIES
 ;; https://elpa.gnu.org/packages/activities.html
 ;; Управление наборами окон, вкладок, фреймов и буферов
-
 (use-package activities
   :ensure t
-  :init
-  (unless (package-installed-p 'activities)
-    (package-vc-install '(activities
-                          :url "https://github.com/alphapapa/activities.el.git"
-                          :branch "v0.7.2")))
   :config
   (activities-mode 1)
   :bind
@@ -967,11 +960,6 @@
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
 (use-package ansible
   :ensure t
-  :init
-  (unless (package-installed-p 'ansible)
-    (package-vc-install '(ansible
-                          :url "https://gitlab.com/emacs-ansible/emacs-ansible.git"
-                          :branch "0.3.2")))
   :defer t)
 
 
@@ -1006,22 +994,10 @@
   :defer t)
 
 
-;; 📦 CODEGPT
-;; https://github.com/emacs-openai/codegpt
-;; Клиент для OpenAI GPT
-(use-package codegpt
-  :ensure t)
-
-
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
-  :init
-  (unless (package-installed-p 'colorful-mode)
-    (package-vc-install '(colorful-mode
-                          :url "https://github.com/DevelopmentCool2449/colorful-mode.git"
-                          :branch "v1.2.0")))
   :ensure t
   :hook ((css-mode
           emacs-lisp-mode
@@ -1035,11 +1011,6 @@
 ;; Автодополнение
 (use-package company
   :ensure t
-  :init
-  (unless (package-installed-p 'company)
-    (package-vc-install '(company
-                          :url "https://github.com/company-mode/company-mode.git"
-                          :branch "1.0.2")))
   :delight ""
   :demand t
   :custom
@@ -1131,11 +1102,6 @@
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
   :ensure t
-  :init
-  (unless (package-installed-p 'edit-indirect)
-    (package-vc-install '(edit-indirect
-                          :url "https://github.com/Fanael/edit-indirect.git"
-                          :branch "0.1.13")))
   :bind (:map global-map
               ("C-c '" . edit-indirect-region)))
 
@@ -1245,12 +1211,6 @@
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
   :ensure t
-  :init
-  (unless (package-installed-p 'flycheck)
-    (package-vc-install '(flycheck
-                          :url "https://github.com/flycheck/flycheck.git"
-                          :branch "34.1"
-                          :doc "doc")))
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
@@ -1261,28 +1221,29 @@
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
-  :hook ((asciidoc-mode
-          conf-mode
-          css-mode
-          dockerfile-mode
-          emacs-lisp-mode
-          html-mode
-          js-mode
-          json-mode
-          latex-mode
-          lisp-data-mode
-          makefile-mode
-          markdown-mode
-          nxml-mode
-          python-mode
-          rst-mode
-          ruby-mode
-          sh-mode
-          sql-mode
-          terraform-mode
-          web-mode
-          yaml-mode
-          ) . flycheck-mode))
+  :hook
+  ((asciidoc-mode
+    conf-mode
+    css-mode
+    dockerfile-mode
+    emacs-lisp-mode
+    html-mode
+    js-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    sh-mode
+    sql-mode
+    terraform-mode
+    web-mode
+    yaml-mode
+    ) . flycheck-mode))
 
 
 ;; 📦 FLYCHECK-EGLOT
@@ -1477,11 +1438,8 @@
   :ensure t
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
-  :init
-  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
-  ;; (magit-mode . magit-auto-revert-mode)
+  (magit-mode . magit-auto-revert-mode)
   (after-save . magit-after-save-refresh-status)
   (after-save . magit-after-save-refresh-buffers))
 
@@ -1491,13 +1449,7 @@
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
-  :requires magit
-  :after magit
   :ensure t
-  :commands (diff-hl-mode diff-hl-dired-mode)
-  :config
-  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   :hook
   ((asciidoc-mode
     emacs-lisp-mode

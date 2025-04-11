@@ -332,6 +332,10 @@
 (require 'electric)
 (customize-set-variable 'electric-indent-inhibit t "Не выравнивать предыдущую строку по нажатию RET.")
 (add-hook 'emacs-lisp-mode-hook 'electric-indent-local-mode)
+(add-hook 'markdown-mode-hook 'electric-indent-local-mode)
+(add-hook 'python-mode-hook 'electric-indent-local-mode)
+(add-hook 'rst-mode-hook 'electric-indent-local-mode)
+(add-hook 'ruby-mode-hook 'electric-indent-local-mode)
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -924,28 +928,6 @@
   :mode ("\\.adoc\\'" . asciidoc-mode))
 
 
-;; 📦 AGGRESSIVE-INDENT
-;; https://github.com/Malabarba/aggressive-indent-mode
-;; Принудительное выравнивание кода
-(use-package aggressive-indent
-  :ensure t
-  :init
-  (unless (package-installed-p 'aggressive-indent)
-    (package-vc-install '(aggressive-indent
-                          :url "https://github.com/Malabarba/aggressive-indent-mode.git"
-                          :branch "1.10.0")))
-  :defer t
-  :hook ((emacs-lisp-mode
-          js-mode
-          json-mode
-          latex-mode
-          lisp-data-mode
-          nxml-mode
-          sh-mode
-          sql-mode
-          ) . aggressive-indent-mode))
-
-
 ;; 📦 ALL
 ;; https://elpa.gnu.org/packages/all.html
 ;; Это аналог `occur', только все найденные строки помещаются в отдельный буфер,
@@ -1465,10 +1447,6 @@
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (when (emacs-version-not-less-than 27 1)
-  (unless (package-installed-p 'markdown-mode)
-    (package-vc-install '(markdown-mode
-                          :url "https://github.com/jrblevin/markdown-mode.git"
-                          branch "v2.6")))
   (use-package markdown-mode
     :ensure t
     :defer t
@@ -1571,11 +1549,6 @@
 ;; https://github.com/purcell/package-lint
 ;; Проверка пакетов Emacs
 (use-package package-lint
-  :init
-  (unless (package-installed-p 'package-lint)
-    (package-vc-install '(package-lint
-                          :url "https://github.com/purcell/package-lint.git"
-                          :branch "0.24")))
   :ensure t
   :defer t)
 
@@ -1891,7 +1864,7 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(load-theme 'standard-dark t)
+(load-theme 'ef-duo-dark t)
 
 (when (file-exists-p custom-file)
   (load custom-file))

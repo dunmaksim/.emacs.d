@@ -729,12 +729,14 @@
  '(blink-matching-paren t "Мигать, когда скобки парные")
  '(suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды"))
 (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
-(global-visual-line-mode 1) ;; Деление логических строк на видимые
 (line-number-mode t)        ;; Показывать номер строки в статусной строке
 (overwrite-mode -1)         ;; Отключить режим перезаписи текста
 (size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
 (keymap-global-set "C-z" 'undo)               ;; Отмена
 (keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+(add-hook 'asciidoc-mode-hook 'visual-line-mode)
+(add-hook 'markdown-mode-hook 'visual-line-mode)
+(add-hook 'rst-mode-hook 'visual-line-mode)
 
 
 ;; 📦 TAB-BAR
@@ -951,11 +953,6 @@
 ;; так далее.
 (use-package avy
   :ensure t
-  :init
-  (unless (package-installed-p 'avy)
-    (package-vc-install '(avy
-                          :url "https://github.com/abo-abo/avy.git"
-                          :branch "0.5.0")))
   :delight ""
   :bind (:map global-map
               ("M-g f" . avy-goto-line)
@@ -1153,18 +1150,6 @@
             ) . eglot-ensure)))
 
 
-;; 📦 EL-PATCH
-;; https://github.com/radian-software/el-patch
-;; Зависимость Magit
-(use-package el-patch
-  :ensure t
-  :init
-  (unless (package-installed-p 'el-patch)
-    (package-vc-install '(el-patch
-                          :url "https://github.com/radian-software/el-patch.git"
-                          :branch "3.1"))))
-
-
 ;; 📦 ELDOC-MODE
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Programming-Language-Doc.html
 ;; Отображение подсказок при работе с Emacs Lisp
@@ -1180,11 +1165,6 @@
 ;; Загрузка переменных окружения из `.envrc'.
 (use-package envrc
   :ensure t
-  :init
-  (unless (package-installed-p 'envrc)
-    (package-vc-install '(envrc
-                          :url "https://github.com/purcell/envrc.git"
-                          :branch "0.12")))
   :hook (after-init . envrc-global-mode))
 
 
@@ -1319,21 +1299,16 @@
 ;; Красивая подсветка отступов
 (use-package indent-bars
   :ensure t
-  :init
-  (unless (package-installed-p 'indent-bars)
-    (package-vc-install
-     '(indent-bars
-       :url "https://github.com/jdtsmith/indent-bars.git"
-       :branch "v0.8.2")))
-  :hook ((emacs-lisp-mode
-          js-mode
-          makefile-mode
-          markdown-mode
-          python-mode
-          rst-mode
-          ruby-mode
-          yaml-mode
-          ) . indent-bars-mode))
+  :hook
+  ((emacs-lisp-mode
+    js-mode
+    makefile-mode
+    markdown-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    yaml-mode
+    ) . indent-bars-mode))
 
 
 ;; 📦 IVY
@@ -1547,7 +1522,7 @@
 
 ;; 📦 PACKAGE-LINT
 ;; https://github.com/purcell/package-lint
-;; Проверка пакетов Emacs
+;; Проверка кода пакетов Emacs.
 (use-package package-lint
   :ensure t
   :defer t)
@@ -1593,10 +1568,6 @@
 ;; https://github.com/protesilaos/pulsar
 ;; Этот пакет требует Emacs версии 27.1 или новее
 (when (emacs-version-not-less-than 27 1)
-  (unless (package-installed-p 'pulsar)
-    (package-vc-install '(pulsar
-                          :url "https://github.com/protesilaos/pulsar.git"
-                          :branch "1.2.0")))
   (use-package pulsar
     :ensure t
     :custom (pulsar-pulse t)
@@ -1623,11 +1594,6 @@
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
 (use-package rainbow-delimiters
-  :init
-  (unless (package-installed-p 'rainbow-delimiters)
-    (package-vc-install '(rainbow-delimiters
-                          :url "https://github.com/Fanael/rainbow-delimiters"
-                          :branch "2.1.5")))
   :ensure t
   :delight ""
   :hook
@@ -1779,28 +1745,6 @@
   :ensure t)
 
 
-;; 📦 WEB-MODE
-;; https://web-mode.org/
-;; Режим для редактирования HTML и не только.
-(use-package web-mode
-  :init
-  (unless (package-installed-p 'web-mode)
-    (package-vc-install '(web-mode
-                          :url "https://github.com/fxbois/web-mode.git"
-                          :branch "v17.3.20")))
-  :ensure t
-  :custom
-  (web-mode-attr-indent-offset 4 "4 пробела при выравнивании")
-  (web-mode-enable-block-face t "Раскрашивать блок в соответствующий цвет")
-  (web-mode-enable-css-colorization t "Код или имя цвета при редактировании CSS будут отмечены фоном этого цвета")
-  (web-mode-enable-current-column-highlight t "Подсветка отступа активного элемента")
-  (web-mode-enable-current-element-highlight t "Подсветка активного элемента разметки")
-  (web-mode-enable-part-face t)
-  (web-mode-html-offset 2 "Отступ в 2 знака для корректной работы `highlight-indentation-mode'.")
-  (web-mode-markup-indent-offset 2 "Отступ при вёрстке HTML — 2 пробела")
-  :mode "\\.html\\'")
-
-
 ;; 📦 WHICH-KEY MODE
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
@@ -1818,26 +1762,26 @@
   (which-key-setup-side-window-right)) ;; Показывать подсказки справа
 
 
-;; 📦 YAML-MODE
-;; https://github.com/yoshiki/yaml-mode
-;; Работа с YAML-файлами
-(use-package yaml-mode
-  :ensure t
-  :init
-  (unless (package-installed-p 'yaml-mode)
-    (package-vc-install '(yaml-mode
-                          :url "https://github.com/yoshiki/yaml-mode.git"
-                          :branch "0.0.16")))
-  :defer t
-  :mode
-  ("\\.ansible\\-lint\\'"
-   "\\.clang\\-tidy\\'"
-   "\\.pre\\-commit\\-config\\.yaml\\'"
-   "\\.yaml\\'"
-   "\\.yamllint\\'"
-   "\\.yamllint\\-config\\.yaml\\'"
-   "\\.yfm\\'"
-   "\\.yml\\'"))
+;; ;; 📦 YAML-MODE
+;; ;; https://github.com/yoshiki/yaml-mode
+;; ;; Работа с YAML-файлами
+;; (use-package yaml-mode
+;;   :ensure t
+;;   :init
+;;   (unless (package-installed-p 'yaml-mode)
+;;     (package-vc-install '(yaml-mode
+;;                           :url "https://github.com/yoshiki/yaml-mode.git"
+;;                           :branch "0.0.16")))
+;;   :defer t
+;;   :mode
+;;   ("\\.ansible\\-lint\\'"
+;;    "\\.clang\\-tidy\\'"
+;;    "\\.pre\\-commit\\-config\\.yaml\\'"
+;;    "\\.yaml\\'"
+;;    "\\.yamllint\\'"
+;;    "\\.yamllint\\-config\\.yaml\\'"
+;;    "\\.yfm\\'"
+;;    "\\.yml\\'"))
 
 
 ;; 📦 YASNIPPET

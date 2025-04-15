@@ -186,9 +186,10 @@
 ;; yc → Yandex Cloud
 ;; Это встроенный пакет
 (require 'abbrev)
-(add-hook 'asciidoc-mode-hook 'abbrev-mode)
-(add-hook 'markdown-mode-hook 'abbrev-mode)
-(add-hook 'rst-mode-hook 'abbrev-mode)
+(dolist (hook '(asciidoc-mode
+                markdown-mode
+                rst-mode))
+  (add-hook (derived-mode-hook-name hook) 'abbrev-mode))
 
 
 ;; 📦 AUTOREVERT
@@ -224,7 +225,6 @@
 (require 'conf-mode)
 (dolist (mode '(("\\.env\\'" . conf-mode)
                 ("\\.flake8\\'" . conf-mode)
-                ("\\.ini\\'" . conf-mode)
                 ("\\.pylintrc\\'" . conf-mode)
                 ("\\inventory\\'" . conf-mode)))
   (add-to-list 'auto-mode-alist mode))
@@ -235,7 +235,6 @@
 ;; Поддержка CSS.
 (require 'css-mode)
 (customize-set-variable 'css-indent-offset 2)
-(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
 
 
 ;; 📦 DELSEL
@@ -255,12 +254,14 @@
  '(desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
  '(desktop-restore-frames t "Восстанавливать фреймы.")
  '(desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов."))
-(add-to-list 'desktop-modes-not-to-save 'dired-mode)
-(add-to-list 'desktop-modes-not-to-save 'Info-mode)
-(add-to-list 'desktop-modes-not-to-save 'info-lookup-mode)
+(dolist (mode '(dired-mode
+                Info-mode
+                Info-lookup-mode))
+  (add-to-list 'desktop-modes-not-to-save mode))
 (desktop-save-mode 1)
 (add-hook 'server-after-make-frame-hook 'desktop-read)
-(add-hook 'server-done-hook 'desktop-save)
+(add-hook 'kill-emacs-hook 'desktop-save)
+(add-to-list 'delete-frame-functions 'desktop-save)
 
 
 ;; 📦 DIRED
@@ -283,10 +284,6 @@
               ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
            "\\'"))
  '(dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
- ;; Эксперименты
- ;; '(dired-hide-details-hide-information-lines nil)
- ;; '(dired-hide-details-hide-symlink-targets nil)
- ;;
  '(dired-listing-switches "-l --human-readable --all --group-directories-first")
  '(dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов"))
 (add-hook 'dired-mode-hook 'dired-hide-details-mode)
@@ -331,11 +328,12 @@
 ;; Автоматический отступ. В основном только мешает, лучше выключить.
 (require 'electric)
 (customize-set-variable 'electric-indent-inhibit t "Не выравнивать предыдущую строку по нажатию RET.")
-(add-hook 'emacs-lisp-mode-hook 'electric-indent-local-mode)
-(add-hook 'markdown-mode-hook 'electric-indent-local-mode)
-(add-hook 'python-mode-hook 'electric-indent-local-mode)
-(add-hook 'rst-mode-hook 'electric-indent-local-mode)
-(add-hook 'ruby-mode-hook 'electric-indent-local-mode)
+(dolist (hook '(emacs-lisp-mode
+                markdown-mode
+                python-mode
+                rst-mode
+                ruby-mode))
+  (add-hook (derived-mode-hook-name hook) #'electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -468,12 +466,13 @@
 ;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
 ;; Возможны варианты (зависит от основного режима).
 (require 'goto-addr)
-(add-hook 'asciidoc-mode-hook 'goto-address-mode)
-(add-hook 'emacs-lisp-mode-hook 'goto-address-mode)
-(add-hook 'html-mode-hook 'goto-address-mode)
-(add-hook 'markdown-mode-hook 'goto-address-mode)
-(add-hook 'rst-mode-hook 'goto-address-mode)
-(add-hook 'web-mode-hook 'goto-address-mode)
+(dolist (hook '(asciidoc-mode
+                emacs-lisp-mode
+                html-mode
+                markdown-mode
+                rst-mode
+                web-mode))
+  (add-hook (derived-mode-hook-name hook) 'goto-address-mode))
 
 
 ;; 📦 GREP
@@ -602,14 +601,12 @@
  '(js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
  '(js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
  '(js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case."))
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js-mode))
 
 
 ;; 📦 MAKEFILE
 ;; Встроенный пакет.
 ;; Поддержка Makefile.
 (require 'make-mode)
-(add-to-list 'auto-mode-alist '("\\Makefile\\'" . makefile-gmake-mode))
 
 
 ;; 📦 MINIBUFFER
@@ -683,8 +680,6 @@
  '(rst-indent-literal-minimized 3)
  '(rst-indent-width 3)
  '(rst-toc-indent 3))
-(add-to-list 'auto-mode-alist '("\\.rst\\'" . rst-mode))
-(add-to-list 'auto-mode-alist '("\\.txt\\'" . rst-mode))
 
 
 ;; 📦 SAVE-HIST
@@ -692,7 +687,8 @@
 ;; Запоминает историю введенных команд
 (require 'savehist)
 (savehist-mode 1)
-(add-hook 'server-done-hook 'savehist-save)
+(add-hook 'kill-emacs-hook 'savehist-save)
+(add-to-list 'delete-frame-functions 'savehist-save)
 
 
 ;; 📦 SGML-MODE
@@ -1041,8 +1037,7 @@
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
 (use-package csv-mode
-  :ensure t
-  :mode "\\.csv\\'")
+  :ensure t)
 
 
 ;; 📦 DENOTE
@@ -1059,13 +1054,7 @@
 ;; Работа с файлами `Dockerfile'.
 (use-package dockerfile-mode
   :ensure t
-  :init
-  (unless (package-installed-p 'dockerfile-mode)
-    (package-vc-install '(dockerfile-mode
-                          :url "https://github.com/spotify/dockerfile-mode.git"
-                          :branch "v1.9")))
-  :defer t
-  :mode "\\Dockerfile\\'")
+  :defer t)
 
 
 ;; 📦 EDIT-INDIRECT

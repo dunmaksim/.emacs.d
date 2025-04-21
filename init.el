@@ -260,8 +260,6 @@
   (add-to-list 'desktop-modes-not-to-save mode))
 (desktop-save-mode 1)
 (add-hook 'server-after-make-frame-hook 'desktop-read)
-(add-hook 'kill-emacs-hook 'desktop-save)
-(add-to-list 'delete-frame-functions 'desktop-save)
 
 
 ;; 📦 DIRED
@@ -499,7 +497,7 @@
       read-only ;; Только чтение?
       locked    ;; Заблокирован?
       " "
-      (name 30 40 :left :elide) ;; Имя буфера: от 30 до 40 знаков
+      (name 35 45 :left :elide) ;; Имя буфера: от 30 до 40 знаков
       " "
       (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
       " "
@@ -507,10 +505,12 @@
      ;; Сокращённый формат
      (mark      ;; Отметка?
       " "
-      (name 32 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
+      (name 35 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
       " "
       filename)))  ;; Имя файла)
  '(ibuffer-default-sorting-mode 'filename/process "Сортировать файлы по имени / процессу")
+ '(ibuffer-display-summary nil "Не показывать строку ИТОГО")
+ '(ibuffer-eliding-string "…" "Если строка не уместилась, показать этот символ")
  '(ibuffer-expert 1 "Не запрашивать подтверждение для опасных операций")
  '(ibuffer-shrink-to-minimum-size t "Минимальный размер буфера по умолчанию")
  '(ibuffer-truncate-lines nil "Не обкусывать длинные строки")
@@ -655,8 +655,7 @@
 
 
 ;; 📦 RST-MODE
-;; Встроенный пакет.
-;; Основной режим для редактирования reStructutedText
+;; Встроенный пакет для редактирования reStructutedText
 ;; https://www.writethedocs.org/guide/writing/reStructuredText/
 (require 'rst)
 (custom-set-variables
@@ -665,6 +664,12 @@
  '(rst-indent-field 3)
  '(rst-indent-literal-minimized 3)
  '(rst-indent-width 3)
+ '(rst-preferred-adornments '((?# over-and-under 1)
+                              (?* over-and-under 1)
+                              (?= simple 0)
+                              (?- simple 0)
+                              (?^ simple 0)
+                              (?\" simple 0)))
  '(rst-toc-indent 3))
 
 
@@ -804,8 +809,7 @@
 
 
 ;; 📦 WINNER-MODE
-;; Встроенный пакет.
-;; Управление окнами.
+;; Встроенный пакет для управления состояниями окон.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Convenience.html
 ;; Для управления конфигурациями окон используются последовательности
 ;; [C-c <left>] и [C-c <right>]
@@ -821,6 +825,7 @@
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
+
 
 ;; 📦 PACKAGE
 (require 'package)
@@ -883,8 +888,7 @@
   :config
   (activities-mode 1)
   :bind
-  (
-   ("C-x C-a C-n" . activities-new)
+  (("C-x C-a C-n" . activities-new)
    ("C-x C-a C-d" . activities-define)
    ("C-x C-a C-a" . activities-resume)
    ("C-x C-a C-s" . activities-suspend)
@@ -936,10 +940,11 @@
 (use-package avy
   :ensure t
   :delight ""
-  :bind (:map global-map
-              ("M-g f" . avy-goto-line)
-              ("M-g w" . avy-goto-word)
-              ("C-:" . avy-goto-char)))
+  :bind
+  (:map global-map
+        ("M-g f" . avy-goto-line)
+        ("M-g w" . avy-goto-word)
+        ("C-:" . avy-goto-char)))
 
 
 ;; 📦 BBCODE-MODE
@@ -947,11 +952,6 @@
 ;; Режим редактирования BB-кодов
 (use-package bbcode-mode
   :ensure t
-  :init
-  (unless (package-installed-p 'bbcode-mode)
-    (package-vc-install '(bbcode-mode
-                          :url "https://github.com/lassik/emacs-bbcode-mode.git"
-                          :branch "v2.3.0")))
   :defer t)
 
 
@@ -1067,9 +1067,7 @@
   :ensure t
   :delight ""
   :config
-  (editorconfig-mode 1)
-  :mode
-  ("\\.editorconfig\\'" . editorconfig-conf-mode))
+  (editorconfig-mode 1))
 
 
 ;; 📦 EF-THEMES
@@ -1220,32 +1218,9 @@
 ;; Форматирование кода с помощью разных внешних средств.
 (use-package format-all
   :ensure t
-  :init
-  (unless (package-installed-p 'format-all)
-    (package-vc-install '(format-all
-                          :url "https://github.com/lassik/emacs-format-all-the-code.git"
-                          :branch "0.6.0")))
   :defer t
   :bind (:map global-map
               ([f12] . format-all-buffer)))
-
-
-;; ;; 📦 HELM
-;; ;; https://github.com/emacs-helm/helm
-;; ;; Подсказки и автодополнение ввода.
-;; ;; [C-o] — переключение между источниками подсказок (история и полный список команд)
-;; (use-package helm
-;;   :ensure t
-;;   :init
-;;   (unless (package-installed-p 'helm)
-;;     (package-vc-install '(helm
-;;                           :url "https://github.com/emacs-helm/helm.git"
-;;                           :branch "v4.0")))
-;;   :delight ""
-;;   :config
-;;   (helm-mode 1)
-;;   :bind (:map global-map
-;;               ("M-y" . helm-show-kill-ring)))
 
 
 ;; 📦 HL-TODO
@@ -1289,9 +1264,9 @@
 ;; 📦 IVY
 ;; https://elpa.gnu.org/packages/ivy.html
 ;; https://elpa.gnu.org/packages/doc/ivy.html
-;; Функции фильтрации и выбора элементов. Как Helm, но теперь в составе Emacs.
+;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
 ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
-;; Это последовательность [C-M-j].
+;; это последовательность [C-M-j].
 (use-package ivy
   :ensure t
   :demand t
@@ -1342,13 +1317,7 @@
 ;; Поддержка JSON
 (use-package json-mode
   :ensure t
-  :init
-  (unless (package-installed-p 'json-mode)
-    (package-vc-install '(json-mode
-                          :url "https://github.com/json-emacs/json-mode.git"
-                          :branch "v1.9.2")))
-  :defer t
-  :mode "\\.json\\'")
+  :defer t)
 
 
 ;; 📦 LIN
@@ -1406,8 +1375,7 @@
     (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
     :config (setq-local word-wrap t)
     :bind (:map markdown-mode-map
-                ("M-." . markdown-follow-thing-at-point))
-    :mode ("\\.md\\'" . markdown-mode)))
+                ("M-." . markdown-follow-thing-at-point))))
 
 
 ;; 📦 MODUS-THEMES
@@ -1494,8 +1462,7 @@
 ;; * gettext-el: если po-mode из архивов не работает
 (use-package po-mode
   :pin "melpa"
-  :ensure t
-  :mode "\\.po\\'\\|\\.po\\.")
+  :ensure t)
 
 
 ;; 📦 PROJECTILE
@@ -1594,8 +1561,7 @@
   :init
   (defvar ruby-indent-offset 2 "Ширина TAB'а в `ruby-mode'.")
   :mode
-  ("\\Vagrantfile\\'"
-   "\\.rb\\'"))
+  ("\\Vagrantfile\\'" . ruby-mode))
 
 
 ;; 📦 SYMBOLS-OUTLINE
@@ -1643,7 +1609,6 @@
   :defer t
   :mode
   ("\\.terraformrc\\'"
-   "\\.tf\\'"
    "\\.tofurc\\'"
    "tofu\\.rc\\'"))
 
@@ -1721,26 +1686,19 @@
   (which-key-setup-side-window-right)) ;; Показывать подсказки справа
 
 
-;; ;; 📦 YAML-MODE
-;; ;; https://github.com/yoshiki/yaml-mode
-;; ;; Работа с YAML-файлами
-;; (use-package yaml-mode
-;;   :ensure t
-;;   :init
-;;   (unless (package-installed-p 'yaml-mode)
-;;     (package-vc-install '(yaml-mode
-;;                           :url "https://github.com/yoshiki/yaml-mode.git"
-;;                           :branch "0.0.16")))
-;;   :defer t
-;;   :mode
-;;   ("\\.ansible\\-lint\\'"
-;;    "\\.clang\\-tidy\\'"
-;;    "\\.pre\\-commit\\-config\\.yaml\\'"
-;;    "\\.yaml\\'"
-;;    "\\.yamllint\\'"
-;;    "\\.yamllint\\-config\\.yaml\\'"
-;;    "\\.yfm\\'"
-;;    "\\.yml\\'"))
+;; 📦 YAML-MODE
+;; https://github.com/yoshiki/yaml-mode
+;; Работа с YAML-файлами
+(use-package yaml-mode
+  :ensure t
+  :defer t
+  :mode
+  ("\\.ansible\\-lint\\'"
+   "\\.clang\\-tidy\\'"
+   "\\.pre\\-commit\\-config\\.yaml\\'"
+   "\\.yamllint\\'"
+   "\\.yamllint\\-config\\.yaml\\'"
+   "\\.yfm\\'"))
 
 
 ;; 📦 YASNIPPET
@@ -1750,11 +1708,10 @@
   :ensure t
   :init
   (progn
+    ;; Создать каталог для хранения сниппетов, иначе будет ошибка
     (defvar init-el-yasnippet-snippets-dir (expand-file-name "snippets" user-emacs-directory))
     (unless (file-directory-p init-el-yasnippet-snippets-dir)
-      (make-directory init-el-yasnippet-snippets-dir))
-    (unless (file-directory-p init-el-autosave-dir)
-      (make-directory init-el-autosave-dir)))
+      (make-directory init-el-yasnippet-snippets-dir)))
   :config (yas-global-mode 1))
 
 

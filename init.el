@@ -820,6 +820,7 @@
 ;; 📦 WINDOW
 ;; Встроенный пакет, отвечает за управление размерами окон
 (require 'window)
+(customize-set-variable 'window-resize-pixelwise t)  ;; Делить окна по пикселям, а не по символам.
 (keymap-global-set "C-S-<iso-lefttab>" 'next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
 (keymap-global-set "C-<tab>" 'previous-buffer)       ;; [Ctrl+Shift+Tab] Следующий буфер
 

@@ -1676,7 +1676,6 @@
   :ensure t
   :delight ""
   :custom
-  (which-key-buffer-name "Клавиши")
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-idle-delay 2 "Задержка появления подсказки")
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")

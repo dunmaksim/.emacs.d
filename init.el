@@ -177,6 +177,44 @@
 (keymap-global-set "M--" (lambda() (interactive) (insert "—")))
 
 
+;; 📦 PACKAGE
+(require 'package)
+(customize-set-variable 'package-enable-at-startup nil "Prevent double loading of libraries")
+(dolist (archive '(("gnu" . "https://elpa.gnu.org/packages/")
+                   ("melpa" . "https://melpa.org/packages/")
+                   ("melpa-stable" . "https://stable.melpa.org/packages/")
+                   ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+  (add-to-list 'package-archives archive t))
+(package-initialize)
+
+(customize-set-variable
+ 'package-archive-priorities
+ '(("gnu" . 40)
+   ("nongnu" . 30)
+   ("melpa-stable" . 20)
+   ("melpa" . 10)))
+
+(unless package-archive-contents
+  (message "Обновление списка архивов...")
+  (package-refresh-contents))
+
+(unless (package-installed-p 'use-package)
+  (progn
+    (message "Пакет `use-package' не установлен.")
+    (message "Установка `use-package'...")
+    (package-install 'use-package t)))
+
+(require 'use-package)
+
+;; Настройки отладочного режима
+(when init-file-debug
+  (custom-set-variables
+   '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")
+   '(use-package-compute-statistics t "Сбор статистики `use-package'.")
+   '(use-package-expand-minimally t "Минимальное раскрытие кода.")
+   '(use-package-verbose t "Подробный режим работы `use-package'.")))
+
+
 ;; 📦 ABBREV-MODE
 ;; Встроенный пакет.
 ;; Использование аббревиатур -- фрагментов текста, которые при вводе
@@ -185,11 +223,12 @@
 ;; tf → Terraform
 ;; yc → Yandex Cloud
 ;; Это встроенный пакет
-(require 'abbrev)
-(dolist (hook '(asciidoc-mode
-                markdown-mode
-                rst-mode))
-  (add-hook (derived-mode-hook-name hook) 'abbrev-mode))
+(use-package abbrev
+  :hook
+  ((asciidoc-mode
+    markdown-mode
+    rst-mode
+    rst-ts-mode) . abbrev-mode))
 
 
 ;; 📦 AUTOREVERT
@@ -198,68 +237,72 @@
 ;; Автоматическое обновление буферов.
 ;; По умолчанию `global-auto-revert-mode' работает только с файловыми
 ;; буферами.
-(require 'autorevert)
-(customize-set-variable 'auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
-;; Автоматически перезагружать файловый буфер при изменении файла на диске.
-(global-auto-revert-mode 1)
-;; Включить автообновление буферов с `dired-mode'.
-(add-hook 'dired-mode-hook 'auto-revert-mode)
+(use-package autorevert
+  :custom
+  (auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
+  :config
+  (global-auto-revert-mode 1)
+  :hook
+  (dired-mode . auto-revert-mode))
 
 
 ;; 📦 CALENDAR
 ;; Встроенный пакет
-(require 'calendar)
-(customize-set-variable 'calendar-week-start-day 1 "Начнём неделю с понедельника.")
+(use-package calendar
+  :custom
+  (calendar-week-start-day 1 "Начнём неделю с понедельника."))
 
 
 ;; 📦 CHECKDOC
 ;; Встроенный пакет для проверки строк документации.
-(require 'checkdoc)
-(customize-set-variable 'checkdoc-minor-mode-string " CheckDoc")
-(add-hook 'emacs-lisp-mode-hook 'checkdoc-minor-mode)
+(use-package checkdoc
+  :custom
+  (checkdoc-minor-mode-string " CheckDoc")
+  :hook
+  (emacs-lisp-mode . checkdoc-minor-mode))
 
 
 ;; 📦 CONF-MODE
 ;; Встроенный пакет.
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF
-(require 'conf-mode)
-(dolist (mode '(("\\.env\\'" . conf-mode)
-                ("\\.flake8\\'" . conf-mode)
-                ("\\.pylintrc\\'" . conf-mode)
-                ("\\inventory\\'" . conf-mode)))
-  (add-to-list 'auto-mode-alist mode))
+(use-package conf-mode
+  :mode
+  (("\\.env\\'"
+    "\\.flake8\\'"
+    "\\.pylintrc\\'"
+    "\\inventory\\'") . conf-mode))
 
 
 ;; 📦 CSS-MODE
 ;; Встроенный пакет.
 ;; Поддержка CSS.
-(require 'css-mode)
-(customize-set-variable 'css-indent-offset 2)
+(use-package css
+  :custom
+  (css-indent-offset 2 "Отступ 2 пробела"))
 
 
 ;; 📦 DELSEL
 ;; Встроенный пакет.
 ;; Используется для управления удалением выделенного текста.
-(require 'delsel)
-(delete-selection-mode t) ;; Удалять выделенный фрагмент при вводе текста
+(use-package delsel
+  :config
+  ;; Удалять выделенный фрагмент при вводе текста
+  (delete-selection-mode t))
 
 
 ;; 📦 DESKTOP
 ;; Встроенный пакет.
 ;; Сохранение состояния Emacs между сессиями.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
-(require 'desktop)
-(custom-set-variables
- '(desktop-dirname user-emacs-directory "Каталог для хранения файла .desktop.")
- '(desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
- '(desktop-restore-frames t "Восстанавливать фреймы.")
- '(desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов."))
-(dolist (mode '(dired-mode
-                Info-mode
-                Info-lookup-mode))
-  (add-to-list 'desktop-modes-not-to-save mode))
-(desktop-save-mode 1)
-(add-hook 'server-after-make-frame-hook 'desktop-read)
+(use-package desktop
+  :custom
+  (desktop-dirname user-emacs-directory "Каталог для хранения файла .desktop.")
+  (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
+  (desktop-restore-frames t "Восстанавливать фреймы.")
+  (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
+  :config
+  (desktop-save-mode 1)
+  (add-hook 'server-after-make-frame-hook 'desktop-read))
 
 
 ;; 📦 DIRED
@@ -738,6 +781,7 @@
 (keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
 (add-hook 'asciidoc-mode-hook 'visual-line-mode)
 (add-hook 'markdown-mode-hook 'visual-line-mode)
+(add-hook 'org-mode-hook 'visual-line-mode)
 (add-hook 'rst-mode-hook 'visual-line-mode)
 
 
@@ -776,6 +820,7 @@
 (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc/src/"))
 (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
 (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
+(add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0" "src/"))
 (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
 (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1"))
 (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
@@ -885,44 +930,6 @@
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
-
-
-;; 📦 PACKAGE
-(require 'package)
-(customize-set-variable 'package-enable-at-startup nil "Prevent double loading of libraries")
-(dolist (archive '(("gnu" . "https://elpa.gnu.org/packages/")
-                   ("melpa" . "https://melpa.org/packages/")
-                   ("melpa-stable" . "https://stable.melpa.org/packages/")
-                   ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-  (add-to-list 'package-archives archive t))
-(package-initialize)
-
-(customize-set-variable
- 'package-archive-priorities
- '(("gnu" . 40)
-   ("nongnu" . 30)
-   ("melpa-stable" . 20)
-   ("melpa" . 10)))
-
-(unless package-archive-contents
-  (message "Обновление списка архивов...")
-  (package-refresh-contents))
-
-(unless (package-installed-p 'use-package)
-  (progn
-    (message "Пакет `use-package' не установлен.")
-    (message "Установка `use-package'...")
-    (package-install 'use-package t)))
-
-(require 'use-package)
-
-;; Настройки отладочного режима
-(when init-file-debug
-  (custom-set-variables
-   '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")
-   '(use-package-compute-statistics t "Сбор статистики `use-package'.")
-   '(use-package-expand-minimally t "Минимальное раскрытие кода.")
-   '(use-package-verbose t "Подробный режим работы `use-package'.")))
 
 
 ;; 📦 DELIGHT

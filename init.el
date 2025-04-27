@@ -344,7 +344,7 @@
             dockerfile-mode
             emacs-lisp-mode
             html-mode
-            js-mode
+            js-base-mode
             json-mode
             latex-mode
             lisp-data-mode
@@ -402,7 +402,7 @@
                 emacs-lisp-data-mode
                 emacs-lisp-mode
                 html-mode
-                js-mode
+                js-base-mode
                 json-mode
                 lisp-data-mode
                 markdown-mode
@@ -457,7 +457,7 @@
 ;; Отображение рекомендуемой границы символов.
 (require 'display-fill-column-indicator)
 (dolist (mode-name '(emacs-lisp-mode
-                     js-mode
+                     js-base-mode
                      python-mode
                      yaml-mode
                      yaml-ts-mode))
@@ -592,21 +592,13 @@
        (or
         (mode . conf-mode)
         (mode . editorconfig-conf-mode)))
-      ("XML"
-       (or
-        (mode . nxml-mode)
-        (mode . xml-mode)))
+      ("XML" (mode . nxml-mode))
       ("YAML" (or
                (mode . yaml-mode)
                (mode . yaml-ts-mode)))
       ("Makefile" (mode . makefile-mode))
-      ("Python"
-       (or
-        ;; (mode . anaconda-mode)
-        (mode . python-mode)))
-      ("Ruby" (or
-               (mode . ruby-mode)
-               (mode . ruby-ts-mode)))
+      ("Python" (mode . python-base-mode))
+      ("Ruby" (mode . ruby-base-mode))
       ("SSH keys" (or (name . "^\\*.pub$")))
       ("Shell-script"
        (or
@@ -616,7 +608,9 @@
       ("SQL" (mode . sql-mode))
       ("Web"
        (or
-        (mode . js-mode)
+        (mode . html-mode)
+        (mode . html-ts-mode)
+        (mode . js-base-mode)
         (mode . web-mode)))
       ("Magit"
        (or
@@ -644,11 +638,11 @@
 
 ;; 📦 JS-MODE
 ;; Встроенный пакет для работы с JavaScript.
-(require 'js)
-(custom-set-variables
- '(js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
- '(js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
- '(js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case."))
+(use-package js
+  :custom
+  (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
+  (js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
+  (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case."))
 
 
 ;; 📦 MAKEFILE
@@ -760,83 +754,95 @@
 ;; 📦 SHELL-MODE
 ;; Встроенный пакет.
 ;; Оболочка командной строки внутри Emacs
-(require 'shell)
-(custom-set-variables
- '(shell-kill-buffer-on-exit t "Закрыть буфер, если работа завершена."))
+(use-package shell
+  :custom
+  (shell-kill-buffer-on-exit t "Закрыть буфер, если работа завершена."))
 
 
 ;; 📦 SIMPLE
 ;; Встроенный пакет.
 ;; Разные настройки управления элементарным редактированием текста.
-(require 'simple)
-(custom-set-variables
- '(backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
- '(blink-matching-paren t "Мигать, когда скобки парные")
- '(suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды"))
-(column-number-mode 1)      ;; Показывать номер колонки в статусной строке
-(line-number-mode t)        ;; Показывать номер строки в статусной строке
-(overwrite-mode -1)         ;; Отключить режим перезаписи текста
-(size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
-(keymap-global-set "C-z" 'undo)               ;; Отмена
-(keymap-global-set "S-<SPC>" 'just-one-space) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
-(add-hook 'asciidoc-mode-hook 'visual-line-mode)
-(add-hook 'markdown-mode-hook 'visual-line-mode)
-(add-hook 'org-mode-hook 'visual-line-mode)
-(add-hook 'rst-mode-hook 'visual-line-mode)
+(use-package simple
+  :custom
+  (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
+  (blink-matching-paren t "Мигать, когда скобки парные")
+  (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
+  :config
+  (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
+  (line-number-mode t)        ;; Показывать номер строки в статусной строке
+  (overwrite-mode -1)         ;; Отключить режим перезаписи текста
+  (size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
+  :hook
+  (:map global-map
+    ("C-z" . undo)               ;; Отмена
+    ("S-<SPC>" . just-one-space)) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+  :hook
+  ((asciidoc-mode
+    markdown-mode
+    org-mode
+    rst-mode) . visual-line-mode))
 
 
 ;; 📦 TAB-BAR
 ;; Встроенный пакет для управления вкладками.
-(require 'tab-bar)
-(custom-set-variables
- '(tab-bar-show 1 "Показывать вкладки, если их больше одной.")
- '(tab-bar-close-button-show nil "Показывать кнопку закрытия вкладки."))
-(tab-bar-mode 1)
+(when (fboundp 'tab-bar-mode)
+  (use-package tab-bar
+    :custom
+    (tab-bar-show 1 "Показывать вкладки, если их больше одной.")
+    (tab-bar-close-button-show nil "Показывать кнопку закрытия вкладки.")
+    :config
+    (tab-bar-mode 1)))
 
 
 ;; 📦 TOOLBAR
 ;; Встроенный пакет, недоступный в Emacs NOX
 (when (fboundp 'tool-bar-mode)
-  (require 'tool-bar)
-  (customize-set-variable 'tool-bar-mode nil))
+  (use-package tool-bar
+    :custom
+    (tool-bar-mode nil)))
 
 
 ;; 📦 TOOLTIP
 ;; Встроенный пакет.
 ;; Вывод подсказок в графической среде.
 (when (fboundp 'tooltip-mode)
-  (require 'tooltip)
-  (customize-set-variable 'tooltip-mode nil "Отключить показ подсказок с помощью GUI")
-  (tooltip-mode -1))
+  (use-package tooltip
+    :config
+    (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
 ;; 📦 TREESIT
 ;; Встроенный пакет для работы с TreeSitter
-(require 'treesit)
-;; Создадим каталог для хранения so-файлов с грамматиками
-(defvar init-el-tree-sitter-dir (expand-file-name "tree-sitter" user-emacs-directory))
-(unless (file-directory-p init-el-tree-sitter-dir)
-  (make-directory init-el-tree-sitter-dir))
-(add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc/src/"))
-(add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
-(add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
-(add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0" "src/"))
-(add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
-(add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1"))
-(add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
-(add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
-(add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown/src/"))
-(add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
-(add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
-(add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.23.2"))
-(add-to-list 'treesit-language-source-alist '(rst "https://github.com/stsewd/tree-sitter-rst.git" "v0.1.0" "src/"))
-(add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
-(add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.0" "src/"))
-(add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-(add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
-(add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-(add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
-(add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))
+(use-package treesit
+  :ensure t
+  :init
+  (progn
+    ;; Создадим каталог для хранения so-файлов с грамматиками
+    (defvar init-el-tree-sitter-dir (expand-file-name "tree-sitter" user-emacs-directory))
+    (unless (file-directory-p init-el-tree-sitter-dir)
+      (make-directory init-el-tree-sitter-dir)))
+  :config
+  (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc/src/"))
+  (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
+  (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
+  (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0" "src/"))
+  (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
+  (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1"))
+  (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
+  (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
+  (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown/src/"))
+  (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
+  (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
+  (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.23.2"))
+  (add-to-list 'treesit-language-source-alist '(rst "https://github.com/stsewd/tree-sitter-rst.git" "v0.1.0" "src/"))
+  (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+  (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
+  (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.0" "src/"))
+  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode)))
 
 
 ;; 📦 UNIQUIFY
@@ -851,52 +857,51 @@
 ;; 📦 WHITESPACE MODE
 ;; Встроенный пакет.
 ;; Отображение невидимых символов.
-(require 'whitespace)
-(custom-set-variables
- '(whitespace-display-mappings ;; Отображение нечитаемых символов
-   '((space-mark   ?\    [?\xB7]     [?.])        ;; Пробел
-     (space-mark   ?\xA0 [?\xA4]     [?_])        ;; Неразрывный пробел
-     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
-     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
- '(whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать."))
-(dolist (hook '(asciidoc-mode
-                conf-mode
-                css-mode
-                dockerfile-mode
-                dockerfile-ts-mode
-                emacs-lisp-mode
-                html-mode
-                js-mode
-                json-mode
-                latex-mode
-                lisp-data-mode
-                makefile-gmake-mode
-                makefile-mode
-                markdown-mode
-                nxml-mode
-                org-mode
-                po-mode
-                python-mode
-                rst-mode
-                rst-ts-mode
-                ruby-mode
-                ruby-ts-mode
-                sh-mode
-                snippet-mode ;; Yasnippet
-                sql-mode
-                terraform-mode
-                tex-mode
-                web-mode
-                yaml-mode))
-  (add-hook (derived-mode-hook-name hook) 'whitespace-mode))
+(use-package whitespace
+  :custom
+  (whitespace-display-mappings ;; Отображение нечитаемых символов
+    '((space-mark   ?\    [?\xB7]     [?.])        ;; Пробел
+       (space-mark   ?\xA0 [?\xA4]     [?_])        ;; Неразрывный пробел
+       (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
+       (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
+  (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
+  :hook
+  ((asciidoc-mode
+    conf-mode
+    css-mode
+    dockerfile-mode
+    dockerfile-ts-mode
+    emacs-lisp-mode
+    html-mode
+    js-base-mode
+    json-mode
+    latex-mode
+    lisp-data-mode
+    makefile-gmake-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    org-mode
+    po-mode
+    python-base-mode
+    rst-mode
+    rst-ts-mode
+    ruby-base-mode
+    sh-mode
+    snippet-mode ;; Yasnippet
+    sql-mode
+    terraform-mode
+    tex-mode
+    yaml-mode) . whitespace-mode))
 
 
 ;; 📦 WINDMOVE
-;; Встроенный пакет.
+;; Встроенный пакет для быстрого переключения окон.
 ;; Перемещение между окнами Emacs.
-(require 'windmove)
-(windmove-default-keybindings 'ctrl)
-(windmove-swap-states-default-keybindings 'meta)
+(use-package windmove
+  :config
+  (windmove-default-keybindings 'ctrl)
+  (windmove-swap-states-default-keybindings 'meta))
 
 
 ;; 📦 WINNER-MODE
@@ -904,28 +909,33 @@
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Convenience.html
 ;; Для управления конфигурациями окон используются последовательности
 ;; [C-c <left>] и [C-c <right>]
-(require 'winner)
-(winner-mode 1)
+(use-package winner
+  :config
+  (winner-mode 1))
 
 
 ;; 📦 WINDOW
 ;; Встроенный пакет, отвечает за управление размерами окон
-(require 'window)
-(customize-set-variable 'window-resize-pixelwise t)  ;; Делить окна по пикселям, а не по символам.
-(keymap-global-set "C-S-<iso-lefttab>" 'next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
-(keymap-global-set "C-<tab>" 'previous-buffer)       ;; [Ctrl+Shift+Tab] Следующий буфер
+(use-package window
+  :custom
+  (window-resize-pixelwise t "Делить окна по пикселям, а не по символам.")
+  :bind
+  (map :global-map
+    ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
+    ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
 
 
 ;; 📦 YAML-TS-MODE
 ;; Встроенный пакет для работы с YAML через TreeSitter
-(require 'yaml-ts-mode)
-(add-to-list 'auto-mode-alist '("\\.ansible\\-lint\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.ansible\\-lint\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.clang\\-tidy\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.pre\\-commit\\-config\\.yaml\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.yamllint\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.yamllint\\-config\\.yaml\\'" . yaml-ts-mode))
-(add-to-list 'auto-mode-alist '("\\.yfm\\'" . yaml-ts-mode))
+(use-package yaml-ts-mode
+  :mode
+  (("\\.ansible\\-lint\\'"
+    "\\.ansible\\-lint\\'"
+    "\\.clang\\-tidy\\'"
+    "\\.pre\\-commit\\-config\\.yaml\\'"
+    "\\.yamllint\\'"
+    "\\.yamllint\\-config\\.yaml\\'"
+    "\\.yfm\\'") . yaml-ts-mode))
 
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
@@ -1061,7 +1071,7 @@
           minibufer-mode
           nxml-mode
           org-mode
-          python-mode
+          python-base-mode
           rst-mode
           ruby-mode
           web-mode) . company-mode)
@@ -1169,7 +1179,7 @@
     (add-to-list 'eglot-server-programs '(dockerfile-mode . ("docker-langserver" "--stdio")))
     (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
     (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
-    (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+    (add-to-list 'eglot-server-programs '(python-base-mode . ("jedi-language-server")))
     (add-to-list 'eglot-server-programs '(rst-mode . ("esbonio")))
     (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
@@ -1181,7 +1191,7 @@
             dockerfile-mode
             dockerfile-ts-mode
             markdown-mode
-            python-mode
+            python-base-mode
             rst-mode
             ruby-mode
             yaml-mode
@@ -1229,14 +1239,14 @@
     dockerfile-ts-mode
     emacs-lisp-mode
     html-mode
-    js-mode
+    js-base-mode
     json-mode
     latex-mode
     lisp-data-mode
     makefile-mode
     markdown-mode
     nxml-mode
-    python-mode
+    python-base-mode
     rst-mode
     ruby-mode
     sh-mode
@@ -1317,10 +1327,10 @@
   :ensure t
   :hook
   ((emacs-lisp-mode
-    js-mode
+    js-base-mode
     makefile-mode
     markdown-mode
-    python-mode
+    python-base-mode
     rst-mode
     ruby-mode
     yaml-mode
@@ -1422,7 +1432,7 @@
     emacs-lisp-mode
     makefile-mode
     markdown-mode
-    python-mode
+    python-base-mode
     rst-mode
     yaml-mode). diff-hl-margin-mode)
   ((dired-mode . diff-hl-dired-mode)))
@@ -1571,9 +1581,9 @@
     (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)))
 
 
-;; 📦 PYTHON-MODE
-;; Встроенный пакет для работы с Python
-(use-package python-mode
+;; 📦 PYTHON-TS-MODE
+;; Встроенный пакет для работы с Python через TreeSitter
+(use-package python-base-mode
   :ensure t
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
@@ -1599,7 +1609,7 @@
     markdown-mode
     nxml-mode
     org-mode
-    python-mode
+    python-base-mode
     rst-mode
     sh-mode
     sql-mode
@@ -1634,7 +1644,7 @@
   :hook
   ((asciidoc-mode
     emacs-lisp-mode
-    python-mode
+    python-base-mode
     rst-mode
     ) . symbols-outline-follow-mode))
 

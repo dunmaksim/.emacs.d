@@ -367,7 +367,7 @@
 
 ;; 📦 DOCKER-TS-MODE
 ;; Встроенный пакет на базе TreeSitter
-(require 'dockerfile-ts-mode)
+(use-package dockerfile-ts-mode)
 
 
 ;; 📦 ELECTRIC-INDENT MODE
@@ -432,36 +432,43 @@
 
 ;; 📦 FILES
 ;; Это встроенный пакет для управления файлами
-(require 'files)
-(custom-set-variables
- '(auto-save-file-name-transforms `((".*" , init-el-autosave-dir) t))
- '(delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
- '(enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
- '(enable-local-variables :all "Считать все переменные из файлов `.dir-locals.el' безопасными")
- '(large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
- '(make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
- '(require-final-newline t "Требовать новую строку в конце файлов")
- '(save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
-(dolist (safe-var '((buffer-env-script-name . ".venv/bin/activate")
-                    (electric-pair-preserve-balance . t)
-                    (emacs-lisp-docstring-fill-column . 80)
-                    (fill-column . 120)
-                    (fill-column . 80)
-                    (frozen_string_literal . true)
-                    (lexical-binding . t)))
-  (add-to-list 'safe-local-variable-values safe-var))
+(use-package files
+  :custom
+  (auto-save-file-name-transforms `((".*" , init-el-autosave-dir) t))
+  (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
+  (enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
+  (enable-local-variables :all "Считать все переменные из файлов `.dir-locals.el' безопасными")
+  (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
+  (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
+  (require-final-newline t "Требовать новую строку в конце файлов")
+  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
+  :init
+  (dolist (safe-var '((buffer-env-script-name . ".venv/bin/activate")
+                     (electric-pair-preserve-balance . t)
+                     (emacs-lisp-docstring-fill-column . 80)
+                     (fill-column . 120)
+                     (fill-column . 80)
+                     (frozen_string_literal . true)
+                     (lexical-binding . t)))
+  (add-to-list 'safe-local-variable-values safe-var)))
 
 
 ;; 📦 FILL-COLUMN
 ;; Встроенный пакет.
 ;; Отображение рекомендуемой границы символов.
-(require 'display-fill-column-indicator)
-(dolist (mode-name '(emacs-lisp-mode
-                     js-base-mode
-                     python-mode
-                     yaml-mode
-                     yaml-ts-mode))
-  (add-hook (derived-mode-hook-name mode-name) 'display-fill-column-indicator-mode))
+(use-package display-fill-column-indicator
+  :hook
+  ((emacs-lisp-mode
+    js-base-mode
+    python-base-mode
+    yaml-mode
+    yaml-ts-mode) . display-fill-column-indicator-mode))
+
+
+;; 📦 FLYMAKE
+;; Встроенный пакет для работы со статическими анализаторами.
+(use-package flymake
+  :hook (emacs-mode . flymake-mode))
 
 
 ;; 📦 FLYSPELL-MODE
@@ -472,26 +479,26 @@
 (when (string-equal system-type "gnu/linux")
   (defvar text-spell-program nil "Программа для проверки орфографии.")
   (cond
-   ((or
-     (file-exists-p "/usr/bin/hunspell")
-     (file-symlink-p "/usr/bin/hunspell"))
-    (setq text-spell-program "hunspell"))
-   ((or
-     (file-exists-p "/usr/bin/aspell")
-     (file-symlink-p "/usr/bin/aspell"))
-    (setq text-spell-program "aspell")))
+    ((or
+       (file-exists-p "/usr/bin/hunspell")
+       (file-symlink-p "/usr/bin/hunspell"))
+      (setq text-spell-program "hunspell"))
+    ((or
+       (file-exists-p "/usr/bin/aspell")
+       (file-symlink-p "/usr/bin/aspell"))
+      (setq text-spell-program "aspell")))
   ;; Нужно использовать ispell-mode только в том случае, когда есть
   ;; чем проверять орфографию.
   (if text-spell-program
-      ;; Программа для проверки орфографии найдена
-      (progn
-        (message (format "Для проверки орфографии используется %s" text-spell-program))
-        (require 'flyspell)
-        (customize-set-variable 'ispell-program-name text-spell-program)
-        (add-hook 'text-mode-hook 'flyspell-mode)
-        (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
-        ;; Не найдено программ для проверки орфографии
-        (message "Не найдено программ для проверки орфографии."))))
+    ;; Программа для проверки орфографии найдена
+    (progn
+      (message (format "Для проверки орфографии используется %s" text-spell-program))
+      (require 'flyspell)
+      (customize-set-variable 'ispell-program-name text-spell-program)
+      (add-hook 'text-mode-hook 'flyspell-mode)
+      (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode))
+    ;; Не найдено программ для проверки орфографии
+    (message "Не найдено программ для проверки орфографии.")))
 
 
 ;; 📦 FRAME
@@ -636,7 +643,7 @@
 
 ;; 📦 MAKEFILE
 ;; Встроенный пакет для работы с `Makefile'.
-(require 'make-mode)
+(use-package make-mode)
 
 
 ;; 📦 NEW-COMMENT
@@ -1610,10 +1617,7 @@
 ;; В отличие от russian-computer, позволяет использовать лигатуры.
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
-  :ensure t
-  :custom
-  (default-input-method "russian-techwriter" "Метод ввода по умолчанию")
-  (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
+  :ensure t)
 
 
 ;; 📦 SYMBOLS-OUTLINE

@@ -267,16 +267,16 @@
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF
 (use-package conf-mode
   :mode
-  (("\\.env\\'"
-    "\\.flake8\\'"
-    "\\.pylintrc\\'"
-    "\\inventory\\'") . conf-mode))
+  (("\\.env\\'" . conf-mode)
+   ("\\.flake8\\'" . conf-mode)
+   ("\\.pylintrc\\'" . conf-mode)
+   ("\\inventory\\'" . conf-mode)))
 
 
 ;; 📦 CSS-MODE
 ;; Встроенный пакет.
 ;; Поддержка CSS.
-(use-package css
+(use-package css-mode
   :custom
   (css-indent-offset 2 "Отступ 2 пробела"))
 
@@ -488,15 +488,10 @@
         (message (format "Для проверки орфографии используется %s" text-spell-program))
         (require 'flyspell)
         (customize-set-variable 'ispell-program-name text-spell-program)
-        (dolist (hook '(asciidoc-mode
-                        emacs-lisp-mode
-                        markdown-mode
-                        org-mode
-                        rst-mode
-                        text-mode))
-          (add-hook (derived-mode-hook-name hook) 'flyspell-mode)))
-    ;; Не найдено программ для проверки орфографии
-    (message "Не найдено программ для проверки орфографии.")))
+        (add-hook 'text-mode-hook 'flyspell-mode)
+        (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode)
+        ;; Не найдено программ для проверки орфографии
+        (message "Не найдено программ для проверки орфографии."))))
 
 
 ;; 📦 FRAME
@@ -528,12 +523,6 @@
 ;; Встроенный пакет для поиска с помощью `grep'.
 (require 'grep)
 (keymap-global-set "<f6>" 'find-grep) ;; Запуск `find-grep' по нажатию [F6].
-
-
-;; 📦 HL-LINE-MODE
-;; Встроенный пакет для подсветки активной строки.
-(require 'hl-line)
-(global-hl-line-mode 1)
 
 
 ;; 📦 IBUFFER
@@ -672,30 +661,35 @@
 
 ;; 📦 PAREN
 ;; Встроенный пакет для управления парными скобками.
-(require 'paren)
-(show-paren-mode 1) ;; Подсвечивать парные скобки
+(use-package paren
+  :config
+  (show-paren-mode 1)) ;; Подсвечивать парные скобки
 
 
 ;; 📦 PIXEL-SCROLL
 ;; Встроенный пакет, позволяет плавно прокручивать текст
 (when (package-installed-p 'pixel-scroll)
-  (require 'pixel-scroll)
-  (pixel-scroll-mode 1)
-  (pixel-scroll-precision-mode))
+  (use-package pixel-scroll
+    :config
+    (pixel-scroll-mode 1)
+    (pixel-scroll-precision-mode)))
 
 
 ;; 📦 REPLACE
 ;; Встроенный пакет.
 ;; Функции поиска и замены текста.
-(require 'replace)
-(keymap-global-set "<f3>" 'replace-string)
-(keymap-global-set "<f4>" 'replace-regexp)
+(use-package replace
+  :bind
+  (:map global-map
+        ("<f3>" . replace-string)
+        ("<f4>" . replace-regexp)))
 
 
 ;; 📦 RUBY-TS-MODE
 ;; Встроенный пакет для работы с Ruby.
-(require 'ruby-ts-mode)
-(add-to-list 'auto-mode-alist '("Vagrantfile\\'" . ruby-ts-mode))
+(use-package ruby-mode
+  :mode
+  ("Vagrantfile\\'" . ruby-mode))
 
 
 ;; 📦 SAVEPLACE
@@ -709,20 +703,20 @@
 ;; 📦 RST-MODE
 ;; Встроенный пакет для редактирования reStructutedText
 ;; https://www.writethedocs.org/guide/writing/reStructuredText/
-(require 'rst)
-(custom-set-variables
- '(rst-default-indent 3)
- '(rst-indent-comment 3)
- '(rst-indent-field 3)
- '(rst-indent-literal-minimized 3)
- '(rst-indent-width 3)
- '(rst-preferred-adornments '((?# over-and-under 1)
+(use-package rst
+  :custom
+  (rst-default-indent 3)
+  (rst-indent-comment 3)
+  (rst-indent-field 3)
+  (rst-indent-literal-minimized 3)
+  (rst-indent-width 3)
+  (rst-preferred-adornments '((?# over-and-under 1)
                               (?* over-and-under 1)
                               (?= simple 0)
                               (?- simple 0)
                               (?^ simple 0)
                               (?\" simple 0)))
- '(rst-toc-indent 3))
+  (rst-toc-indent 3))
 
 
 ;; 📦 SAVE-HIST
@@ -768,19 +762,16 @@
   (blink-matching-paren t "Мигать, когда скобки парные")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
-  (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
-  (line-number-mode t)        ;; Показывать номер строки в статусной строке
-  (overwrite-mode -1)         ;; Отключить режим перезаписи текста
-  (size-indication-mode nil)  ;; Отображать размер буфера в строке статуса
-  :hook
+  (column-number-mode 1)     ;; Показывать номер колонки в статусной строке
+  (line-number-mode t)       ;; Показывать номер строки в статусной строке
+  (overwrite-mode -1)        ;; Отключить режим перезаписи текста
+  (size-indication-mode nil) ;; Отображать размер буфера в строке статуса
+  :bind
   (:map global-map
-    ("C-z" . undo)               ;; Отмена
-    ("S-<SPC>" . just-one-space)) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+        ("C-z" . undo)                ;; Отмена
+        ("S-<SPC>" . just-one-space)) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
   :hook
-  ((asciidoc-mode
-    markdown-mode
-    org-mode
-    rst-mode) . visual-line-mode))
+  (text-mode . visual-line-mode))
 
 
 ;; 📦 TAB-BAR
@@ -799,7 +790,7 @@
 (when (fboundp 'tool-bar-mode)
   (use-package tool-bar
     :custom
-    (tool-bar-mode nil)))
+    (tool-bar-mode nil "Выключить панель инструментов.")))
 
 
 ;; 📦 TOOLTIP
@@ -814,7 +805,6 @@
 ;; 📦 TREESIT
 ;; Встроенный пакет для работы с TreeSitter
 (use-package treesit
-  :ensure t
   :init
   (progn
     ;; Создадим каталог для хранения so-файлов с грамматиками
@@ -860,10 +850,10 @@
 (use-package whitespace
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
-    '((space-mark   ?\    [?\xB7]     [?.])        ;; Пробел
-       (space-mark   ?\xA0 [?\xA4]     [?_])        ;; Неразрывный пробел
-       (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
-       (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
+   '((space-mark   ?\    [?\xB7]     [?.])        ;; Пробел
+     (space-mark   ?\xA0 [?\xA4]     [?_])        ;; Неразрывный пробел
+     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
+     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
   (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
   :hook
   ((asciidoc-mode
@@ -892,7 +882,8 @@
     sql-mode
     terraform-mode
     tex-mode
-    yaml-mode) . whitespace-mode))
+    yaml-mode
+    yaml-ts-mode) . whitespace-mode))
 
 
 ;; 📦 WINDMOVE
@@ -920,7 +911,7 @@
   :custom
   (window-resize-pixelwise t "Делить окна по пикселям, а не по символам.")
   :bind
-  (map :global-map
+  (:map global-map
     ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
     ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
 
@@ -929,13 +920,11 @@
 ;; Встроенный пакет для работы с YAML через TreeSitter
 (use-package yaml-ts-mode
   :mode
-  (("\\.ansible\\-lint\\'"
-    "\\.ansible\\-lint\\'"
-    "\\.clang\\-tidy\\'"
-    "\\.pre\\-commit\\-config\\.yaml\\'"
-    "\\.yamllint\\'"
-    "\\.yamllint\\-config\\.yaml\\'"
-    "\\.yfm\\'") . yaml-ts-mode))
+  (("\\.ansible\\-lint\\'" . yaml-ts-mode)
+   ("\\.ansible\\-lint\\'" . yaml-ts-mode)
+   ("\\.clang\\-tidy\\'" . yaml-ts-mode)
+   ("\\.yamllint\\'" . yaml-ts-mode)
+   ("\\.yfm\\'" . yaml-ts-mode)))
 
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
@@ -1375,11 +1364,8 @@
   :ensure t
   :custom
   (jinx-languages "ru_RU en_US")
-  :hook ((asciidoc-mode
-          markdown-mode
-          org-mode
-          rst-mode
-          text-mode). jinx-mode)
+  :hook ((emacs-lisp-mode
+          text-mode) . jinx-mode)
   :bind
   (:map global-map
         ("M-$" . jinx-correct)
@@ -1583,7 +1569,7 @@
 
 ;; 📦 PYTHON-TS-MODE
 ;; Встроенный пакет для работы с Python через TreeSitter
-(use-package python-base-mode
+(use-package python
   :ensure t
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")

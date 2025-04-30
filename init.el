@@ -652,20 +652,6 @@
 (keymap-global-set "M-'" 'comment-or-uncomment-region)
 
 
-;; 📦 NXML-MODE
-;; Встроенный пакет.
-;; Почти как `xml-mode', только лучше и новее (ну вы поняли…)
-(require 'nxml-mode)
-(custom-set-variables
- '(nxml-attribute-indent 4 "Выравнивание атрибутов")
- '(nxml-auto-insert-xml-declaration-flag nil "Не вставлять декларацию")
- '(nxml-bind-meta-tab-to-complete-flag t "Использовать TAB для завершения ввода")
- '(nxml-child-indent 4 "Выравнивание дочерних элементов")
- '(nxml-slash-auto-complete-flag t "Закрывать теги по вводу /"))
-(add-to-list 'auto-mode-alist '("\\.pom\\'" . nxml-mode))
-(add-to-list 'auto-mode-alist '("\\.xml\\'" . nxml-mode))
-
-
 ;; 📦 PAREN
 ;; Встроенный пакет для управления парными скобками.
 (use-package paren
@@ -921,6 +907,21 @@
   (:map global-map
     ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
     ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
+
+
+;; 📦 XML
+;; Встроенный пакет для работы с диалектами XML
+(use-package xml
+  :custom
+  (nxml-attribute-indent 4 "Выравнивание атрибутов")
+  (nxml-auto-insert-xml-declaration-flag nil "Не вставлять декларацию")
+  (nxml-bind-meta-tab-to-complete-flag t "Использовать TAB для завершения ввода")
+  (nxml-child-indent 4 "Выравнивание дочерних элементов")
+  (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
+  :mode
+  (("\\.pom\\'" . nxml-mode)
+   ("\\.xml\\'" . nxml-mode)))
+
 
 
 ;; 📦 YAML-TS-MODE
@@ -1427,6 +1428,7 @@
     markdown-mode
     python-base-mode
     rst-mode
+    rst-ts-mode
     yaml-mode). diff-hl-margin-mode)
   ((dired-mode . diff-hl-dired-mode)))
 

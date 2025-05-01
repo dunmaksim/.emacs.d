@@ -310,10 +310,10 @@
 ;; Клавиши:
 ;; [+] - создание каталога.
 ;; [C-x C-f] - создание файла с последующим открытием буфера.
-(require 'dired)
-(custom-set-variables
- '(dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
- '(dired-garbage-files-regexp
+(use-package dired
+  :custom
+  (dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
+  (dired-garbage-files-regexp
    (concat (regexp-opt
             '(".aux"
               ".bak"
@@ -324,11 +324,11 @@
               ".toc"
               ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
            "\\'"))
- '(dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
- '(dired-listing-switches "-l --human-readable --all --group-directories-first")
- '(dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов"))
-(add-hook 'dired-mode-hook 'dired-hide-details-mode)
-(keymap-set dired-mode-map ":" 'dired-up-directory)
+  (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
+  (dired-listing-switches "-l --human-readable --all --group-directories-first")
+  (dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов")
+  :init
+  (add-hook 'dired-mode-hook 'dired-hide-details-mode))
 
 
 ;; 📦 DISPLAY-LINE-NUMBERS-MODE
@@ -358,38 +358,7 @@
     shell-script-mode
     terraform-mode
     tex-mode
-    web-mode
     yaml-ts-mode) . display-line-numbers-mode))
-
-;; (require 'display-line-numbers)
-;; (dolist
-;;     (hook '(asciidoc-mode
-;;             c-mode
-;;             conf-mode
-;;             css-mode
-;;             csv-mode
-;;             dockerfile-mode
-;;             emacs-lisp-mode
-;;             html-ts-mode
-;;             js-base-mode
-;;             json-ts-mode
-;;             latex-mode
-;;             lisp-data-mode
-;;             makefile-mode
-;;             markdown-mode
-;;             nxml-mode
-;;             po-mode
-;;             python-mode
-;;             rst-mode
-;;             ruby-mode
-;;             sh-mode
-;;             shell-script-mode
-;;             terraform-mode
-;;             tex-mode
-;;             web-mode
-;;             yaml-mode
-;;             yaml-ts-mode))
-;;   (add-hook (derived-mode-hook-name hook) #'display-line-numbers-mode))
 
 
 ;; 📦 DOCKER-TS-MODE
@@ -402,14 +371,15 @@
 ;; 📦 ELECTRIC-INDENT MODE
 ;; Встроенный пакет.
 ;; Автоматический отступ. В основном только мешает, лучше выключить.
-(require 'electric)
-(customize-set-variable 'electric-indent-inhibit t "Не выравнивать предыдущую строку по нажатию RET.")
-(dolist (hook '(emacs-lisp-mode
-                markdown-mode
-                python-mode
-                rst-mode
-                ruby-mode))
-  (add-hook (derived-mode-hook-name hook) #'electric-indent-local-mode))
+(use-package electric
+  :custom
+  (electric-indent-inhibit t "Не выравнивать предыдущую строку по нажатию RET.")
+  :hook
+  ((emacs-lisp-mode
+    markdown-mode
+    python-base-mode
+    rst-mode
+    ruby-base-mode) . electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -431,16 +401,15 @@
                 emacs-lisp-data-mode
                 emacs-lisp-mode
                 html-ts-mode
-                js-base-mode
+                js-mode
+                js-ts-mode
                 json-ts-mode
                 lisp-data-mode
                 markdown-mode
-                python-mode
+                python-base-mode
                 ruby-mode
                 terraform-mode
-                web-mode
-                yaml-mode
-                yaml-ts-mode))
+                yaml-base-mode))
   (add-hook (derived-mode-hook-name hook) #'electric-pair-local-mode))
 
 
@@ -558,8 +527,7 @@
                 emacs-lisp-mode
                 html-ts-mode
                 markdown-mode
-                rst-mode
-                web-mode))
+                rst-mode))
   (add-hook (derived-mode-hook-name hook) 'goto-address-mode))
 
 
@@ -649,8 +617,7 @@
       ("Web"
        (or
         (mode . html-ts-mode)
-        (mode . js-base-mode)
-        (mode . web-mode)))
+        (mode . js-base-mode)))
       ("Magit"
        (or
         (mode . magit-status-mode)
@@ -856,6 +823,7 @@
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
     (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown/src/"))
+    (add-to-list 'treesit-language-source-alist '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown-inline/src/"))
     (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
     (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
     (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.23.2"))
@@ -868,10 +836,10 @@
 ;; 📦 UNIQUIFY
 ;; Встроенный пакет.
 ;; Используется для поддержания уникальности названий буферов, путей и т. д.
-(require 'uniquify)
-(custom-set-variables
- '(uniquify-buffer-name-style 'forward "Показывать каталог перед именем файла, если буферы одинаковые (по умолчанию имя<каталог>)")
- '(uniquify-separator "/" "Разделять буферы с похожими именами, используя /"))
+(use-package uniquify
+  :custom
+  (uniquify-buffer-name-style 'forward "Показывать каталог перед именем файла, если буферы одинаковые (по умолчанию имя<каталог>)")
+  (uniquify-separator "/" "Разделять буферы с похожими именами, используя /"))
 
 
 ;; 📦 WHITESPACE MODE
@@ -1075,7 +1043,6 @@
   :hook ((css-mode
           emacs-lisp-mode
           html-ts-mode
-          web-mode
           yaml-ts-mode) . colorful-mode))
 
 
@@ -1105,8 +1072,7 @@
           org-mode
           python-base-mode
           rst-mode
-          ruby-mode
-          web-mode) . company-mode)
+          ruby-base-mode) . company-mode)
   :bind
   (:map company-active-map
         ("TAB" . company-complete-common-or-cycle)
@@ -1280,7 +1246,6 @@
     sh-mode
     sql-mode
     terraform-mode
-    web-mode
     yaml-mode
     ) . flycheck-mode))
 
@@ -1452,7 +1417,7 @@
     python-base-mode
     rst-mode
     rst-ts-mode
-    yaml-mode). diff-hl-margin-mode)
+    yaml-mode). diff-hl-mode)
   ((dired-mode . diff-hl-dired-mode)))
 
 
@@ -1631,7 +1596,6 @@
     sh-mode
     sql-mode
     terraform-mode
-    web-mode
     yaml-mode
     ) . rainbow-delimiters-mode))
 

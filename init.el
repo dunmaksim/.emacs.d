@@ -332,42 +332,71 @@
 
 
 ;; 📦 DISPLAY-LINE-NUMBERS-MODE
-;; Встроенный пакет
-;; Показывает номера строк
-(require 'display-line-numbers)
-(dolist
-    (hook '(asciidoc-mode
-            c-mode
-            conf-mode
-            css-mode
-            csv-mode
-            dockerfile-mode
-            emacs-lisp-mode
-            html-mode
-            js-base-mode
-            json-mode
-            latex-mode
-            lisp-data-mode
-            makefile-mode
-            markdown-mode
-            nxml-mode
-            po-mode
-            python-mode
-            rst-mode
-            ruby-mode
-            sh-mode
-            shell-script-mode
-            terraform-mode
-            tex-mode
-            web-mode
-            yaml-mode
-            yaml-ts-mode))
-  (add-hook (derived-mode-hook-name hook) #'display-line-numbers-mode))
+;; Встроенный пакет для показа номеров строк
+(use-package display-line-numbers
+  :hook
+  ((asciidoc-mode
+    c-mode
+    conf-mode
+    css-mode
+    csv-mode
+    dockerfile-ts-mode
+    emacs-lisp-mode
+    html-mode
+    js-base-mode
+    json-ts-mode
+    latex-mode
+    lisp-data-mode
+    makefile-mode
+    markdown-mode
+    nxml-mode
+    po-mode
+    python-base-mode
+    rst-mode
+    ruby-base-mode
+    sh-mode
+    shell-script-mode
+    terraform-mode
+    tex-mode
+    web-mode
+    yaml-ts-mode) . display-line-numbers-mode))
+
+;; (require 'display-line-numbers)
+;; (dolist
+;;     (hook '(asciidoc-mode
+;;             c-mode
+;;             conf-mode
+;;             css-mode
+;;             csv-mode
+;;             dockerfile-mode
+;;             emacs-lisp-mode
+;;             html-ts-mode
+;;             js-base-mode
+;;             json-ts-mode
+;;             latex-mode
+;;             lisp-data-mode
+;;             makefile-mode
+;;             markdown-mode
+;;             nxml-mode
+;;             po-mode
+;;             python-mode
+;;             rst-mode
+;;             ruby-mode
+;;             sh-mode
+;;             shell-script-mode
+;;             terraform-mode
+;;             tex-mode
+;;             web-mode
+;;             yaml-mode
+;;             yaml-ts-mode))
+;;   (add-hook (derived-mode-hook-name hook) #'display-line-numbers-mode))
 
 
 ;; 📦 DOCKER-TS-MODE
-;; Встроенный пакет на базе TreeSitter
-(use-package dockerfile-ts-mode)
+;; Встроенный пакет на базе TreeSitter для работы с Dockerfile.
+(use-package dockerfile-ts-mode
+  :mode
+  ("\\Containerfile\\'" . dockerfile-ts-mode))
 
 
 ;; 📦 ELECTRIC-INDENT MODE
@@ -401,9 +430,9 @@
                 css-mode
                 emacs-lisp-data-mode
                 emacs-lisp-mode
-                html-mode
+                html-ts-mode
                 js-base-mode
-                json-mode
+                json-ts-mode
                 lisp-data-mode
                 markdown-mode
                 python-mode
@@ -443,14 +472,22 @@
   (require-final-newline t "Требовать новую строку в конце файлов")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
   :init
-  (dolist (safe-var '((buffer-env-script-name . ".venv/bin/activate")
-                     (electric-pair-preserve-balance . t)
-                     (emacs-lisp-docstring-fill-column . 80)
-                     (fill-column . 120)
-                     (fill-column . 80)
-                     (frozen_string_literal . true)
-                     (lexical-binding . t)))
-  (add-to-list 'safe-local-variable-values safe-var)))
+  (progn
+    (dolist (safe-var '((buffer-env-script-name . ".venv/bin/activate")
+                         (electric-pair-preserve-balance . t)
+                         (emacs-lisp-docstring-fill-column . 80)
+                         (fill-column . 120)
+                         (fill-column . 80)
+                         (frozen_string_literal . true)
+                         (lexical-binding . t)))
+      (add-to-list 'safe-local-variable-values safe-var))
+    (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))))
 
 
 ;; 📦 FILL-COLUMN
@@ -519,7 +556,7 @@
 (require 'goto-addr)
 (dolist (hook '(asciidoc-mode
                 emacs-lisp-mode
-                html-mode
+                html-ts-mode
                 markdown-mode
                 rst-mode
                 web-mode))
@@ -530,6 +567,13 @@
 ;; Встроенный пакет для поиска с помощью `grep'.
 (require 'grep)
 (keymap-global-set "<f6>" 'find-grep) ;; Запуск `find-grep' по нажатию [F6].
+
+
+;; 📦 HTML-TS-MODE
+;; Встроенный пакет для работы с HTML и SGML.
+(use-package html-ts-mode
+  :mode
+  ("\\.jinja\\'" . html-ts-mode))
 
 
 ;; 📦 IBUFFER
@@ -604,7 +648,6 @@
       ("SQL" (mode . sql-mode))
       ("Web"
        (or
-        (mode . html-mode)
         (mode . html-ts-mode)
         (mode . js-base-mode)
         (mode . web-mode)))
@@ -639,6 +682,11 @@
   (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
   (js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
   (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case."))
+
+
+;; 📦 JSON-TS-MODE
+;; Встроенный пакет для работы с JSON через TreeSitter
+(use-package json-ts-mode)
 
 
 ;; 📦 MAKEFILE
@@ -721,12 +769,6 @@
 (add-to-list 'delete-frame-functions 'savehist-save)
 
 
-;; 📦 SGML-MODE
-;; Встроенный пакет для работы с HTML и SGML.
-(require 'sgml-mode)
-(add-to-list 'auto-mode-alist '("\\.jinja\\'" . html-mode))
-
-
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет.
 ;; Работа со скриптами Shell.
@@ -803,29 +845,24 @@
     ;; Создадим каталог для хранения so-файлов с грамматиками
     (defvar init-el-tree-sitter-dir (expand-file-name "tree-sitter" user-emacs-directory))
     (unless (file-directory-p init-el-tree-sitter-dir)
-      (make-directory init-el-tree-sitter-dir)))
-  :config
-  (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc/src/"))
-  (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
-  (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
-  (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0" "src/"))
-  (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
-  (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1"))
-  (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
-  (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
-  (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown/src/"))
-  (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
-  (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
-  (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.23.2"))
-  (add-to-list 'treesit-language-source-alist '(rst "https://github.com/stsewd/tree-sitter-rst.git" "v0.1.0" "src/"))
-  (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
-  (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
-  (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.0" "src/"))
-  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode)))
+      (make-directory init-el-tree-sitter-dir))
+    ;; Грамматики
+    (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc/src/"))
+    (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
+    (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
+    (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0" "src/"))
+    (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
+    (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1"))
+    (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
+    (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
+    (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown/src/"))
+    (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
+    (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
+    (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.23.2"))
+    (add-to-list 'treesit-language-source-alist '(rst "https://github.com/stsewd/tree-sitter-rst.git" "v0.1.0" "src/"))
+    (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+    (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
+    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.0" "src/"))))
 
 
 ;; 📦 UNIQUIFY
@@ -855,9 +892,9 @@
     dockerfile-mode
     dockerfile-ts-mode
     emacs-lisp-mode
-    html-mode
+    html-ts-mode
     js-base-mode
-    json-mode
+    json-ts-mode
     latex-mode
     lisp-data-mode
     makefile-gmake-mode
@@ -1037,10 +1074,8 @@
   :ensure t
   :hook ((css-mode
           emacs-lisp-mode
-          html-mode
           html-ts-mode
           web-mode
-          yaml-mode
           yaml-ts-mode) . colorful-mode))
 
 
@@ -1062,7 +1097,7 @@
           dockerfile-mode
           dockerfile-ts-mode
           emacs-lisp-mode
-          html-mode
+          html-ts-mode
           latex-mode
           lisp-data-mode
           minibufer-mode
@@ -1173,25 +1208,21 @@
                                 "Настройки буфера событий Eglot")
     :config
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
-    (add-to-list 'eglot-server-programs '(dockerfile-mode . ("docker-langserver" "--stdio")))
     (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
     (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
     (add-to-list 'eglot-server-programs '(python-base-mode . ("jedi-language-server")))
-    (add-to-list 'eglot-server-programs '(rst-mode . ("esbonio")))
-    (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "rubocop" "--lsp")))
-    (add-to-list 'eglot-server-programs '(yaml-mode . ("yaml-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '(ruby-base-mode . ("bundle" "exec" "rubocop" "--lsp")))
+    (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
     :bind (:map eglot-mode-map
                 ("C-c C-d" . eldoc)
                 ("C-c C-r" . eglot-rename)
                 ("C-c C-f" . eglot-format-buffer))
     :hook ((ansible-mode
-            dockerfile-mode
             dockerfile-ts-mode
             markdown-mode
             python-base-mode
-            rst-mode
-            ruby-mode
-            yaml-mode
+            ruby-base-mode
+            yaml-ts-mode
             ) . eglot-ensure)))
 
 
@@ -1235,9 +1266,9 @@
     dockerfile-mode
     dockerfile-ts-mode
     emacs-lisp-mode
-    html-mode
+    html-ts-mode
     js-base-mode
-    json-mode
+    json-ts-mode
     latex-mode
     lisp-data-mode
     makefile-mode
@@ -1380,14 +1411,6 @@
         ("C-M-$" . jinx-languages)
         ("M-n" . jinx-next)
         ("M-p" . jinx-previous)))
-
-
-;; 📦 JSON-MODE
-;; https://github.com/json-emacs/json-mode
-;; Поддержка JSON
-(use-package json-mode
-  :ensure t
-  :defer t)
 
 
 ;; 📦 LIN
@@ -1597,7 +1620,6 @@
     conf-mode
     css-mode
     emacs-lisp-mode
-    json-mode
     lisp-data-mode
     makefile-gmake-mode
     makefile-mode

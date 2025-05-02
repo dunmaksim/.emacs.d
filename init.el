@@ -218,17 +218,12 @@
 ;; 📦 ABBREV-MODE
 ;; Встроенный пакет.
 ;; Использование аббревиатур -- фрагментов текста, которые при вводе
-;; определённой последовательности символов заменяются на другую,
-;; например:
-;; tf → Terraform
-;; yc → Yandex Cloud
-;; Это встроенный пакет
+;; определённой последовательности символов заменяются на другую.
 (use-package abbrev
   :hook
   ((asciidoc-mode
     markdown-mode
-    rst-mode
-    rst-ts-mode) . abbrev-mode))
+    rst-mode) . abbrev-mode))
 
 
 ;; 📦 AUTOREVERT
@@ -274,9 +269,10 @@
 
 
 ;; 📦 CSS-MODE
-;; Встроенный пакет.
-;; Поддержка CSS.
+;; Встроенный пакет для работы с CSS
 (use-package css-mode
+  :mode
+  ("\\.css\\'" . css-ts-mode)
   :custom
   (css-indent-offset 2 "Отступ 2 пробела"))
 
@@ -361,7 +357,7 @@
     yaml-ts-mode) . display-line-numbers-mode))
 
 
-;; 📦 DOCKER-TS-MODE
+;; 📦 DOCKERFILE-TS-MODE
 ;; Встроенный пакет на базе TreeSitter для работы с Dockerfile.
 (use-package dockerfile-ts-mode
   :mode
@@ -815,6 +811,7 @@
       (make-directory init-el-tree-sitter-dir))
     ;; Грамматики
     (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc/src/"))
+    (add-to-list 'treesit-language-source-alist '(asciidoc-inline "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc_inline/src/"))
     (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
     (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
     (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0" "src/"))
@@ -830,7 +827,32 @@
     (add-to-list 'treesit-language-source-alist '(rst "https://github.com/stsewd/tree-sitter-rst.git" "v0.1.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
     (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
-    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.0" "src/"))))
+    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.0" "src/"))
+    ;; Сборка и установка грамматик
+    (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'asciidoc init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc-inline.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'asciidoc-inline init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-bash.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'bash init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-css.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'css init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-dockerfile.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'dockerfile init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-javascript.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'javascript init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-html.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'html init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-json.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'json init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-python.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'python init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-ruby.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'ruby init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-rust.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'rust init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir))))
 
 
 ;; 📦 UNIQUIFY
@@ -1608,25 +1630,6 @@
   :ensure t)
 
 
-;; 📦 SYMBOLS-OUTLINE
-;; https://github.com/liushihao456/symbols-outline.el
-;; Показывает переменные, функции, заголовки и другие части файла на панели
-;; Требует наличия в системе `ctags'. В Debian рекомендуется использовать
-;; пакет `universal-ctags'
-(use-package symbols-outline
-  :ensure t
-  :custom
-  (symbols-outline-window-width 40 "Ширина окна")
-  :bind (:map global-map
-              ("C-c i" . symbols-outline-show))
-  :hook
-  ((asciidoc-mode
-    emacs-lisp-mode
-    python-base-mode
-    rst-mode
-    ) . symbols-outline-follow-mode))
-
-
 ;; 📦 SWIPER
 ;; https://elpa.gnu.org/packages/swiper.html
 ;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
@@ -1636,13 +1639,6 @@
   :bind (:map global-map
               ("C-s" . swiper-isearch)
               ("C-r" . swiper-isearch-backward)))
-
-
-;; 📦 TEMPEL
-;; https://github.com/minad/tempel
-;; Система шаблонов.
-(use-package tempel
-  :ensure t)
 
 
 ;; 📦 TERRAFORM-MODE

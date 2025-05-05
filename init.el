@@ -195,8 +195,14 @@
    ("melpa" . 10)))
 
 (unless package-archive-contents
-  (message "Обновление списка архивов...")
-  (package-refresh-contents))
+  (progn
+    (message "Обновление списка архивов...")
+    (package-refresh-contents)))
+
+(unless (package-installed-p 'gnu-elpa-keyring-update)
+  (progn
+    (message "Обновление ключей для проверки цифровой подписи.")
+    (package-install 'gnu-elpa-keyring-update)))
 
 (unless (package-installed-p 'use-package)
   (progn
@@ -213,10 +219,6 @@
    '(use-package-compute-statistics t "Сбор статистики `use-package'.")
    '(use-package-expand-minimally t "Минимальное раскрытие кода.")
    '(use-package-verbose t "Подробный режим работы `use-package'.")))
-
-
-(use-package gnu-elpa-keyring-update
-  :ensure t)
 
 
 ;; 📦 ABBREV-MODE
@@ -275,8 +277,6 @@
 ;; 📦 CSS-MODE
 ;; Встроенный пакет для работы с CSS
 (use-package css-mode
-  :mode
-  ("\\.css\\'" . css-ts-mode)
   :custom
   (css-indent-offset 2 "Отступ 2 пробела"))
 
@@ -338,12 +338,12 @@
   ((asciidoc-mode
     c-mode
     conf-mode
-    css-mode
+    css-ts-mode
     csv-mode
     dockerfile-ts-mode
     emacs-lisp-mode
-    html-mode
-    js-base-mode
+    html-ts-mode
+    js-ts-mode
     json-ts-mode
     latex-mode
     lisp-data-mode
@@ -351,14 +351,13 @@
     markdown-mode
     nxml-mode
     po-mode
-    python-base-mode
+    python-ts-mode
     rst-mode
-    ruby-base-mode
-    sh-mode
+    ruby-ts-mode
     shell-script-mode
     terraform-mode
     tex-mode
-    yaml-ts-mode) . display-line-numbers-mode))
+yaml-ts-mode) . display-line-numbers-mode))
 
 
 ;; 📦 DOCKERFILE-TS-MODE
@@ -377,9 +376,9 @@
   :hook
   ((emacs-lisp-mode
     markdown-mode
-    python-base-mode
+    python-ts-mode
     rst-mode
-    ruby-base-mode) . electric-indent-local-mode))
+    ruby-ts-mode) . electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -397,19 +396,18 @@
   (add-to-list 'electric-pair-pairs pair))
 (dolist (hook '(asciidoc-mode
                 conf-mode
-                css-mode
+                css-ts-mode
                 emacs-lisp-data-mode
                 emacs-lisp-mode
                 html-ts-mode
-                js-mode
                 js-ts-mode
                 json-ts-mode
                 lisp-data-mode
                 markdown-mode
-                python-base-mode
+                python-ts-mode
                 ruby-mode
                 terraform-mode
-                yaml-base-mode))
+                yaml-ts-mode))
   (add-hook (derived-mode-hook-name hook) #'electric-pair-local-mode))
 
 
@@ -443,20 +441,22 @@
   :init
   (progn
     (dolist (safe-var '((buffer-env-script-name . ".venv/bin/activate")
-                         (electric-pair-preserve-balance . t)
-                         (emacs-lisp-docstring-fill-column . 80)
-                         (fill-column . 120)
-                         (fill-column . 80)
-                         (frozen_string_literal . true)
-                         (lexical-binding . t)))
+                        (electric-pair-preserve-balance . t)
+                        (emacs-lisp-docstring-fill-column . 80)
+                        (fill-column . 120)
+                        (fill-column . 80)
+                        (frozen_string_literal . true)
+                        (lexical-binding . t)))
       (add-to-list 'safe-local-variable-values safe-var))
+    (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
     (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
     (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
     (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
     (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
     (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-    (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
-    (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))))
+    (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))
+    (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))))
 
 
 ;; 📦 FILL-COLUMN
@@ -465,9 +465,8 @@
 (use-package display-fill-column-indicator
   :hook
   ((emacs-lisp-mode
-    js-base-mode
-    python-base-mode
-    yaml-mode
+    js-ts-mode
+    python-ts-mode
     yaml-ts-mode) . display-fill-column-indicator-mode))
 
 
@@ -510,25 +509,27 @@
 ;; 📦 FRAME
 ;; Встроенный пакет.
 ;; Управление фреймами.
-(require 'frame)
-(custom-set-variables
- '(window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
- '(window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон"))
-(keymap-global-set "C-x O" 'previous-window-any-frame) ;; Перейти в предыдущее окно
-(keymap-global-set "C-x o" 'next-window-any-frame)     ;; Перейти в следующее окно
+(use-package frame
+  :custom
+  (window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
+  (window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон")
+  :bind
+  (:map global-map
+    ("C-x O" . previous-window-any-frame) ;; Перейти в предыдущее окно
+    ("C-x o" . next-window-any-frame)))   ;; Перейти в следующее окно
 
 
 ;; 📦 GOTO-ADDRESS-MODE
 ;; Встроенный пакет.
 ;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
 ;; Возможны варианты (зависит от основного режима).
-(require 'goto-addr)
-(dolist (hook '(asciidoc-mode
-                emacs-lisp-mode
-                html-ts-mode
-                markdown-mode
-                rst-mode))
-  (add-hook (derived-mode-hook-name hook) 'goto-address-mode))
+(use-package goto-addr
+  :hook
+  ((asciidoc-mode
+    emacs-lisp-mode
+    html-ts-mode
+    markdown-mode
+    rst-mode) . goto-address-mode))
 
 
 ;; 📦 GREP
@@ -592,32 +593,24 @@
       ("Org" (mode . org-mode))
       ("Markdown" (mode . markdown-mode))
       ("AsciiDoc" (mode . asciidoc-mode))
-      ("ReStructured Text"
-       (or
-        (mode . rst-mode)
-        (mode . rst-ts-mode)))
+      ("ReStructured Text" (mode . rst-mode))
       ("CONF / INI"
        (or
         (mode . conf-mode)
         (mode . editorconfig-conf-mode)))
       ("XML" (mode . nxml-mode))
-      ("YAML" (or
-               (mode . yaml-mode)
-               (mode . yaml-ts-mode)))
+      ("YAML" (mode . yaml-ts-mode))
       ("Makefile" (mode . makefile-mode))
-      ("Python" (mode . python-base-mode))
-      ("Ruby" (mode . ruby-base-mode))
+      ("Python" (mode . python-ts-mode))
+      ("Ruby" (mode . ruby-ts-mode))
       ("SSH keys" (or (name . "^\\*.pub$")))
-      ("Shell-script"
-       (or
-        (mode . shell-script-mode)
-        (mode . sh-mode)))
+      ("Shell-script" (mode . shell-script-mode))
       ("Terraform" (mode . terraform-mode))
       ("SQL" (mode . sql-mode))
       ("Web"
        (or
         (mode . html-ts-mode)
-        (mode . js-base-mode)))
+        (mode . js-ts-mode)))
       ("Magit"
        (or
         (mode . magit-status-mode)
@@ -695,17 +688,19 @@
 
 ;; 📦 RUBY-TS-MODE
 ;; Встроенный пакет для работы с Ruby.
-(use-package ruby-mode
+(use-package ruby-ts-mode
   :mode
-  ("Vagrantfile\\'" . ruby-mode))
+  ("Vagrantfile\\'" . ruby-ts-mode))
 
 
 ;; 📦 SAVEPLACE
 ;; Встроенный пакет.
 ;; Запоминание позиции курсора в посещённых файлах.
-(require 'saveplace)
-(customize-set-variable 'save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
-(save-place-mode 1)
+(use-package saveplace
+  :custom
+  (save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
+  :config
+  (save-place-mode 1))
 
 
 ;; 📦 RST-MODE
@@ -739,12 +734,12 @@
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет.
 ;; Работа со скриптами Shell.
-(require 'sh-script)
-(dolist (mode '(("\\.bashrc\\'" . shell-script-mode)
-                ("\\.envrc\\'" . shell-script-mode)
-                ("\\.profile\\'" . shell-script-mode)
-                ("\\.sh\\'" . shell-script-mode)))
-  (add-to-list 'auto-mode-alist mode))
+(use-package sh-script
+  :mode
+  (("\\.bashrc\\'"
+    "\\.envrc\\'"
+    "\\.profile\\'"
+    "\\.sh\\'") . shell-script-mode))
 
 
 ;; 📦 SHELL-MODE
@@ -818,7 +813,8 @@
     (add-to-list 'treesit-language-source-alist '(asciidoc-inline "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc_inline/src/"))
     (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
     (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
-    (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile" "v0.2.0" "src/"))
+    (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
+    (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "master" "src/"))
     (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
     (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1"))
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
@@ -828,7 +824,6 @@
     (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
     (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
     (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.23.2"))
-    (add-to-list 'treesit-language-source-alist '(rst "https://github.com/stsewd/tree-sitter-rst.git" "v0.1.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
     (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
     (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.0" "src/"))
@@ -882,12 +877,11 @@
   :hook
   ((asciidoc-mode
     conf-mode
-    css-mode
-    dockerfile-mode
+    css-ts-mode
     dockerfile-ts-mode
     emacs-lisp-mode
     html-ts-mode
-    js-base-mode
+    js-ts-mode
     json-ts-mode
     latex-mode
     lisp-data-mode
@@ -897,16 +891,14 @@
     nxml-mode
     org-mode
     po-mode
-    python-base-mode
+    python-ts-mode
     rst-mode
-    rst-ts-mode
-    ruby-base-mode
-    sh-mode
+    ruby-ts-mode
+    shell-script-mode
     snippet-mode ;; Yasnippet
     sql-mode
     terraform-mode
     tex-mode
-    yaml-mode
     yaml-ts-mode) . whitespace-mode))
 
 
@@ -1066,9 +1058,10 @@
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
   :ensure t
-  :hook ((css-mode
+  :hook ((css-ts-mode
           emacs-lisp-mode
           html-ts-mode
+          json-ts-mode
           yaml-ts-mode) . colorful-mode))
 
 
@@ -1086,8 +1079,7 @@
   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
   (company-tooltip-limit 15 "Ограничение на число подсказок")
   :hook ((asciidoc-mode
-          css-mode
-          dockerfile-mode
+          css-ts-mode
           dockerfile-ts-mode
           emacs-lisp-mode
           html-ts-mode
@@ -1096,9 +1088,9 @@
           minibufer-mode
           nxml-mode
           org-mode
-          python-base-mode
+          python-ts-mode
           rst-mode
-          ruby-base-mode) . company-mode)
+          ruby-ts-mode) . company-mode)
   :bind
   (:map company-active-map
         ("TAB" . company-complete-common-or-cycle)
@@ -1202,8 +1194,8 @@
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
     (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
     (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
-    (add-to-list 'eglot-server-programs '(python-base-mode . ("jedi-language-server")))
-    (add-to-list 'eglot-server-programs '(ruby-base-mode . ("bundle" "exec" "rubocop" "--lsp")))
+    (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+    (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
     :bind (:map eglot-mode-map
                 ("C-c C-d" . eldoc)
@@ -1212,8 +1204,8 @@
     :hook ((ansible-mode
             dockerfile-ts-mode
             markdown-mode
-            python-base-mode
-            ruby-base-mode
+            python-ts-mode
+            ruby-ts-mode
             yaml-ts-mode
             ) . eglot-ensure)))
 
@@ -1254,25 +1246,24 @@
   :hook
   ((asciidoc-mode
     conf-mode
-    css-mode
-    dockerfile-mode
+    css-ts-mode
     dockerfile-ts-mode
     emacs-lisp-mode
     html-ts-mode
-    js-base-mode
+    js-ts-mode
     json-ts-mode
     latex-mode
     lisp-data-mode
     makefile-mode
     markdown-mode
     nxml-mode
-    python-base-mode
+    python-ts-mode
     rst-mode
-    ruby-mode
-    sh-mode
+    ruby-ts-mode
+    shell-script-mode
     sql-mode
     terraform-mode
-    yaml-mode
+    yaml-ts-mode
     ) . flycheck-mode))
 
 
@@ -1331,6 +1322,7 @@
 ;; Распознаёт текст в буферах и автоматически превращает в кнопки и ссылки.
 (use-package hyperbole
   :ensure t
+  :pin "gnu"
   :delight ""
   :hook
   ((emacs-lisp-mode
@@ -1346,13 +1338,13 @@
   :ensure t
   :hook
   ((emacs-lisp-mode
-    js-base-mode
+    js-ts-mode
     makefile-mode
     markdown-mode
-    python-base-mode
+    python-ts-mode
     rst-mode
-    ruby-mode
-    yaml-mode
+    ruby-ts-mode
+    yaml-ts-mode
     ) . indent-bars-mode))
 
 
@@ -1411,7 +1403,6 @@
 (use-package lin
   :ensure t
   :config
-  (global-hl-line-mode nil)
   (lin-global-mode 1))
 
 
@@ -1435,15 +1426,15 @@
 ;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
   :ensure t
+  :pin "gnu"
   :hook
   ((asciidoc-mode
     emacs-lisp-mode
     makefile-mode
     markdown-mode
-    python-base-mode
+    python-ts-mode
     rst-mode
-    rst-ts-mode
-    yaml-mode). diff-hl-mode)
+    yaml-ts-mode). diff-hl-mode)
   ((dired-mode . diff-hl-dired-mode)))
 
 
@@ -1609,7 +1600,7 @@
   :hook
   ((asciidoc-mode
     conf-mode
-    css-mode
+    css-ts-mode
     emacs-lisp-mode
     lisp-data-mode
     makefile-gmake-mode
@@ -1617,12 +1608,12 @@
     markdown-mode
     nxml-mode
     org-mode
-    python-base-mode
+    python-ts-mode
     rst-mode
     sh-mode
     sql-mode
     terraform-mode
-    yaml-mode
+    yaml-ts-mode
     ) . rainbow-delimiters-mode))
 
 
@@ -1697,7 +1688,7 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(load-theme 'ef-duo-dark t)
+(load-theme 'modus-vivendi t)
 
 (when (file-exists-p custom-file)
   (load custom-file))

@@ -179,12 +179,10 @@
 
 ;; 📦 PACKAGE
 (require 'package)
-(customize-set-variable 'package-enable-at-startup nil "Prevent double loading of libraries")
-(dolist (archive '(("gnu" . "https://elpa.gnu.org/packages/")
-                   ("melpa" . "https://melpa.org/packages/")
-                   ("melpa-stable" . "https://stable.melpa.org/packages/")
-                   ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-  (add-to-list 'package-archives archive t))
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
 (customize-set-variable

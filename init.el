@@ -352,10 +352,10 @@
     python-ts-mode
     rst-mode
     ruby-ts-mode
-    shell-script-mode
+    sh-mode
     terraform-mode
     tex-mode
-yaml-ts-mode) . display-line-numbers-mode))
+    yaml-ts-mode) . display-line-numbers-mode))
 
 
 ;; 📦 DOCKERFILE-TS-MODE
@@ -383,45 +383,48 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; Встроенный пакет.
 ;; Автоматически вставляет при вводе одной скобки или кавычки парную ей. Если
 ;; выделен регион, то в скобки обрамляется он.
-(require 'elec-pair)
-(dolist (pair '((?\( . ?\)) ;; ()
-                (?\[ . ?\]) ;; []
-                (?{ . ?})   ;; {}
-                (?« . ?»)   ;; «»
-                (?‘ . ’?)   ;; ‘’
-                (?‚ . ‘?)   ;; ‚‘
-                (?“ . ”?))) ;; “”))
-  (add-to-list 'electric-pair-pairs pair))
-(dolist (hook '(asciidoc-mode
-                conf-mode
-                css-ts-mode
-                emacs-lisp-data-mode
-                emacs-lisp-mode
-                html-ts-mode
-                js-ts-mode
-                json-ts-mode
-                lisp-data-mode
-                markdown-mode
-                python-ts-mode
-                ruby-mode
-                terraform-mode
-                yaml-ts-mode))
-  (add-hook (derived-mode-hook-name hook) #'electric-pair-local-mode))
+(use-package elec-pair
+  :init
+  (dolist (pair '((?\( . ?\)) ;; ()
+                  (?\[ . ?\]) ;; []
+                  (?{ . ?})   ;; {}
+                  (?« . ?»)   ;; «»
+                  (?‘ . ’?)   ;; ‘’
+                  (?‚ . ‘?)   ;; ‚‘
+                  (?“ . ”?))) ;; “”))
+    (add-to-list 'electric-pair-pairs pair))
+  :hook
+  ((asciidoc-mode
+    conf-mode
+    css-ts-mode
+    emacs-lisp-data-mode
+    emacs-lisp-mode
+    html-ts-mode
+    js-ts-mode
+    json-ts-mode
+    lisp-data-mode
+    markdown-mode
+    python-ts-mode
+    ruby-mode
+    terraform-mode
+    yaml-ts-mode) . electric-pair-local-mode))
 
 
 ;; 📦 EMACS-LISP-MODE
 ;; IT IS NOT A ELISP-MODE!
 ;; Встроенный пакет для EMACS Lisp
-(require 'elisp-mode)
-(add-to-list 'auto-mode-alist '("\\.abbrev_defs\\'" . lisp-data-mode))
-(add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
+(use-package elisp-mode
+  :mode
+  ("\\.abbrev_defs\\'" . lisp-data-mode)
+  ("\\.el\\'" . emacs-lisp-mode))
 
 
 ;; 📦 FACE-REMAP
 ;; Встроенный пакет.
 ;; Отображение шрифтов в графическом режиме.
-(require 'face-remap)
-(customize-set-variable 'text-scale-mode-step 1.1 "Шаг увеличения масштаба")
+(use-package face-remap
+  :custom
+  (text-scale-mode-step 1.1 "Шаг увеличения масштаба"))
 
 
 ;; 📦 FILES
@@ -496,10 +499,12 @@ yaml-ts-mode) . display-line-numbers-mode))
     ;; Программа для проверки орфографии найдена
     (progn
       (message (format "Для проверки орфографии используется %s" text-spell-program))
-      (require 'flyspell)
-      (customize-set-variable 'ispell-program-name text-spell-program)
-      (add-hook 'text-mode-hook 'flyspell-mode)
-      (add-hook 'emacs-lisp-mode-hook 'flyspell-prog-mode))
+      (use-package flyspell
+        :custom
+        (ispell-program-name text-spell-program)
+        :hook
+        ((text-mode . flyspell-mode)
+          (emacs-lisp-mode . flyspell-prog-mode))))
     ;; Не найдено программ для проверки орфографии
     (message "Не найдено программ для проверки орфографии.")))
 
@@ -532,8 +537,9 @@ yaml-ts-mode) . display-line-numbers-mode))
 
 ;; 📦 GREP
 ;; Встроенный пакет для поиска с помощью `grep'.
-(require 'grep)
-(keymap-global-set "<f6>" 'find-grep) ;; Запуск `find-grep' по нажатию [F6].
+(use-package grep
+  :bind
+  (:map global-map ("<f6>" . find-grep)))
 
 
 ;; 📦 HTML-TS-MODE
@@ -546,35 +552,35 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; 📦 IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 ;; По нажатию F2 выводит список открытых буферов.
-(require 'ibuffer)
-(custom-set-variables
- '(ibuffer-formats ;; Форматирование вывода
-   ;; Полный формат
-   '((mark      ;; Отметка
-      modified  ;; Буфер изменён?
-      read-only ;; Только чтение?
-      locked    ;; Заблокирован?
-      " "
-      (name 35 45 :left :elide) ;; Имя буфера: от 30 до 40 знаков
-      " "
-      (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
-      " "
-      filename-and-process)     ;; Имя файла и процесс
-     ;; Сокращённый формат
-     (mark      ;; Отметка?
-      " "
-      (name 35 -1) ;; Имя буфера: 32 знака, при неоходимости — расширить на сколько нужно
-      " "
-      filename)))  ;; Имя файла)
- '(ibuffer-default-sorting-mode 'filename/process "Сортировать файлы по имени / процессу")
- '(ibuffer-display-summary nil "Не показывать строку ИТОГО")
- '(ibuffer-eliding-string "…" "Если строка не уместилась, показать этот символ")
- '(ibuffer-expert 1 "Не запрашивать подтверждение для опасных операций")
- '(ibuffer-shrink-to-minimum-size t "Минимальный размер буфера по умолчанию")
- '(ibuffer-truncate-lines nil "Не обкусывать длинные строки")
- '(ibuffer-use-other-window t "Открывать буфер *Ibuffer* в отдельном окне"))
-(defalias 'list-buffers 'ibuffer "Замена стандартной функции на ibuffer.")
-(keymap-global-set "<f2>" 'ibuffer)
+(use-package ibuffer
+  :custom
+  (ibuffer-formats '((mark      ;; Отметка
+                      modified  ;; Буфер изменён?
+                      read-only ;; Только чтение?
+                      locked    ;; Заблокирован?
+                      " "
+                      (name 35 45 :left :elide) ;; Имя буфера: от 30 до 40 знаков
+                      " "
+                      (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
+                      " "
+                      filename-and-process)     ;; Имя файла и процесс
+                     ;; Сокращённый формат
+                     (mark      ;; Отметка?
+                      " "
+                      (name 35 -1) ;; Имя буфера: 32 знака, при необходимости — расширить на сколько нужно
+                      " "
+                      filename)))  ;; Имя файла
+  (ibuffer-default-sorting-mode 'filename/process "Сортировать файлы по имени / процессу")
+  (ibuffer-display-summary nil "Не показывать строку ИТОГО")
+  (ibuffer-eliding-string "…" "Если строка не уместилась, показать этот символ")
+  (ibuffer-expert 1 "Не запрашивать подтверждение для опасных операций")
+  (ibuffer-shrink-to-minimum-size t "Минимальный размер буфера по умолчанию")
+  (ibuffer-truncate-lines nil "Не обкусывать длинные строки")
+  (ibuffer-use-other-window t "Открывать буфер *Ibuffer* в отдельном окне")
+  :init
+  (defalias 'list-buffers 'ibuffer "Замена стандартной функции на ibuffer.")
+  :bind
+  (:map global-map ("<f2>" . ibuffer)))
 
 
 ;; 📦 IBUF-EXT
@@ -602,7 +608,7 @@ yaml-ts-mode) . display-line-numbers-mode))
       ("Python" (mode . python-ts-mode))
       ("Ruby" (mode . ruby-ts-mode))
       ("SSH keys" (or (name . "^\\*.pub$")))
-      ("Shell-script" (mode . shell-script-mode))
+      ("Shell-script" (mode . sh-mode))
       ("Terraform" (mode . terraform-mode))
       ("SQL" (mode . sql-mode))
       ("Web"
@@ -654,8 +660,10 @@ yaml-ts-mode) . display-line-numbers-mode))
 
 ;; 📦 NEW-COMMENT
 ;; Встроенный пакет для работы с комментариями.
-(require 'newcomment)
-(keymap-global-set "M-'" 'comment-or-uncomment-region)
+(use-package newcomment
+  :bind
+  (:map global-map
+    ("M-'" . comment-or-uncomment-region)))
 
 
 ;; 📦 PAREN
@@ -734,10 +742,10 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; Работа со скриптами Shell.
 (use-package sh-script
   :mode
-  (("\\.bashrc\\'"
-    "\\.envrc\\'"
-    "\\.profile\\'"
-    "\\.sh\\'") . shell-script-mode))
+  ("\\.bashrc\\'" . bash-ts-mode)
+  ("\\.envrc\\'" . sh-mode)
+  ("\\.profile\\'" . sh-mode)
+  ("\\.sh\\'" . sh-mode))
 
 
 ;; 📦 SHELL-MODE
@@ -763,8 +771,7 @@ yaml-ts-mode) . display-line-numbers-mode))
   (size-indication-mode nil) ;; Отображать размер буфера в строке статуса
   :bind
   (:map global-map
-        ("C-z" . undo)                ;; Отмена
-        ("S-<SPC>" . just-one-space)) ;; Заменить пробелы и TAB'ы до и после курсора на один пробел
+        ("C-z" . undo)) ;; Отмена
   :hook
   (text-mode . visual-line-mode))
 
@@ -892,7 +899,7 @@ yaml-ts-mode) . display-line-numbers-mode))
     python-ts-mode
     rst-mode
     ruby-ts-mode
-    shell-script-mode
+    sh-mode
     snippet-mode ;; Yasnippet
     sql-mode
     terraform-mode
@@ -1001,9 +1008,10 @@ yaml-ts-mode) . display-line-numbers-mode))
 (use-package adjust-parens
   :ensure t
   :hook (emacs-lisp-mode . adjust-parens-mode)
-  :bind (:map emacs-lisp-mode-map
-              ("<tab>" . lisp-indent-adjust-parens)
-              ("<backtab>" . lisp-dedent-adjust-parens)))
+  :bind
+  (:map emacs-lisp-mode-map
+    ("<tab>" . lisp-indent-adjust-parens)
+    ("<backtab>" . lisp-dedent-adjust-parens)))
 
 
 ;; 📦 ASCIIDOC-MODE
@@ -1076,24 +1084,25 @@ yaml-ts-mode) . display-line-numbers-mode))
   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
   (company-tooltip-limit 15 "Ограничение на число подсказок")
-  :hook ((asciidoc-mode
-          css-ts-mode
-          dockerfile-ts-mode
-          emacs-lisp-mode
-          html-ts-mode
-          latex-mode
-          lisp-data-mode
-          minibufer-mode
-          nxml-mode
-          org-mode
-          python-ts-mode
-          rst-mode
-          ruby-ts-mode) . company-mode)
+  :hook
+  ((asciidoc-mode
+     css-ts-mode
+     dockerfile-ts-mode
+     emacs-lisp-mode
+     html-ts-mode
+     latex-mode
+     lisp-data-mode
+     minibufer-mode
+     nxml-mode
+     org-mode
+     python-ts-mode
+     rst-mode
+     ruby-ts-mode) . company-mode)
   :bind
   (:map company-active-map
-        ("TAB" . company-complete-common-or-cycle)
-        ("M-/" . company-complete)
-        ("M-." . company-show-location)))
+    ("TAB" . company-complete-common-or-cycle)
+    ("M-/" . company-complete)
+    ("M-." . company-show-location)))
 
 
 ;; 📦 COUNSEL
@@ -1101,6 +1110,7 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; Автодополнение на основе Ivy
 (use-package counsel
   :ensure t
+  :pin "gnu"
   :bind
   (:map global-map
         ("C-c c" . counsel-compile)
@@ -1178,34 +1188,35 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;;               Создать в корне проекта файл .dir-locals.el и задать значение
 ;;               переменной `eglot-workspace-configuration'.
 ;; - YAML:       sudo npm -g install yaml-language-server
-(when (emacs-version-not-less-than 26 3)
-  (use-package eglot
-    :ensure t
-    :defer t
-    :custom
-    (eglot-events-buffer-config '(
-                                  :size 0 ;; Выключить ведение буфера событий
-                                  :format 'lisp ;; Формат Lisp для логов
-                                  )
-                                "Настройки буфера событий Eglot")
-    :config
-    (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
-    (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
-    (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
-    (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
-    (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "rubocop" "--lsp")))
-    (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
-    :bind (:map eglot-mode-map
-                ("C-c C-d" . eldoc)
-                ("C-c C-r" . eglot-rename)
-                ("C-c C-f" . eglot-format-buffer))
-    :hook ((ansible-mode
-            dockerfile-ts-mode
-            markdown-mode
-            python-ts-mode
-            ruby-ts-mode
-            yaml-ts-mode
-            ) . eglot-ensure)))
+(use-package eglot
+  :ensure t
+  :defer t
+  :custom
+  (eglot-events-buffer-config '(
+                                 :size 0 ;; Выключить ведение буфера событий
+                                 :format 'lisp ;; Формат Lisp для логов
+                                 )
+    "Настройки буфера событий Eglot")
+  :config
+  (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
+  (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
+  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+  (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "rubocop" "--lsp")))
+  (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
+  :bind
+  (:map eglot-mode-map
+    ("C-c C-d" . eldoc)
+    ("C-c C-r" . eglot-rename)
+    ("C-c C-f" . eglot-format-buffer))
+  :hook
+  ((ansible-mode
+    dockerfile-ts-mode
+    markdown-mode
+    python-ts-mode
+    ruby-ts-mode
+    yaml-ts-mode
+   ) . eglot-ensure))
 
 
 ;; 📦 ELDOC-MODE
@@ -1215,7 +1226,7 @@ yaml-ts-mode) . display-line-numbers-mode))
   :config
   (global-eldoc-mode nil)
   :delight ""
-  :hook ((emacs-lisp-mode) . eldoc-mode))
+  :hook (emacs-lisp-mode . eldoc-mode))
 
 
 ;; 📦 ENVRC
@@ -1258,7 +1269,7 @@ yaml-ts-mode) . display-line-numbers-mode))
     python-ts-mode
     rst-mode
     ruby-ts-mode
-    shell-script-mode
+    sh-mode
     sql-mode
     terraform-mode
     yaml-ts-mode
@@ -1382,6 +1393,7 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; В Debian требует для работы пакеты `libenchant2-dev' и `pkgconf'.
 (use-package jinx
   :ensure t
+  :pin "gnu"
   :custom
   (jinx-languages "ru_RU en_US")
   :hook ((emacs-lisp-mode
@@ -1410,6 +1422,7 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; Лучшее средство для работы с Git.
 (use-package magit
   :ensure t
+  :pin "melpa-stable"
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   :hook
@@ -1439,17 +1452,16 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; 📦 MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
-(when (emacs-version-not-less-than 27 1)
-  (use-package markdown-mode
-    :ensure t
-    :defer t
-    :custom
-    (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
-    (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
-    (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
-    :config (setq-local word-wrap t)
-    :bind (:map markdown-mode-map
-                ("M-." . markdown-follow-thing-at-point))))
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :custom
+  (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
+  (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
+  (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
+  :config (setq-local word-wrap t)
+  :bind (:map markdown-mode-map
+          ("M-." . markdown-follow-thing-at-point)))
 
 
 ;; 📦 MODUS-THEMES
@@ -1466,12 +1478,13 @@ yaml-ts-mode) . display-line-numbers-mode))
   :custom (mc/always-run-for-all t "Не задавать лишних вопросов.")
   :init
   (keymap-global-unset "M-<down-mouse-1>")
-  :bind (:map global-map
-              ("C-S-c C-S-c" . mc/edit-lines)
-              ("C->" . mc/mark-next-like-this)
-              ("C-<" . mc/mark-previous-like-this)
-              ("C-c C-<" . mc/mark-all-like-this)
-              ("M-<mouse-1>" . mc/add-cursor-on-click)))
+  :bind
+  (:map global-map
+    ("C-S-c C-S-c" . mc/edit-lines)
+    ("C->" . mc/mark-next-like-this)
+    ("C-<" . mc/mark-previous-like-this)
+    ("C-c C-<" . mc/mark-all-like-this)
+    ("M-<mouse-1>" . mc/add-cursor-on-click)))
 
 
 ;; 📦 NERD-ICONS
@@ -1554,8 +1567,9 @@ yaml-ts-mode) . display-line-numbers-mode))
   :bind
   ("<f5>" . projectile-compile-project)
   :init
-  (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
-  (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all"))
+  (progn
+    (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
+    (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all")))
   :custom
   (projectile-completion-system 'ivy)
   :config
@@ -1566,14 +1580,14 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; Вспыхивание строки, к которой переместился курсор
 ;; https://github.com/protesilaos/pulsar
 ;; Этот пакет требует Emacs версии 27.1 или новее
-(when (emacs-version-not-less-than 27 1)
-  (use-package pulsar
-    :ensure t
-    :custom (pulsar-pulse t)
-    :hook
-    ((after-init . pulsar-global-mode)
-     (next-error . pulsar-pulse-line))
-    :config
+(use-package pulsar
+  :ensure t
+  :custom
+  (pulsar-pulse t)
+  :init
+  (progn
+    (add-hook 'after-init-hook 'pulsar-global-mode)
+    (add-hook 'next-error-hook 'pulsar-pulse-line)
     (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
     (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
     (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)))
@@ -1620,7 +1634,9 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; В отличие от russian-computer, позволяет использовать лигатуры.
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
-  :ensure t)
+  :ensure t
+  :config
+  (customize-set-variable 'default-input-method 'russian-techwriter))
 
 
 ;; 📦 SWIPER
@@ -1629,9 +1645,11 @@ yaml-ts-mode) . display-line-numbers-mode))
 ;; `isearch-backward'.
 (use-package swiper
   :ensure t
-  :bind (:map global-map
-              ("C-s" . swiper-isearch)
-              ("C-r" . swiper-isearch-backward)))
+  :pin "gnu"
+  :bind
+  (:map global-map
+        ("C-s" . swiper-isearch)
+        ("C-r" . swiper-isearch-backward)))
 
 
 ;; 📦 TERRAFORM-MODE

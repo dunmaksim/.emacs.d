@@ -43,7 +43,7 @@
 
     ;; Перебор шрифтов
     (cond
-     ((member "Fire Code Nerd" availiable-fonts)
+     ((member "Fira Code Nerd" availiable-fonts)
       (setq default-font-family "Fira Code Nerd"))
      ((member "Fira Code" availiable-fonts)
       (setq default-font-family "Fira Code"))
@@ -284,8 +284,7 @@
 ;; Используется для управления удалением выделенного текста.
 (use-package delsel
   :config
-  ;; Удалять выделенный фрагмент при вводе текста
-  (delete-selection-mode t))
+  (delete-selection-mode t)) ;; Удалять выделенный фрагмент при вводе текста
 
 
 ;; 📦 DESKTOP
@@ -299,8 +298,10 @@
   (desktop-restore-frames t "Восстанавливать фреймы.")
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
-  (desktop-save-mode 1)
-  (add-hook 'server-after-make-frame-hook 'desktop-read))
+  (progn
+    (desktop-save-mode 1)
+    (add-hook 'server-after-make-frame-hook 'desktop-read)
+    (add-to-list 'desktop-modes-not-to-save 'treesit--exporer-tree-mode)))
 
 
 ;; 📦 DIRED
@@ -312,16 +313,16 @@
   :custom
   (dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
   (dired-garbage-files-regexp
-   (concat (regexp-opt
-            '(".aux"
-              ".bak"
-              ".dvi"
-              ".log"
-              ".orig"
-              ".rej"
-              ".toc"
-              ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
-           "\\'"))
+    (concat (regexp-opt
+              '(".aux"
+                ".bak"
+                ".dvi"
+                ".log"
+                ".orig"
+                ".rej"
+                ".toc"
+                ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
+      "\\'"))
   (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
   (dired-listing-switches "-l --human-readable --all --group-directories-first")
   (dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов")
@@ -384,7 +385,7 @@
 ;; Автоматически вставляет при вводе одной скобки или кавычки парную ей. Если
 ;; выделен регион, то в скобки обрамляется он.
 (use-package elec-pair
-  :init
+  :config
   (dolist (pair '((?\( . ?\)) ;; ()
                   (?\[ . ?\]) ;; []
                   (?{ . ?})   ;; {}
@@ -439,16 +440,15 @@
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
   (require-final-newline t "Требовать новую строку в конце файлов")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
-  :init
+  :config
   (progn
-    (dolist (safe-var '((buffer-env-script-name . ".venv/bin/activate")
-                        (electric-pair-preserve-balance . t)
-                        (emacs-lisp-docstring-fill-column . 80)
-                        (fill-column . 120)
-                        (fill-column . 80)
-                        (frozen_string_literal . true)
-                        (lexical-binding . t)))
-      (add-to-list 'safe-local-variable-values safe-var))
+    (add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
+    (add-to-list 'safe-local-variable-values '(electric-pair-preserve-balance . t))
+    (add-to-list 'safe-local-variable-values '(emacs-lisp-docstring-fill-column . 80))
+    (add-to-list 'safe-local-variable-values '(fill-column . 120))
+    (add-to-list 'safe-local-variable-values '(fill-column . 80))
+    (add-to-list 'safe-local-variable-values '(frozen_string_literal . true))
+    (add-to-list 'safe-local-variable-values '(lexical-binding . t))
     (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
     (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
     (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
@@ -804,6 +804,12 @@
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
+;; 📦 TRANSIENT
+(use-package transient
+  :ensure t
+  :pin "gnu")
+
+
 ;; 📦 TREESIT
 ;; Встроенный пакет для работы с TreeSitter
 (use-package treesit
@@ -983,25 +989,6 @@
              (whitespace-mode " ¶"))))
 
 
-;; 📦 ACTIVITIES
-;; https://elpa.gnu.org/packages/activities.html
-;; Управление наборами окон, вкладок, фреймов и буферов
-(use-package activities
-  :ensure t
-  :config
-  (activities-mode 1)
-  :bind
-  (("C-x C-a C-n" . activities-new)
-   ("C-x C-a C-d" . activities-define)
-   ("C-x C-a C-a" . activities-resume)
-   ("C-x C-a C-s" . activities-suspend)
-   ("C-x C-a C-k" . activities-kill)
-   ("C-x C-a RET" . activities-switch)
-   ("C-x C-a b" . activities-switch-buffer)
-   ("C-x C-a g" . activities-revert)
-   ("C-x C-a l" . activities-list)))
-
-
 ;; 📦 ADJUST-PARENS
 ;; https://elpa.gnu.org/packages/adjust-parens.html
 ;; Пакет для автоматического управления скобочками и уровнями отступов.
@@ -1015,9 +1002,9 @@
 
 
 ;; 📦 ASCIIDOC-MODE
-(use-package asciidoc-mode
-  :load-path "~/repo/asciidoc-mode/"
-  :mode ("\\.adoc\\'" . asciidoc-mode))
+(use-package asciidoc-ts-mode
+  :load-path "~/repo/asciidoc-ts-mode/"
+  :mode ("\\.adoc\\'" . asciidoc-ts-mode))
 
 
 ;; 📦 ALL
@@ -1246,9 +1233,9 @@
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
   (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
-  (flycheck-locate-config-file-functions '(flycheck-locate-config-file-by-path
-                                           flycheck-locate-config-file-ancestor-directories
-                                           flycheck-locate-config-file-home))
+  ;; (flycheck-locate-config-file-functions '(flycheck-locate-config-file-by-path
+  ;;                                          flycheck-locate-config-file-ancestor-directories
+  ;;                                          flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
@@ -1286,36 +1273,15 @@
   (global-flycheck-eglot-mode 1))
 
 
-;; 📦 FLYLISP
-;; https://elpa.gnu.org/packages/flylisp.html
-;; Подсвекта непарных или неправильно выровненных скобок
-(use-package flylisp
-  :ensure t
-  :hook (emacs-lisp-mode . flylisp-mode))
-
-
-;; 📦 FONT-LOCK-PROFILER
-;; https://github.com/Lindydancer/font-lock-profiler
-;; Отладчик Font Lock
-(use-package font-lock-profiler
-  :ensure t)
-
-
-;; 📦 FONT-LOCK-STUDIO
-;; https://github.com/Lindydancer/font-lock-studio
-;; Ещё больше отладки Font Lock!
-(use-package font-lock-studio
-  :ensure t)
-
-
 ;; 📦 FORMAT-ALL
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода с помощью разных внешних средств.
 (use-package format-all
   :ensure t
   :defer t
-  :bind (:map global-map
-              ([f12] . format-all-buffer)))
+  :bind
+  (:map global-map
+    ([f12] . format-all-buffer)))
 
 
 ;; 📦 HL-TODO
@@ -1584,7 +1550,7 @@
   :ensure t
   :custom
   (pulsar-pulse t)
-  :init
+  :config
   (progn
     (add-hook 'after-init-hook 'pulsar-global-mode)
     (add-hook 'next-error-hook 'pulsar-pulse-line)

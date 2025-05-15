@@ -43,7 +43,7 @@
 
     ;; Перебор шрифтов
     (cond
-     ((member "Fire Code Nerd" availiable-fonts)
+     ((member "Fira Code Nerd" availiable-fonts)
       (setq default-font-family "Fira Code Nerd"))
      ((member "Fira Code" availiable-fonts)
       (setq default-font-family "Fira Code"))

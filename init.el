@@ -69,6 +69,7 @@
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
+(add-hook 'emacs-startup-hook 'setup-gui-settings)
 
 (setup-gui-settings (selected-frame))
 
@@ -386,14 +387,14 @@
 ;; выделен регион, то в скобки обрамляется он.
 (use-package elec-pair
   :config
-  (dolist (pair '((?\( . ?\)) ;; ()
-                  (?\[ . ?\]) ;; []
-                  (?{ . ?})   ;; {}
-                  (?« . ?»)   ;; «»
-                  (?‘ . ’?)   ;; ‘’
-                  (?‚ . ‘?)   ;; ‚‘
-                  (?“ . ”?))) ;; “”))
-    (add-to-list 'electric-pair-pairs pair))
+  (progn
+    (add-to-list 'electric-pair-pairs '(?\( . ?\))) ;; ()
+    (add-to-list 'electric-pair-pairs '(?\[ . ?\])) ;; []
+    (add-to-list 'electric-pair-pairs '(?{ . ?}))   ;; {}
+    (add-to-list 'electric-pair-pairs '(?« . ?»))   ;; «»
+    (add-to-list 'electric-pair-pairs '(?‘ . ’?))   ;; ‘’
+    (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
+    (add-to-list 'electric-pair-pairs '(?“ . ”?)))  ;; “”))
   :hook
   ((asciidoc-mode
     conf-mode
@@ -678,8 +679,16 @@
 (when (package-installed-p 'pixel-scroll)
   (use-package pixel-scroll
     :config
-    (pixel-scroll-mode 1)
-    (pixel-scroll-precision-mode)))
+    (progn
+      (pixel-scroll-mode 1)
+      (pixel-scroll-precision-mode))))
+
+
+;; 📦 REPEAT-MODE
+;; Встроенный пакет для повторения типовых действий
+(use-package repeat
+  :config
+  (repeat-mode 1))
 
 
 ;; 📦 REPLACE
@@ -765,13 +774,14 @@
   (blink-matching-paren t "Мигать, когда скобки парные")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
-  (column-number-mode 1)     ;; Показывать номер колонки в статусной строке
-  (line-number-mode t)       ;; Показывать номер строки в статусной строке
-  (overwrite-mode -1)        ;; Отключить режим перезаписи текста
-  (size-indication-mode nil) ;; Отображать размер буфера в строке статуса
+  (progn
+    (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
+    (line-number-mode t)        ;; Показывать номер строки в статусной строке
+    (overwrite-mode -1)         ;; Отключить режим перезаписи текста
+    (size-indication-mode nil)) ;; Отображать размер буфера в строке статуса
   :bind
   (:map global-map
-        ("C-z" . undo)) ;; Отмена
+    ("C-z" . undo)) ;; Отмена
   :hook
   (text-mode . visual-line-mode))
 
@@ -918,8 +928,9 @@
 ;; Перемещение между окнами Emacs.
 (use-package windmove
   :config
-  (windmove-default-keybindings 'ctrl)
-  (windmove-swap-states-default-keybindings 'meta))
+  (progn
+    (windmove-default-keybindings 'ctrl)
+    (windmove-swap-states-default-keybindings 'meta)))
 
 
 ;; 📦 WINNER-MODE
@@ -1002,9 +1013,9 @@
 
 
 ;; 📦 ASCIIDOC-MODE
-(use-package asciidoc-ts-mode
-  :load-path "~/repo/asciidoc-ts-mode/"
-  :mode ("\\.adoc\\'" . asciidoc-ts-mode))
+(use-package asciidoc-mode
+  :load-path "~/repo/asciidoc-mode/"
+  :mode ("\\.adoc\\'" . asciidoc-mode))
 
 
 ;; 📦 ALL
@@ -1185,12 +1196,13 @@
                                  )
     "Настройки буфера событий Eglot")
   :config
-  (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
-  (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
-  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
-  (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "rubocop" "--lsp")))
-  (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
+  (progn
+    (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
+    (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
+    (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+    (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+    (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "rubocop" "--lsp")))
+    (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio"))))
   :bind
   (:map eglot-mode-map
     ("C-c C-d" . eldoc)
@@ -1642,9 +1654,10 @@
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")
   (which-key-show-major-mode t "То же самое что и [C-h m], но в формате which-key")
   :config
-  (which-key-mode 1)
-  (which-key-setup-minibuffer)
-  (which-key-setup-side-window-right)) ;; Показывать подсказки справа
+  (progn
+    (which-key-mode 1)
+    (which-key-setup-minibuffer)
+    (which-key-setup-side-window-right))) ;; Показывать подсказки справа
 
 
 ;; 📦 YASNIPPET

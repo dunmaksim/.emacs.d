@@ -1519,6 +1519,13 @@
   :defer t)
 
 
+;; 📦 PLANTUML-MODE
+;; https://github.com/skuro/plantuml-mode
+;; Пакет для работы с PlantUML
+(use-package plantuml-mode
+  :ensure t)
+
+
 ;; 📦 PO-MODE
 ;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
 ;; Работа с файлами локализации.

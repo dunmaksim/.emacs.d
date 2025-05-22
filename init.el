@@ -117,7 +117,6 @@
 
 
 (custom-set-variables
- '(compilation-scroll-output t "Автоматическая прокрутка буфера *compilation*")
  '(create-lockfiles nil "Не создавать lock-файлы")
  '(completion-ignore-case t "Игнорировать регистр при автодополнении")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
@@ -231,6 +230,12 @@
     rst-mode) . abbrev-mode))
 
 
+;; 📦 ANSI-COLOR
+(use-package ansi-color
+  :custom
+  (ansi-color-for-compilation-mode t "Расцветка буфера *compile*"))
+
+
 ;; 📦 AUTOREVERT
 ;; Встроенный пакет.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Revert.html
@@ -260,6 +265,12 @@
   (checkdoc-minor-mode-string " CheckDoc")
   :hook
   (emacs-lisp-mode . checkdoc-minor-mode))
+
+
+;; 📦 COMPILE
+(use-package compile
+  :custom
+  (compilation-scroll-output t))
 
 
 ;; 📦 CONF-MODE
@@ -1188,6 +1199,7 @@
 ;; - YAML:       sudo npm -g install yaml-language-server
 (use-package eglot
   :ensure t
+  :pin "gnu"
   :defer t
   :custom
   (eglot-events-buffer-config '(

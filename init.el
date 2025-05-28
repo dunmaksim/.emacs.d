@@ -233,7 +233,9 @@
 ;; 📦 ANSI-COLOR
 (use-package ansi-color
   :custom
-  (ansi-color-for-compilation-mode t "Расцветка буфера *compile*"))
+  (ansi-color-for-compilation-mode t "Расцветка буфера *compile*")
+  :hook
+  (compilation-filter . ansi-color-compilation-filter))
 
 
 ;; 📦 AUTOREVERT
@@ -508,7 +510,7 @@
   ;; Нужно использовать ispell-mode только в том случае, когда есть
   ;; чем проверять орфографию.
   (if text-spell-program
-    ;; Программа для проверки орфографии найдена
+    ;; then
     (progn
       (message (format "Для проверки орфографии используется %s" text-spell-program))
       (use-package flyspell
@@ -517,7 +519,7 @@
         :hook
         ((text-mode . flyspell-mode)
           (emacs-lisp-mode . flyspell-prog-mode))))
-    ;; Не найдено программ для проверки орфографии
+    ;; else
     (message "Не найдено программ для проверки орфографии.")))
 
 
@@ -531,7 +533,9 @@
   :bind
   (:map global-map
     ("C-x O" . previous-window-any-frame) ;; Перейти в предыдущее окно
-    ("C-x o" . next-window-any-frame)))   ;; Перейти в следующее окно
+    ;; Перейти в следующее окно
+    ("C-x o" . next-window-any-frame)
+    ("M-o" . next-window-any-frame)))
 
 
 ;; 📦 GOTO-ADDRESS-MODE
@@ -1702,7 +1706,7 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(load-theme 'modus-vivendi t)
+(load-theme 'ef-autumn t)
 
 (when (file-exists-p custom-file)
   (load custom-file))

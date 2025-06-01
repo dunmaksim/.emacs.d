@@ -1150,7 +1150,7 @@
 (use-package denote
   :ensure t
   :custom
-  (denote-directory "~/Notes/" "Каталог для хранения заметок."))
+  (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1649,8 +1649,8 @@
   :pin "gnu"
   :bind
   (:map global-map
-        ("C-s" . swiper-isearch)
-        ("C-r" . swiper-isearch-backward)))
+    ("C-s" . swiper-isearch)
+    ("C-r" . swiper-isearch-backward)))
 
 
 ;; 📦 TERRAFORM-MODE
@@ -1673,6 +1673,7 @@
   :delight ""
   :custom
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
+  (which-key-dont-use-unicode nil "Используем Unicode")
   (which-key-idle-delay 2 "Задержка появления подсказки")
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")
   (which-key-show-major-mode t "То же самое что и [C-h m], но в формате which-key")

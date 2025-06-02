@@ -562,7 +562,8 @@
 ;; Встроенный пакет для работы с HTML и SGML.
 (use-package html-ts-mode
   :mode
-  ("\\.jinja\\'" . html-ts-mode))
+  ("\\.jinja\\'" . html-ts-mode)
+  ("\\.hbs\\'" . html-ts-mode))
 
 
 ;; 📦 IBUFFER

@@ -1682,8 +1682,7 @@
   :config
   (progn
     (which-key-mode 1)
-    (which-key-setup-minibuffer)
-    (which-key-setup-side-window-right))) ;; Показывать подсказки справа
+    (which-key-setup-minibuffer)))
 
 
 ;; 📦 YASNIPPET

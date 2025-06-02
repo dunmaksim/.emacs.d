@@ -767,6 +767,7 @@
 ;; Работа со скриптами Shell.
 (use-package sh-script
   :mode
+  ("\\.bash_aliases\\'" . bash-ts-mode)
   ("\\.bashrc\\'" . bash-ts-mode)
   ("\\.envrc\\'" . sh-mode)
   ("\\.profile\\'" . sh-mode)

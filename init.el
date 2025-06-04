@@ -25,6 +25,7 @@
 
 (require 'derived) ;; derived-mode-hook-name
 
+
 ;;; Здесь находятся настройки базовой функциональности Emacs.
 ;;; Даже если будут какие-то проблемы со сторонними пакетами, этот код всё
 ;;; равно будет выполнен.
@@ -119,6 +120,7 @@
 (custom-set-variables
  '(create-lockfiles nil "Не создавать lock-файлы")
  '(completion-ignore-case t "Игнорировать регистр при автодополнении")
+ '(completions-detailed t "Подробный подсказки в минибуфере")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
  '(default-input-method "russian-computer" "Метод ввода по умолчанию")
  '(default-transient-input-method "russian-computer")
@@ -129,6 +131,7 @@
  '(initial-scratch-message nil "Пустой буфер *scratch*")
  '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл.")
  '(major-mode 'text-mode "Текстовый режим для новых буферов по умолчанию.")
+ '(read-answer-short t "Быстрый ввод ответов на вопросы (не аналог yes-or-no-p)")
  '(read-file-name-completion-ignore-case t "Игнорировать регистр при вводе имён файлов")
  '(read-process-output-max (* 1024 1024) "Увеличим чанк чтения для LSP: по умолчанию 65535")
  '(ring-bell-function 'ignore "Отключить звуковое сопровождение событий")
@@ -238,6 +241,14 @@
   (compilation-filter . ansi-color-compilation-filter))
 
 
+;; 📦 APHELEIA
+;; https://github.com/radian-software/apheleia
+;; Автоформат буфера перед сохранением.
+(use-package apheleia
+  :ensure t
+  (apheleia-global-mode 1))
+
+
 ;; 📦 AUTOREVERT
 ;; Встроенный пакет.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Revert.html
@@ -247,6 +258,7 @@
 (use-package autorevert
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
+  (global-auto-revert-non-file-buffers t "Автообновление не только файловых буферов.")
   :config
   (global-auto-revert-mode 1)
   :hook
@@ -418,6 +430,7 @@
     js-ts-mode
     json-ts-mode
     lisp-data-mode
+    org-mode
     markdown-mode
     python-ts-mode
     ruby-mode
@@ -518,7 +531,7 @@
         (ispell-program-name text-spell-program)
         :hook
         ((text-mode . flyspell-mode)
-          (emacs-lisp-mode . flyspell-prog-mode))))
+         (emacs-lisp-mode . flyspell-prog-mode))))
     ;; else
     (message "Не найдено программ для проверки орфографии.")))
 
@@ -530,6 +543,7 @@
   :custom
   (window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
   (window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон")
+  (frame-resize-pixelwise t "Размер фреймов считать по пикселям а не по символам")
   :bind
   (:map global-map
     ("C-x O" . previous-window-any-frame) ;; Перейти в предыдущее окно
@@ -554,6 +568,8 @@
 ;; 📦 GREP
 ;; Встроенный пакет для поиска с помощью `grep'.
 (use-package grep
+  :config
+  (add-to-list 'grep-find-ignored-directories "node_modules")
   :bind
   (:map global-map ("<f6>" . find-grep)))
 
@@ -789,6 +805,7 @@
   :custom
   (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
   (blink-matching-paren t "Мигать, когда скобки парные")
+  (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
   (progn
@@ -849,22 +866,22 @@
     ;; Грамматики
     (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc/src/"))
     (add-to-list 'treesit-language-source-alist '(asciidoc-inline "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.3.0" "tree-sitter-asciidoc_inline/src/"))
-    (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.23.3"))
+    (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.25.0"))
     (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
     (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
-    (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "master" "src/"))
+    (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.1.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
     (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1"))
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
     (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
-    (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown/src/"))
-    (add-to-list 'treesit-language-source-alist '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.3.2" "tree-sitter-markdown-inline/src/"))
+    (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.5.0" "tree-sitter-markdown/src/"))
+    (add-to-list 'treesit-language-source-alist '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.5.0" "tree-sitter-markdown-inline/src/"))
     (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
     (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
-    (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.23.2"))
-    (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src"))
+    (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
+    (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "0.23.2" "tsx/src"))
     (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
-    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.0" "src/"))
+    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.1" "src/"))
     ;; Сборка и установка грамматик
     (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'asciidoc init-el-tree-sitter-dir))
@@ -889,7 +906,9 @@
     (unless (file-exists-p (expand-file-name "libtree-sitter-rust.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'rust init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir))))
+      (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir)))
+  :custom
+  (setq treesit-font-lock-level 4 "По умолчанию — 3. Увеличим немного."))
 
 
 ;; 📦 UNIQUIFY

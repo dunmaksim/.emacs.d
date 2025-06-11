@@ -120,13 +120,11 @@
 (custom-set-variables
  '(create-lockfiles nil "Не создавать lock-файлы")
  '(completion-ignore-case t "Игнорировать регистр при автодополнении")
- '(completions-detailed t "Подробный подсказки в минибуфере")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
  '(default-input-method "russian-computer" "Метод ввода по умолчанию")
  '(default-transient-input-method "russian-computer")
  '(delete-by-moving-to-trash t "Удалять файлы в Корзину")
  '(gc-cons-threshold (* 2 gc-cons-threshold) "Увеличить размер памяти для сборщика мусора")
- '(indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
  '(inhibit-startup-screen t "Не показывать приветственный экран")
  '(initial-scratch-message nil "Пустой буфер *scratch*")
  '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл.")
@@ -135,11 +133,9 @@
  '(read-file-name-completion-ignore-case t "Игнорировать регистр при вводе имён файлов")
  '(read-process-output-max (* 1024 1024) "Увеличим чанк чтения для LSP: по умолчанию 65535")
  '(ring-bell-function 'ignore "Отключить звуковое сопровождение событий")
- '(save-place-forget-unreadable-files t "Если файл нельзя открыть, то и помнить о нём ничего не надо")
  '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
  '(show-trailing-whitespace t "Подсветка висячих пробелов")
  '(standard-indent 4 "Отступ по умолчанию")
- '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
  '(truncate-lines 1 "Обрезать длинные строки")
  '(use-dialog-box nil "Диалоговые окна ОС не нужны")
  '(use-short-answers t "Краткие ответы вместо длинных")
@@ -339,16 +335,16 @@
   :custom
   (dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
   (dired-garbage-files-regexp
-    (concat (regexp-opt
-              '(".aux"
-                ".bak"
-                ".dvi"
-                ".log"
-                ".orig"
-                ".rej"
-                ".toc"
-                ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
-      "\\'"))
+   (concat (regexp-opt
+            '(".aux"
+              ".bak"
+              ".dvi"
+              ".log"
+              ".orig"
+              ".rej"
+              ".toc"
+              ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
+           "\\'"))
   (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
   (dired-listing-switches "-l --human-readable --all --group-directories-first")
   (dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов")
@@ -512,26 +508,26 @@
 (when (string-equal system-type "gnu/linux")
   (defvar text-spell-program nil "Программа для проверки орфографии.")
   (cond
-    ((or
-       (file-exists-p "/usr/bin/hunspell")
-       (file-symlink-p "/usr/bin/hunspell"))
-      (setq text-spell-program "hunspell"))
-    ((or
-       (file-exists-p "/usr/bin/aspell")
-       (file-symlink-p "/usr/bin/aspell"))
-      (setq text-spell-program "aspell")))
+   ((or
+     (file-exists-p "/usr/bin/hunspell")
+     (file-symlink-p "/usr/bin/hunspell"))
+    (setq text-spell-program "hunspell"))
+   ((or
+     (file-exists-p "/usr/bin/aspell")
+     (file-symlink-p "/usr/bin/aspell"))
+    (setq text-spell-program "aspell")))
   ;; Нужно использовать ispell-mode только в том случае, когда есть
   ;; чем проверять орфографию.
   (if text-spell-program
-    ;; then
-    (progn
-      (message (format "Для проверки орфографии используется %s" text-spell-program))
-      (use-package flyspell
-        :custom
-        (ispell-program-name text-spell-program)
-        :hook
-        ((text-mode . flyspell-mode)
-         (emacs-lisp-mode . flyspell-prog-mode))))
+      ;; then
+      (progn
+        (message (format "Для проверки орфографии используется %s" text-spell-program))
+        (use-package flyspell
+          :custom
+          (ispell-program-name text-spell-program)
+          :hook
+          ((text-mode . flyspell-mode)
+           (emacs-lisp-mode . flyspell-prog-mode))))
     ;; else
     (message "Не найдено программ для проверки орфографии.")))
 
@@ -546,10 +542,10 @@
   (frame-resize-pixelwise t "Размер фреймов считать по пикселям а не по символам")
   :bind
   (:map global-map
-    ("C-x O" . previous-window-any-frame) ;; Перейти в предыдущее окно
-    ;; Перейти в следующее окно
-    ("C-x o" . next-window-any-frame)
-    ("M-o" . next-window-any-frame)))
+        ("C-x O" . previous-window-any-frame) ;; Перейти в предыдущее окно
+        ;; Перейти в следующее окно
+        ("C-x o" . next-window-any-frame)
+        ("M-o" . next-window-any-frame)))
 
 
 ;; 📦 GOTO-ADDRESS-MODE
@@ -672,12 +668,20 @@
 (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default")))
 
 
+;; 📦 INDENT
+;; Встроенный пакет, отвечающий за отступы
+(use-package indent
+  :custom
+  (standard-indent 4 "Отступ по умолчанию.")
+  (tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение."))
+
+
 ;; 📦 JS-MODE
 ;; Встроенный пакет для работы с JavaScript.
 (use-package js
   :custom
-  (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
   (js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
+  (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
   (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case."))
 
 
@@ -691,12 +695,19 @@
 (use-package make-mode)
 
 
+;; 📦 MINIBUFFER
+;; Встроенный пакет для управления поведением минибуфера.
+(use-package minibuffer
+  :custom
+  (completions-detailed t "Подробный подсказки в минибуфере"))
+
+
 ;; 📦 NEW-COMMENT
 ;; Встроенный пакет для работы с комментариями.
 (use-package newcomment
   :bind
   (:map global-map
-    ("M-'" . comment-or-uncomment-region)))
+        ("M-'" . comment-or-uncomment-region)))
 
 
 ;; 📦 PAREN
@@ -805,6 +816,7 @@
   :custom
   (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
   (blink-matching-paren t "Мигать, когда скобки парные")
+  (indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
@@ -815,7 +827,7 @@
     (size-indication-mode nil)) ;; Отображать размер буфера в строке статуса
   :bind
   (:map global-map
-    ("C-z" . undo)) ;; Отмена
+        ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
   (text-mode . visual-line-mode))
 
@@ -986,8 +998,8 @@
   (window-resize-pixelwise t "Делить окна по пикселям, а не по символам.")
   :bind
   (:map global-map
-    ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
-    ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
+        ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
+        ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
 
 
 ;; 📦 XML
@@ -1044,8 +1056,8 @@
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind
   (:map emacs-lisp-mode-map
-    ("<tab>" . lisp-indent-adjust-parens)
-    ("<backtab>" . lisp-dedent-adjust-parens)))
+        ("<tab>" . lisp-indent-adjust-parens)
+        ("<backtab>" . lisp-dedent-adjust-parens)))
 
 
 ;; 📦 ASCIIDOC-MODE
@@ -1120,23 +1132,23 @@
   (company-tooltip-limit 15 "Ограничение на число подсказок")
   :hook
   ((asciidoc-mode
-     css-ts-mode
-     dockerfile-ts-mode
-     emacs-lisp-mode
-     html-ts-mode
-     latex-mode
-     lisp-data-mode
-     minibufer-mode
-     nxml-mode
-     org-mode
-     python-ts-mode
-     rst-mode
-     ruby-ts-mode) . company-mode)
+    css-ts-mode
+    dockerfile-ts-mode
+    emacs-lisp-mode
+    html-ts-mode
+    latex-mode
+    lisp-data-mode
+    minibufer-mode
+    nxml-mode
+    org-mode
+    python-ts-mode
+    rst-mode
+    ruby-ts-mode) . company-mode)
   :bind
   (:map company-active-map
-    ("TAB" . company-complete-common-or-cycle)
-    ("M-/" . company-complete)
-    ("M-." . company-show-location)))
+        ("TAB" . company-complete-common-or-cycle)
+        ("M-/" . company-complete)
+        ("M-." . company-show-location)))
 
 
 ;; 📦 COUNSEL
@@ -1228,10 +1240,10 @@
   :defer t
   :custom
   (eglot-events-buffer-config '(
-                                 :size 0 ;; Выключить ведение буфера событий
-                                 :format 'lisp ;; Формат Lisp для логов
-                                 )
-    "Настройки буфера событий Eglot")
+                                :size 0 ;; Выключить ведение буфера событий
+                                :format 'lisp ;; Формат Lisp для логов
+                                )
+                              "Настройки буфера событий Eglot")
   :config
   (progn
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
@@ -1242,9 +1254,9 @@
     (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio"))))
   :bind
   (:map eglot-mode-map
-    ("C-c C-d" . eldoc)
-    ("C-c C-r" . eglot-rename)
-    ("C-c C-f" . eglot-format-buffer))
+        ("C-c C-d" . eldoc)
+        ("C-c C-r" . eglot-rename)
+        ("C-c C-f" . eglot-format-buffer))
   :hook
   ((ansible-mode
     dockerfile-ts-mode
@@ -1252,7 +1264,7 @@
     python-ts-mode
     ruby-ts-mode
     yaml-ts-mode
-   ) . eglot-ensure))
+    ) . eglot-ensure))
 
 
 ;; 📦 ELDOC-MODE
@@ -1330,7 +1342,7 @@
   :defer t
   :bind
   (:map global-map
-    ([f12] . format-all-buffer)))
+        ([f12] . format-all-buffer)))
 
 
 ;; 📦 HL-TODO
@@ -1476,7 +1488,7 @@
   (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
   :config (setq-local word-wrap t)
   :bind (:map markdown-mode-map
-          ("M-." . markdown-follow-thing-at-point)))
+              ("M-." . markdown-follow-thing-at-point)))
 
 
 ;; 📦 MODUS-THEMES
@@ -1495,11 +1507,11 @@
   (keymap-global-unset "M-<down-mouse-1>")
   :bind
   (:map global-map
-    ("C-S-c C-S-c" . mc/edit-lines)
-    ("C->" . mc/mark-next-like-this)
-    ("C-<" . mc/mark-previous-like-this)
-    ("C-c C-<" . mc/mark-all-like-this)
-    ("M-<mouse-1>" . mc/add-cursor-on-click)))
+        ("C-S-c C-S-c" . mc/edit-lines)
+        ("C->" . mc/mark-next-like-this)
+        ("C-<" . mc/mark-previous-like-this)
+        ("C-c C-<" . mc/mark-all-like-this)
+        ("M-<mouse-1>" . mc/add-cursor-on-click)))
 
 
 ;; 📦 NERD-ICONS
@@ -1670,8 +1682,8 @@
   :pin "gnu"
   :bind
   (:map global-map
-    ("C-s" . swiper-isearch)
-    ("C-r" . swiper-isearch-backward)))
+        ("C-s" . swiper-isearch)
+        ("C-r" . swiper-isearch-backward)))
 
 
 ;; 📦 TERRAFORM-MODE

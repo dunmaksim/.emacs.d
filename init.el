@@ -242,6 +242,7 @@
 ;; Автоформат буфера перед сохранением.
 (use-package apheleia
   :ensure t
+  :config
   (apheleia-global-mode 1))
 
 

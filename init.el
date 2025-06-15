@@ -157,7 +157,6 @@
 
 (require 'keymap)
 
-(keymap-global-unset "<insert>")  ;; Режим перезаписи не нужен
 (keymap-global-unset "M-,")       ;; Такие маркеры не нужны
 (keymap-global-unset "C-z")       ;; Такой Ctrl+Z нам не нужен
 (keymap-global-unset "C-x C-z")   ;; `suspend-emacs' тоже не нужен
@@ -371,6 +370,7 @@
     lisp-data-mode
     makefile-mode
     markdown-mode
+    mhtml-mode
     nxml-mode
     po-mode
     python-ts-mode
@@ -386,7 +386,8 @@
 ;; Встроенный пакет на базе TreeSitter для работы с Dockerfile.
 (use-package dockerfile-ts-mode
   :mode
-  ("\\Containerfile\\'" . dockerfile-ts-mode))
+  ("\\Containerfile\\'" . dockerfile-ts-mode)
+  ("\\Dockerfile\\'" . dockerfile-ts-mode))
 
 
 ;; 📦 ELECTRIC-INDENT MODE
@@ -398,6 +399,7 @@
   :hook
   ((emacs-lisp-mode
     markdown-mode
+    mhtml-mode
     python-ts-mode
     rst-mode
     ruby-ts-mode) . electric-indent-local-mode))
@@ -429,6 +431,7 @@
     lisp-data-mode
     org-mode
     markdown-mode
+    mhtml-mode
     python-ts-mode
     ruby-mode
     terraform-mode
@@ -784,10 +787,12 @@
 ;; 📦 SAVE-HIST
 ;; Встроенный пакет.
 ;; Запоминает историю введенных команд
-(require 'savehist)
-(savehist-mode 1)
-(add-hook 'kill-emacs-hook 'savehist-save)
-(add-to-list 'delete-frame-functions 'savehist-save)
+(use-package savehist
+  :config
+  (progn
+    (savehist-mode 1)
+    (add-hook 'kill-emacs-hook 'savehist-save)
+    (add-to-list 'delete-frame-functions 'savehist-save)))
 
 
 ;; 📦 SHELL-SCRIPT-MODE
@@ -822,13 +827,13 @@
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
   (progn
-    (column-number-mode 1)      ;; Показывать номер колонки в статусной строке
-    (line-number-mode t)        ;; Показывать номер строки в статусной строке
-    (overwrite-mode -1)         ;; Отключить режим перезаписи текста
-    (size-indication-mode nil)) ;; Отображать размер буфера в строке статуса
+    (column-number-mode 1)           ;; Показывать номер колонки в статусной строке
+    (keymap-global-unset "<insert>") ;; Режим перезаписи не нужен
+    (line-number-mode t)             ;; Показывать номер строки в статусной строке
+    (overwrite-mode -1)              ;; Отключить режим перезаписи текста
+    (size-indication-mode nil))      ;; Отображать размер буфера в строке статуса
   :bind
-  (:map global-map
-        ("C-z" . undo)) ;; Отмена на Ctrl+Z
+  (:map global-map ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
   (text-mode . visual-line-mode))
 
@@ -1023,7 +1028,6 @@
 (use-package yaml-ts-mode
   :mode
   (("\\.ansible\\-lint\\'" . yaml-ts-mode)
-   ("\\.ansible\\-lint\\'" . yaml-ts-mode)
    ("\\.clang\\-tidy\\'" . yaml-ts-mode)
    ("\\.yamllint\\'" . yaml-ts-mode)
    ("\\.yfm\\'" . yaml-ts-mode)))
@@ -1744,6 +1748,7 @@
 
 (when (file-exists-p custom-file)
   (load custom-file))
+
 
 (provide 'init.el)
 ;;; init.el ends here

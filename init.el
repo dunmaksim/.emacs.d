@@ -241,8 +241,13 @@
 ;; Автоформат буфера перед сохранением.
 (use-package apheleia
   :ensure t
-  :config
-  (apheleia-global-mode 1))
+  :custom
+  (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
+  :hook
+  ((emacs-lisp-mode
+    js-ts-mode
+    python-ts-mode
+    ruby-ts-mode) . apheleia-mode))
 
 
 ;; 📦 AUTOREVERT

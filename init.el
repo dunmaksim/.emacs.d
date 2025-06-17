@@ -1139,10 +1139,9 @@
 ;; Автодополнение
 (use-package company
   :ensure t
-  :delight ""
-  :demand t
   :custom
   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
+  (company-lighter-base "" "Не надо показывать индикатор в строке статуса")
   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")

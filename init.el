@@ -1037,13 +1037,13 @@
    ("\\.xml\\'" . nxml-mode)))
 
 
-
 ;; 📦 YAML-TS-MODE
 ;; Встроенный пакет для работы с YAML через TreeSitter
 (use-package yaml-ts-mode
   :mode
   (("\\.ansible\\-lint\\'" . yaml-ts-mode)
    ("\\.clang\\-tidy\\'" . yaml-ts-mode)
+   ("\\.ya?ml\\'" . yaml-ts-mode)
    ("\\.yamllint\\'" . yaml-ts-mode)
    ("\\.yfm\\'" . yaml-ts-mode)))
 

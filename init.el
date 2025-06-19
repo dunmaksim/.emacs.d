@@ -691,12 +691,16 @@
   :custom
   (js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
   (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
-  (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case."))
+  (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case.")
+  :mode
+  ("\\(\\.js[mx]\\|\\.har\\)\\'" . js-ts-mode))
 
 
 ;; 📦 JSON-TS-MODE
 ;; Встроенный пакет для работы с JSON через TreeSitter
-(use-package json-ts-mode)
+(use-package json-ts-mode
+  :mode
+  ("\\.json\\'" . json-ts-mode))
 
 
 ;; 📦 MAKEFILE

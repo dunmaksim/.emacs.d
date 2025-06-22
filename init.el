@@ -217,6 +217,68 @@
    '(use-package-verbose t "Подробный режим работы `use-package'.")))
 
 
+;; 📦 TREESIT
+;; Встроенный пакет для работы с TreeSitter
+(use-package treesit
+  :init
+  (progn
+    ;; Создадим каталог для хранения so-файлов с грамматиками
+    (defvar init-el-tree-sitter-dir (expand-file-name "tree-sitter" user-emacs-directory))
+    (unless (file-directory-p init-el-tree-sitter-dir)
+      (make-directory init-el-tree-sitter-dir)))
+  :config
+  (progn
+    ;; Грамматики
+    (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.25.0"))
+    (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
+    (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
+    (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.2.0" "src/"))
+    (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
+    (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1" "src/"))
+    (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.2" "src/"))
+    (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
+    (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
+    (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.5.0" "tree-sitter-markdown/src/"))
+    (add-to-list 'treesit-language-source-alist '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.5.0" "tree-sitter-markdown-inline/src/"))
+    (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
+    (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
+    (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
+    (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript.git" "v0.23.2" "tsx/src"))
+    (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
+    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.1" "src/"))
+    ;; Сборка и установка грамматик
+    (unless (file-exists-p (expand-file-name "libtree-sitter-bash.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'bash init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-css.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'css init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-dockerfile.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'dockerfile init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-javascript.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'javascript init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-hcl.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'hcl init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-html.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'html init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-jsdoc.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'jsdoc init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-json.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'json init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-python.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'python init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-ruby.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'ruby init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-rust.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'rust init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-typescript.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'typescript init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libree-sitter-xml.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'xml init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir)))
+  :custom
+  (treesit-font-lock-level 4 "По умолчанию — 3. Увеличим немного."))
+
+
 ;; 📦 ABBREV-MODE
 ;; Встроенный пакет.
 ;; Использование аббревиатур -- фрагментов текста, которые при вводе
@@ -768,7 +830,8 @@
 ;; Встроенный пакет для работы с Ruby.
 (use-package ruby-ts-mode
   :mode
-  ("Vagrantfile\\'" . ruby-ts-mode))
+  (("\\.rb\\'" . ruby-ts-mode)
+   ("Vagrantfile\\'". ruby-ts-mode)))
 
 
 ;; 📦 SAVEPLACE
@@ -882,70 +945,17 @@
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
+;; 📦 TRACK-CHANGES
+;; Встроенный пакет
+(use-package track-changes
+  :pin "gnu"
+  :ensure t)
+
+
 ;; 📦 TRANSIENT
 (use-package transient
   :ensure t
   :pin "gnu")
-
-
-;; 📦 TREESIT
-;; Встроенный пакет для работы с TreeSitter
-(use-package treesit
-  :init
-  (progn
-    ;; Создадим каталог для хранения so-файлов с грамматиками
-    (defvar init-el-tree-sitter-dir (expand-file-name "tree-sitter" user-emacs-directory))
-    (unless (file-directory-p init-el-tree-sitter-dir)
-      (make-directory init-el-tree-sitter-dir))
-    ;; Грамматики
-    (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.25.0"))
-    (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
-    (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
-    (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.2.0" "src/"))
-    (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
-    (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1" "src/"))
-    (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.2" "src/"))
-    (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
-    (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
-    (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.5.0" "tree-sitter-markdown/src/"))
-    (add-to-list 'treesit-language-source-alist '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.5.0" "tree-sitter-markdown-inline/src/"))
-    (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
-    (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
-    (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
-    (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript.git" "0.23.2" "tsx/src"))
-    (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
-    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.1" "src/"))
-    ;; Сборка и установка грамматик
-    (unless (file-exists-p (expand-file-name "libtree-sitter-bash.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'bash init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-css.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'css init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-dockerfile.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'dockerfile init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-javascript.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'javascript init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-hcl.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'hcl init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-html.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'html init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-jsdoc.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'jsdoc init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-json.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'json init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-python.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'python init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-ruby.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'ruby init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-rust.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'rust init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-typescript.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'typescript init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libree-sitter-xml.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'xml init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir)))
-  :custom
-  (setq treesit-font-lock-level 4 "По умолчанию — 3. Увеличим немного."))
 
 
 ;; 📦 UNIQUIFY
@@ -1726,6 +1736,7 @@
 ;; Показывает подсказки к сочетаниям клавиш.
 (use-package which-key
   :ensure t
+  :pin "gnu"
   :delight ""
   :custom
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
@@ -1737,6 +1748,13 @@
   (progn
     (which-key-mode 1)
     (which-key-setup-minibuffer)))
+
+
+;; 📦 WINDOW-TOOL-BAR
+;; Встроенный пакет, который вставляет тулбар в каждое окно
+(use-package window-tool-bar
+  :pin "gnu"
+  :ensure t)
 
 
 ;; 📦 YASNIPPET

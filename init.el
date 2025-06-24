@@ -63,7 +63,9 @@
       (set-frame-font
        (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
                default-font-family
-               init-el-font-height) nil t)
+               init-el-font-height)
+       nil
+       t)
       (set-face-attribute 'default nil :family default-font-family))
     (set-face-attribute 'default nil :height (* init-el-font-height 10))))
 
@@ -355,10 +357,10 @@
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF
 (use-package conf-mode
   :mode
-  (("\\.env\\'" . conf-mode)
-   ("\\.flake8\\'" . conf-mode)
-   ("\\.pylintrc\\'" . conf-mode)
-   ("\\inventory\\'" . conf-mode)))
+  ("\\.env\\'"
+   "\\.flake8\\'"
+   "\\.pylintrc\\'"
+   "\\inventory\\'"))
 
 
 ;; 📦 CSS-MODE
@@ -453,16 +455,14 @@
 ;; Встроенный пакет на базе TreeSitter для работы с Dockerfile.
 (use-package dockerfile-ts-mode
   :mode
-  ("\\Containerfile\\'" . dockerfile-ts-mode)
-  ("\\Dockerfile\\'" . dockerfile-ts-mode))
+  ("\\Containerfile\\'"
+   "\\Dockerfile\\'"))
 
 
 ;; 📦 ELECTRIC-INDENT MODE
 ;; Встроенный пакет.
 ;; Автоматический отступ. В основном только мешает, лучше выключить.
 (use-package electric
-  :custom
-  (electric-indent-inhibit t "Не выравнивать предыдущую строку по нажатию RET.")
   :hook
   ((emacs-lisp-mode
     markdown-mode
@@ -568,6 +568,10 @@
 ;; 📦 FLYMAKE
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
+  :ensure t
+  :pin "gnu"
+  :init
+  (package-upgrade 'flymake)
   :hook (emacs-mode . flymake-mode))
 
 
@@ -645,8 +649,9 @@
 ;; Встроенный пакет для работы с HTML и SGML.
 (use-package html-ts-mode
   :mode
-  ("\\.jinja\\'" . html-ts-mode)
-  ("\\.hbs\\'" . html-ts-mode))
+  ("\\.hbs\\'"
+   "\\.html\\'"
+   "\\.jinja\\'"))
 
 
 ;; 📦 IBUFFER
@@ -755,14 +760,14 @@
   (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
   (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case.")
   :mode
+  ("\\.js\\'" . js-ts-mode)
   ("\\(\\.js[mx]\\|\\.har\\)\\'" . js-ts-mode))
 
 
 ;; 📦 JSON-TS-MODE
 ;; Встроенный пакет для работы с JSON через TreeSitter
 (use-package json-ts-mode
-  :mode
-  ("\\.json\\'" . json-ts-mode))
+  :mode "\\.json\\'")
 
 
 ;; 📦 MAKEFILE
@@ -809,6 +814,14 @@
   (emacs-lisp-mode . prettify-symbols-mode))
 
 
+;; 📦 PROJECT
+;; Встроенный пакет для работы с проектами
+(use-package project
+  :ensure t
+  :pin "gnu"
+  :init (package-upgrade 'project))
+
+
 ;; 📦 REPEAT-MODE
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
@@ -830,8 +843,8 @@
 ;; Встроенный пакет для работы с Ruby.
 (use-package ruby-ts-mode
   :mode
-  (("\\.rb\\'" . ruby-ts-mode)
-   ("Vagrantfile\\'". ruby-ts-mode)))
+  ("\\.rb\\'"
+   "Vagrantfile\\'"))
 
 
 ;; 📦 SAVEPLACE
@@ -952,10 +965,21 @@
   :ensure t)
 
 
+;; 📦 TRAMP
+;; Встроенный пакет для работы с файлами удалённо
+(use-package tramp
+  :pin "gnu"
+  :ensure t
+  :init
+  (package-upgrade 'tramp))
+
+
 ;; 📦 TRANSIENT
 (use-package transient
   :ensure t
-  :pin "gnu")
+  :pin "gnu"
+  :init
+  (package-upgrade 'transient))
 
 
 ;; 📦 UNIQUIFY
@@ -1047,19 +1071,19 @@
   (nxml-child-indent 4 "Выравнивание дочерних элементов")
   (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
   :mode
-  (("\\.pom\\'" . nxml-mode)
-   ("\\.xml\\'" . nxml-mode)))
+  ("\\.pom\\'"
+   "\\.xml\\'"))
 
 
 ;; 📦 YAML-TS-MODE
 ;; Встроенный пакет для работы с YAML через TreeSitter
 (use-package yaml-ts-mode
   :mode
-  (("\\.ansible\\-lint\\'" . yaml-ts-mode)
-   ("\\.clang\\-tidy\\'" . yaml-ts-mode)
-   ("\\.ya?ml\\'" . yaml-ts-mode)
-   ("\\.yamllint\\'" . yaml-ts-mode)
-   ("\\.yfm\\'" . yaml-ts-mode)))
+  ("\\.ansible\\-lint\\'"
+   "\\.clang\\-tidy\\'"
+   "\\.ya?ml\\'"
+   "\\.yamllint\\'"
+   "\\.yfm\\'"))
 
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
@@ -1097,7 +1121,7 @@
 ;; 📦 ASCIIDOC-MODE
 (use-package asciidoc-mode
   :load-path "~/repo/asciidoc-mode/"
-  :mode ("\\.adoc\\'" . asciidoc-mode))
+  :mode "\\.adoc\\'")
 
 
 ;; 📦 ALL
@@ -1270,6 +1294,8 @@
 (use-package eglot
   :ensure t
   :pin "gnu"
+  :init
+  (package-upgrade 'eglot)
   :defer t
   :custom
   (eglot-events-buffer-config '(
@@ -1587,6 +1613,8 @@
 (use-package org
   :defer t
   :ensure t
+  :init
+  (package-upgrade 'org)
   :config
   (setq-local
    truncate-lines nil ;; Не обрезать строки
@@ -1651,6 +1679,7 @@
   :ensure t
   :custom
   (pulsar-pulse t)
+  (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
   :config
   (progn
     (add-hook 'after-init-hook 'pulsar-global-mode)
@@ -1664,10 +1693,13 @@
 ;; Встроенный пакет для работы с Python через TreeSitter
 (use-package python
   :ensure t
+  :pin "gnu"
+  :init
+  (package-upgrade 'python)
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
-  (python-indent-offset 4 "Отсуп по умолчанию — 4 пробела"))
+  (python-indent-offset 4 "Отступ по умолчанию — 4 пробела"))
 
 
 ;; 📦 RAINBOW-DELIMITERS-MODE
@@ -1702,8 +1734,8 @@
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
   :ensure t
-  :config
-  (customize-set-variable 'default-input-method 'russian-techwriter))
+  :custom
+  (default-input-method 'russian-techwriter))
 
 
 ;; 📦 SWIPER
@@ -1717,6 +1749,20 @@
   (:map global-map
         ("C-s" . swiper-isearch)
         ("C-r" . swiper-isearch-backward)))
+
+
+;; 📦 TEMPEL
+;; https://github.com/minad/tempel
+;; Шаблонизатор
+(use-package tempel
+  :ensure t
+  :pin "gnu"
+  :bind (("M-+" . tempel-complete)
+         ("M-*" . tempel-insert))
+  :config
+  (add-to-list 'completion-at-point-functions 'tempel-expand)
+  :hook
+  (prog-mode . tempel-abbrev-mode))
 
 
 ;; 📦 TERRAFORM-MODE
@@ -1738,6 +1784,8 @@
   :ensure t
   :pin "gnu"
   :delight ""
+  :init
+  (package-upgrade 'which-key)
   :custom
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-dont-use-unicode nil "Используем Unicode")
@@ -1754,7 +1802,9 @@
 ;; Встроенный пакет, который вставляет тулбар в каждое окно
 (use-package window-tool-bar
   :pin "gnu"
-  :ensure t)
+  :ensure t
+  :init
+  (package-upgrade 'window-tool-bar))
 
 
 ;; 📦 YASNIPPET

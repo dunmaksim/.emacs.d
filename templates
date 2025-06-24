@@ -1,0 +1,18 @@
+emacs-lisp-mode
+(use-package package
+  :pin "pin"
+  :ensure ensure
+  :hook
+  :mode
+  :)
+
+rst-mode
+
+(h1 (make-string (+ 2 (length title)) ?#) n " " (p "Заголовок: " title) " " n (make-string (+ 2 (length title)) ?#) n)
+(h2 (p "Заголовок: " title) n (make-string (length title) ?=) n)
+(h3 (p "Заголовок: " title) n (make-string (length title) ?-) n)
+
+;; Local Variables
+;; mode: lisp-data
+;; outline-regexp: "[a-z]"
+;; End:

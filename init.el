@@ -817,9 +817,7 @@
 ;; 📦 PROJECT
 ;; Встроенный пакет для работы с проектами
 (use-package project
-  :ensure t
-  :pin "gnu"
-  :init (package-upgrade 'project))
+  :ensure t)
 
 
 ;; 📦 REPEAT-MODE
@@ -969,17 +967,13 @@
 ;; Встроенный пакет для работы с файлами удалённо
 (use-package tramp
   :pin "gnu"
-  :ensure t
-  :init
-  (package-upgrade 'tramp))
+  :ensure t)
 
 
 ;; 📦 TRANSIENT
 (use-package transient
   :ensure t
-  :pin "gnu"
-  :init
-  (package-upgrade 'transient))
+  :pin "gnu")
 
 
 ;; 📦 UNIQUIFY
@@ -1294,8 +1288,6 @@
 (use-package eglot
   :ensure t
   :pin "gnu"
-  :init
-  (package-upgrade 'eglot)
   :defer t
   :custom
   (eglot-events-buffer-config '(
@@ -1613,8 +1605,6 @@
 (use-package org
   :defer t
   :ensure t
-  :init
-  (package-upgrade 'org)
   :config
   (setq-local
    truncate-lines nil ;; Не обрезать строки
@@ -1694,8 +1684,6 @@
 (use-package python
   :ensure t
   :pin "gnu"
-  :init
-  (package-upgrade 'python)
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
@@ -1784,8 +1772,6 @@
   :ensure t
   :pin "gnu"
   :delight ""
-  :init
-  (package-upgrade 'which-key)
   :custom
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-dont-use-unicode nil "Используем Unicode")
@@ -1802,9 +1788,7 @@
 ;; Встроенный пакет, который вставляет тулбар в каждое окно
 (use-package window-tool-bar
   :pin "gnu"
-  :ensure t
-  :init
-  (package-upgrade 'window-tool-bar))
+  :ensure t)
 
 
 ;; 📦 YASNIPPET
@@ -1834,7 +1818,6 @@
 
 (when (file-exists-p custom-file)
   (load custom-file))
-
 
 (provide 'init.el)
 ;;; init.el ends here

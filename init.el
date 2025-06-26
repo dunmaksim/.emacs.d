@@ -1146,7 +1146,7 @@
   (:map global-map
         ("M-g f" . avy-goto-line)
         ("M-g w" . avy-goto-word)
-        ("C-:" . avy-goto-char)))
+        ("C-'" . avy-goto-char)))
 
 
 ;; 📦 BBCODE-MODE

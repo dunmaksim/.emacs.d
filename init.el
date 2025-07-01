@@ -23,6 +23,10 @@
   user-emacs-directory)
  "Файл для сохранения пользовательских настроек, сделанных в customize.")
 
+;; Загрузим настройки сразу, чтобы они не переопределяли параметры из `init.el'.
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 (require 'derived) ;; derived-mode-hook-name
 
 
@@ -117,7 +121,6 @@
           (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
     ;; Каталог не существует
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
-
 
 (custom-set-variables
  '(create-lockfiles nil "Не создавать lock-файлы")
@@ -478,14 +481,13 @@
 ;; выделен регион, то в скобки обрамляется он.
 (use-package elec-pair
   :config
-  (progn
-    (add-to-list 'electric-pair-pairs '(?\( . ?\))) ;; ()
-    (add-to-list 'electric-pair-pairs '(?\[ . ?\])) ;; []
-    (add-to-list 'electric-pair-pairs '(?{ . ?}))   ;; {}
-    (add-to-list 'electric-pair-pairs '(?« . ?»))   ;; «»
-    (add-to-list 'electric-pair-pairs '(?‘ . ’?))   ;; ‘’
-    (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
-    (add-to-list 'electric-pair-pairs '(?“ . ”?)))  ;; “”))
+  (add-to-list 'electric-pair-pairs '(?\( . ?\))) ;; ()
+  (add-to-list 'electric-pair-pairs '(?\[ . ?\])) ;; []
+  (add-to-list 'electric-pair-pairs '(?{ . ?}))   ;; {}
+  (add-to-list 'electric-pair-pairs '(?« . ?»))   ;; «»
+  (add-to-list 'electric-pair-pairs '(?‘ . ’?))   ;; ‘’
+  (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
+  (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”)
   :hook
   ((asciidoc-mode
     conf-mode
@@ -502,6 +504,7 @@
     python-ts-mode
     ruby-mode
     terraform-mode
+    tex-mode
     yaml-ts-mode) . electric-pair-local-mode))
 
 
@@ -779,7 +782,7 @@
 ;; Встроенный пакет для управления поведением минибуфера.
 (use-package minibuffer
   :custom
-  (completions-detailed t "Подробный подсказки в минибуфере"))
+  (completions-detailed t "Подробные подсказки в минибуфере"))
 
 
 ;; 📦 NEW-COMMENT
@@ -1194,7 +1197,9 @@
     org-mode
     python-ts-mode
     rst-mode
-    ruby-ts-mode) . company-mode)
+    ruby-ts-mode
+    tex-mode
+    ) . company-mode)
   :bind
   (:map company-active-map
         ("TAB" . company-complete-common-or-cycle)
@@ -1464,6 +1469,22 @@
   :requires ivy)
 
 
+;; 📦 IVY-POSFRAME
+;; https://github.com/tumashu/ivy-posframe
+;; Показывает удобное окно по центру активного буфера.
+(use-package ivy-posframe
+  :ensure t
+  :pin "gnu"
+  :custom
+  (ivy-postframe-parameters '((left-fringe . 8)
+                              (right-fringe . 8)))
+  :config
+  (ivy-posframe-mode 1)
+  (add-to-list 'ivy-posframe-display-functions-alist '(swiper . ivy-display-function-fallback))
+  (add-to-list 'ivy-posframe-display-functions-alist '(complete-symbol . ivy-posframe-display-at-point))
+  (add-to-list 'ivy-posframe-display-functions-alist '(counsel-M-x . ivy-posframe-display-at-window-bottom-left)))
+
+
 ;; 📦 JINX
 ;; https://github.com/minad/jinx
 ;; Проверка орфографии не только для слова под курсором, как во `flyspell',
@@ -1723,7 +1744,8 @@
 (use-package russian-techwriter
   :ensure t
   :custom
-  (default-input-method 'russian-techwriter))
+  (default-input-method 'russian-techwriter "Метод ввода по умолчанию.")
+  (default-transient-input-method 'russian-techwriter "Временный метод ввода."))
 
 
 ;; 📦 SWIPER
@@ -1815,9 +1837,6 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (load-theme 'ef-autumn t)
-
-(when (file-exists-p custom-file)
-  (load custom-file))
 
 (provide 'init.el)
 ;;; init.el ends here

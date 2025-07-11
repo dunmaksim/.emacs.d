@@ -249,7 +249,7 @@
     (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
     (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
     (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript.git" "v0.23.2" "tsx/src"))
-    (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
+                                        ;    (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
     (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.1" "src/"))
     ;; Сборка и установка грамматик
     (unless (file-exists-p (expand-file-name "libtree-sitter-bash.so" init-el-tree-sitter-dir))
@@ -276,8 +276,8 @@
       (treesit-install-language-grammar 'rust init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-typescript.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'typescript init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libree-sitter-xml.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'xml init-el-tree-sitter-dir))
+                                        ;    (unless (file-exists-p (expand-file-name "libree-sitter-xml.so" init-el-tree-sitter-dir))
+                                        ;      (treesit-install-language-grammar 'xml init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir)))
   :custom
@@ -1160,16 +1160,28 @@
   :defer t)
 
 
+;; 📦 BUFFER-ENV
+;; https://github.com/astoff/buffer-env
+;; Переменные окружения для отдельного буфера. Почти ENVRC, только от GNU
+(use-package buffer-env
+  :pin "gnu"
+  :ensure t
+  :config
+  (add-hook 'hack-local-variables-hook #'buffer-env-update)
+  (add-hook 'comint-mode-hook #'buffer-env-update))
+
+
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
   :ensure t
-  :hook ((css-ts-mode
-          emacs-lisp-mode
-          html-ts-mode
-          json-ts-mode
-          yaml-ts-mode) . colorful-mode))
+  :hook
+  ((css-ts-mode
+    emacs-lisp-mode
+    html-ts-mode
+    json-ts-mode
+    yaml-ts-mode) . colorful-mode))
 
 
 ;; 📦 COMPANY-MODE
@@ -1231,6 +1243,15 @@
 ;; Поддержка CSV
 (use-package csv-mode
   :ensure t)
+
+
+;; 📦 CURSOR-UNDO
+;; https://elpa.gnu.org/packages/cursor-undo.html
+;; Отмена работает в том числе на перемещение курсора.
+(use-package cursor-undo
+  :ensure t
+  :pin "gnu"
+  :config (cursor-undo 1))
 
 
 ;; 📦 DENOTE
@@ -1350,9 +1371,6 @@
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
   (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
-  ;; (flycheck-locate-config-file-functions '(flycheck-locate-config-file-by-path
-  ;;                                          flycheck-locate-config-file-ancestor-directories
-  ;;                                          flycheck-locate-config-file-home))
   (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
@@ -1480,7 +1498,6 @@
                               (right-fringe . 8)))
   :config
   (ivy-posframe-mode 1)
-  (add-to-list 'ivy-posframe-display-functions-alist '(swiper . ivy-display-function-fallback))
   (add-to-list 'ivy-posframe-display-functions-alist '(complete-symbol . ivy-posframe-display-at-point))
   (add-to-list 'ivy-posframe-display-functions-alist '(counsel-M-x . ivy-posframe-display-at-window-bottom-left)))
 
@@ -1722,6 +1739,7 @@
     conf-mode
     css-ts-mode
     emacs-lisp-mode
+    js-ts-mode
     lisp-data-mode
     makefile-gmake-mode
     makefile-mode

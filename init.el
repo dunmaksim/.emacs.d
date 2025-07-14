@@ -573,8 +573,6 @@
 (use-package flymake
   :ensure t
   :pin "gnu"
-  :init
-  (package-upgrade 'flymake)
   :hook (emacs-mode . flymake-mode))
 
 
@@ -827,7 +825,9 @@
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
   :config
-  (repeat-mode 1))
+  (repeat-mode 1)
+  :hook
+  (text-mode . repeat-mode))
 
 
 ;; 📦 REPLACE

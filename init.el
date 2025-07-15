@@ -123,8 +123,8 @@
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
 
 (custom-set-variables
- '(create-lockfiles nil "Не создавать lock-файлы")
  '(completion-ignore-case t "Игнорировать регистр при автодополнении")
+ '(create-lockfiles nil "Не создавать lock-файлы")
  '(cursor-type 'bar "Курсор в виде вертикальной черты")
  '(default-input-method "russian-computer" "Метод ввода по умолчанию")
  '(default-transient-input-method "russian-computer")
@@ -141,6 +141,7 @@
  '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
  '(show-trailing-whitespace t "Подсветка висячих пробелов")
  '(standard-indent 4 "Отступ по умолчанию")
+ '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
  '(truncate-lines 1 "Обрезать длинные строки")
  '(use-dialog-box nil "Диалоговые окна ОС не нужны")
  '(use-short-answers t "Краткие ответы вместо длинных")
@@ -743,14 +744,6 @@
  '(ibuffer-show-empty-filter-groups nil "Не показывать пустые группы"))
 (add-hook 'ibuffer-mode-hook 'ibuffer-auto-mode)
 (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default")))
-
-
-;; 📦 INDENT
-;; Встроенный пакет, отвечающий за отступы
-(use-package indent
-  :custom
-  (standard-indent 4 "Отступ по умолчанию.")
-  (tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение."))
 
 
 ;; 📦 JS-MODE

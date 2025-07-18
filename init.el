@@ -142,7 +142,6 @@
  '(show-trailing-whitespace t "Подсветка висячих пробелов")
  '(standard-indent 4 "Отступ по умолчанию")
  '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
- '(truncate-lines 1 "Обрезать длинные строки")
  '(use-dialog-box nil "Диалоговые окна ОС не нужны")
  '(use-short-answers t "Краткие ответы вместо длинных")
  '(user-full-name "Dunaevsky Maxim" "Имя пользователя")

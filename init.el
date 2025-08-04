@@ -1488,21 +1488,6 @@
   :requires ivy)
 
 
-;; 📦 IVY-POSFRAME
-;; https://github.com/tumashu/ivy-posframe
-;; Показывает удобное окно по центру активного буфера.
-(use-package ivy-posframe
-  :ensure t
-  :pin "gnu"
-  :custom
-  (ivy-postframe-parameters '((left-fringe . 8)
-                              (right-fringe . 8)))
-  :config
-  (ivy-posframe-mode 1)
-  (add-to-list 'ivy-posframe-display-functions-alist '(complete-symbol . ivy-posframe-display-at-point))
-  (add-to-list 'ivy-posframe-display-functions-alist '(counsel-M-x . ivy-posframe-display-at-window-bottom-left)))
-
-
 ;; 📦 JINX
 ;; https://github.com/minad/jinx
 ;; Проверка орфографии не только для слова под курсором, как во `flyspell',

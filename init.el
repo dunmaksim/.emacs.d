@@ -395,7 +395,7 @@
   (progn
     (desktop-save-mode 1)
     (add-hook 'server-after-make-frame-hook 'desktop-read)
-    (add-to-list 'desktop-modes-not-to-save 'treesit--exporer-tree-mode)))
+    (add-to-list 'desktop-modes-not-to-save 'dired-mode)))
 
 
 ;; 📦 DIRED
@@ -1184,59 +1184,59 @@
     yaml-ts-mode) . colorful-mode))
 
 
-;; 📦 COMPANY-MODE
-;; https://company-mode.github.io/
-;; Автодополнение
-(use-package company
-  :ensure t
-  :pin "gnu"
-  :custom
-  (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
-  (company-lighter-base "" "Не надо показывать индикатор в строке статуса")
-  (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
-  (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
-  (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
-  (company-tooltip-limit 15 "Ограничение на число подсказок")
-  :hook
-  ((asciidoc-mode
-    css-ts-mode
-    dockerfile-ts-mode
-    emacs-lisp-mode
-    html-ts-mode
-    latex-mode
-    lisp-data-mode
-    minibufer-mode
-    nxml-mode
-    org-mode
-    python-ts-mode
-    rst-mode
-    ruby-ts-mode
-    tex-mode
-    ) . company-mode)
-  :bind
-  (:map company-active-map
-        ("TAB" . company-complete-common-or-cycle)
-        ("M-/" . company-complete)
-        ("M-." . company-show-location)))
+;; ;; 📦 COMPANY-MODE
+;; ;; https://company-mode.github.io/
+;; ;; Автодополнение
+;; (use-package company
+;;   :ensure t
+;;   :pin "gnu"
+;;   :custom
+;;   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
+;;   (company-lighter-base "" "Не надо показывать индикатор в строке статуса")
+;;   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
+;;   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
+;;   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
+;;   (company-tooltip-limit 15 "Ограничение на число подсказок")
+;;   :hook
+;;   ((asciidoc-mode
+;;     css-ts-mode
+;;     dockerfile-ts-mode
+;;     emacs-lisp-mode
+;;     html-ts-mode
+;;     latex-mode
+;;     lisp-data-mode
+;;     minibufer-mode
+;;     nxml-mode
+;;     org-mode
+;;     python-ts-mode
+;;     rst-mode
+;;     ruby-ts-mode
+;;     tex-mode
+;;     ) . company-mode)
+;;   :bind
+;;   (:map company-active-map
+;;         ("TAB" . company-complete-common-or-cycle)
+;;         ("M-/" . company-complete)
+;;         ("M-." . company-show-location)))
 
 
-;; 📦 COUNSEL
-;; https://elpa.gnu.org/packages/counsel.html
-;; Автодополнение на основе Ivy
-(use-package counsel
-  :ensure t
-  :pin "gnu"
-  :bind
-  (:map global-map
-        ("C-c c" . counsel-compile)
-        ("C-c g" . counsel-git)
-        ("C-h f" . counsel-describe-function)
-        ("C-h l" . counsel-find-library)
-        ("C-h v" . counsel-describe-variable)
-        ("C-x 8 RET" . counsel-unicode-char)
-        ("C-x C-f" . counsel-find-file)
-        ("M-x" . counsel-M-x)
-        ("M-y" . counsel-yank-pop)))
+;; ;; 📦 COUNSEL
+;; ;; https://elpa.gnu.org/packages/counsel.html
+;; ;; Автодополнение на основе Ivy
+;; (use-package counsel
+;;   :ensure t
+;;   :pin "gnu"
+;;   :bind
+;;   (:map global-map
+;;         ("C-c c" . counsel-compile)
+;;         ("C-c g" . counsel-git)
+;;         ("C-h f" . counsel-describe-function)
+;;         ("C-h l" . counsel-find-library)
+;;         ("C-h v" . counsel-describe-variable)
+;;         ("C-x 8 RET" . counsel-unicode-char)
+;;         ("C-x C-f" . counsel-find-file)
+;;         ("M-x" . counsel-M-x)
+;;         ("M-y" . counsel-yank-pop)))
 
 
 ;; 📦 CSV-MODE

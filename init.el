@@ -1806,6 +1806,18 @@
    "tofu\\.rc\\'"))
 
 
+;; 📦 VERTICO
+;; Автодополнение
+(use-package vertico
+  :ensure t
+  :pin "gnu"
+  :custom
+  (vertico-resize t "Изменять высоту минибуфера динамически")
+  (vertico-count 15 "15 кандидатов")
+  :config
+  (vertico-mode 1))
+
+
 ;; 📦 WHICH-KEY MODE
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.

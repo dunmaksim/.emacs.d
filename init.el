@@ -13,7 +13,7 @@
    (and (= emacs-major-version major)
         (>= emacs-minor-version minor))))
 
-(defconst init-el-font-height 16 "Размер шрифта по умолчанию.")
+(defconst init-el-font-height 15 "Размер шрифта по умолчанию.")
 
 (require 'custom)
 (customize-set-variable
@@ -162,10 +162,10 @@
 
 (require 'keymap)
 
-(keymap-global-unset "M-,")       ;; Такие маркеры не нужны
-(keymap-global-unset "C-z")       ;; Такой Ctrl+Z нам не нужен
-(keymap-global-unset "C-x C-z")   ;; `suspend-emacs' тоже не нужен
-(keymap-global-unset "C-x C-p")   ;; `mark-page' не нужна, часто конфликтует с Projectile
+(keymap-global-unset "M-,")     ;; Такие маркеры не нужны
+(keymap-global-unset "C-z")     ;; Такой Ctrl+Z нам не нужен
+(keymap-global-unset "C-x C-z") ;; `suspend-emacs' тоже не нужен
+(keymap-global-unset "C-x C-p") ;; `mark-page' не нужна, часто конфликтует с Projectile
 
 ;; Включим переключение буферов по Ctrl+PgUp и Ctrl+PgDn
 (keymap-global-unset "C-<next>")  ;; Ни разу не видел, что это было нужно
@@ -328,7 +328,7 @@
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
   (global-auto-revert-non-file-buffers t "Автообновление не только файловых буферов.")
   :config
-  (global-auto-revert-mode 1)
+  (global-auto-revert-mode t)
   :hook
   (dired-mode . auto-revert-mode))
 
@@ -393,7 +393,7 @@
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
   (progn
-    (desktop-save-mode 1)
+    (desktop-save-mode t)
     (add-hook 'server-after-make-frame-hook 'desktop-read)
     (add-to-list 'desktop-modes-not-to-save 'dired-mode)))
 
@@ -787,7 +787,7 @@
 ;; Встроенный пакет для управления парными скобками.
 (use-package paren
   :config
-  (show-paren-mode 1)) ;; Подсвечивать парные скобки
+  (show-paren-mode t)) ;; Подсвечивать парные скобки
 
 
 ;; 📦 PIXEL-SCROLL
@@ -796,7 +796,7 @@
   (use-package pixel-scroll
     :config
     (progn
-      (pixel-scroll-mode 1)
+      (pixel-scroll-mode t)
       (pixel-scroll-precision-mode))))
 
 
@@ -817,7 +817,7 @@
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
   :config
-  (repeat-mode 1)
+  (repeat-mode t)
   :hook
   (text-mode . repeat-mode))
 
@@ -847,7 +847,7 @@
   :custom
   (save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
   :config
-  (save-place-mode 1))
+  (save-place-mode t))
 
 
 ;; 📦 RST-MODE
@@ -875,7 +875,7 @@
 (use-package savehist
   :config
   (progn
-    (savehist-mode 1)
+    (savehist-mode t)
     (add-hook 'kill-emacs-hook 'savehist-save)
     (add-to-list 'delete-frame-functions 'savehist-save)))
 
@@ -912,7 +912,7 @@
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
   (progn
-    (column-number-mode 1)           ;; Показывать номер колонки в статусной строке
+    (column-number-mode t)           ;; Показывать номер колонки в статусной строке
     (keymap-global-unset "<insert>") ;; Режим перезаписи не нужен
     (line-number-mode t)             ;; Показывать номер строки в статусной строке
     (overwrite-mode -1)              ;; Отключить режим перезаписи текста
@@ -920,7 +920,8 @@
   :bind
   (:map global-map ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
-  (text-mode . visual-line-mode))
+  (text-mode . visual-line-mode)
+  (compilation-mode . visual-line-mode))
 
 
 ;; 📦 TAB-BAR
@@ -928,10 +929,10 @@
 (when (fboundp 'tab-bar-mode)
   (use-package tab-bar
     :custom
-    (tab-bar-show 1 "Показывать вкладки, если их больше одной.")
+    (tab-bar-show t "Показывать вкладки, если их больше одной.")
     (tab-bar-close-button-show nil "Показывать кнопку закрытия вкладки.")
     :config
-    (tab-bar-mode 1)))
+    (tab-bar-mode t)))
 
 
 ;; 📦 TOOLBAR
@@ -1036,7 +1037,7 @@
 ;; [C-c <left>] и [C-c <right>]
 (use-package winner
   :config
-  (winner-mode 1))
+  (winner-mode t))
 
 
 ;; 📦 WINDOW
@@ -1220,23 +1221,23 @@
 ;;         ("M-." . company-show-location)))
 
 
-;; ;; 📦 COUNSEL
-;; ;; https://elpa.gnu.org/packages/counsel.html
-;; ;; Автодополнение на основе Ivy
-;; (use-package counsel
-;;   :ensure t
-;;   :pin "gnu"
-;;   :bind
-;;   (:map global-map
-;;         ("C-c c" . counsel-compile)
-;;         ("C-c g" . counsel-git)
-;;         ("C-h f" . counsel-describe-function)
-;;         ("C-h l" . counsel-find-library)
-;;         ("C-h v" . counsel-describe-variable)
-;;         ("C-x 8 RET" . counsel-unicode-char)
-;;         ("C-x C-f" . counsel-find-file)
-;;         ("M-x" . counsel-M-x)
-;;         ("M-y" . counsel-yank-pop)))
+;; 📦 COUNSEL
+;; https://elpa.gnu.org/packages/counsel.html
+;; Автодополнение на основе Ivy
+(use-package counsel
+  :ensure t
+  :pin "gnu"
+  :bind
+  (:map global-map
+        ("C-c c" . counsel-compile)
+        ("C-c g" . counsel-git)
+        ("C-h f" . counsel-describe-function)
+        ("C-h l" . counsel-find-library)
+        ("C-h v" . counsel-describe-variable)
+        ("C-x 8 RET" . counsel-unicode-char)
+        ("C-x C-f" . counsel-find-file)
+        ("M-x" . counsel-M-x)
+        ("M-y" . counsel-yank-pop)))
 
 
 ;; 📦 CSV-MODE
@@ -1264,6 +1265,12 @@
   (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
 
 
+;; 📦 DORIC-THEMES
+(use-package doric-themes
+  :ensure t
+  :pin "gnu")
+
+
 ;; 📦 EDIT-INDIRECT
 ;; https://github.com/Fanael/edit-indirect
 ;; Позволяет редактировать выделенный регион в отдельном буфере.
@@ -1288,7 +1295,7 @@
   :ensure t
   :delight ""
   :config
-  (editorconfig-mode 1))
+  (editorconfig-mode t))
 
 
 ;; 📦 EF-THEMES
@@ -1406,7 +1413,7 @@
   :ensure t
   :after (flycheck eglot)
   :config
-  (global-flycheck-eglot-mode 1))
+  (global-flycheck-eglot-mode t))
 
 
 ;; 📦 FORMAT-ALL
@@ -1470,7 +1477,7 @@
   :demand t
   :delight 'ivy-mode
   :config
-  (ivy-mode 1)
+  (ivy-mode t)
   :bind
   (:map global-map
         ("C-x b" . ivy-switch-buffer)
@@ -1515,7 +1522,7 @@
 (use-package lin
   :ensure t
   :config
-  (lin-global-mode 1))
+  (lin-global-mode t))
 
 
 ;; 📦 MAGIT
@@ -1682,7 +1689,7 @@
   :custom
   (projectile-completion-system 'ivy)
   :config
-  (projectile-mode 1))
+  (projectile-mode t))
 
 
 ;; 📦 PULSAR
@@ -1752,6 +1759,12 @@
   (default-transient-input-method 'russian-techwriter "Временный метод ввода."))
 
 
+;; 📦 STANDARD THEMES
+(use-package standard-themes
+  :ensure t
+  :pin "gnu")
+
+
 ;; 📦 SWIPER
 ;; https://elpa.gnu.org/packages/swiper.html
 ;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
@@ -1791,18 +1804,6 @@
    "tofu\\.rc\\'"))
 
 
-;; 📦 VERTICO
-;; Автодополнение
-(use-package vertico
-  :ensure t
-  :pin "gnu"
-  :custom
-  (vertico-resize t "Изменять высоту минибуфера динамически")
-  (vertico-count 15 "15 кандидатов")
-  :config
-  (vertico-mode 1))
-
-
 ;; 📦 WHICH-KEY MODE
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
@@ -1818,7 +1819,7 @@
   (which-key-show-major-mode t "То же самое что и [C-h m], но в формате which-key")
   :config
   (progn
-    (which-key-mode 1)
+    (which-key-mode t)
     (which-key-setup-minibuffer)))
 
 
@@ -1840,7 +1841,7 @@
     (defvar init-el-yasnippet-snippets-dir (expand-file-name "snippets" user-emacs-directory))
     (unless (file-directory-p init-el-yasnippet-snippets-dir)
       (make-directory init-el-yasnippet-snippets-dir)))
-  :config (yas-global-mode 1))
+  :config (yas-global-mode t))
 
 
 ;; 📦 YASNIPPET-SNIPPETS
@@ -1852,7 +1853,8 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(load-theme 'ef-autumn t)
+;; (load-theme 'ef-autumn t)
+(load-theme 'standard-dark t)
 
 (provide 'init.el)
 ;;; init.el ends here

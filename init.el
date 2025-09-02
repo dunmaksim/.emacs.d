@@ -6,13 +6,6 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
-(defun emacs-version-not-less-than (major minor)
-  "True when Emacs version is not less than MAJOR MINOR version."
-  (or
-   (> emacs-major-version major)
-   (and (= emacs-major-version major)
-        (>= emacs-minor-version minor))))
-
 (defconst init-el-font-height 15 "Размер шрифта по умолчанию.")
 
 (require 'custom)
@@ -920,8 +913,9 @@
   :bind
   (:map global-map ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
-  (text-mode . visual-line-mode)
-  (compilation-mode . visual-line-mode))
+  (compilation-mode . visual-line-mode)
+  (messages-buffer-mode . visual-line-mode)
+  (text-mode . visual-line-mode))
 
 
 ;; 📦 TAB-BAR
@@ -1088,22 +1082,6 @@
   :pin "gnu")
 
 
-;; 📦 DELIGHT
-;; https://elpa.gnu.org/packages/delight.html
-;; Позволяет спрятать из панели статуса лишние названия режимов.
-;; Эти строки находятся здесь потому, что `use-package' активно
-;; использует возможности этого пакета далее, поэтому он должен быть
-;; загружен как можно раньше.
-(use-package delight
-  :ensure t
-  :config
-  (delight '((checkdoc-minor-mode)
-             (treesit-mode " 🌳")
-             (global-visual-line-mode)
-             (global-whitespace-mode)
-             (whitespace-mode " ¶"))))
-
-
 ;; 📦 ADJUST-PARENS
 ;; https://elpa.gnu.org/packages/adjust-parens.html
 ;; Пакет для автоматического управления скобочками и уровнями отступов.
@@ -1145,7 +1123,6 @@
 ;; так далее.
 (use-package avy
   :ensure t
-  :delight ""
   :bind
   (:map global-map
         ("M-g f" . avy-goto-line)
@@ -1185,40 +1162,38 @@
     yaml-ts-mode) . colorful-mode))
 
 
-;; ;; 📦 COMPANY-MODE
-;; ;; https://company-mode.github.io/
-;; ;; Автодополнение
-;; (use-package company
-;;   :ensure t
-;;   :pin "gnu"
-;;   :custom
-;;   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
-;;   (company-lighter-base "" "Не надо показывать индикатор в строке статуса")
-;;   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
-;;   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
-;;   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
-;;   (company-tooltip-limit 15 "Ограничение на число подсказок")
-;;   :hook
-;;   ((asciidoc-mode
-;;     css-ts-mode
-;;     dockerfile-ts-mode
-;;     emacs-lisp-mode
-;;     html-ts-mode
-;;     latex-mode
-;;     lisp-data-mode
-;;     minibufer-mode
-;;     nxml-mode
-;;     org-mode
-;;     python-ts-mode
-;;     rst-mode
-;;     ruby-ts-mode
-;;     tex-mode
-;;     ) . company-mode)
-;;   :bind
-;;   (:map company-active-map
-;;         ("TAB" . company-complete-common-or-cycle)
-;;         ("M-/" . company-complete)
-;;         ("M-." . company-show-location)))
+;; 📦 COMPANY-MODE
+;; https://company-mode.github.io/
+;; Автодополнение
+(use-package company
+  :ensure t
+  :pin "gnu"
+  :custom
+  (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
+  (company-lighter-base "" "Не надо показывать индикатор в строке статуса")
+  (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
+  (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
+  (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
+  (company-tooltip-limit 15 "Ограничение на число подсказок")
+  :hook
+  ((css-ts-mode
+    dockerfile-ts-mode
+    emacs-lisp-mode
+    html-ts-mode
+    latex-mode
+    lisp-data-mode
+    minibuffer-mode
+    nxml-mode
+    org-mode
+    python-ts-mode
+    ruby-ts-mode
+    tex-mode
+    ) . company-mode)
+  :bind
+  (:map company-active-map
+        ("TAB" . company-complete-common-or-cycle)
+        ("M-/" . company-complete)
+        ("M-." . company-show-location)))
 
 
 ;; 📦 COUNSEL
@@ -1293,7 +1268,6 @@
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
   :ensure t
-  :delight ""
   :config
   (editorconfig-mode t))
 
@@ -1358,7 +1332,6 @@
 (use-package eldoc
   :config
   (global-eldoc-mode nil)
-  :delight ""
   :hook (emacs-lisp-mode . eldoc-mode))
 
 
@@ -1441,7 +1414,6 @@
 (use-package hyperbole
   :ensure t
   :pin "gnu"
-  :delight ""
   :hook
   ((emacs-lisp-mode
     markdown-mode
@@ -1475,7 +1447,6 @@
 (use-package ivy
   :ensure t
   :demand t
-  :delight 'ivy-mode
   :config
   (ivy-mode t)
   :bind
@@ -1534,6 +1505,7 @@
   :pin "melpa-stable"
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
+  (magit-show-long-lines-warning nil "Выключить предупреждения про длинные строки.")
   :hook
   (magit-mode . magit-auto-revert-mode)
   (after-save . magit-after-save-refresh-status)
@@ -1606,7 +1578,6 @@
 ;; скопировать их в `/usr/local/share/fonts/'.
 (use-package nerd-icons
   :ensure t
-  :delight ""
   :custom
   (nerd-icons-color-icons t "Использовать цветные иконки."))
 
@@ -1616,7 +1587,6 @@
 ;; Иконки в `dired'.
 (use-package nerd-icons-dired
   :ensure t
-  :delight ""
   :after (dired nerd-icons)
   :hook (dired-mode . nerd-icons-dired-mode))
 
@@ -1676,15 +1646,17 @@
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (use-package projectile
   :ensure t
-  :delight ""
   :bind-keymap
   ("C-x p" . projectile-command-map)
   ("C-c p" . projectile-command-map)
   :bind
-  ("<f5>" . projectile-compile-project)
+  ("<f5>" . projectile-test-project)
+  ("<f6>" . projectile-compile-project)
   :init
   (progn
     (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
+    (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make docker-clear && make docker-dirhtml"))
+    (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make docker-dirhtml"))
     (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all")))
   :custom
   (projectile-completion-system 'ivy)
@@ -1726,7 +1698,6 @@
 ;; Подсветка парных скобок одним и тем же цветом
 (use-package rainbow-delimiters
   :ensure t
-  :delight ""
   :hook
   ((asciidoc-mode
     conf-mode
@@ -1810,7 +1781,6 @@
 (use-package which-key
   :ensure t
   :pin "gnu"
-  :delight ""
   :custom
   (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-dont-use-unicode nil "Используем Unicode")
@@ -1853,8 +1823,7 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-;; (load-theme 'ef-autumn t)
-(load-theme 'standard-dark t)
+(load-theme 'ef-autumn t)
 
 (provide 'init.el)
 ;;; init.el ends here

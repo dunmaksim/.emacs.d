@@ -918,17 +918,6 @@
   (text-mode . visual-line-mode))
 
 
-;; 📦 TAB-BAR
-;; Встроенный пакет для управления вкладками.
-(when (fboundp 'tab-bar-mode)
-  (use-package tab-bar
-    :custom
-    (tab-bar-show t "Показывать вкладки, если их больше одной.")
-    (tab-bar-close-button-show nil "Показывать кнопку закрытия вкладки.")
-    :config
-    (tab-bar-mode t)))
-
-
 ;; 📦 TOOLBAR
 ;; Встроенный пакет, недоступный в Emacs NOX
 (when (fboundp 'tool-bar-mode)

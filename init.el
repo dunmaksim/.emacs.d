@@ -385,17 +385,15 @@
   (desktop-restore-frames t "Восстанавливать фреймы.")
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
-  (progn
-    (desktop-save-mode t)
-    (add-hook 'server-after-make-frame-hook 'desktop-read)
-    (add-to-list 'desktop-modes-not-to-save 'dired-mode)))
+  (desktop-save-mode t)
+  (add-hook 'server-after-make-frame-hook 'desktop-read)
+  (add-hook 'server-done-hook 'desktop-save)
+  (add-to-list 'after-delete-frame-functions 'desktop-save)
+  (add-to-list 'desktop-modes-not-to-save 'dired-mode))
 
 
 ;; 📦 DIRED
 ;; Встроенный пакет для работы с файлами и каталогами.
-;; Клавиши:
-;; [+] - создание каталога.
-;; [C-x C-f] - создание файла с последующим открытием буфера.
 (use-package dired
   :custom
   (dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
@@ -1403,6 +1401,8 @@
 (use-package hyperbole
   :ensure t
   :pin "gnu"
+  :custom
+  (hyperbole-mode-lighter nil "Убрать индикатор из статусной строки")
   :hook
   ((emacs-lisp-mode
     markdown-mode
@@ -1649,6 +1649,7 @@
     (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all")))
   :custom
   (projectile-completion-system 'ivy)
+  (projectile-mode-line-prefix " Проект")
   :config
   (projectile-mode t))
 
@@ -1775,6 +1776,7 @@
   (which-key-dont-use-unicode nil "Используем Unicode")
   (which-key-idle-delay 2 "Задержка появления подсказки")
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")
+  (which-key-lighter nil "Справимся и так, не надо ничего показывать в строке статуса.")
   (which-key-show-major-mode t "То же самое что и [C-h m], но в формате which-key")
   :config
   (progn

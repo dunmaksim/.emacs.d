@@ -9,12 +9,10 @@
 (defconst init-el-font-height 15 "Размер шрифта по умолчанию.")
 
 (require 'custom)
-(customize-set-variable
- 'custom-file
- (expand-file-name
-  (convert-standard-filename "custom.el")
-  user-emacs-directory)
- "Файл для сохранения пользовательских настроек, сделанных в customize.")
+(setopt custom-file
+        (expand-file-name
+         (convert-standard-filename "custom.el")
+         user-emacs-directory)) ;; Файл для сохранения пользовательских настроек, сделанных в customize.
 
 ;; Загрузим настройки сразу, чтобы они не переопределяли параметры из `init.el'.
 (when (file-exists-p custom-file)
@@ -89,10 +87,7 @@
 ;; В противном случае будут проблемы при загрузке архива пакетов.
 (when (< emacs-major-version 27)
   (require 'gnutls)
-  (customize-set-variable
-   'gnutls-algorithm-priority
-   "NORMAL:-VERS-TLS1.3"
-   "Необходимо для старых версий Emacs."))
+  (setopt gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")) ;; Необходимо для старых версий Emacs
 
 
 ;; Определение пути к каталогу с исходным кодом
@@ -110,47 +105,46 @@
           (message (format "Каталог %s пуст." init-el-emacs-source-path))
         ;; Каталог не пуст
         (progn
-          (customize-set-variable 'source-directory init-el-emacs-source-path)
+          (setopt source-directory init-el-emacs-source-path)
           (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
     ;; Каталог не существует
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
 
-(custom-set-variables
- '(completion-ignore-case t "Игнорировать регистр при автодополнении")
- '(create-lockfiles nil "Не создавать lock-файлы")
- '(cursor-type 'bar "Курсор в виде вертикальной черты")
- '(default-input-method "russian-computer" "Метод ввода по умолчанию")
- '(default-transient-input-method "russian-computer")
- '(delete-by-moving-to-trash t "Удалять файлы в Корзину")
- '(gc-cons-threshold (* 2 gc-cons-threshold) "Увеличить размер памяти для сборщика мусора")
- '(inhibit-startup-screen t "Не показывать приветственный экран")
- '(initial-scratch-message nil "Пустой буфер *scratch*")
- '(load-prefer-newer t "Если есть файл elc, но el новее, загрузить el-файл.")
- '(major-mode 'text-mode "Текстовый режим для новых буферов по умолчанию.")
- '(read-answer-short t "Быстрый ввод ответов на вопросы (не аналог yes-or-no-p)")
- '(read-file-name-completion-ignore-case t "Игнорировать регистр при вводе имён файлов")
- '(read-process-output-max (* 1024 1024) "Увеличим чанк чтения для LSP: по умолчанию 65535")
- '(ring-bell-function 'ignore "Отключить звуковое сопровождение событий")
- '(scroll-margin 4 "Отступ от верхней и нижней границ буфера")
- '(show-trailing-whitespace t "Подсветка висячих пробелов")
- '(standard-indent 4 "Отступ по умолчанию")
- '(tab-always-indent 'complete "Если можно — выровнять текст, иначе — автодополнение.")
- '(use-dialog-box nil "Диалоговые окна ОС не нужны")
- '(use-short-answers t "Краткие ответы вместо длинных")
- '(user-full-name "Dunaevsky Maxim" "Имя пользователя")
- '(user-mail-address "dunmaksim@yandex.ru" "Адрес электронной почты")
- '(vc-follow-symlinks t "Переходить по ссылкам без лишних вопросов")
- '(visible-bell t "Мигать буфером при переходе в него"))
+(setopt completion-ignore-case t) ;; Игнорировать регистр при автодополнении
+(setopt create-lockfiles nil) ;; Не создавать lock-файлы
+(setopt cursor-type 'bar) ;; Курсор в виде вертикальной черты
+(setopt default-input-method "russian-computer") ;; Метод ввода по умолчанию
+(setopt default-transient-input-method "russian-computer") ;; Временный метод ввода
+(setopt delete-by-moving-to-trash t) ;; Удалять файлы в Корзину
+(setopt gc-cons-threshold (* 2 gc-cons-threshold)) ;; Увеличить размер памяти для сборщика мусора
+(setopt inhibit-startup-screen t) ;; Не показывать приветственный экран
+(setopt initial-scratch-message nil) ;; Пустой буфер *scratch*
+(setopt load-prefer-newer t) ;; Если есть файл elc, но el новее, загрузить el-файл.
+(setopt major-mode 'text-mode) ;; Текстовый режим для новых буферов по умолчанию.
+(setopt read-answer-short t) ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
+(setopt read-file-name-completion-ignore-case t) ;; Игнорировать регистр при вводе имён файлов
+(setopt read-process-output-max (* 1024 1024)) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
+(setopt ring-bell-function 'ignore) ;; Отключить звуковое сопровождение событий
+(setopt scroll-margin 4) ;; Отступ от верхней и нижней границ буфера
+(setopt show-trailing-whitespace t) ;; Подсветка висячих пробелов
+(setopt standard-indent 4) ;; Отступ по умолчанию
+(setopt tab-always-indent 'complete) ;; Если можно — выровнять текст, иначе — автодополнение.
+(setopt use-dialog-box nil) ;; Диалоговые окна ОС не нужны
+(setopt use-short-answers t) ;; Краткие ответы вместо длинных
+(setopt user-full-name "Dunaevsky Maxim") ;; Имя пользователя
+(setopt user-mail-address "dunmaksim@yandex.ru") ;; Адрес электронной почты
+(setopt vc-follow-symlinks t) ;; Переходить по ссылкам без лишних вопросов
+(setopt visible-bell t) ;; Мигать буфером при переходе в него
 
 
 (when (fboundp 'menu-bar-mode)
-  (customize-set-variable 'menu-bar-mode nil "Выключить отображение меню"))
+  (setopt menu-bar-mode nil)) ;; Выключить отображение меню
 
 (when (fboundp 'scroll-bar-mode)
-  (customize-set-variable 'scroll-bar-mode nil "Отключить полосы прокрутки"))
+  (setopt scroll-bar-mode nil)) ;; Отключить полосы прокрутки
 
 (when (fboundp 'tool-bar-mode)
-  (customize-set-variable 'tool-bar-mode nil "Выключить отображение панели инструментов"))
+  (setopt tool-bar-mode nil)) ;; Выключить отображение панели инструментов
 
 
 (require 'keymap)
@@ -181,12 +175,11 @@
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-(customize-set-variable
- 'package-archive-priorities
- '(("gnu" . 40)
-   ("nongnu" . 30)
-   ("melpa-stable" . 20)
-   ("melpa" . 10)))
+(setopt package-archive-priorities
+        '(("gnu" . 40)
+          ("nongnu" . 30)
+          ("melpa-stable" . 20)
+          ("melpa" . 10)))
 
 (unless package-archive-contents
   (progn
@@ -208,11 +201,10 @@
 
 ;; Настройки отладочного режима
 (when init-file-debug
-  (custom-set-variables
-   '(debug-on-error t "Автоматически перейти в режим отладки при ошибках.")
-   '(use-package-compute-statistics t "Сбор статистики `use-package'.")
-   '(use-package-expand-minimally t "Минимальное раскрытие кода.")
-   '(use-package-verbose t "Подробный режим работы `use-package'.")))
+  (setopt debug-on-error t) ;; Автоматически перейти в режим отладки при ошибках.
+  (setopt use-package-compute-statistics t) ;; Сбор статистики `use-package'
+  (setopt use-package-expand-minimally t) ;; Минимальное раскрытие кода.
+  (setopt use-package-verbose t)) ;; Подробный режим работы `use-package'.
 
 
 ;; 📦 TREESIT
@@ -232,7 +224,7 @@
     (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
-    (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1" "src/"))
+    (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.25.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.2" "src/"))
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
     (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
@@ -683,55 +675,54 @@
 ;; 📦 IBUF-EXT
 ;; Встроенный пакет с дополнительными настройками `ibuffer'.
 (require 'ibuf-ext)
-(custom-set-variables
- '(ibuffer-saved-filter-groups                    ;; Группы по умолчанию
-   '(("default"
-      ("Dired" (mode . dired-mode))
-      ("Emacs Lisp"
-       (or
-        (mode . emacs-lisp-mode)
-        (mode . lisp-data-mode)))
-      ("Org" (mode . org-mode))
-      ("Markdown" (mode . markdown-mode))
-      ("AsciiDoc" (mode . asciidoc-mode))
-      ("ReStructured Text" (mode . rst-mode))
-      ("CONF / INI"
-       (or
-        (mode . conf-mode)
-        (mode . editorconfig-conf-mode)))
-      ("XML" (mode . nxml-mode))
-      ("YAML" (mode . yaml-ts-mode))
-      ("Makefile" (mode . makefile-mode))
-      ("Python" (mode . python-ts-mode))
-      ("Ruby" (mode . ruby-ts-mode))
-      ("SSH keys" (or (name . "^\\*.pub$")))
-      ("Shell-script" (mode . sh-mode))
-      ("Terraform" (mode . terraform-mode))
-      ("SQL" (mode . sql-mode))
-      ("Web"
-       (or
-        (mode . html-ts-mode)
-        (mode . js-ts-mode)))
-      ("Magit"
-       (or
-        (mode . magit-status-mode)
-        (mode . magit-log-mode)
-        (name . "^\\*magit")
-        (name . "git-monitor")))
-      ("Commands"
-       (or
-        (mode . compilation-mode)
-        (mode . eshell-mode)
-        (mode . shell-mode)
-        (mode . term-mode)))
-      ("Emacs"
-       (or
-        (name . "^\\*scratch\\*$")
-        (name . "^\\*Messages\\*$")
-        (name . "^\\*\\(Customize\\|Help\\)")
-        (name . "\\*\\(Echo\\|Minibuf\\)"))))))
- '(ibuffer-hidden-filter-groups (list "*Internal*" ) "Не показывать эти буферы")
- '(ibuffer-show-empty-filter-groups nil "Не показывать пустые группы"))
+(setopt ibuffer-saved-filter-groups                    ;; Группы по умолчанию
+        '(("default"
+           ("Dired" (mode . dired-mode))
+           ("Emacs Lisp"
+            (or
+             (mode . emacs-lisp-mode)
+             (mode . lisp-data-mode)))
+           ("Org" (mode . org-mode))
+           ("Markdown" (mode . markdown-mode))
+           ("AsciiDoc" (mode . asciidoc-mode))
+           ("ReStructured Text" (mode . rst-mode))
+           ("CONF / INI"
+            (or
+             (mode . conf-mode)
+             (mode . editorconfig-conf-mode)))
+           ("XML" (mode . nxml-mode))
+           ("YAML" (mode . yaml-ts-mode))
+           ("Makefile" (mode . makefile-mode))
+           ("Python" (mode . python-ts-mode))
+           ("Ruby" (mode . ruby-ts-mode))
+           ("SSH keys" (or (name . "^\\*.pub$")))
+           ("Shell-script" (mode . sh-mode))
+           ("Terraform" (mode . terraform-mode))
+           ("SQL" (mode . sql-mode))
+           ("Web"
+            (or
+             (mode . html-ts-mode)
+             (mode . js-ts-mode)))
+           ("Magit"
+            (or
+             (mode . magit-status-mode)
+             (mode . magit-log-mode)
+             (name . "^\\*magit")
+             (name . "git-monitor")))
+           ("Commands"
+            (or
+             (mode . compilation-mode)
+             (mode . eshell-mode)
+             (mode . shell-mode)
+             (mode . term-mode)))
+           ("Emacs"
+            (or
+             (name . "^\\*scratch\\*$")
+             (name . "^\\*Messages\\*$")
+             (name . "^\\*\\(Customize\\|Help\\)")
+             (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+(setopt ibuffer-hidden-filter-groups (list "*Internal*" )) ;; Не показывать эти буферы
+(setopt ibuffer-show-empty-filter-groups nil) ;; Не показывать пустые группы
 (add-hook 'ibuffer-mode-hook 'ibuffer-auto-mode)
 (add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default")))
 
@@ -829,6 +820,18 @@
   :mode
   ("\\.rb\\'"
    "Vagrantfile\\'"))
+
+
+;; 📦 RUST-MODE
+;; https://github.com/rust-lang/rust-mode
+;; Поддержка языка Rust: https://rust-lang.org/
+(use-package rust-mode
+  :ensure t
+  :mode ("\\.rs\\'" . rust-mode)
+  :custom
+  (rust-format-on-save t "Автоматическое форматирование буфера при сохранении.")
+  :config
+  (add-hook 'rust-mode-hook (lambda () (setq indent-tabs-mode nil))))
 
 
 ;; 📦 SAVEPLACE
@@ -1309,6 +1312,7 @@
     markdown-mode
     python-ts-mode
     ruby-ts-mode
+    rust-mode
     yaml-ts-mode
     ) . eglot-ensure))
 

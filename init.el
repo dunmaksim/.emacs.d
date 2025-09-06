@@ -67,7 +67,6 @@
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
-(add-hook 'emacs-startup-hook 'setup-gui-settings)
 
 (setup-gui-settings (selected-frame))
 
@@ -234,7 +233,6 @@
     (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
     (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
     (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript.git" "v0.23.2" "tsx/src"))
-                                        ;    (add-to-list 'treesit-language-source-alist '(xml "https://github.com/tree-sitter-grammars/tree-sitter-xml.git" "v0.7.0" "xml/src/"))
     (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.1" "src/"))
     ;; Сборка и установка грамматик
     (unless (file-exists-p (expand-file-name "libtree-sitter-bash.so" init-el-tree-sitter-dir))
@@ -261,8 +259,6 @@
       (treesit-install-language-grammar 'rust init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-typescript.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'typescript init-el-tree-sitter-dir))
-                                        ;    (unless (file-exists-p (expand-file-name "libree-sitter-xml.so" init-el-tree-sitter-dir))
-                                        ;      (treesit-install-language-grammar 'xml init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir)))
   :custom
@@ -378,6 +374,7 @@
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
   (desktop-save-mode t)
+  (add-hook 'after-init-hook 'desktop-read)
   (add-hook 'server-after-make-frame-hook 'desktop-read)
   (add-hook 'server-done-hook 'desktop-save)
   (add-to-list 'after-delete-frame-functions 'desktop-save)
@@ -1323,6 +1320,8 @@
 (use-package eldoc
   :config
   (global-eldoc-mode nil)
+  :custom
+  (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
   :hook (emacs-lisp-mode . eldoc-mode))
 
 

@@ -109,32 +109,40 @@
     ;; Каталог не существует
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
 
-(setopt completion-ignore-case t) ;; Игнорировать регистр при автодополнении
-(setopt create-lockfiles nil) ;; Не создавать lock-файлы
-(setopt cursor-type 'bar) ;; Курсор в виде вертикальной черты
-(setopt default-input-method "russian-computer") ;; Метод ввода по умолчанию
-(setopt default-transient-input-method "russian-computer") ;; Временный метод ввода
-(setopt delete-by-moving-to-trash t) ;; Удалять файлы в Корзину
-(setopt gc-cons-threshold (* 2 gc-cons-threshold)) ;; Увеличить размер памяти для сборщика мусора
-(setopt inhibit-startup-screen t) ;; Не показывать приветственный экран
-(setopt initial-scratch-message nil) ;; Пустой буфер *scratch*
-(setopt load-prefer-newer t) ;; Если есть файл elc, но el новее, загрузить el-файл.
-(setopt major-mode 'text-mode) ;; Текстовый режим для новых буферов по умолчанию.
-(setopt read-answer-short t) ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
-(setopt read-file-name-completion-ignore-case t) ;; Игнорировать регистр при вводе имён файлов
-(setopt read-process-output-max (* 1024 1024)) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
-(setopt ring-bell-function 'ignore) ;; Отключить звуковое сопровождение событий
-(setopt scroll-margin 4) ;; Отступ от верхней и нижней границ буфера
-(setopt show-trailing-whitespace t) ;; Подсветка висячих пробелов
-(setopt standard-indent 4) ;; Отступ по умолчанию
-(setopt tab-always-indent 'complete) ;; Если можно — выровнять текст, иначе — автодополнение.
-(setopt use-dialog-box nil) ;; Диалоговые окна ОС не нужны
-(setopt use-short-answers t) ;; Краткие ответы вместо длинных
-(setopt user-full-name "Dunaevsky Maxim") ;; Имя пользователя
-(setopt user-mail-address "dunmaksim@yandex.ru") ;; Адрес электронной почты
-(setopt vc-follow-symlinks t) ;; Переходить по ссылкам без лишних вопросов
-(setopt visible-bell t) ;; Мигать буфером при переходе в него
+(setopt completion-ignore-case t ;; Игнорировать регистр при автодополнении
+        create-lockfiles nil ;; Не создавать lock-файлы
+        cursor-type 'bar ;; Курсор в виде вертикальной черты
+        default-input-method "russian-computer" ;; Метод ввода по умолчанию
+        default-transient-input-method "russian-computer" ;; Временный метод ввода
+        delete-by-moving-to-trash t ;; Удалять файлы в Корзину
+        gc-cons-threshold (* 2 gc-cons-threshold) ;; Увеличить размер памяти для сборщика мусора
+        inhibit-startup-screen t ;; Не показывать приветственный экран
+        initial-scratch-message nil ;; Пустой буфер *scratch*
+        load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
+        major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
+        read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
+        read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
+        read-process-output-max (* 1024 1024) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
+        ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
+        scroll-margin 4 ;; Отступ от верхней и нижней границ буфера
+        show-trailing-whitespace t ;; Подсветка висячих пробелов
+        standard-indent 4 ;; Отступ по умолчанию
+        tab-always-indent 'complete ;; Если можно — выровнять текст, иначе — автодополнение.
+        use-dialog-box nil ;; Диалоговые окна ОС не нужны
+        use-short-answers t ;; Краткие ответы вместо длинных
+        user-full-name "Dunaevsky Maxim" ;; Имя пользователя
+        user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты
+        vc-follow-symlinks t ;; Переходить по ссылкам без лишних вопросов
+        visible-bell t) ;; Мигать буфером при переходе в него
 
+
+(defun init-kill-scratch ()
+  "Закрыть буфер *scratch* при запуске редактора или подключении клиента."
+  (when (get-buffer "*scratch*")
+    (kill-buffer "*scratch*")))
+
+(add-hook 'after-init-hook 'init-kill-scratch)
+(add-hook 'server-after-make-frame-hook 'init-kill-scratch)
 
 (when (fboundp 'menu-bar-mode)
   (setopt menu-bar-mode nil)) ;; Выключить отображение меню
@@ -185,6 +193,7 @@
     (message "Обновление списка архивов...")
     (package-refresh-contents)))
 
+
 (unless (package-installed-p 'gnu-elpa-keyring-update)
   (progn
     (message "Обновление ключей для проверки цифровой подписи.")
@@ -200,10 +209,10 @@
 
 ;; Настройки отладочного режима
 (when init-file-debug
-  (setopt debug-on-error t) ;; Автоматически перейти в режим отладки при ошибках.
-  (setopt use-package-compute-statistics t) ;; Сбор статистики `use-package'
-  (setopt use-package-expand-minimally t) ;; Минимальное раскрытие кода.
-  (setopt use-package-verbose t)) ;; Подробный режим работы `use-package'.
+  (setopt debug-on-error t ;; Автоматически перейти в режим отладки при ошибках.
+          use-package-compute-statistics t ;; Сбор статистики `use-package'
+          use-package-expand-minimally t ;; Минимальное раскрытие кода.
+          use-package-verbose t)) ;; Подробный режим работы `use-package'.
 
 
 ;; 📦 TREESIT
@@ -386,19 +395,8 @@
 (use-package dired
   :custom
   (dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
-  (dired-garbage-files-regexp
-   (concat (regexp-opt
-            '(".aux"
-              ".bak"
-              ".dvi"
-              ".log"
-              ".orig"
-              ".rej"
-              ".toc"
-              ".~undo-tree~")) ;; Добавил файлы UNDO-TREE в список мусора
-           "\\'"))
   (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
-  (dired-listing-switches "-l --human-readable --all --group-directories-first")
+  (dired-listing-switches "-l --human-readable --all --group-directories-first --dired")
   (dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов")
   :init
   (add-hook 'dired-mode-hook 'dired-hide-details-mode))
@@ -511,7 +509,7 @@
   :custom
   (auto-save-file-name-transforms `((".*" , init-el-autosave-dir) t))
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
-  (enable-local-eval t "Разрешить инструкцию вызов `eval' в `.dir-locals.el'")
+  (enable-local-eval t "Разрешить вызов `eval' в `.dir-locals.el'")
   (enable-local-variables :all "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть undo-tree")
@@ -671,57 +669,59 @@
 
 ;; 📦 IBUF-EXT
 ;; Встроенный пакет с дополнительными настройками `ibuffer'.
-(require 'ibuf-ext)
-(setopt ibuffer-saved-filter-groups                    ;; Группы по умолчанию
-        '(("default"
-           ("Dired" (mode . dired-mode))
-           ("Emacs Lisp"
-            (or
-             (mode . emacs-lisp-mode)
-             (mode . lisp-data-mode)))
-           ("Org" (mode . org-mode))
-           ("Markdown" (mode . markdown-mode))
-           ("AsciiDoc" (mode . asciidoc-mode))
-           ("ReStructured Text" (mode . rst-mode))
-           ("CONF / INI"
-            (or
-             (mode . conf-mode)
-             (mode . editorconfig-conf-mode)))
-           ("XML" (mode . nxml-mode))
-           ("YAML" (mode . yaml-ts-mode))
-           ("Makefile" (mode . makefile-mode))
-           ("Python" (mode . python-ts-mode))
-           ("Ruby" (mode . ruby-ts-mode))
-           ("SSH keys" (or (name . "^\\*.pub$")))
-           ("Shell-script" (mode . sh-mode))
-           ("Terraform" (mode . terraform-mode))
-           ("SQL" (mode . sql-mode))
-           ("Web"
-            (or
-             (mode . html-ts-mode)
-             (mode . js-ts-mode)))
-           ("Magit"
-            (or
-             (mode . magit-status-mode)
-             (mode . magit-log-mode)
-             (name . "^\\*magit")
-             (name . "git-monitor")))
-           ("Commands"
-            (or
-             (mode . compilation-mode)
-             (mode . eshell-mode)
-             (mode . shell-mode)
-             (mode . term-mode)))
-           ("Emacs"
-            (or
-             (name . "^\\*scratch\\*$")
-             (name . "^\\*Messages\\*$")
-             (name . "^\\*\\(Customize\\|Help\\)")
-             (name . "\\*\\(Echo\\|Minibuf\\)"))))))
-(setopt ibuffer-hidden-filter-groups (list "*Internal*" )) ;; Не показывать эти буферы
-(setopt ibuffer-show-empty-filter-groups nil) ;; Не показывать пустые группы
-(add-hook 'ibuffer-mode-hook 'ibuffer-auto-mode)
-(add-hook 'ibuffer-mode-hook #'(lambda ()(ibuffer-switch-to-saved-filter-groups "default")))
+(use-package ibuf-ext
+  :custom
+  (ibuffer-saved-filter-groups                    ;; Группы по умолчанию
+   '(("default"
+      ("Dired" (mode . dired-mode))
+      ("Emacs Lisp"
+       (or
+        (mode . emacs-lisp-mode)
+        (mode . lisp-data-mode)))
+      ("Org" (mode . org-mode))
+      ("Markdown" (mode . markdown-mode))
+      ("AsciiDoc" (mode . asciidoc-mode))
+      ("ReStructured Text" (mode . rst-mode))
+      ("CONF / INI"
+       (or
+        (mode . conf-mode)
+        (mode . editorconfig-conf-mode)))
+      ("XML" (mode . nxml-mode))
+      ("YAML" (mode . yaml-ts-mode))
+      ("Makefile" (mode . makefile-mode))
+      ("Python" (mode . python-ts-mode))
+      ("Ruby" (mode . ruby-ts-mode))
+      ("SSH keys" (or (name . "^\\*.pub$")))
+      ("Shell-script" (mode . sh-mode))
+      ("Terraform" (mode . terraform-mode))
+      ("SQL" (mode . sql-mode))
+      ("Web"
+       (or
+        (mode . html-ts-mode)
+        (mode . js-ts-mode)))
+      ("Magit"
+       (or
+        (mode . magit-status-mode)
+        (mode . magit-log-mode)
+        (name . "^\\*magit")
+        (name . "git-monitor")))
+      ("Commands"
+       (or
+        (mode . compilation-mode)
+        (mode . eshell-mode)
+        (mode . shell-mode)
+        (mode . term-mode)))
+      ("Emacs"
+       (or
+        (name . "^\\*scratch\\*$")
+        (name . "^\\*Messages\\*$")
+        (name . "^\\*\\(Customize\\|Help\\)")
+        (name . "\\*\\(Echo\\|Minibuf\\)"))))))
+  (ibuffer-hidden-filter-groups (list "*Internal*" )) ;; Не показывать эти буферы
+  (ibuffer-show-empty-filter-groups nil) ;; Не показывать пустые группы
+  :hook
+  (ibuffer-mode . ibuffer-auto-mode)
+  (ibuffer-mode . (lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
 
 
 ;; 📦 JS-MODE

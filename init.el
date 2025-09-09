@@ -1562,9 +1562,6 @@
 
 ;; 📦 NERD-ICONS
 ;; https://github.com/rainstormstudio/nerd-icons.el
-;; Требуется для корректной работы `doom-modeline'.
-;; Начиная с версии 4.0.0 пакет `all-the-icons' не поддерживается.
-;;
 ;; Для установки самих шрифтов следует использовать команду `nerd-icons-install-fonts'.
 ;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
 ;; скопировать их в `/usr/local/share/fonts/'.
@@ -1572,6 +1569,13 @@
   :ensure t
   :custom
   (nerd-icons-color-icons t "Использовать цветные иконки."))
+
+
+;; 📦 NERD-ICONS-COMPLETION
+;; https://github.com/rainstormstudio/nerd-icons-completion
+;; Иконки в автозавершении ввода.
+(use-package nerd-icons-completion
+  :config (nerd-icons-completion-mode t))
 
 
 ;; 📦 NERD-ICONS-DIRED
@@ -1642,8 +1646,9 @@
   ("C-x p" . projectile-command-map)
   ("C-c p" . projectile-command-map)
   :bind
-  ("<f5>" . projectile-test-project)
-  ("<f6>" . projectile-compile-project)
+  (:map global-map
+        ("<f6>" . projectile-test-project)
+        ("<f9>" . projectile-compile-project))
   :init
   (progn
     (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))

@@ -1,16 +1,28 @@
-emacs-lisp-mode
-(use-package package
-  :pin "pin"
-  :ensure ensure
-  :hook
-  :mode
-  :)
+asciidoc-mode
 
-rst-mode
+(note
+"[NOTE]" n
+"====" n
+p n
+"====" n)
 
-(h1 (make-string (+ 2 (length title)) ?#) n " " (p "Заголовок: " title) " " n (make-string (+ 2 (length title)) ?#) n)
-(h2 (p "Заголовок: " title) n (make-string (length title) ?=) n)
-(h3 (p "Заголовок: " title) n (make-string (length title) ?-) n)
+(warning
+"[WARNING]" n
+"====" n
+p n
+"====" n)
+
+(caution
+"[CAUTION]" n
+"====" n
+p n
+"====" n)
+
+(source
+"[source, " p "]" n
+"----" n
+n
+"----" n)
 
 ;; Local Variables
 ;; mode: lisp-data

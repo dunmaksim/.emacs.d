@@ -20,7 +20,6 @@
 
 (require 'derived) ;; derived-mode-hook-name
 
-
 ;;; Здесь находятся настройки базовой функциональности Emacs.
 ;;; Даже если будут какие-то проблемы со сторонними пакетами, этот код всё
 ;;; равно будет выполнен.
@@ -1136,6 +1135,18 @@
   (add-hook 'comint-mode-hook #'buffer-env-update))
 
 
+;; 📦 CAPE
+;; https://github.com/minad/cape
+;; Бэкенды автодополнения для CORFU
+(use-package cape
+  :pin "gnu"
+  :ensure t
+  :config
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+
+
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
@@ -1149,19 +1160,44 @@
     yaml-ts-mode) . colorful-mode))
 
 
-;; 📦 COMPANY-MODE
-;; https://company-mode.github.io/
-;; Автодополнение
-(use-package company
-  :ensure t
-  :pin "gnu"
-  :custom
-  (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
-  (company-lighter-base "" "Не надо показывать индикатор в строке статуса")
-  (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
-  (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
-  (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
-  (company-tooltip-limit 15 "Ограничение на число подсказок")
+;; ;; 📦 COMPANY-MODE
+;; ;; https://company-mode.github.io/
+;; ;; Автодополнение
+;; (use-package company
+;;   :ensure t
+;;   :pin "gnu"
+;;   :custom
+;;   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
+;;   (company-lighter-base "" "Не надо показывать индикатор в строке статуса")
+;;   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
+;;   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
+;;   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
+;;   (company-tooltip-limit 15 "Ограничение на число подсказок")
+;;   :hook
+;;   ((css-ts-mode
+;;     dockerfile-ts-mode
+;;     emacs-lisp-mode
+;;     html-ts-mode
+;;     latex-mode
+;;     lisp-data-mode
+;;     minibuffer-mode
+;;     nxml-mode
+;;     org-mode
+;;     python-ts-mode
+;;     ruby-ts-mode
+;;     tex-mode
+;;     ) . company-mode)
+;;   :bind
+;;   (:map company-active-map
+;;         ("TAB" . company-complete-common-or-cycle)
+;;         ("M-/" . company-complete)
+;;         ("M-." . company-show-location)))
+
+
+;; 📦 CORFU
+;; corfu.el - COmpletion in Region FUnction
+;; Минималистичный аналог Company
+(use-package corfu
   :hook
   ((css-ts-mode
     dockerfile-ts-mode
@@ -1169,18 +1205,11 @@
     html-ts-mode
     latex-mode
     lisp-data-mode
-    minibuffer-mode
     nxml-mode
     org-mode
     python-ts-mode
     ruby-ts-mode
-    tex-mode
-    ) . company-mode)
-  :bind
-  (:map company-active-map
-        ("TAB" . company-complete-common-or-cycle)
-        ("M-/" . company-complete)
-        ("M-." . company-show-location)))
+    tex-mode) . corfu-mode))
 
 
 ;; 📦 COUNSEL
@@ -1569,6 +1598,16 @@
   :ensure t
   :custom
   (nerd-icons-color-icons t "Использовать цветные иконки."))
+
+
+;; 📦 NERD-ICONS-CORFU
+;; https://github.com/LuigiPiucco/nerd-icons-corfu
+;; Иконки в CORFU
+(use-package nerd-icons-corfu
+  :ensure t
+  :after (corfu nerd-icons)
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
 
 
 ;; 📦 NERD-ICONS-COMPLETION

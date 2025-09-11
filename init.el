@@ -902,11 +902,11 @@
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
   (progn
-    (column-number-mode t)           ;; Показывать номер колонки в статусной строке
+    (column-number-mode nil)         ;; Отключить показ номера колонки
     (keymap-global-unset "<insert>") ;; Режим перезаписи не нужен
-    (line-number-mode t)             ;; Показывать номер строки в статусной строке
+    (line-number-mode nil)           ;; Отключить показ номер строки
     (overwrite-mode -1)              ;; Отключить режим перезаписи текста
-    (size-indication-mode nil))      ;; Отображать размер буфера в строке статуса
+    (size-indication-mode nil))      ;; Отключить показ размера буфера
   :bind
   (:map global-map ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook

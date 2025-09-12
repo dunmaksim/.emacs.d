@@ -897,18 +897,18 @@
   :custom
   (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
   (blink-matching-paren t "Мигать, когда скобки парные")
+  (column-number-mode nil "Выключить показ номера колонки в mode-line")
+  (line-number-mode nil "Выключить показ номера строки в mode-line")
   (indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
+  (overwrite-mode nil "Выключить режим перезаписи.")
+  (size-indication-mode nil "Выключить показ размера буфера в mode-line")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
-  (progn
-    (column-number-mode nil)         ;; Отключить показ номера колонки
-    (keymap-global-unset "<insert>") ;; Режим перезаписи не нужен
-    (line-number-mode nil)           ;; Отключить показ номер строки
-    (overwrite-mode -1)              ;; Отключить режим перезаписи текста
-    (size-indication-mode nil))      ;; Отключить показ размера буфера
+  (keymap-global-unset "<insert>") ;; Режим перезаписи не нужен
   :bind
-  (:map global-map ("C-z" . undo)) ;; Отмена на Ctrl+Z
+  (:map global-map
+        ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
   (compilation-mode . visual-line-mode)
   (messages-buffer-mode . visual-line-mode)
@@ -1352,6 +1352,14 @@
   :custom
   (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
   :hook (emacs-lisp-mode . eldoc-mode))
+
+
+;; 📦 ELPY
+;; https://elpy.readthedocs.io/en/latest/index.html
+;; Emacs Lisp Python IDE
+(use-package elpy
+  :ensure t
+  :config (elpy-enable))
 
 
 ;; 📦 ENVRC

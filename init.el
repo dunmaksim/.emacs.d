@@ -1794,6 +1794,25 @@
         ("C-r" . swiper-isearch-backward)))
 
 
+;; SYMBOLS-OUTLINE
+;; https://github.com/liushihao456/symbols-outline.el
+;; Показывает переменные, функции, заголовки и другие части файла
+;; в отдельном окне и позволяет быстро перемещаться между ними.
+(use-package symbols-outline
+  :ensure t
+  :custom
+  (symbols-outline-window-width 40 "Ширина окна")
+  :bind (:map global-map
+              ("C-c i" . symbols-outline-show))
+  :hook
+  ((asciidoc-mode
+    adoc-mode
+    emacs-lisp-mode
+    markdown-mode
+    python-ts-mode
+    rst-mode) . symbols-outline-follow-mode))
+
+
 ;; 📦 TEMPEL
 ;; https://github.com/minad/tempel
 ;; Шаблонизатор

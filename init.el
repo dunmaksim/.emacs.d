@@ -1771,8 +1771,8 @@
 (use-package russian-techwriter
   :ensure t
   :custom
-  (default-input-method 'russian-techwriter "Метод ввода по умолчанию.")
-  (default-transient-input-method 'russian-techwriter "Временный метод ввода."))
+  (default-qinput-method "russian-techwriter" "Метод ввода по умолчанию.")
+  (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
 
 
 ;; 📦 STANDARD THEMES
@@ -1806,7 +1806,6 @@
               ("C-c i" . symbols-outline-show))
   :hook
   ((asciidoc-mode
-    adoc-mode
     emacs-lisp-mode
     markdown-mode
     python-ts-mode

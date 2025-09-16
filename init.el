@@ -1847,7 +1847,7 @@
   :ensure t
   :pin "gnu"
   :custom
-  (which-key-computer-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
+  (which-key-compute-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-dont-use-unicode nil "Используем Unicode")
   (which-key-idle-delay 2 "Задержка появления подсказки")
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")

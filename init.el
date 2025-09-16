@@ -1852,6 +1852,7 @@
   (which-key-idle-delay 2 "Задержка появления подсказки")
   (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")
   (which-key-lighter nil "Справимся и так, не надо ничего показывать в строке статуса.")
+  (which-key-separator " → " "Разделитель сочетаний и команд")
   (which-key-show-major-mode t "То же самое что и [C-h m], но в формате which-key")
   :config
   (progn

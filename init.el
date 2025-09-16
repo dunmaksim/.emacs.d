@@ -1798,6 +1798,8 @@
 ;; https://github.com/liushihao456/symbols-outline.el
 ;; Показывает переменные, функции, заголовки и другие части файла
 ;; в отдельном окне и позволяет быстро перемещаться между ними.
+;; Для корректной работы нужна утилита ctags. В Debian Linux это пакет
+;; universal-ctags
 (use-package symbols-outline
   :ensure t
   :custom
@@ -1853,8 +1855,7 @@
   (which-key-show-major-mode t "То же самое что и [C-h m], но в формате which-key")
   :config
   (progn
-    (which-key-mode t)
-    (which-key-setup-minibuffer)))
+    (which-key-mode t)))
 
 
 ;; 📦 WINDOW-TOOL-BAR

@@ -1775,6 +1775,23 @@
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
 
 
+;; 📦 SMARTPARENS
+;; https://github.com/Fuco1/smartparens
+;; Умная расстановка скобок
+(use-package smartparens
+  :ensure t
+  :hook
+  ((conf-mode
+    editorconfig-conf-mode
+    emacs-lisp-mode
+    markdown-mode
+    org-mode
+    python-ts-mode
+    rst-mode
+    ruby-ts-mode) . smartparens-mode)
+  :config (require 'smartparens-config))
+
+
 ;; 📦 STANDARD THEMES
 (use-package standard-themes
   :ensure t

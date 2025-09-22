@@ -1145,22 +1145,6 @@
   (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
 
-;; CENTAUR-TABS
-;; https://github.com/ema2159/centaur-tabs
-;; Красивые вкладки как в VS Code
-(use-package centaur-tabs
-  :ensure t
-  :config
-  (centaur-tabs-mode t)
-  :custom
-  (centaur-tabs-style "bar" "Стиль — прямоугольник")
-  (centaur-tabs-set-icons t "Отображать иконки")
-  :bind
-  (:map global-map
-        ("C-<prior>" . centaur-tabs-backward)
-        ("C-<next>" . centaur-tabs-forward)))
-
-
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
@@ -1172,40 +1156,6 @@
     html-ts-mode
     json-ts-mode
     yaml-ts-mode) . colorful-mode))
-
-
-;; ;; 📦 COMPANY-MODE
-;; ;; https://company-mode.github.io/
-;; ;; Автодополнение
-;; (use-package company
-;;   :ensure t
-;;   :pin "gnu"
-;;   :custom
-;;   (company-idle-delay 0.5 "Задержка вывода подсказки — полсекунды")
-;;   (company-lighter-base "" "Не надо показывать индикатор в строке статуса")
-;;   (company-minimum-prefix-length 2 "Минимум 2 знака, чтобы company начала работать")
-;;   (company-show-quick-access t "Показывать номера возле потенциальных кандидатов")
-;;   (company-tooltip-align-annotations t "Выровнять текст подсказки по правому краю")
-;;   (company-tooltip-limit 15 "Ограничение на число подсказок")
-;;   :hook
-;;   ((css-ts-mode
-;;     dockerfile-ts-mode
-;;     emacs-lisp-mode
-;;     html-ts-mode
-;;     latex-mode
-;;     lisp-data-mode
-;;     minibuffer-mode
-;;     nxml-mode
-;;     org-mode
-;;     python-ts-mode
-;;     ruby-ts-mode
-;;     tex-mode
-;;     ) . company-mode)
-;;   :bind
-;;   (:map company-active-map
-;;         ("TAB" . company-complete-common-or-cycle)
-;;         ("M-/" . company-complete)
-;;         ("M-." . company-show-location)))
 
 
 ;; 📦 CORFU

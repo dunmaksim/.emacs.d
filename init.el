@@ -859,20 +859,18 @@
   (rst-toc-indent 3))
 
 
-;; 📦 SAVE-HIST
-;; Встроенный пакет.
-;; Запоминает историю введенных команд
+;; 📦 SAVEHIST
+;; Встроенный пакет для запоминания истории команд
 (use-package savehist
+  :hook
+  (kill-emacs . savehist-save)
   :config
-  (progn
-    (savehist-mode t)
-    (add-hook 'kill-emacs-hook 'savehist-save)
-    (add-to-list 'delete-frame-functions 'savehist-save)))
+  (add-to-list 'delete-frame-functions 'savehist-save)
+  (savehist-mode t))
 
 
 ;; 📦 SHELL-SCRIPT-MODE
-;; Встроенный пакет.
-;; Работа со скриптами Shell.
+;; Встроенный пакет для работы со скриптами Shell.
 (use-package sh-script
   :mode
   ("\\.bash_aliases\\'" . bash-ts-mode)
@@ -1005,9 +1003,9 @@
 ;; Перемещение между окнами Emacs.
 (use-package windmove
   :config
-  (progn
-    (windmove-default-keybindings 'ctrl)
-    (windmove-swap-states-default-keybindings 'meta)))
+  (windmove-default-keybindings 'ctrl)
+  (windmove-swap-states-default-keybindings 'meta)
+  (windmove-move t))
 
 
 ;; 📦 WINNER-MODE
@@ -1145,6 +1143,22 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+
+
+;; CENTAUR-TABS
+;; https://github.com/ema2159/centaur-tabs
+;; Красивые вкладки как в VS Code
+(use-package centaur-tabs
+  :ensure t
+  :config
+  (centaur-tabs-mode t)
+  :custom
+  (centaur-tabs-style "bar" "Стиль — прямоугольник")
+  (centaur-tabs-set-icons t "Отображать иконки")
+  :bind
+  (:map global-map
+        ("C-<prior>" . centaur-tabs-backward)
+        ("C-<next>" . centaur-tabs-forward)))
 
 
 ;; 📦 COLORFUL-MODE
@@ -1704,7 +1718,7 @@
     (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all")))
   :custom
   (projectile-completion-system 'ivy)
-  (projectile-mode-line-prefix " Проект")
+  (projectile-switch-project-action 'projectile-dired)
   :config
   (projectile-mode t))
 

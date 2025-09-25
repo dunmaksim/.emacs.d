@@ -8,6 +8,10 @@
 
 (defconst init-el-font-height 15 "Размер шрифта по умолчанию.")
 
+(defun init-el-set-font-height ()
+  "Устанавливает указанный размер шрифта во фрейме."
+  (set-face-attribute 'default nil :height (* init-el-font-height 10)))
+
 (require 'custom)
 (setopt custom-file
         (expand-file-name
@@ -17,8 +21,6 @@
 ;; Загрузим настройки сразу, чтобы они не переопределяли параметры из `init.el'.
 (when (file-exists-p custom-file)
   (load custom-file))
-
-(require 'derived) ;; derived-mode-hook-name
 
 ;;; Здесь находятся настройки базовой функциональности Emacs.
 ;;; Даже если будут какие-то проблемы со сторонними пакетами, этот код всё
@@ -31,8 +33,6 @@
 
   FRAME-NAME — имя фрейма, который настраивается."
   (when (display-graphic-p frame-name)
-    (global-font-lock-mode t)  ;; Отображать шрифты красиво, используя Font Face's
-
     (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
     (defvar default-font-family nil "Шрифт по умолчанию.")
 
@@ -61,13 +61,14 @@
        nil
        t)
       (set-face-attribute 'default nil :family default-font-family))
-    (set-face-attribute 'default nil :height (* init-el-font-height 10))))
+    (init-el-set-font-height)))
+
+(global-font-lock-mode t)  ;; Отображать шрифты красиво, используя Font Face's
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 (add-to-list 'after-make-frame-functions #'setup-gui-settings)
-
-(setup-gui-settings (selected-frame))
+(add-hook 'after-init-hook (lambda ()(setup-gui-settings (selected-frame))))
 
 (defconst init-el-autosave-dir
   (expand-file-name "saves" user-emacs-directory)
@@ -895,8 +896,6 @@
   :custom
   (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
   (blink-matching-paren t "Мигать, когда скобки парные")
-  (column-number-mode nil "Выключить показ номера колонки в mode-line")
-  (line-number-mode nil "Выключить показ номера строки в mode-line")
   (indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
   (overwrite-mode nil "Выключить режим перезаписи.")
@@ -930,24 +929,11 @@
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
-;; 📦 TRACK-CHANGES
-;; Встроенный пакет
-(use-package track-changes
-  :pin "gnu"
-  :ensure t)
-
-
 ;; 📦 TRAMP
 ;; Встроенный пакет для работы с файлами удалённо
 (use-package tramp
   :pin "gnu"
   :ensure t)
-
-
-;; 📦 TRANSIENT
-(use-package transient
-  :ensure t
-  :pin "gnu")
 
 
 ;; 📦 UNIQUIFY
@@ -1005,7 +991,7 @@
   :config
   (windmove-default-keybindings 'ctrl)
   (windmove-swap-states-default-keybindings 'meta)
-  (windmove-move t))
+  (windmove-mode t))
 
 
 ;; 📦 WINNER-MODE
@@ -1114,14 +1100,6 @@
         ("C-'" . avy-goto-char)))
 
 
-;; 📦 BBCODE-MODE
-;; https://github.com/lassik/emacs-bbcode-mode
-;; Режим редактирования BB-кодов
-(use-package bbcode-mode
-  :ensure t
-  :defer t)
-
-
 ;; 📦 BUFFER-ENV
 ;; https://github.com/astoff/buffer-env
 ;; Переменные окружения для отдельного буфера. Почти ENVRC, только от GNU
@@ -1220,10 +1198,12 @@
   (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
 
 
-;; 📦 DORIC-THEMES
-(use-package doric-themes
+;; 📦 DOOM-MODELINE
+;; https://github.com/seagle0128/doom-modeline
+;; Красивая строка статуса
+(use-package doom-modeline
   :ensure t
-  :pin "gnu")
+  :config (doom-modeline-mode t))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1324,14 +1304,6 @@
 (use-package elpy
   :ensure t
   :config (elpy-enable))
-
-
-;; 📦 ENVRC
-;; https://github.com/purcell/envrc
-;; Загрузка переменных окружения из `.envrc'.
-(use-package envrc
-  :ensure t
-  :hook (after-init . envrc-global-mode))
 
 
 ;; 📦 FLYCHECK
@@ -1507,8 +1479,9 @@
 
 ;; 📦 DIFF-HL
 ;; https://github.com/dgutov/diff-hl
-;; Показывает небольшие маркеры рядом с незафиксированными изменениями. Дополняет функциональность git-gutter,
-;; которые показывает изменения только в обычных буферах. Этот пакет умеет работать с dired и другими режимами.
+;; Показывает небольшие маркеры рядом с незафиксированными изменениями.
+;; Дополняет функциональность git-gutter, который показывает изменения только в
+;; обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
   :ensure t
   :pin "gnu"
@@ -1757,9 +1730,14 @@
 
 
 ;; 📦 STANDARD THEMES
+;; https://github.com/protesilaos/standard-themes
+;; Улучшенные темы на основе стандартных
 (use-package standard-themes
   :ensure t
-  :pin "gnu")
+  :pin "gnu"
+  :custom
+  (standard-themes-bold-constructs t)
+  (standard-themes-italic-constructs t))
 
 
 ;; 📦 SWIPER
@@ -1807,18 +1785,6 @@
   (add-to-list 'completion-at-point-functions 'tempel-expand)
   :hook
   (prog-mode . tempel-abbrev-mode))
-
-
-;; 📦 TERRAFORM-MODE
-;; https://github.com/hcl-emacs/terraform-mode
-;; Работа с файлами конфигурации Terraform и OpenTofu
-(use-package terraform-mode
-  :ensure t
-  :defer t
-  :mode
-  ("\\.terraformrc\\'"
-   "\\.tofurc\\'"
-   "tofu\\.rc\\'"))
 
 
 ;; 📦 WHICH-KEY MODE
@@ -1871,6 +1837,7 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (load-theme 'ef-autumn t)
+;; (load-theme 'standard-dark-tinted t)
 
 (provide 'init.el)
 ;;; init.el ends here

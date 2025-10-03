@@ -912,6 +912,13 @@
   (text-mode . visual-line-mode))
 
 
+;; 📦 TEX
+;; Встроенный пакет для работы с TeX и LaTeX.
+(use-package tex-mode
+  :mode
+  ("\\.tex\\'" . tex-mode))
+
+
 ;; 📦 TOOLBAR
 ;; Встроенный пакет, недоступный в Emacs NOX
 (when (fboundp 'tool-bar-mode)
@@ -1044,7 +1051,7 @@
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
 
 
-;; 📦 AUXTEX
+;; 📦 AUCTEX
 ;; IDE для работы с TeX
 ;; https://www.gnu.org/software/auctex/index.html
 (use-package auctex
@@ -1710,23 +1717,6 @@
   :custom
   (default-qinput-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
-
-
-;; 📦 SMARTPARENS
-;; https://github.com/Fuco1/smartparens
-;; Умная расстановка скобок
-(use-package smartparens
-  :ensure t
-  :hook
-  ((conf-mode
-    editorconfig-conf-mode
-    emacs-lisp-mode
-    markdown-mode
-    org-mode
-    python-ts-mode
-    rst-mode
-    ruby-ts-mode) . smartparens-mode)
-  :config (require 'smartparens-config))
 
 
 ;; 📦 STANDARD THEMES

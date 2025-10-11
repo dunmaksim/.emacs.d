@@ -188,10 +188,14 @@
           ("melpa-stable" . 20)
           ("melpa" . 10)))
 
-(unless package-archive-contents
-  (progn
-    (message "Обновление списка архивов...")
-    (package-refresh-contents)))
+(defun init-el-check-archive-contents ()
+  ;; Check package archive contents state and update them if needed
+  (unless package-archive-contents
+    (progn
+      (message "Обновление списка архивов...")
+      (package-refresh-contents))))
+
+(init-el-check-archive-contents)
 
 
 (unless (package-installed-p 'gnu-elpa-keyring-update)
@@ -293,20 +297,6 @@
   (compilation-filter . ansi-color-compilation-filter))
 
 
-;; 📦 APHELEIA
-;; https://github.com/radian-software/apheleia
-;; Автоформат буфера перед сохранением.
-(use-package apheleia
-  :ensure t
-  :custom
-  (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
-  :hook
-  ((emacs-lisp-mode
-    js-ts-mode
-    python-ts-mode
-    ruby-ts-mode) . apheleia-mode))
-
-
 ;; 📦 AUTOREVERT
 ;; Встроенный пакет.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Auto-Revert.html
@@ -321,6 +311,13 @@
   (global-auto-revert-mode t)
   :hook
   (dired-mode . auto-revert-mode))
+
+
+;; 📦 BROWSE-URL
+;; Встроенный пакет, отвечающий за открытие и просмотр URL.
+(use-package browse-url
+  :custom
+  (setopt browse-url-generic-program "chromium" "Браузер по умолчанию."))
 
 
 ;; 📦 CALENDAR
@@ -448,6 +445,7 @@
   ((emacs-lisp-mode
     markdown-mode
     mhtml-mode
+    nxml-mode
     python-ts-mode
     rst-mode
     ruby-ts-mode) . electric-indent-local-mode))
@@ -476,9 +474,10 @@
     js-ts-mode
     json-ts-mode
     lisp-data-mode
-    org-mode
     markdown-mode
     mhtml-mode
+    nxml-mode
+    org-mode
     python-ts-mode
     ruby-mode
     terraform-mode
@@ -549,8 +548,6 @@
 ;; 📦 FLYMAKE
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
-  :ensure t
-  :pin "gnu"
   :hook (emacs-mode . flymake-mode))
 
 
@@ -788,8 +785,7 @@
 
 ;; 📦 PROJECT
 ;; Встроенный пакет для работы с проектами
-(use-package project
-  :ensure t)
+(use-package project)
 
 
 ;; 📦 REPEAT-MODE
@@ -823,7 +819,6 @@
 ;; https://github.com/rust-lang/rust-mode
 ;; Поддержка языка Rust: https://rust-lang.org/
 (use-package rust-mode
-  :ensure t
   :mode ("\\.rs\\'" . rust-mode)
   :custom
   (rust-format-on-save t "Автоматическое форматирование буфера при сохранении.")
@@ -936,13 +931,6 @@
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
-;; 📦 TRAMP
-;; Встроенный пакет для работы с файлами удалённо
-(use-package tramp
-  :pin "gnu"
-  :ensure t)
-
-
 ;; 📦 UNIQUIFY
 ;; Встроенный пакет.
 ;; Используется для поддержания уникальности названий буферов, путей и т. д.
@@ -1051,19 +1039,94 @@
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
 
 
+(defvar init-el-my-packages
+  '(apheleia
+    auctex
+    adjust-parens
+    all
+    ansible
+    avy
+    buffer-env
+    cape
+    colorful-mode
+    corfu
+    counsel
+    csv-mode
+    cursor-undo
+    denote
+    doom-modeline
+    edit-indirect
+    editorconfig
+    ef-themes
+    eglot
+    eldoc
+    elpy
+    flycheck
+    flycheck-eglot
+    format-all
+    hl-todo
+    hyperbole
+    indent-bars
+    ivy
+    ivy-hydra
+    jinx
+    lin
+    magit
+    diff-hl
+    markdown-mode
+    modus-themes
+    multiple-cursors
+    nerd-icons
+    nerd-icons-corfu
+    nerd-icons-completion
+    nerd-icons-dired
+    nerd-icons-ibuffer
+    org
+    package-lint
+    plantuml-mode
+    po-mode
+    projectile
+    pulsar
+    python
+    rainbow-delimiters
+    russian-techwriter
+    rust-mode
+    standard-themes
+    swiper
+    symbols-outline
+    which-key
+    yasnippet
+    yasnippet-snippets))
+
+(dolist (pkg package-selected-packages)
+  (unless (package-installed-p pkg)
+    (progn
+      (init-el-check-archive-contents)
+      (package-install pkg t))))
+
+
+;; 📦 APHELEIA
+;; https://github.com/radian-software/apheleia
+;; Автоформат буфера перед сохранением.
+(use-package apheleia
+  :custom
+  (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
+  :hook
+  ((emacs-lisp-mode
+    python-ts-mode
+    ruby-ts-mode) . apheleia-mode))
+
+
 ;; 📦 AUCTEX
 ;; IDE для работы с TeX
 ;; https://www.gnu.org/software/auctex/index.html
-(use-package auctex
-  :ensure t
-  :pin "gnu")
+(use-package auctex)
 
 
 ;; 📦 ADJUST-PARENS
 ;; https://elpa.gnu.org/packages/adjust-parens.html
 ;; Пакет для автоматического управления скобочками и уровнями отступов.
 (use-package adjust-parens
-  :ensure t
   :hook (emacs-lisp-mode . adjust-parens-mode)
   :bind
   (:map emacs-lisp-mode-map
@@ -1082,15 +1145,13 @@
 ;; Это аналог `occur', только все найденные строки помещаются в отдельный буфер,
 ;; где их можно отредактировать, не прыгая по всему буферу. После изменений
 ;; достаточно нажать C-c C-c, и изменения отразятся в основном буфере
-(use-package all
-  :ensure t)
+(use-package all)
 
 
 ;; 📦 ANSIBLE
 ;; https://gitlab.com/emacs-ansible/emacs-ansible
 ;; Дополнительные возможности при работе с YAML-файлами Ansible
 (use-package ansible
-  :ensure t
   :defer t)
 
 
@@ -1099,7 +1160,6 @@
 ;; Множество функций для быстрого перехода к нужной строке, слову, символу и
 ;; так далее.
 (use-package avy
-  :ensure t
   :bind
   (:map global-map
         ("M-g f" . avy-goto-line)
@@ -1111,8 +1171,6 @@
 ;; https://github.com/astoff/buffer-env
 ;; Переменные окружения для отдельного буфера. Почти ENVRC, только от GNU
 (use-package buffer-env
-  :pin "gnu"
-  :ensure t
   :config
   (add-hook 'hack-local-variables-hook #'buffer-env-update)
   (add-hook 'comint-mode-hook #'buffer-env-update))
@@ -1122,8 +1180,6 @@
 ;; https://github.com/minad/cape
 ;; Бэкенды автодополнения для CORFU
 (use-package cape
-  :pin "gnu"
-  :ensure t
   :config
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
@@ -1134,7 +1190,6 @@
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
-  :ensure t
   :hook
   ((css-ts-mode
     emacs-lisp-mode
@@ -1165,8 +1220,6 @@
 ;; https://elpa.gnu.org/packages/counsel.html
 ;; Автодополнение на основе Ivy
 (use-package counsel
-  :ensure t
-  :pin "gnu"
   :bind
   (:map global-map
         ("C-c c" . counsel-compile)
@@ -1184,23 +1237,20 @@
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
 (use-package csv-mode
-  :ensure t)
+  :mode ("\\.csv\\'" . csv-mode))
 
 
 ;; 📦 CURSOR-UNDO
 ;; https://elpa.gnu.org/packages/cursor-undo.html
 ;; Отмена работает в том числе на перемещение курсора.
 (use-package cursor-undo
-  :ensure t
-  :pin "gnu"
-  :config (cursor-undo 1))
+  :config (cursor-undo t))
 
 
 ;; 📦 DENOTE
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
 (use-package denote
-  :ensure t
   :custom
   (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
 
@@ -1209,7 +1259,11 @@
 ;; https://github.com/seagle0128/doom-modeline
 ;; Красивая строка статуса
 (use-package doom-modeline
-  :ensure t
+  :custom
+  (doom-modeline-total-line-number t "Общее количество строк")
+  (doom-modline-vcs-max-length 20 "Видим имена длинных веток")
+  (doom-modeline-irc nil "Не показывать статус IRC")
+  (doom-modeline-battery nil "У меня нет батареи, показывать нечего")
   :config (doom-modeline-mode t))
 
 
@@ -1225,7 +1279,6 @@
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
-  :ensure t
   :bind (:map global-map
               ("C-c '" . edit-indirect-region)))
 
@@ -1234,15 +1287,13 @@
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
-  :ensure t
   :config
   (editorconfig-mode t))
 
 
 ;; 📦 EF-THEMES
 ;; https://github.com/protesilaos/ef-themes.git
-(use-package ef-themes
-  :ensure t)
+(use-package ef-themes)
 
 
 ;; 📦 EGLOT
@@ -1261,8 +1312,6 @@
 ;;               переменной `eglot-workspace-configuration'.
 ;; - YAML:       sudo npm -g install yaml-language-server
 (use-package eglot
-  :ensure t
-  :pin "gnu"
   :defer t
   :custom
   (eglot-events-buffer-config '(
@@ -1309,7 +1358,6 @@
 ;; https://elpy.readthedocs.io/en/latest/index.html
 ;; Emacs Lisp Python IDE
 (use-package elpy
-  :ensure t
   :config (elpy-enable))
 
 
@@ -1317,7 +1365,6 @@
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
-  :ensure t
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
@@ -1353,7 +1400,6 @@
 ;; https://github.com/flycheck/flycheck-eglot
 ;; Интеграция Flycheck с Eglot
 (use-package flycheck-eglot
-  :ensure t
   :after (flycheck eglot)
   :config
   (global-flycheck-eglot-mode t))
@@ -1363,7 +1409,6 @@
 ;; https://github.com/lassik/emacs-format-all-the-code
 ;; Форматирование кода с помощью разных внешних средств.
 (use-package format-all
-  :ensure t
   :defer t
   :bind
   (:map global-map
@@ -1374,7 +1419,6 @@
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
 (use-package hl-todo
-  :ensure t
   :config (global-hl-todo-mode t))
 
 
@@ -1382,8 +1426,6 @@
 ;; https://www.gnu.org/software/hyperbole/
 ;; Распознаёт текст в буферах и автоматически превращает в кнопки и ссылки.
 (use-package hyperbole
-  :ensure t
-  :pin "gnu"
   :custom
   (hyperbole-mode-lighter nil "Убрать индикатор из статусной строки")
   :hook
@@ -1397,7 +1439,6 @@
 ;; https://github.com/jdtsmith/indent-bars
 ;; Красивая подсветка отступов
 (use-package indent-bars
-  :ensure t
   :hook
   ((emacs-lisp-mode
     js-ts-mode
@@ -1417,7 +1458,6 @@
 ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
 ;; это последовательность [C-M-j].
 (use-package ivy
-  :ensure t
   :demand t
   :config
   (ivy-mode t)
@@ -1432,7 +1472,6 @@
 ;; https://elpa.gnu.org/packages/ivy-hydra.html
 ;; Дополнительные сочетания клавиш для IVY.
 (use-package ivy-hydra
-  :ensure t
   :demand t
   :after ivy
   :requires ivy)
@@ -1444,8 +1483,6 @@
 ;; а вообще во всём буфере.
 ;; В Debian требует для работы пакеты `libenchant2-dev' и `pkgconf'.
 (use-package jinx
-  :ensure t
-  :pin "gnu"
   :custom
   (jinx-languages "ru_RU en_US")
   :hook ((emacs-lisp-mode
@@ -1463,7 +1500,6 @@
 ;; Почти то же самое, что и `hl-line-mode', только лучше.
 ;; TODO: в чём именно?
 (use-package lin
-  :ensure t
   :config
   (lin-global-mode t))
 
@@ -1473,8 +1509,6 @@
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
 (use-package magit
-  :ensure t
-  :pin "melpa-stable"
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   (magit-show-long-lines-warning nil "Выключить предупреждения про длинные строки.")
@@ -1490,8 +1524,6 @@
 ;; Дополняет функциональность git-gutter, который показывает изменения только в
 ;; обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
-  :ensure t
-  :pin "gnu"
   :hook
   ((asciidoc-mode
     emacs-lisp-mode
@@ -1507,7 +1539,6 @@
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (use-package markdown-mode
-  :ensure t
   :defer t
   :custom
   (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
@@ -1520,15 +1551,13 @@
 
 ;; 📦 MODUS-THEMES
 ;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
-(use-package modus-themes
-  :ensure t)
+(use-package modus-themes)
 
 
 ;; 📦 MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (use-package multiple-cursors
-  :ensure t
   :custom (mc/always-run-for-all t "Не задавать лишних вопросов.")
   :init
   (keymap-global-unset "M-<down-mouse-1>")
@@ -1547,7 +1576,6 @@
 ;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
 ;; скопировать их в `/usr/local/share/fonts/'.
 (use-package nerd-icons
-  :ensure t
   :custom
   (nerd-icons-color-icons t "Использовать цветные иконки."))
 
@@ -1556,7 +1584,6 @@
 ;; https://github.com/LuigiPiucco/nerd-icons-corfu
 ;; Иконки в CORFU
 (use-package nerd-icons-corfu
-  :ensure t
   :after (corfu nerd-icons)
   :config
   (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
@@ -1573,7 +1600,6 @@
 ;; https://github.com/rainstormstudio/nerd-icons-dired
 ;; Иконки в `dired'.
 (use-package nerd-icons-dired
-  :ensure t
   :after (dired nerd-icons)
   :hook (dired-mode . nerd-icons-dired-mode))
 
@@ -1582,7 +1608,6 @@
 ;; https://github.com/seagle0128/nerd-icons-ibuffer
 ;; Отображение иконок в ibuffer
 (use-package nerd-icons-ibuffer
-  :ensure t
   :after (ibuffer nerd-icons)
   :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
@@ -1592,7 +1617,6 @@
 ;; Органайзер, заметки и так далее
 (use-package org
   :defer t
-  :ensure t
   :config
   (setq-local
    truncate-lines nil ;; Не обрезать строки
@@ -1603,15 +1627,13 @@
 ;; https://github.com/purcell/package-lint
 ;; Проверка кода пакетов Emacs.
 (use-package package-lint
-  :ensure t
   :defer t)
 
 
 ;; 📦 PLANTUML-MODE
 ;; https://github.com/skuro/plantuml-mode
 ;; Пакет для работы с PlantUML
-(use-package plantuml-mode
-  :ensure t)
+(use-package plantuml-mode)
 
 
 ;; 📦 PO-MODE
@@ -1621,8 +1643,7 @@
 ;; * gettext
 ;; * gettext-el: если po-mode из архивов не работает
 (use-package po-mode
-  :pin "melpa"
-  :ensure t)
+  :pin "melpa")
 
 
 ;; 📦 PROJECTILE
@@ -1632,7 +1653,6 @@
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (use-package projectile
-  :ensure t
   :bind-keymap
   ("C-x p" . projectile-command-map)
   ("C-c p" . projectile-command-map)
@@ -1658,7 +1678,6 @@
 ;; https://github.com/protesilaos/pulsar
 ;; Этот пакет требует Emacs версии 27.1 или новее
 (use-package pulsar
-  :ensure t
   :custom
   (pulsar-pulse t)
   (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
@@ -1674,8 +1693,6 @@
 ;; 📦 PYTHON-TS-MODE
 ;; Встроенный пакет для работы с Python через TreeSitter
 (use-package python
-  :ensure t
-  :pin "gnu"
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
@@ -1686,7 +1703,6 @@
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним и тем же цветом
 (use-package rainbow-delimiters
-  :ensure t
   :hook
   ((asciidoc-mode
     conf-mode
@@ -1713,7 +1729,6 @@
 ;; В отличие от russian-computer, позволяет использовать лигатуры.
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
-  :ensure t
   :custom
   (default-qinput-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
@@ -1723,8 +1738,6 @@
 ;; https://github.com/protesilaos/standard-themes
 ;; Улучшенные темы на основе стандартных
 (use-package standard-themes
-  :ensure t
-  :pin "gnu"
   :custom
   (standard-themes-bold-constructs t)
   (standard-themes-italic-constructs t))
@@ -1735,8 +1748,6 @@
 ;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
 ;; `isearch-backward'.
 (use-package swiper
-  :ensure t
-  :pin "gnu"
   :bind
   (:map global-map
         ("C-s" . swiper-isearch)
@@ -1750,7 +1761,6 @@
 ;; Для корректной работы нужна утилита ctags. В Debian Linux это пакет
 ;; universal-ctags
 (use-package symbols-outline
-  :ensure t
   :custom
   (symbols-outline-window-width 40 "Ширина окна")
   :bind (:map global-map
@@ -1763,26 +1773,10 @@
     rst-mode) . symbols-outline-follow-mode))
 
 
-;; 📦 TEMPEL
-;; https://github.com/minad/tempel
-;; Шаблонизатор
-(use-package tempel
-  :ensure t
-  :pin "gnu"
-  :bind (("M-+" . tempel-complete)
-         ("M-*" . tempel-insert))
-  :config
-  (add-to-list 'completion-at-point-functions 'tempel-expand)
-  :hook
-  (prog-mode . tempel-abbrev-mode))
-
-
 ;; 📦 WHICH-KEY MODE
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
 (use-package which-key
-  :ensure t
-  :pin "gnu"
   :custom
   (which-key-compute-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-dont-use-unicode nil "Используем Unicode")
@@ -1792,22 +1786,13 @@
   (which-key-separator " → " "Разделитель сочетаний и команд")
   (which-key-show-major-mode t "То же самое что и [C-h m], но в формате which-key")
   :config
-  (progn
-    (which-key-mode t)))
-
-
-;; 📦 WINDOW-TOOL-BAR
-;; Встроенный пакет, который вставляет тулбар в каждое окно
-(use-package window-tool-bar
-  :pin "gnu"
-  :ensure t)
+  (which-key-mode t))
 
 
 ;; 📦 YASNIPPET
 ;; https://elpa.gnu.org/packages/yasnippet.html
 ;; Библиотека для управления сниппетами. Требуется для расширения функций Eglot.
 (use-package yasnippet
-  :ensure t
   :init
   (progn
     ;; Создать каталог для хранения сниппетов, иначе будет ошибка
@@ -1820,14 +1805,12 @@
 ;; 📦 YASNIPPET-SNIPPETS
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
 ;; Набор сниппетов для `yasnippet'
-(use-package yasnippet-snippets
-  :ensure t)
+(use-package yasnippet-snippets)
 
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 (load-theme 'ef-autumn t)
-;; (load-theme 'standard-dark-tinted t)
 
 (provide 'init.el)
 ;;; init.el ends here

@@ -82,12 +82,6 @@
 (unless (file-directory-p init-el-package-user-dir)
   (make-directory init-el-package-user-dir))
 
-;; Если используется старая версия EMACS, нужно указать параметры протокола TLS.
-;; В противном случае будут проблемы при загрузке архива пакетов.
-(when (< emacs-major-version 27)
-  (require 'gnutls)
-  (setopt gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")) ;; Необходимо для старых версий Emacs
-
 
 ;; Определение пути к каталогу с исходным кодом
 (when (string-equal system-type "gnu/linux")

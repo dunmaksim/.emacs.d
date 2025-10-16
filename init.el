@@ -195,7 +195,7 @@
 (unless (package-installed-p 'gnu-elpa-keyring-update)
   (progn
     (message "Обновление ключей для проверки цифровой подписи.")
-    (package-install 'gnu-elpa-keyring-update)))
+    (package-install 'gnu-elpa-keyring-update t)))
 
 (unless (package-installed-p 'use-package)
   (progn
@@ -288,8 +288,8 @@
 ;; определённой последовательности символов заменяются на другую.
 (use-package abbrev
   :hook
-  ((asciidoc-mode
-    markdown-mode
+  ((asciidoc-ts-mode
+    markdown-ts-mode
     rst-mode) . abbrev-mode))
 
 
@@ -407,7 +407,7 @@
 ;; Встроенный пакет для показа номеров строк
 (use-package display-line-numbers
   :hook
-  ((asciidoc-mode
+  ((asciidoc-ts-mode
     c-mode
     conf-mode
     css-ts-mode
@@ -420,7 +420,7 @@
     latex-mode
     lisp-data-mode
     makefile-mode
-    markdown-mode
+    markdown-ts-mode
     mhtml-mode
     nxml-mode
     po-mode
@@ -447,7 +447,7 @@
 (use-package electric
   :hook
   ((emacs-lisp-mode
-    markdown-mode
+    markdown-ts-mode
     mhtml-mode
     nxml-mode
     python-ts-mode
@@ -469,7 +469,7 @@
   (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
   (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”)
   :hook
-  ((asciidoc-mode
+  ((asciidoc-ts-mode
     conf-mode
     css-ts-mode
     emacs-lisp-data-mode
@@ -478,7 +478,7 @@
     js-ts-mode
     json-ts-mode
     lisp-data-mode
-    markdown-mode
+    markdown-ts-mode
     mhtml-mode
     nxml-mode
     org-mode
@@ -609,10 +609,10 @@
 ;; Возможны варианты (зависит от основного режима).
 (use-package goto-addr
   :hook
-  ((asciidoc-mode
+  ((asciidoc-ts-mode
     emacs-lisp-mode
     html-ts-mode
-    markdown-mode
+    markdown-ts-mode
     rst-mode) . goto-address-mode))
 
 
@@ -680,8 +680,8 @@
         (mode . emacs-lisp-mode)
         (mode . lisp-data-mode)))
       ("Org" (mode . org-mode))
-      ("Markdown" (mode . markdown-mode))
-      ("AsciiDoc" (mode . asciidoc-mode))
+      ("Markdown" (mode . markdown-ts-mode))
+      ("AsciiDoc" (mode . asciidoc-ts-mode))
       ("ReStructured Text" (mode . rst-mode))
       ("CONF / INI"
        (or
@@ -956,7 +956,7 @@
      (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
   (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
   :hook
-  ((asciidoc-mode
+  ((asciidoc-ts-mode
     conf-mode
     css-ts-mode
     dockerfile-ts-mode
@@ -968,7 +968,7 @@
     lisp-data-mode
     makefile-gmake-mode
     makefile-mode
-    markdown-mode
+    markdown-ts-mode
     nxml-mode
     org-mode
     po-mode
@@ -1043,64 +1043,68 @@
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
 
 
-(defvar init-el-my-packages
-  '(apheleia
-    auctex
-    adjust-parens
-    all
-    ansible
-    avy
-    buffer-env
-    cape
-    colorful-mode
-    corfu
-    counsel
-    csv-mode
-    cursor-undo
-    denote
-    doom-modeline
-    edit-indirect
-    editorconfig
-    ef-themes
-    eglot
-    eldoc
-    elpy
-    flycheck
-    flycheck-eglot
-    format-all
-    hl-todo
-    hyperbole
-    indent-bars
-    ivy
-    ivy-hydra
-    jinx
-    lin
-    magit
-    diff-hl
-    markdown-mode
-    modus-themes
-    multiple-cursors
-    nerd-icons
-    nerd-icons-corfu
-    nerd-icons-completion
-    nerd-icons-dired
-    nerd-icons-ibuffer
-    org
-    package-lint
-    plantuml-mode
-    po-mode
-    projectile
-    pulsar
-    python
-    rainbow-delimiters
-    russian-techwriter
-    rust-mode
-    standard-themes
-    swiper
-    symbols-outline
-    which-key
-    yasnippet
-    yasnippet-snippets))
+(setopt package-selected-packages
+        '(apheleia
+          auctex
+          adjust-parens
+          all
+          ansible
+          avy
+          buffer-env
+          cape
+          colorful-mode
+          corfu
+          counsel
+          csv-mode
+          cursor-undo
+          denote
+          doom-modeline
+          edit-indirect
+          editorconfig
+          ef-themes
+          eglot
+          eldoc
+          elpy
+          flycheck
+          flymake
+          font-lock-studio
+          format-all
+          gnu-elpa-keyring-update
+          hl-todo
+          hyperbole
+          indent-bars
+          ivy
+          ivy-hydra
+          jinx
+          lin
+          magit
+          diff-hl
+          markdown-ts-mode
+          modus-themes
+          multiple-cursors
+          nerd-icons
+          nerd-icons-corfu
+          nerd-icons-completion
+          nerd-icons-dired
+          nerd-icons-ibuffer
+          org
+          package-lint
+          plantuml-mode
+          po-mode
+          project
+          projectile
+          pulsar
+          python
+          rainbow-delimiters
+          russian-techwriter
+          rust-mode
+          standard-themes
+          swiper
+          symbols-outline
+          tramp
+          which-key
+          yasnippet
+          yasnippet-snippets))
 
 (dolist (pkg package-selected-packages)
   (unless (package-installed-p pkg)
@@ -1127,21 +1131,18 @@
 (use-package auctex)
 
 
-;; 📦 ADJUST-PARENS
-;; https://elpa.gnu.org/packages/adjust-parens.html
-;; Пакет для автоматического управления скобочками и уровнями отступов.
-(use-package adjust-parens
-  :hook (emacs-lisp-mode . adjust-parens-mode)
-  :bind
-  (:map emacs-lisp-mode-map
-        ("<tab>" . lisp-indent-adjust-parens)
-        ("<backtab>" . lisp-dedent-adjust-parens)))
+;; ;; 📦 ASCIIDOC-MODE
+;; (use-package asciidoc-mode
+;;   :load-path "~/repo/asciidoc-mode/"
+;;   :mode "\\.adoc\\'")
 
 
-;; 📦 ASCIIDOC-MODE
-(use-package asciidoc-mode
+;; 📦 ASCIIDOC-TS-MODE
+(use-package asciidoc-ts-mode
   :load-path "~/repo/asciidoc-mode/"
-  :mode "\\.adoc\\'")
+  :mode ("\\.adoc\\'" . asciidoc-ts-mode)
+  :config
+  (add-hook 'asciidoc-ts-mode-hook #'treesit-inspect-mode))
 
 
 ;; 📦 ALL
@@ -1265,7 +1266,7 @@
 (use-package doom-modeline
   :custom
   (doom-modeline-total-line-number t "Общее количество строк")
-  (doom-modline-vcs-max-length 20 "Видим имена длинных веток")
+  (doom-modline-vcs-max-length 25 "Видим имена длинных веток")
   (doom-modeline-irc nil "Не показывать статус IRC")
   (doom-modeline-battery nil "У меня нет батареи, показывать нечего")
   :config (doom-modeline-mode t))
@@ -1327,7 +1328,7 @@
   (progn
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
     (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
-    (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+    (add-to-list 'eglot-server-programs '(markdown-ts-mode . ("marksman")))
     (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
     (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio"))))
@@ -1339,7 +1340,7 @@
   :hook
   ((ansible-mode
     dockerfile-ts-mode
-    markdown-mode
+    markdown-ts-mode
     python-ts-mode
     ruby-ts-mode
     rust-mode
@@ -1377,7 +1378,7 @@
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
-  ((asciidoc-mode
+  ((asciidoc-ts-mode
     conf-mode
     css-ts-mode
     dockerfile-ts-mode
@@ -1388,7 +1389,7 @@
     latex-mode
     lisp-data-mode
     makefile-mode
-    markdown-mode
+    markdown-ts-mode
     nxml-mode
     python-ts-mode
     rst-mode
@@ -1398,15 +1399,6 @@
     terraform-mode
     yaml-ts-mode
     ) . flycheck-mode))
-
-
-;; 📦 FLYCHECK-EGLOT
-;; https://github.com/flycheck/flycheck-eglot
-;; Интеграция Flycheck с Eglot
-(use-package flycheck-eglot
-  :after (flycheck eglot)
-  :config
-  (global-flycheck-eglot-mode t))
 
 
 ;; 📦 FORMAT-ALL
@@ -1434,7 +1426,7 @@
   (hyperbole-mode-lighter nil "Убрать индикатор из статусной строки")
   :hook
   ((emacs-lisp-mode
-    markdown-mode
+    markdown-ts-mode
     rst-mode
     text-mode) . hyperbole-mode))
 
@@ -1447,7 +1439,7 @@
   ((emacs-lisp-mode
     js-ts-mode
     makefile-mode
-    markdown-mode
+    markdown-ts-mode
     python-ts-mode
     rst-mode
     ruby-ts-mode
@@ -1529,28 +1521,33 @@
 ;; обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
   :hook
-  ((asciidoc-mode
+  ((asciidoc-ts-mode
     emacs-lisp-mode
     makefile-mode
-    markdown-mode
+    markdown-ts-mode
     python-ts-mode
     rst-mode
     yaml-ts-mode). diff-hl-mode)
   ((dired-mode . diff-hl-dired-mode)))
 
 
-;; 📦 MARKDOWN MODE
-;; https://github.com/jrblevin/markdown-mode
-;; Режим для работы с файлами в формате Markdown
-(use-package markdown-mode
-  :defer t
-  :custom
-  (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
-  (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
-  (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
-  :config (setq-local word-wrap t)
-  :bind (:map markdown-mode-map
-              ("M-." . markdown-follow-thing-at-point)))
+;; ;; 📦 MARKDOWN MODE
+;; ;; https://github.com/jrblevin/markdown-mode
+;; ;; Режим для работы с файлами в формате Markdown
+;; (use-package markdown-mode
+;;   :defer t
+;;   :custom
+;;   (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
+;;   (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
+;;   (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
+;;   :config (setq-local word-wrap t)
+;;   :bind (:map markdown-mode-map
+;;               ("M-." . markdown-follow-thing-at-point)))
+
+
+(use-package markdown-ts-mode
+  :ensure t
+  :mode ("\\.md\\'" . markdown-ts-mode))
 
 
 ;; 📦 MODUS-THEMES
@@ -1708,7 +1705,7 @@
 ;; Подсветка парных скобок одним и тем же цветом
 (use-package rainbow-delimiters
   :hook
-  ((asciidoc-mode
+  ((asciidoc-ts-mode
     conf-mode
     css-ts-mode
     emacs-lisp-mode
@@ -1716,7 +1713,7 @@
     lisp-data-mode
     makefile-gmake-mode
     makefile-mode
-    markdown-mode
+    markdown-ts-mode
     nxml-mode
     org-mode
     python-ts-mode
@@ -1770,9 +1767,9 @@
   :bind (:map global-map
               ("C-c i" . symbols-outline-show))
   :hook
-  ((asciidoc-mode
+  ((asciidoc-ts-mode
     emacs-lisp-mode
-    markdown-mode
+    markdown-ts-mode
     python-ts-mode
     rst-mode) . symbols-outline-follow-mode))
 

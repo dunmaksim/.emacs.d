@@ -118,7 +118,7 @@
         read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
         read-process-output-max (* 1024 1024) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
         ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
-        scroll-margin 4 ;; Отступ от верхней и нижней границ буфера
+        ;; scroll-margin 3 ;; Отступ от верхней и нижней границ буфера
         show-trailing-whitespace t ;; Подсветка висячих пробелов
         standard-indent 4 ;; Отступ по умолчанию
         tab-always-indent 'complete ;; Если можно — выровнять текст, иначе — автодополнение.

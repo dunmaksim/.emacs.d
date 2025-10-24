@@ -228,26 +228,26 @@
     (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.4.0" "tree-sitter-asciidoc/src/"))
     (add-to-list 'treesit-language-source-alist '(asciidoc-inline "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.4.0" "tree-sitter-asciidoc_inline/src/"))
     (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.25.0"))
-    (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.23.2"))
+    (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.25.0"))
     (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
     (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.25.0" "src/"))
-    (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.2" "src/"))
+    (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.25.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
     (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
-    ;; (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.5.1" "tree-sitter-markdown/src/"))
-    ;; (add-to-list 'treesit-language-source-alist '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.5.1" "tree-sitter-markdown-inline/src/"))
     (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.4.0" "tree-sitter-markdown/src/"))
     (add-to-list 'treesit-language-source-alist '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.4.0" "tree-sitter-markdown-inline/src/"))
-    (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.23.6"))
+    (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.25.0"))
     (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
     (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
     (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript.git" "v0.23.2" "tsx/src"))
-    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.1" "src/"))
+    (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.2" "src/"))
     ;; Сборка и установка грамматик
     (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'asciidoc init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc-inline.so" init-el-tree-sitter-dir))
+      (treesit-install-language-grammar 'asciidoc-inline init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-bash.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'bash init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-css.so" init-el-tree-sitter-dir))
@@ -279,7 +279,10 @@
     (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir)))
   :custom
-  (treesit-font-lock-level 4 "По умолчанию — 3. Увеличим немного."))
+  (treesit-font-lock-level 4 "По умолчанию — 3. Увеличим немного.")
+  :bind
+  (:map global-map
+        ("<f5>" . treesit-explore-mode)))
 
 
 ;; 📦 ABBREV-MODE
@@ -384,11 +387,12 @@
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
   (desktop-save-mode t)
-  (add-hook 'after-init-hook 'desktop-read)
-  (add-hook 'server-after-make-frame-hook 'desktop-read)
-  (add-hook 'server-done-hook 'desktop-save)
   (add-to-list 'after-delete-frame-functions 'desktop-save)
-  (add-to-list 'desktop-modes-not-to-save 'dired-mode))
+  (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+  :hook
+  (after-init . desktop-read)
+  (server-after-make-frame . desktop-read)
+  (server-done . desktop-save))
 
 
 ;; 📦 DIRED
@@ -811,6 +815,25 @@
         ("<f4>" . replace-regexp)))
 
 
+;; 📦 RST-MODE
+;; Встроенный пакет для редактирования reStructutedText
+;; https://www.writethedocs.org/guide/writing/reStructuredText/
+(use-package rst
+  :custom
+  (rst-default-indent 3)
+  (rst-indent-comment 3)
+  (rst-indent-field 3)
+  (rst-indent-literal-minimized 3)
+  (rst-indent-width 3)
+  (rst-preferred-adornments '((?# over-and-under 1)
+                              (?* over-and-under 1)
+                              (?= simple 0)
+                              (?- simple 0)
+                              (?^ simple 0)
+                              (?\" simple 0)))
+  (rst-toc-indent 3))
+
+
 ;; 📦 RUBY-TS-MODE
 ;; Встроенный пакет для работы с Ruby.
 (use-package ruby-ts-mode
@@ -838,25 +861,6 @@
   (save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
   :config
   (save-place-mode t))
-
-
-;; 📦 RST-MODE
-;; Встроенный пакет для редактирования reStructutedText
-;; https://www.writethedocs.org/guide/writing/reStructuredText/
-(use-package rst
-  :custom
-  (rst-default-indent 3)
-  (rst-indent-comment 3)
-  (rst-indent-field 3)
-  (rst-indent-literal-minimized 3)
-  (rst-indent-width 3)
-  (rst-preferred-adornments '((?# over-and-under 1)
-                              (?* over-and-under 1)
-                              (?= simple 0)
-                              (?- simple 0)
-                              (?^ simple 0)
-                              (?\" simple 0)))
-  (rst-toc-indent 3))
 
 
 ;; 📦 SAVEHIST
@@ -909,6 +913,14 @@
   (compilation-mode . visual-line-mode)
   (messages-buffer-mode . visual-line-mode)
   (text-mode . visual-line-mode))
+
+
+;; 📦 SORT
+;; Встроенный пакет для сортировки всякого разного
+(use-package sort
+  :bind
+  (:map global-map
+        ("<f7>" . sort-lines)))
 
 
 ;; 📦 TEX
@@ -1045,10 +1057,10 @@
 
 (setopt package-selected-packages
         '(apheleia
-          auctex
           adjust-parens
           all
           ansible
+          auctex
           avy
           buffer-env
           cape
@@ -1058,6 +1070,7 @@
           csv-mode
           cursor-undo
           denote
+          diff-hl
           doom-modeline
           edit-indirect
           editorconfig
@@ -1078,13 +1091,12 @@
           jinx
           lin
           magit
-          diff-hl
           markdown-ts-mode
           modus-themes
           multiple-cursors
           nerd-icons
-          nerd-icons-corfu
           nerd-icons-completion
+          nerd-icons-corfu
           nerd-icons-dired
           nerd-icons-ibuffer
           org
@@ -1096,6 +1108,7 @@
           pulsar
           python
           rainbow-delimiters
+          rg
           russian-techwriter
           rust-mode
           standard-themes
@@ -1131,18 +1144,19 @@
 (use-package auctex)
 
 
-;; ;; 📦 ASCIIDOC-MODE
-;; (use-package asciidoc-mode
-;;   :load-path "~/repo/asciidoc-mode/"
-;;   :mode "\\.adoc\\'")
-
-
 ;; 📦 ASCIIDOC-TS-MODE
 (use-package asciidoc-ts-mode
   :load-path "~/repo/asciidoc-mode/"
   :mode ("\\.adoc\\'" . asciidoc-ts-mode)
   :config
   (add-hook 'asciidoc-ts-mode-hook #'treesit-inspect-mode))
+
+(defun toggle-asciidoc-ts-mode ()
+  "Быстрое включение и выключение `asciidoc-ts-mode'."
+  (interactive)
+  (unload-feature 'asciidoc-ts-mode)
+  (asciidoc-ts-mode t))
+(global-set-key (kbd "<f2>") #'toggle-asciidoc-ts-mode)
 
 
 ;; 📦 ALL
@@ -1167,9 +1181,9 @@
 (use-package avy
   :bind
   (:map global-map
-        ("M-g f" . avy-goto-line)
-        ("M-g w" . avy-goto-word)
-        ("C-'" . avy-goto-char)))
+        ("M-g f" . #'avy-goto-line)
+        ("M-g w" . #'avy-goto-word)
+        ("C-'" . #'avy-goto-char)))
 
 
 ;; 📦 BUFFER-ENV
@@ -1227,15 +1241,15 @@
 (use-package counsel
   :bind
   (:map global-map
-        ("C-c c" . counsel-compile)
-        ("C-c g" . counsel-git)
-        ("C-h f" . counsel-describe-function)
-        ("C-h l" . counsel-find-library)
-        ("C-h v" . counsel-describe-variable)
-        ("C-x 8 RET" . counsel-unicode-char)
-        ("C-x C-f" . counsel-find-file)
-        ("M-x" . counsel-M-x)
-        ("M-y" . counsel-yank-pop)))
+        ("C-c c" . #'counsel-compile)
+        ("C-c g" . #'counsel-git)
+        ("C-h f" . #'counsel-describe-function)
+        ("C-h l" . #'counsel-find-library)
+        ("C-h v" . #'counsel-describe-variable)
+        ("C-x 8 RET" . #'counsel-unicode-char)
+        ("C-x C-f" . #'counsel-find-file)
+        ("M-x" . #'counsel-M-x)
+        ("M-y" . #'counsel-yank-pop)))
 
 
 ;; 📦 CSV-MODE
@@ -1266,7 +1280,7 @@
 (use-package doom-modeline
   :custom
   (doom-modeline-total-line-number t "Общее количество строк")
-  (doom-modline-vcs-max-length 25 "Видим имена длинных веток")
+  (doom-modeline-vcs-max-length 25 "Видим имена длинных веток")
   (doom-modeline-irc nil "Не показывать статус IRC")
   (doom-modeline-battery nil "У меня нет батареи, показывать нечего")
   :config (doom-modeline-mode t))
@@ -1482,6 +1496,7 @@
   :custom
   (jinx-languages "ru_RU en_US")
   :hook ((emacs-lisp-mode
+          markdown-ts-mode
           text-mode) . jinx-mode)
   :bind
   (:map global-map
@@ -1546,7 +1561,6 @@
 
 
 (use-package markdown-ts-mode
-  :ensure t
   :mode ("\\.md\\'" . markdown-ts-mode))
 
 
@@ -1684,8 +1698,8 @@
   (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
   :config
   (progn
-    (add-hook 'after-init-hook 'pulsar-global-mode)
-    (add-hook 'next-error-hook 'pulsar-pulse-line)
+    (add-hook 'after-init-hook #'pulsar-global-mode)
+    (add-hook 'next-error-hook #'pulsar-pulse-line)
     (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
     (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
     (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)))
@@ -1725,6 +1739,14 @@
     ) . rainbow-delimiters-mode))
 
 
+;; 📦 RG
+;; https://rgel.readthedocs.io/en/latest/usage.html
+;; Интерфейс к утилите `ripgrep', которая почти как `grep', только лучше,
+;; быстрее и написана на Rust.
+(use-package rx
+  :config (rg-enable-default-bindings))
+
+
 ;; 📦 RUSSIAN-TECHWRITER
 ;; Метод ввода для технических писателей.
 ;; В отличие от russian-computer, позволяет использовать лигатуры.
@@ -1751,8 +1773,8 @@
 (use-package swiper
   :bind
   (:map global-map
-        ("C-s" . swiper-isearch)
-        ("C-r" . swiper-isearch-backward)))
+        ("C-s" . #'swiper-isearch)
+        ("C-r" . #'swiper-isearch-backward)))
 
 
 ;; SYMBOLS-OUTLINE
@@ -1811,7 +1833,7 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(load-theme 'ef-autumn t)
+(load-theme 'ef-deuteranopia-dark t)
 
 (provide 'init.el)
 ;;; init.el ends here

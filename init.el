@@ -791,11 +791,6 @@
   (emacs-lisp-mode . prettify-symbols-mode))
 
 
-;; 📦 PROJECT
-;; Встроенный пакет для работы с проектами
-(use-package project)
-
-
 ;; 📦 REPEAT-MODE
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
@@ -911,6 +906,7 @@
         ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
   (compilation-mode . visual-line-mode)
+  (markdown-ts-mode . visual-line-mode)
   (messages-buffer-mode . visual-line-mode)
   (text-mode . visual-line-mode))
 
@@ -973,6 +969,7 @@
     css-ts-mode
     dockerfile-ts-mode
     emacs-lisp-mode
+    groovy-mode
     html-ts-mode
     js-ts-mode
     json-ts-mode
@@ -1083,6 +1080,7 @@
           font-lock-studio
           format-all
           gnu-elpa-keyring-update
+          groovy-mode
           hl-todo
           hyperbole
           indent-bars
@@ -1107,7 +1105,6 @@
           projectile
           pulsar
           python
-          rainbow-delimiters
           rg
           russian-techwriter
           rust-mode
@@ -1397,12 +1394,14 @@
     css-ts-mode
     dockerfile-ts-mode
     emacs-lisp-mode
+    groovy-mode
     html-ts-mode
     js-ts-mode
     json-ts-mode
     latex-mode
     lisp-data-mode
     makefile-mode
+    markdown-mode
     markdown-ts-mode
     nxml-mode
     python-ts-mode
@@ -1423,6 +1422,13 @@
   :bind
   (:map global-map
         ([f12] . format-all-buffer)))
+
+
+;; 📦 GROOVY-MODE
+;; https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes
+;; Поддержка синтаксиса Groovy, который используется в Jenkinsfile
+(use-package groovy-mode
+  :mode ("Jenkinsfile\\'"))
 
 
 ;; 📦 HL-TODO
@@ -1560,6 +1566,9 @@
 ;;               ("M-." . markdown-follow-thing-at-point)))
 
 
+;; 📦 MARKDOWN-TS-MODE
+;; https://github.com/LionyxML/markdown-ts-mode
+;; Режим на базе TreeSitter для работы с Markdown
 (use-package markdown-ts-mode
   :mode ("\\.md\\'" . markdown-ts-mode))
 
@@ -1691,7 +1700,7 @@
 ;; 📦 PULSAR
 ;; Вспыхивание строки, к которой переместился курсор
 ;; https://github.com/protesilaos/pulsar
-;; Этот пакет требует Emacs версии 27.1 или новее
+;; Этот пакет требует Emacs 27.1 или новее
 (use-package pulsar
   :custom
   (pulsar-pulse t)
@@ -1712,31 +1721,6 @@
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
   (python-indent-offset 4 "Отступ по умолчанию — 4 пробела"))
-
-
-;; 📦 RAINBOW-DELIMITERS-MODE
-;; https://github.com/Fanael/rainbow-delimiters
-;; Подсветка парных скобок одним и тем же цветом
-(use-package rainbow-delimiters
-  :hook
-  ((asciidoc-ts-mode
-    conf-mode
-    css-ts-mode
-    emacs-lisp-mode
-    js-ts-mode
-    lisp-data-mode
-    makefile-gmake-mode
-    makefile-mode
-    markdown-ts-mode
-    nxml-mode
-    org-mode
-    python-ts-mode
-    rst-mode
-    sh-mode
-    sql-mode
-    terraform-mode
-    yaml-ts-mode
-    ) . rainbow-delimiters-mode))
 
 
 ;; 📦 RG

@@ -266,7 +266,7 @@
       (treesit-install-language-grammar 'json init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-markdown.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'markdown init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libree-sitter-markdown-inline.so" init-el-tree-sitter-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-markdown-inline.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'markdown-inline init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-python.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'python init-el-tree-sitter-dir))
@@ -292,6 +292,7 @@
 (use-package abbrev
   :hook
   ((asciidoc-ts-mode
+    markdown-mode
     markdown-ts-mode
     rst-mode) . abbrev-mode))
 
@@ -1366,8 +1367,10 @@
   :config
   (global-eldoc-mode nil)
   :custom
-  (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
-  :hook (emacs-lisp-mode . eldoc-mode))
+  (eldoc-minor-mode-string nil "Не надо показывать ничего в строке статуса.")
+  :hook
+  ((emacs-lisp-mode
+    lisp-interaction-mode) . eldoc-mode))
 
 
 ;; 📦 ELPY
@@ -1456,9 +1459,11 @@
 ;; Красивая подсветка отступов
 (use-package indent-bars
   :hook
-  ((emacs-lisp-mode
+  ((css-ts-mode
+    javascript-mode
     js-ts-mode
     makefile-mode
+    markdown-mode
     markdown-ts-mode
     python-ts-mode
     rst-mode
@@ -1479,9 +1484,7 @@
   (ivy-mode t)
   :bind
   (:map global-map
-        ("C-x b" . ivy-switch-buffer)
-        ("C-c v" . ivy-push-view)
-        ("C-c V" . ivy-pop-view)))
+        ("C-x b" . #'ivy-switch-buffer)))
 
 
 ;; 📦 IVY-HYDRA

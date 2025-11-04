@@ -232,8 +232,8 @@
     (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
-    (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.25.0" "src/"))
-    (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.25.0" "src/"))
+    (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1" "src/"))
+    (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
     (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.4.0" "tree-sitter-markdown/src/"))
@@ -1058,6 +1058,7 @@
           adjust-parens
           all
           ansible
+          async
           auctex
           avy
           buffer-env
@@ -1067,6 +1068,7 @@
           counsel
           csv-mode
           cursor-undo
+          dashboard
           denote
           diff-hl
           doom-modeline
@@ -1102,6 +1104,7 @@
           package-lint
           plantuml-mode
           po-mode
+          posframe
           project
           projectile
           pulsar
@@ -1154,7 +1157,6 @@
   (interactive)
   (unload-feature 'asciidoc-ts-mode)
   (asciidoc-ts-mode t))
-(global-set-key (kbd "<f2>") #'toggle-asciidoc-ts-mode)
 
 
 ;; 📦 ALL
@@ -1264,6 +1266,29 @@
   :config (cursor-undo t))
 
 
+;; 📦 DASHBOARD
+;; https://github.com/emacs-dashboard/emacs-dashboard
+(use-package dashboard
+  :custom
+  (dashboard-banner-logo-title "Добро пожаловать!")
+  (dashboard-center-content t)
+  (dashboard-items '((recents . 15)
+                     (bookmarks . 5)
+                     (projects . 10)))
+  (dashboard-item-names '(("Agenda for the coming week:" . "Список дел на следующую неделю:")
+                          ("Agenda for today:" . "Список дел на сегодня:")
+                          ("Bookmarks:" . "Закладки:")
+                          ("Projects:" . "Проекты:")
+                          ("Recent Files:" . "Последние открытые файлы:")
+                          ("Registers:" . "Регистры:")))
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-display-icons-p t)
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
+  (initial-buffer-choice (lambda ()(get-buffer-create dashboard-buffer-name)))
+  :config (dashboard-setup-startup-hook))
+
+
 ;; 📦 DENOTE
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
@@ -1356,6 +1381,7 @@
     python-ts-mode
     ruby-ts-mode
     rust-mode
+    rust-ts-mode
     yaml-ts-mode
     ) . eglot-ensure))
 

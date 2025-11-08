@@ -869,6 +869,12 @@
   (savehist-mode t))
 
 
+;; 📦 SEMANTIC
+;; Встроенный аналог TreeSitter
+(use-package semantic
+  :config (semantic-mode t))
+
+
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет для работы со скриптами Shell.
 (use-package sh-script
@@ -1079,6 +1085,9 @@
           eldoc
           elpy
           flycheck
+          flycheck-inline
+          flycheck-eglot
+          flycheck-rust
           flymake
           font-lock-studio
           format-all
@@ -1152,6 +1161,7 @@
   :config
   (add-hook 'asciidoc-ts-mode-hook #'treesit-inspect-mode))
 
+
 (defun toggle-asciidoc-ts-mode ()
   "Быстрое включение и выключение `asciidoc-ts-mode'."
   (interactive)
@@ -1182,7 +1192,7 @@
   :bind
   (:map global-map
         ("M-g f" . #'avy-goto-line)
-        ("M-g w" . #'avy-goto-word)
+        ("M-g w" . #'avy-goto-word-0)
         ("C-'" . #'avy-goto-char)))
 
 
@@ -1272,17 +1282,19 @@
   :custom
   (dashboard-banner-logo-title "Добро пожаловать!")
   (dashboard-center-content t)
-  (dashboard-items '((recents . 15)
-                     (bookmarks . 5)
-                     (projects . 10)))
+  (dashboard-items '((projects . 10)
+                     (recents . 15)
+                     (bookmarks . 5)))
   (dashboard-item-names '(("Agenda for the coming week:" . "Список дел на следующую неделю:")
                           ("Agenda for today:" . "Список дел на сегодня:")
                           ("Bookmarks:" . "Закладки:")
                           ("Projects:" . "Проекты:")
                           ("Recent Files:" . "Последние открытые файлы:")
                           ("Registers:" . "Регистры:")))
-  (dashboard-icon-type 'nerd-icons)
-  (dashboard-display-icons-p t)
+  (dashboard-icon-type 'nerd-icons "Современные иконки.")
+  (dashboard-display-icons-p t "Показывать иконки.")
+  (dashboard-projects-backend 'projectile "Используем продвинутый менеджер проектов.")
+  (dashboard-remove-missing-entry t "Не показывать битые ссылки.")
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons t)
   (initial-buffer-choice (lambda ()(get-buffer-create dashboard-buffer-name)))
@@ -1441,6 +1453,30 @@
     terraform-mode
     yaml-ts-mode
     ) . flycheck-mode))
+
+
+;; 📦 FLYCHECK-INLINE
+;; https://github.com/flycheck/flycheck-inline
+;; Вывод сообщений об ошибках в позиции курсора.
+(use-package flycheck-inline
+  :hook
+  (flycheck-mode . flycheck-inline-mode))
+
+
+;; 📦 FLYCHECK-EGLOT
+;; https://github.com/flycheck/flycheck-eglot
+;; Поддержка Eglot
+(use-package flycheck-eglot
+  :after (flycheck eglot)
+  :config (global-flycheck-eglot-mode t))
+
+
+;; 📦 FLYCHECK-RUST
+;; https://github.com/flycheck/flycheck-rust
+;; Улучшенная работа с Rust
+(use-package flycheck-rust
+  :hook
+  (rust-mode . flycheck-rust-setup))
 
 
 ;; 📦 FORMAT-ALL
@@ -1846,7 +1882,7 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-(load-theme 'ef-deuteranopia-dark t)
+(load-theme 'ef-elea-dark t)
 
 (provide 'init.el)
 ;;; init.el ends here

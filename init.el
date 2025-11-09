@@ -228,10 +228,8 @@
     (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.4.0" "tree-sitter-asciidoc/src/"))
     (add-to-list 'treesit-language-source-alist '(asciidoc-inline "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.4.0" "tree-sitter-asciidoc_inline/src/"))
     (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.25.0"))
-    (add-to-list 'treesit-language-source-alist '(css "https://github.com/tree-sitter/tree-sitter-css.git" "v0.25.0"))
     (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.2.0" "src/"))
-    (add-to-list 'treesit-language-source-alist '(html "https://github.com/tree-sitter/tree-sitter-html.git" "v0.23.2"))
     (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
@@ -250,16 +248,12 @@
       (treesit-install-language-grammar 'asciidoc-inline init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-bash.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'bash init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-css.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'css init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-dockerfile.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'dockerfile init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-javascript.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'javascript init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-hcl.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'hcl init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-html.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'html init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-jsdoc.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'jsdoc init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-json.so" init-el-tree-sitter-dir))
@@ -419,7 +413,7 @@
     csv-mode
     dockerfile-ts-mode
     emacs-lisp-mode
-    html-ts-mode
+    html-mode
     js-ts-mode
     json-ts-mode
     latex-mode
@@ -479,7 +473,7 @@
     css-ts-mode
     emacs-lisp-data-mode
     emacs-lisp-mode
-    html-ts-mode
+    html-mode
     js-ts-mode
     json-ts-mode
     lisp-data-mode
@@ -534,7 +528,6 @@
     (add-to-list 'safe-local-variable-values '(lexical-binding . t))
     (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
     (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-    (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
     (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
     (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
     (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
@@ -616,7 +609,7 @@
   :hook
   ((asciidoc-ts-mode
     emacs-lisp-mode
-    html-ts-mode
+    html-mode
     markdown-ts-mode
     rst-mode) . goto-address-mode))
 
@@ -630,9 +623,9 @@
   (:map global-map ("<f6>" . find-grep)))
 
 
-;; 📦 HTML-TS-MODE
+;; 📦 HTML-MODE
 ;; Встроенный пакет для работы с HTML и SGML.
-(use-package html-ts-mode
+(use-package html-mode
   :mode
   ("\\.hbs\\'"
    "\\.html\\'"
@@ -703,7 +696,7 @@
       ("SQL" (mode . sql-mode))
       ("Web"
        (or
-        (mode . html-ts-mode)
+        (mode . html-mode)
         (mode . js-ts-mode)))
       ("Magit"
        (or
@@ -872,7 +865,11 @@
 ;; 📦 SEMANTIC
 ;; Встроенный аналог TreeSitter
 (use-package semantic
-  :config (semantic-mode t))
+  :config
+  (add-to-list 'semantic-default-submodes 'global-semanticdb-minor-mode)
+  (add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
+  (add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
+  (semantic-mode t))
 
 
 ;; 📦 SHELL-SCRIPT-MODE
@@ -977,7 +974,7 @@
     dockerfile-ts-mode
     emacs-lisp-mode
     groovy-mode
-    html-ts-mode
+    html-mode
     js-ts-mode
     json-ts-mode
     latex-mode
@@ -1157,16 +1154,7 @@
 ;; 📦 ASCIIDOC-TS-MODE
 (use-package asciidoc-ts-mode
   :load-path "~/repo/asciidoc-mode/"
-  :mode ("\\.adoc\\'" . asciidoc-ts-mode)
-  :config
-  (add-hook 'asciidoc-ts-mode-hook #'treesit-inspect-mode))
-
-
-(defun toggle-asciidoc-ts-mode ()
-  "Быстрое включение и выключение `asciidoc-ts-mode'."
-  (interactive)
-  (unload-feature 'asciidoc-ts-mode)
-  (asciidoc-ts-mode t))
+  :mode ("\\.adoc\\'" . asciidoc-ts-mode))
 
 
 ;; 📦 ALL
@@ -1222,7 +1210,7 @@
   :hook
   ((css-ts-mode
     emacs-lisp-mode
-    html-ts-mode
+    html-mode
     json-ts-mode
     yaml-ts-mode) . colorful-mode))
 
@@ -1235,7 +1223,7 @@
   ((css-ts-mode
     dockerfile-ts-mode
     emacs-lisp-mode
-    html-ts-mode
+    html-mode
     latex-mode
     lisp-data-mode
     nxml-mode
@@ -1436,7 +1424,7 @@
     dockerfile-ts-mode
     emacs-lisp-mode
     groovy-mode
-    html-ts-mode
+    html-mode
     js-ts-mode
     json-ts-mode
     latex-mode

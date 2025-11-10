@@ -550,7 +550,8 @@
 ;; 📦 FLYMAKE
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
-  :hook (emacs-mode . flymake-mode))
+  :hook ((emacs-mode
+          wisent-grammar-mode) . flymake-mode))
 
 
 ;; 📦 FLYSPELL-MODE
@@ -993,6 +994,7 @@
     sql-mode
     terraform-mode
     tex-mode
+    wisent-grammar-mode
     yaml-ts-mode) . whitespace-mode))
 
 
@@ -1025,6 +1027,12 @@
   (:map global-map
         ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
         ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
+
+
+;; 📦 WISENT
+;; Встроенный пакет для создания грамматик.
+(use-package wisent
+  :mode ("\\.wi\\'" . wisent-grammar-mode))
 
 
 ;; 📦 XML
@@ -1060,14 +1068,13 @@
         '(apheleia
           adjust-parens
           all
-          ansible
           async
           auctex
           avy
           buffer-env
-          cape
           colorful-mode
-          corfu
+          company
+          company-statistics
           counsel
           csv-mode
           cursor-undo
@@ -1103,7 +1110,6 @@
           multiple-cursors
           nerd-icons
           nerd-icons-completion
-          nerd-icons-corfu
           nerd-icons-dired
           nerd-icons-ibuffer
           org
@@ -1193,16 +1199,6 @@
   (add-hook 'comint-mode-hook #'buffer-env-update))
 
 
-;; 📦 CAPE
-;; https://github.com/minad/cape
-;; Бэкенды автодополнения для CORFU
-(use-package cape
-  :config
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
-
-
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
@@ -1215,27 +1211,22 @@
     yaml-ts-mode) . colorful-mode))
 
 
-;; 📦 CORFU
-;; corfu.el - COmpletion in Region FUnction
-;; Минималистичный аналог Company
-(use-package corfu
-  :hook
-  ((css-ts-mode
-    dockerfile-ts-mode
-    emacs-lisp-mode
-    html-mode
-    latex-mode
-    lisp-data-mode
-    nxml-mode
-    org-mode
-    python-ts-mode
-    ruby-ts-mode
-    tex-mode) . corfu-mode))
+;; 📦 COMPANY
+;; https://company-mode.github.io/
+(use-package company
+  :hook (after-init . global-company-mode))
+
+
+;; 📦 COMPANY-STATISTICS
+;; https://github.com/company-mode/company-statistics
+;; Сортирует кандидаты по частоте использования
+(use-package company-statistics
+  :hook (after-init . company-statistics-mode))
 
 
 ;; 📦 COUNSEL
 ;; https://elpa.gnu.org/packages/counsel.html
-;; Автодополнение на основе Ivy
+;; Удобные функции на основе Ivy
 (use-package counsel
   :bind
   (:map global-map
@@ -1518,6 +1509,7 @@
     python-ts-mode
     rst-mode
     ruby-ts-mode
+    wisent-grammar-mode
     yaml-ts-mode
     ) . indent-bars-mode))
 
@@ -1657,14 +1649,6 @@
   (nerd-icons-color-icons t "Использовать цветные иконки."))
 
 
-;; 📦 NERD-ICONS-CORFU
-;; https://github.com/LuigiPiucco/nerd-icons-corfu
-;; Иконки в CORFU
-(use-package nerd-icons-corfu
-  :after (corfu nerd-icons)
-  :config
-  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
-
 
 ;; 📦 NERD-ICONS-COMPLETION
 ;; https://github.com/rainstormstudio/nerd-icons-completion
@@ -1790,7 +1774,7 @@
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
   :custom
-  (default-qinput-method "russian-techwriter" "Метод ввода по умолчанию.")
+  (default-input-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
 
 

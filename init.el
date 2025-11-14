@@ -83,6 +83,45 @@
   (make-directory init-el-package-user-dir))
 
 
+(defun delete-forward-word (arg)
+  "Delete forward word without moving them into kill-ring.
+ARG is a count of deleting words."
+  (interactive "p")
+  (delete-region
+   (point)
+   (progn
+     (forward-word arg)
+     (point))))
+
+
+(defun delete-backward-word (arg)
+  "Delete backward word without moving them into kill-ring.
+ARG is a count of deleting words."
+  (interactive "p")
+  (delete-forward-word (- arg)))
+
+(defun delete-line-forward ()
+  "Delete line without pushing text to `kill-ring'."
+  (interactive)
+  (delete-region
+   (point)
+   (progn
+     (end-of-line 1)
+     (point)))
+  (delete-char 1))
+
+(defun delete-line-backward ()
+  "Delete line without pushing text to `kill-ring'."
+  (interactive)
+  (let (p1 p2)
+    (setq p1 (point))
+    (beginning-of-line 1)
+    (setq p2 (point))
+    (delete-region p1 p2)))
+
+(global-unset-key "<M-backspace>")
+(global-set-key (kbd "<M-backspace>") 'delete-backward-word)
+
 ;; Определение пути к каталогу с исходным кодом
 (when (string-equal system-type "gnu/linux")
   (message "Используется ОС на базе GNU/Linux")
@@ -103,31 +142,31 @@
     ;; Каталог не существует
     (message (format "Каталог %s не существует." init-el-emacs-source-path))))
 
-(setopt completion-ignore-case t ;; Игнорировать регистр при автодополнении
-        create-lockfiles nil ;; Не создавать lock-файлы
-        cursor-type 'bar ;; Курсор в виде вертикальной черты
-        default-input-method "russian-computer" ;; Метод ввода по умолчанию
-        default-transient-input-method "russian-computer" ;; Временный метод ввода
-        delete-by-moving-to-trash t ;; Удалять файлы в Корзину
-        gc-cons-threshold (* 2 gc-cons-threshold) ;; Увеличить размер памяти для сборщика мусора
-        inhibit-startup-screen t ;; Не показывать приветственный экран
-        initial-scratch-message nil ;; Пустой буфер *scratch*
-        load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
-        major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
-        read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
-        read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
-        read-process-output-max (* 1024 1024) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
-        ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
-        ;; scroll-margin 3 ;; Отступ от верхней и нижней границ буфера
-        show-trailing-whitespace t ;; Подсветка висячих пробелов
-        standard-indent 4 ;; Отступ по умолчанию
-        tab-always-indent 'complete ;; Если можно — выровнять текст, иначе — автодополнение.
-        use-dialog-box nil ;; Диалоговые окна ОС не нужны
-        use-short-answers t ;; Краткие ответы вместо длинных
-        user-full-name "Dunaevsky Maxim" ;; Имя пользователя
-        user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты
-        vc-follow-symlinks t ;; Переходить по ссылкам без лишних вопросов
-        visible-bell t) ;; Мигать буфером при переходе в него
+(setopt
+ completion-ignore-case t ;; Игнорировать регистр при автодополнении
+ create-lockfiles nil ;; Не создавать lock-файлы
+ cursor-type 'bar ;; Курсор в виде вертикальной черты
+ default-input-method "russian-computer" ;; Метод ввода по умолчанию
+ default-transient-input-method "russian-computer" ;; Временный метод ввода
+ delete-by-moving-to-trash t ;; Удалять файлы в Корзину
+ gc-cons-threshold (* 2 gc-cons-threshold) ;; Увеличить размер памяти для сборщика мусора
+ inhibit-startup-screen t ;; Не показывать приветственный экран
+ initial-scratch-message nil ;; Пустой буфер *scratch*
+ load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
+ major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
+ read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
+ read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
+ read-process-output-max (* 1024 1024) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
+ ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
+ show-trailing-whitespace t ;; Подсветка висячих пробелов
+ standard-indent 4 ;; Отступ по умолчанию
+ tab-always-indent 'complete ;; Если можно — выровнять текст, иначе — автодополнение.
+ use-dialog-box nil ;; Диалоговые окна ОС не нужны
+ use-short-answers t ;; Краткие ответы вместо длинных
+ user-full-name "Dunaevsky Maxim" ;; Имя пользователя
+ user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты
+ vc-follow-symlinks t ;; Переходить по ссылкам без лишних вопросов
+ visible-bell t) ;; Мигать буфером при переходе в него
 
 
 (defun init-kill-scratch ()
@@ -234,8 +273,6 @@
     (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
     (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
-    (add-to-list 'treesit-language-source-alist '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.4.0" "tree-sitter-markdown/src/"))
-    (add-to-list 'treesit-language-source-alist '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git" "v0.4.0" "tree-sitter-markdown-inline/src/"))
     (add-to-list 'treesit-language-source-alist '(python "https://github.com/tree-sitter/tree-sitter-python.git" "v0.25.0"))
     (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
     (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
@@ -258,10 +295,6 @@
       (treesit-install-language-grammar 'jsdoc init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-json.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'json init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-markdown.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'markdown init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-markdown-inline.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'markdown-inline init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-python.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'python init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-ruby.so" init-el-tree-sitter-dir))
@@ -287,7 +320,7 @@
   :hook
   ((asciidoc-ts-mode
     markdown-mode
-    markdown-ts-mode
+    markdown-mode
     rst-mode) . abbrev-mode))
 
 
@@ -382,10 +415,11 @@
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
   (desktop-save-mode t)
-  (add-to-list 'after-delete-frame-functions 'desktop-save)
+  (add-to-list 'delete-frame-functions 'desktop-save)
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
   :hook
   (after-init . desktop-read)
+  (kill-emacs . desktop-save)
   (server-after-make-frame . desktop-read)
   (server-done . desktop-save))
 
@@ -419,7 +453,7 @@
     latex-mode
     lisp-data-mode
     makefile-mode
-    markdown-ts-mode
+    markdown-mode
     mhtml-mode
     nxml-mode
     po-mode
@@ -446,7 +480,7 @@
 (use-package electric
   :hook
   ((emacs-lisp-mode
-    markdown-ts-mode
+    markdown-mode
     mhtml-mode
     nxml-mode
     python-ts-mode
@@ -477,7 +511,7 @@
     js-ts-mode
     json-ts-mode
     lisp-data-mode
-    markdown-ts-mode
+    markdown-mode
     mhtml-mode
     nxml-mode
     org-mode
@@ -611,7 +645,7 @@
   ((asciidoc-ts-mode
     emacs-lisp-mode
     html-mode
-    markdown-ts-mode
+    markdown-mode
     rst-mode) . goto-address-mode))
 
 
@@ -679,7 +713,7 @@
         (mode . emacs-lisp-mode)
         (mode . lisp-data-mode)))
       ("Org" (mode . org-mode))
-      ("Markdown" (mode . markdown-ts-mode))
+      ("Markdown" (mode . markdown-mode))
       ("AsciiDoc" (mode . asciidoc-ts-mode))
       ("ReStructured Text" (mode . rst-mode))
       ("CONF / INI"
@@ -857,6 +891,7 @@
 ;; Встроенный пакет для запоминания истории команд
 (use-package savehist
   :hook
+  (server-done . savehist-save)
   (kill-emacs . savehist-save)
   :config
   (add-to-list 'delete-frame-functions 'savehist-save)
@@ -911,7 +946,7 @@
         ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
   (compilation-mode . visual-line-mode)
-  (markdown-ts-mode . visual-line-mode)
+  (markdown-mode . visual-line-mode)
   (messages-buffer-mode . visual-line-mode)
   (text-mode . visual-line-mode))
 
@@ -982,7 +1017,7 @@
     lisp-data-mode
     makefile-gmake-mode
     makefile-mode
-    markdown-ts-mode
+    markdown-mode
     nxml-mode
     org-mode
     po-mode
@@ -1105,7 +1140,7 @@
           jinx
           lin
           magit
-          markdown-ts-mode
+          markdown-mode
           modus-themes
           multiple-cursors
           nerd-icons
@@ -1313,6 +1348,8 @@
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
   :bind (:map global-map
+              ("C-c '" . edit-indirect-region)
+              :map markdown-mode-map
               ("C-c '" . edit-indirect-region)))
 
 
@@ -1356,7 +1393,7 @@
   (progn
     (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
     (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
-    (add-to-list 'eglot-server-programs '(markdown-ts-mode . ("marksman")))
+    (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
     (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
     (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "rubocop" "--lsp")))
     (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio"))))
@@ -1368,7 +1405,7 @@
   :hook
   ((ansible-mode
     dockerfile-ts-mode
-    markdown-ts-mode
+    markdown-mode
     python-ts-mode
     ruby-ts-mode
     rust-mode
@@ -1422,7 +1459,7 @@
     lisp-data-mode
     makefile-mode
     markdown-mode
-    markdown-ts-mode
+    markdown-mode
     nxml-mode
     python-ts-mode
     rst-mode
@@ -1490,7 +1527,7 @@
   (hyperbole-mode-lighter nil "Убрать индикатор из статусной строки")
   :hook
   ((emacs-lisp-mode
-    markdown-ts-mode
+    markdown-mode
     rst-mode
     text-mode) . hyperbole-mode))
 
@@ -1505,7 +1542,7 @@
     js-ts-mode
     makefile-mode
     markdown-mode
-    markdown-ts-mode
+    markdown-mode
     python-ts-mode
     rst-mode
     ruby-ts-mode
@@ -1547,7 +1584,7 @@
   :custom
   (jinx-languages "ru_RU en_US")
   :hook ((emacs-lisp-mode
-          markdown-ts-mode
+          markdown-mode
           text-mode) . jinx-mode)
   :bind
   (:map global-map
@@ -1590,32 +1627,24 @@
   ((asciidoc-ts-mode
     emacs-lisp-mode
     makefile-mode
-    markdown-ts-mode
+    markdown-mode
     python-ts-mode
     rst-mode
     yaml-ts-mode). diff-hl-mode)
   ((dired-mode . diff-hl-dired-mode)))
 
 
-;; ;; 📦 MARKDOWN MODE
-;; ;; https://github.com/jrblevin/markdown-mode
-;; ;; Режим для работы с файлами в формате Markdown
-;; (use-package markdown-mode
-;;   :defer t
-;;   :custom
-;;   (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
-;;   (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
-;;   (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
-;;   :config (setq-local word-wrap t)
-;;   :bind (:map markdown-mode-map
-;;               ("M-." . markdown-follow-thing-at-point)))
-
-
-;; 📦 MARKDOWN-TS-MODE
-;; https://github.com/LionyxML/markdown-ts-mode
-;; Режим на базе TreeSitter для работы с Markdown
-(use-package markdown-ts-mode
-  :mode ("\\.md\\'" . markdown-ts-mode))
+;; 📦 MARKDOWN MODE
+;; https://github.com/jrblevin/markdown-mode
+;; Режим для работы с файлами в формате Markdown
+(use-package markdown-mode
+  :custom
+  (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
+  (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
+  (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
+  :config (setq-local word-wrap t)
+  :bind (:map markdown-mode-map
+              ("M-." . markdown-follow-thing-at-point)))
 
 
 ;; 📦 MODUS-THEMES
@@ -1812,7 +1841,7 @@
   :hook
   ((asciidoc-ts-mode
     emacs-lisp-mode
-    markdown-ts-mode
+    markdown-mode
     python-ts-mode
     rst-mode) . symbols-outline-follow-mode))
 

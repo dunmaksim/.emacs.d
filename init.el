@@ -84,8 +84,6 @@
 
 
 (defun delete-forward-word (arg)
-  "Delete forward word without moving them into kill-ring.
-ARG is a count of deleting words."
   (interactive "p")
   (delete-region
    (point)
@@ -95,13 +93,10 @@ ARG is a count of deleting words."
 
 
 (defun delete-backward-word (arg)
-  "Delete backward word without moving them into kill-ring.
-ARG is a count of deleting words."
   (interactive "p")
   (delete-forward-word (- arg)))
 
 (defun delete-line-forward ()
-  "Delete line without pushing text to `kill-ring'."
   (interactive)
   (delete-region
    (point)
@@ -111,7 +106,6 @@ ARG is a count of deleting words."
   (delete-char 1))
 
 (defun delete-line-backward ()
-  "Delete line without pushing text to `kill-ring'."
   (interactive)
   (let (p1 p2)
     (setq p1 (point))
@@ -119,8 +113,6 @@ ARG is a count of deleting words."
     (setq p2 (point))
     (delete-region p1 p2)))
 
-(global-unset-key "<M-backspace>")
-(global-set-key (kbd "<M-backspace>") 'delete-backward-word)
 
 ;; Определение пути к каталогу с исходным кодом
 (when (string-equal system-type "gnu/linux")
@@ -266,7 +258,6 @@ ARG is a count of deleting words."
     ;; Грамматики
     (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.4.0" "tree-sitter-asciidoc/src/"))
     (add-to-list 'treesit-language-source-alist '(asciidoc-inline "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.4.0" "tree-sitter-asciidoc_inline/src/"))
-    (add-to-list 'treesit-language-source-alist '(bash "https://github.com/tree-sitter/tree-sitter-bash.git" "v0.25.0"))
     (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1" "src/"))
@@ -283,8 +274,6 @@ ARG is a count of deleting words."
       (treesit-install-language-grammar 'asciidoc init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc-inline.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'asciidoc-inline init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-bash.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'bash init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-dockerfile.so" init-el-tree-sitter-dir))
       (treesit-install-language-grammar 'dockerfile init-el-tree-sitter-dir))
     (unless (file-exists-p (expand-file-name "libtree-sitter-javascript.so" init-el-tree-sitter-dir))
@@ -395,6 +384,13 @@ ARG is a count of deleting words."
   (css-indent-offset 2 "Отступ 2 пробела"))
 
 
+;; 📦 CUSTOM
+;; Встроенный пакет для управления настройками кастомизации
+(use-package custom
+  :custom
+  (custom-safe-themes t "Все темы считаем безопасными"))
+
+
 ;; 📦 DELSEL
 ;; Встроенный пакет.
 ;; Используется для управления удалением выделенного текста.
@@ -419,8 +415,8 @@ ARG is a count of deleting words."
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
   :hook
   (after-init . desktop-read)
-  (kill-emacs . desktop-save)
   (server-after-make-frame . desktop-read)
+  (kill-emacs . (lambda () (desktop-save user-emacs-directory t)))
   (server-done . desktop-save))
 
 
@@ -912,8 +908,8 @@ ARG is a count of deleting words."
 ;; Встроенный пакет для работы со скриптами Shell.
 (use-package sh-script
   :mode
-  ("\\.bash_aliases\\'" . bash-ts-mode)
-  ("\\.bashrc\\'" . bash-ts-mode)
+  ("\\.bash_aliases\\'" . sh-mode)
+  ("\\.bashrc\\'" . sh-mode)
   ("\\.envrc\\'" . sh-mode)
   ("\\.profile\\'" . sh-mode)
   ("\\.sh\\'" . sh-mode))
@@ -937,6 +933,7 @@ ARG is a count of deleting words."
   (indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
   (overwrite-mode nil "Выключить режим перезаписи.")
+  (save-interprogram-paste-before-kill t "Сохранять данные в kill ring перед попаданием нового фрагмента")
   (size-indication-mode nil "Выключить показ размера буфера в mode-line")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
@@ -1163,6 +1160,7 @@ ARG is a count of deleting words."
           swiper
           symbols-outline
           tramp
+          vundo
           which-key
           yasnippet
           yasnippet-snippets))
@@ -1196,6 +1194,10 @@ ARG is a count of deleting words."
 (use-package asciidoc-ts-mode
   :load-path "~/repo/asciidoc-mode/"
   :mode ("\\.adoc\\'" . asciidoc-ts-mode))
+
+;; (use-package optimized-defaults
+;;   :load-path "~/repo/optimized-defaults/"
+;;   :config (optimized-defaults))
 
 
 ;; 📦 ALL
@@ -1328,10 +1330,30 @@ ARG is a count of deleting words."
 ;; Красивая строка статуса
 (use-package doom-modeline
   :custom
-  (doom-modeline-total-line-number t "Общее количество строк")
-  (doom-modeline-vcs-max-length 25 "Видим имена длинных веток")
-  (doom-modeline-irc nil "Не показывать статус IRC")
   (doom-modeline-battery nil "У меня нет батареи, показывать нечего")
+  (doom-modeline-buffer-file-name-style 'truncate-upto-project)
+  (doom-modeline-buffer-modification-icon t "Иконка наличия изменений")
+  (doom-modeline-buffer-name t "Название буфера")
+  (doom-modeline-buffer-state-icon t "Иконка состояния буфера")
+  (doom-modeline-env-enable-python t "Отслеживать окружения Python")
+  (doom-modeline-env-enable-ruby t "Отслеживать окружения Ruby")
+  (doom-modeline-env-version t "Версия окружения")
+  (doom-modeline-highlight-modified-buffer-name "Подсвечивать название изменённого буфера")
+  (doom-modeline-icon t "Поддержка иконок")
+  (doom-modeline-irc nil "Не показывать статус IRC")
+  (doom-modeline-lsp t "Статус LSP")
+  (doom-modeline-lsp-icon t "Иконка LSP-сервера")
+  (doom-modeline-major-mode-color-icon t "Цветная иконка основного режима")
+  (doom-modeline-major-mode-icon t "Иконка основного режима")
+  (doom-modeline-modal t "Вывод названия модального режима, если он активен")
+  (doom-modeline-modal-icon t "Иконка модального режима, если он активен")
+  (doom-modeline-project-name t "Название проекта")
+  (doom-modeline-support-imenu t "Поддержка imenu")
+  (doom-modeline-total-line-number t "Общее количество строк")
+  (doom-modeline-total-line-number t "Общее количество строк")
+  (doom-modeline-vcs-display-function #'doom-modeline-vcs-name "Функция получения названия текущей ветки VCS")
+  (doom-modeline-vcs-max-length 30 "Видим имена длинных веток")
+  (doom-modeline-workspace-name t "Название рабочего пространства")
   :config (doom-modeline-mode t))
 
 
@@ -1678,7 +1700,6 @@ ARG is a count of deleting words."
   (nerd-icons-color-icons t "Использовать цветные иконки."))
 
 
-
 ;; 📦 NERD-ICONS-COMPLETION
 ;; https://github.com/rainstormstudio/nerd-icons-completion
 ;; Иконки в автозавершении ввода.
@@ -1846,6 +1867,31 @@ ARG is a count of deleting words."
     rst-mode) . symbols-outline-follow-mode))
 
 
+;; VUNDO
+;; https://github.com/casouri/vundo
+;; Визуализация отмен.
+;; C-z -- запуск.
+;; f -- вперёд
+;; b -- назад
+;; n -- другая ветка
+;; p -- предыдущая ветка
+;; a -- назад к ближайшей развилке
+;; w -- вперёд к ближайшей развилке
+;; e -- в конец ветки
+;; l -- к последнему сохранённому узлу
+;; r -- к следующему сохранённому узлу
+;; m -- выбрать узел для просмотра diff
+;; u -- снять выделение
+;; d -- показать diff между текущим и отмеченным (или родительским) узлом
+;; q -- закрыть
+;; C-c C-s -- сохранить изменения
+(use-package vundo
+  :init (keymap-global-unset "C-z")
+  :map (:global-map
+        ("C-z" . vundo))
+  :config (vundo-mode t))
+
+
 ;; 📦 WHICH-KEY MODE
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
@@ -1879,7 +1925,6 @@ ARG is a count of deleting words."
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
 ;; Набор сниппетов для `yasnippet'
 (use-package yasnippet-snippets)
-
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)

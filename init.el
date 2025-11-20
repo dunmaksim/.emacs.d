@@ -1886,9 +1886,12 @@
 ;; q -- закрыть
 ;; C-c C-s -- сохранить изменения
 (use-package vundo
-  :init (keymap-global-unset "C-z")
-  :map (:global-map
-        ("C-z" . vundo))
+  :init
+  (keymap-global-unset "C-z")
+  (keymap-global-unset "C-/")
+  :bind (:map global-map
+              ("C-z" . vundo)
+              ("C-/" . vundo))
   :config (vundo-mode t))
 
 

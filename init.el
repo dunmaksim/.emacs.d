@@ -6,10 +6,11 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
-(defconst init-el-font-height 15 "Размер шрифта по умолчанию.")
+(defconst init-el-font-height 16 "Размер шрифта по умолчанию.")
 
 (defun init-el-set-font-height ()
-  "Устанавливает указанный размер шрифта во фрейме."
+  "Установка размера шрифта.
+Размер шрифта устанавливается в pt в 10 раз больше чем указано в FONT-HEIGHT."
   (set-face-attribute 'default nil :height (* init-el-font-height 10)))
 
 (require 'custom)
@@ -27,48 +28,56 @@
 ;;; равно будет выполнен.
 ;;; По этой же причине здесь нет ничего, что могло бы сломаться.
 
+(defun init-el-set-font (font-family)
+  "Эта функция устанавливает семейство шрифтов FONT-FAMILY как предпочтительное."
+  ;; Это формат X Logical Font Description Conventions, XLFD
+  ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
+  (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
+                          font-family
+                          init-el-font-height)
+                  nil ;; Не сохранять установленный ранее размер
+                  t   ;; Применить ко всем фреймам
+                  t)  ;; Игнорировать настройки, сделанные через `customize'
+  (set-face-attribute
+   'default ;; Font Face по умолчанию
+   nil      ;; Применить ко всем фреймам
+   ;; Атрибуты шрифта
+   :height (* init-el-font-height 10)
+   :family font-family))
+
+
 ;; Настройки, специфичные для графического режима
-(defun setup-gui-settings (frame-name)
+(defun setup-gui-settings (&optional frame-name)
   "Настройки, необходимые при запуске EMACS в графической среде.
-
-  FRAME-NAME — имя фрейма, который настраивается."
-  (when (display-graphic-p frame-name)
-    (defvar availiable-fonts (font-family-list)) ;; Какие есть семейства шрифтов?
-    (defvar default-font-family nil "Шрифт по умолчанию.")
-
-    ;; Перебор шрифтов
-    (cond
-     ((member "Fira Code Nerd" availiable-fonts)
-      (setq default-font-family "Fira Code Nerd"))
-     ((member "Fira Code" availiable-fonts)
-      (setq default-font-family "Fira Code"))
-     ((member "DejaVu Sans Mono Nerd" availiable-fonts)
-      (setq default-font-family "DejaVu Sans Mono Nerd"))
-     ((member "DejaVu Sans Mono" availiable-fonts)
-      (setq default-font-family "DejaVu Sans Mono"))
-     ((member "Source Code Pro" availiable-fonts)
-      (setq default-font-family "Source Code Pro"))
-     ((member "Consolas" availiable-fonts)
-      (setq default-font-family "Consolas")))
-
-    (when default-font-family
-      ;; Это формат X Logical Font Description Conventions, XLFD
-      ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
-      (set-frame-font
-       (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-               default-font-family
-               init-el-font-height)
-       nil
-       t)
-      (set-face-attribute 'default nil :family default-font-family))
-    (init-el-set-font-height)))
+FRAME-NAME — имя фрейма, который настраивается."
+  (when (display-graphic-p frame-name) ;; Фрейм графический
+    ;; Получаем список шрифтов
+    (let ((font-families (font-family-list)))
+      (let ((preferred-font-family (cond ((member "Lilex" font-families) "Lilex")
+                                         ((member "SauceCodePro NFP" font-families) "SauceCodePro NFP")
+                                         ((member "FiraCode Nerd Font Mono" font-families) "FiraCode Nerd Font Mono")
+                                         ((member "Fira Code" font-families) "Fira Code")
+                                         ((member "DejaVu Sans Mono Nerd" font-families) "DejaVu Sans Mono Nerd")
+                                         ((member "DejaVu Sans Mono" font-families) "DejaVu Sans Mono")
+                                         ((member "Source Code Pro" font-families) "Source Code Pro")
+                                         ((member "Consolas" font-families) "Consolas")
+                                         (t nil))))
+        (when preferred-font-family
+          (progn
+            (message (format "Шрифт по умолчанию: %s" preferred-font-family))
+            (init-el-set-font preferred-font-family)))))))
 
 (global-font-lock-mode t)  ;; Отображать шрифты красиво, используя Font Face's
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
-(add-to-list 'after-make-frame-functions #'setup-gui-settings)
+;; Настройка шрифтов для обычного режима
 (add-hook 'after-init-hook (lambda ()(setup-gui-settings (selected-frame))))
+;; Настройка шрифтов при работе в режиме сервера
+(add-hook 'server-after-make-frame-hook (lambda ()(setup-gui-settings (selected-frame))))
+;; Настройка шрифтов в новых фреймах в любом режиме
+(add-to-list 'after-make-frame-functions 'setup-gui-settings)
+
 
 (defconst init-el-autosave-dir
   (expand-file-name "saves" user-emacs-directory)
@@ -83,65 +92,38 @@
   (make-directory init-el-package-user-dir))
 
 
-(defun delete-forward-word (arg)
-  (interactive "p")
-  (delete-region
-   (point)
-   (progn
-     (forward-word arg)
-     (point))))
-
-
-(defun delete-backward-word (arg)
-  (interactive "p")
-  (delete-forward-word (- arg)))
-
-(defun delete-line-forward ()
-  (interactive)
-  (delete-region
-   (point)
-   (progn
-     (end-of-line 1)
-     (point)))
-  (delete-char 1))
-
-(defun delete-line-backward ()
-  (interactive)
-  (let (p1 p2)
-    (setq p1 (point))
-    (beginning-of-line 1)
-    (setq p2 (point))
-    (delete-region p1 p2)))
-
-
 ;; Определение пути к каталогу с исходным кодом
 (when (string-equal system-type "gnu/linux")
   (message "Используется ОС на базе GNU/Linux")
-  (defvar init-el-emacs-source-path "Путь к каталогу с исходным кодом Emacs")
-  (setq init-el-emacs-source-path
-        (format "/usr/share/emacs/%d.%d/src/"
-                emacs-major-version
-                emacs-minor-version))
-  (if (file-exists-p init-el-emacs-source-path)
-      ;; Каталог существует
-      (if (directory-empty-p init-el-emacs-source-path)
-          ;; Каталог пуст
-          (message (format "Каталог %s пуст." init-el-emacs-source-path))
-        ;; Каталог не пуст
-        (progn
-          (setopt source-directory init-el-emacs-source-path)
-          (message (format "Исходный код обнаружен в каталоге %s" init-el-emacs-source-path))))
-    ;; Каталог не существует
-    (message (format "Каталог %s не существует." init-el-emacs-source-path))))
+  ;; Поищем исходный код в /usr/share/emacs/X.Y/src/, где X и Y мажорная и
+  ;; минорная версия Emacs соответственно.
+  (let ((emacs-source-path (format "/usr/share/emacs/%d.%d/src/"
+                                   emacs-major-version
+                                   emacs-minor-version)))
+    ;; Проверим, существует ли каталог
+    (if (file-exists-p emacs-source-path)
+        ;; Проверяем, пуст ли каталог
+        (if (directory-empty-p emacs-source-path)
+            ;; Каталог пуст
+            (message (format "Каталог %s пуст." emacs-source-path))
+          ;; Каталог не пуст
+          (progn
+            (setopt source-directory emacs-source-path)
+            (message (format "Исходный код обнаружен в каталоге %s" emacs-source-path))))
+      ;; Каталог не существует
+      (message (format "Каталог %s не существует." emacs-source-path)))))
 
 (setopt
  completion-ignore-case t ;; Игнорировать регистр при автодополнении
  create-lockfiles nil ;; Не создавать lock-файлы
+ cursor-in-non-selected-windows nil ;; Отключить курсор в неактивных окнах
  cursor-type 'bar ;; Курсор в виде вертикальной черты
  default-input-method "russian-computer" ;; Метод ввода по умолчанию
  default-transient-input-method "russian-computer" ;; Временный метод ввода
  delete-by-moving-to-trash t ;; Удалять файлы в Корзину
  gc-cons-threshold (* 2 gc-cons-threshold) ;; Увеличить размер памяти для сборщика мусора
+ highlight-nonselected-windows nil ;; Не подсвечивать неактивные окна
+ inhibit-compacting-font-caches t ;; Не сжимать шрифты в памяти
  inhibit-startup-screen t ;; Не показывать приветственный экран
  initial-scratch-message nil ;; Пустой буфер *scratch*
  load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
@@ -149,6 +131,7 @@
  read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
  read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
  read-process-output-max (* 1024 1024) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
+ redisplay-skip-fontification-on-input t ;; Не обновлять буфер, если происходит ввод
  ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
  show-trailing-whitespace t ;; Подсветка висячих пробелов
  standard-indent 4 ;; Отступ по умолчанию
@@ -248,18 +231,16 @@
 ;; Встроенный пакет для работы с TreeSitter
 (use-package treesit
   :init
-  (progn
-    ;; Создадим каталог для хранения so-файлов с грамматиками
-    (defvar init-el-tree-sitter-dir (expand-file-name "tree-sitter" user-emacs-directory))
-    (unless (file-directory-p init-el-tree-sitter-dir)
-      (make-directory init-el-tree-sitter-dir)))
+  ;; Проверим существование подкаталога tree-sitter. При необходимости создадим.
+  (let ((ts-lib-dir (expand-file-name "tree-sitter" user-emacs-directory)))
+    (unless (file-directory-p ts-lib-dir)
+      (make-directory ts-lib-dir)))
   :config
-  (progn
+  (let ((ts-lib-dir (expand-file-name "tree-sitter" user-emacs-directory)))
     ;; Грамматики
     (add-to-list 'treesit-language-source-alist '(asciidoc "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.4.0" "tree-sitter-asciidoc/src/"))
     (add-to-list 'treesit-language-source-alist '(asciidoc-inline "https://github.com/cathaysia/tree-sitter-asciidoc.git" "v0.4.0" "tree-sitter-asciidoc_inline/src/"))
     (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
-    (add-to-list 'treesit-language-source-alist '(hcl "https://github.com/tree-sitter-grammars/tree-sitter-hcl.git" "v1.2.0" "src/"))
     (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.1" "src/"))
     (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
@@ -270,30 +251,28 @@
     (add-to-list 'treesit-language-source-alist '(typescript "https://github.com/tree-sitter/tree-sitter-typescript.git" "v0.23.2" "tsx/src"))
     (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.2" "src/"))
     ;; Сборка и установка грамматик
-    (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'asciidoc init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc-inline.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'asciidoc-inline init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-dockerfile.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'dockerfile init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-javascript.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'javascript init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-hcl.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'hcl init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-jsdoc.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'jsdoc init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-json.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'json init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-python.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'python init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-ruby.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'ruby init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-rust.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'rust init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-typescript.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'typescript init-el-tree-sitter-dir))
-    (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" init-el-tree-sitter-dir))
-      (treesit-install-language-grammar 'yaml init-el-tree-sitter-dir)))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc.so" ts-lib-dir))
+      (treesit-install-language-grammar 'asciidoc ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-asciidoc-inline.so" ts-lib-dir))
+      (treesit-install-language-grammar 'asciidoc-inline ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-dockerfile.so" ts-lib-dir))
+      (treesit-install-language-grammar 'dockerfile ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-javascript.so" ts-lib-dir))
+      (treesit-install-language-grammar 'javascript ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-jsdoc.so" ts-lib-dir))
+      (treesit-install-language-grammar 'jsdoc ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-json.so" ts-lib-dir))
+      (treesit-install-language-grammar 'json ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-python.so" ts-lib-dir))
+      (treesit-install-language-grammar 'python ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-ruby.so" ts-lib-dir))
+      (treesit-install-language-grammar 'ruby ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-rust.so" ts-lib-dir))
+      (treesit-install-language-grammar 'rust ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-typescript.so" ts-lib-dir))
+      (treesit-install-language-grammar 'typescript ts-lib-dir))
+    (unless (file-exists-p (expand-file-name "libtree-sitter-yaml.so" ts-lib-dir))
+      (treesit-install-language-grammar 'yaml ts-lib-dir)))
   :custom
   (treesit-font-lock-level 4 "По умолчанию — 3. Увеличим немного.")
   :bind
@@ -457,7 +436,6 @@
     rst-mode
     ruby-ts-mode
     sh-mode
-    terraform-mode
     tex-mode
     yaml-ts-mode) . display-line-numbers-mode))
 
@@ -513,7 +491,6 @@
     org-mode
     python-ts-mode
     ruby-mode
-    terraform-mode
     tex-mode
     yaml-ts-mode) . electric-pair-local-mode))
 
@@ -580,6 +557,9 @@
 ;; 📦 FLYMAKE
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
+  :bind (:map emacs-lisp-mode-map
+	      ("M-n" . flymake-goto-next-error)
+	      ("M-p" . flymake-goto-prev-error))
   :hook ((emacs-mode
           wisent-grammar-mode) . flymake-mode))
 
@@ -590,30 +570,26 @@
 ;; Использовать пакет только в том случае, когда дело происходит в
 ;; Linux и Hunspell или Aspell доступны.
 (when (string-equal system-type "gnu/linux")
-  (defvar text-spell-program nil "Программа для проверки орфографии.")
-  (cond
-   ((or
-     (file-exists-p "/usr/bin/hunspell")
-     (file-symlink-p "/usr/bin/hunspell"))
-    (setq text-spell-program "hunspell"))
-   ((or
-     (file-exists-p "/usr/bin/aspell")
-     (file-symlink-p "/usr/bin/aspell"))
-    (setq text-spell-program "aspell")))
-  ;; Нужно использовать ispell-mode только в том случае, когда есть
-  ;; чем проверять орфографию.
-  (if text-spell-program
-      ;; then
-      (progn
-        (message (format "Для проверки орфографии используется %s" text-spell-program))
-        (use-package flyspell
-          :custom
-          (ispell-program-name text-spell-program)
-          :hook
-          ((text-mode . flyspell-mode)
-           (emacs-lisp-mode . flyspell-prog-mode))))
-    ;; else
-    (message "Не найдено программ для проверки орфографии.")))
+  (let ((text-spell-program
+         (cond ((file-executable-p "/usr/bin/hunspell") "hunspell")
+               ((file-executable-p "/usr/bin/aspell") "aspell")
+               ((file-executable-p "/usr/bin/nuspell") "nuspell")
+               ;; Ничего не установлено
+               (t nil))))
+    ;; Нужно использовать ispell-mode только в том случае, когда есть
+    ;; чем проверять орфографию.
+    (if text-spell-program
+        ;; then
+        (progn
+          (message (format "Для проверки орфографии используется %s" text-spell-program))
+          (use-package flyspell
+            :custom
+            (setq ispell-program-name text-spell-program)
+            :hook
+            ((text-mode . flyspell-mode)
+             (emacs-lisp-mode . flyspell-prog-mode))))
+      ;; else
+      (message "Не найдено программ для проверки орфографии."))))
 
 
 ;; 📦 FRAME
@@ -709,8 +685,8 @@
         (mode . emacs-lisp-mode)
         (mode . lisp-data-mode)))
       ("Org" (mode . org-mode))
+      ("AsciiDoc" (name . "^\\*.adoc$'"))
       ("Markdown" (mode . markdown-mode))
-      ("AsciiDoc" (mode . asciidoc-ts-mode))
       ("ReStructured Text" (mode . rst-mode))
       ("CONF / INI"
        (or
@@ -723,7 +699,6 @@
       ("Ruby" (mode . ruby-ts-mode))
       ("SSH keys" (or (name . "^\\*.pub$")))
       ("Shell-script" (mode . sh-mode))
-      ("Terraform" (mode . terraform-mode))
       ("SQL" (mode . sql-mode))
       ("Web"
        (or
@@ -813,7 +788,17 @@
 ;; Встроенный пакет, предоставляющий предка для всех программистских режимов.
 (use-package prog-mode
   :hook
-  (emacs-lisp-mode . prettify-symbols-mode))
+  (emacs-lisp-mode . prettify-symbols-mode)) ;; Будем показывать глифы вместо некоторых конструкций
+
+
+;; 📦 RECENTF-MODE
+;; Встроенный пакет, позволяет просматривать и быстро переходить к последним
+;; открытым файлам
+(use-package recentf
+  :custom
+  (recentf-max-saved-items 100 "Помнить последние 100 файлов")
+  (recentf-save-file (locate-user-emacs-file "recentf") "Хранить список в файле .emacs.d/recentf")
+  :config (recentf-mode t))
 
 
 ;; 📦 REPEAT-MODE
@@ -932,12 +917,12 @@
   (blink-matching-paren t "Мигать, когда скобки парные")
   (indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
-  (overwrite-mode nil "Выключить режим перезаписи.")
   (save-interprogram-paste-before-kill t "Сохранять данные в kill ring перед попаданием нового фрагмента")
-  (size-indication-mode nil "Выключить показ размера буфера в mode-line")
+  (size-indication-mode nil "Не показывать размера буфера в mode-line")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
-  (keymap-global-unset "<insert>") ;; Режим перезаписи не нужен
+  (keymap-global-unset "<insert>" t) ;; Режим перезаписи не нужен
+  (disable-command 'overwrite-mode)
   :bind
   (:map global-map
         ("C-z" . undo)) ;; Отмена на Ctrl+Z
@@ -1024,7 +1009,6 @@
     sh-mode
     snippet-mode ;; Yasnippet
     sql-mode
-    terraform-mode
     tex-mode
     wisent-grammar-mode
     yaml-ts-mode) . whitespace-mode))
@@ -1103,6 +1087,7 @@
           async
           auctex
           avy
+          breadcrumb
           buffer-env
           colorful-mode
           company
@@ -1225,6 +1210,13 @@
         ("M-g f" . #'avy-goto-line)
         ("M-g w" . #'avy-goto-word-0)
         ("C-'" . #'avy-goto-char)))
+
+
+;; 📦 BREADCRUMP
+;; TODO
+;; Вывод пути к файлу в заголовке окна
+(use-package breadcrumb
+  :config (breadcrumb-mode t))
 
 
 ;; 📦 BUFFER-ENV
@@ -1488,7 +1480,6 @@
     ruby-ts-mode
     sh-mode
     sql-mode
-    terraform-mode
     yaml-ts-mode
     ) . flycheck-mode))
 
@@ -1771,12 +1762,6 @@
   (:map global-map
         ("<f6>" . projectile-test-project)
         ("<f9>" . projectile-compile-project))
-  :init
-  (progn
-    (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make dirhtml"))
-    (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make docker-clear && make docker-dirhtml"))
-    (add-to-list 'safe-local-variable-values '(projectile-project-compilation-cmd . "make docker-dirhtml"))
-    (add-to-list 'safe-local-variable-values '(projectile-project-test-cmd . "pre-commit run --all")))
   :custom
   (projectile-completion-system 'ivy)
   (projectile-switch-project-action 'projectile-dired)
@@ -1792,13 +1777,13 @@
   :custom
   (pulsar-pulse t)
   (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
+  :hook
+  (after-init . pulsar-global-mode)
+  (next-error . pulsar-pulse-line)
   :config
-  (progn
-    (add-hook 'after-init-hook #'pulsar-global-mode)
-    (add-hook 'next-error-hook #'pulsar-pulse-line)
-    (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
-    (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
-    (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom)))
+  (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
+  (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
+  (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom))
 
 
 ;; 📦 PYTHON-TS-MODE
@@ -1888,10 +1873,8 @@
 (use-package vundo
   :init
   (keymap-global-unset "C-z")
-  (keymap-global-unset "C-/")
   :bind (:map global-map
-              ("C-z" . vundo)
-              ("C-/" . vundo))
+              ("C-z" . vundo))
   :config (vundo-mode t))
 
 
@@ -1916,11 +1899,10 @@
 ;; Библиотека для управления сниппетами. Требуется для расширения функций Eglot.
 (use-package yasnippet
   :init
-  (progn
-    ;; Создать каталог для хранения сниппетов, иначе будет ошибка
-    (defvar init-el-yasnippet-snippets-dir (expand-file-name "snippets" user-emacs-directory))
-    (unless (file-directory-p init-el-yasnippet-snippets-dir)
-      (make-directory init-el-yasnippet-snippets-dir)))
+  ;; Проверим существование каталога snippets. При отсутствии — создадим.
+  (let ((yas-snippets-dir (expand-file-name "snippets" user-emacs-directory)))
+    (unless (file-directory-p yas-snippets-dir)
+      (make-directory yas-snippets-dir)))
   :config (yas-global-mode t))
 
 
@@ -1928,10 +1910,8 @@
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
 ;; Набор сниппетов для `yasnippet'
 (use-package yasnippet-snippets)
-
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
 (load-theme 'ef-elea-dark t)
 
 (provide 'init.el)
 ;;; init.el ends here
+(put 'overwrite-mode 'disabled t)

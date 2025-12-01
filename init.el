@@ -370,7 +370,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :hook
   ((c-mode
     conf-mode
-    css-ts-mode
+    css-mode
     csv-mode
     dockerfile-ts-mode
     emacs-lisp-mode
@@ -431,7 +431,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”)
   :hook
   ((conf-mode
-    css-ts-mode
+    css-mode
     emacs-lisp-data-mode
     emacs-lisp-mode
     html-mode
@@ -476,7 +476,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (add-to-list 'safe-local-variable-values '(fill-column . 80))
   (add-to-list 'safe-local-variable-values '(frozen_string_literal . true))
   (add-to-list 'safe-local-variable-values '(lexical-binding . t))
-  (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
   (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
@@ -911,7 +910,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
   :hook
   ((conf-mode
-    css-ts-mode
+    css-mode
     dockerfile-ts-mode
     emacs-lisp-mode
     groovy-mode
@@ -934,7 +933,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     sql-mode
     tex-mode
     text-mode
-    wisent-grammar-mode
     yaml-ts-mode) . whitespace-mode))
 
 
@@ -967,12 +965,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
         ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
-
-
-;; 📦 WISENT
-;; Встроенный пакет для создания грамматик.
-(use-package wisent
-  :mode ("\\.wi\\'" . wisent-grammar-mode))
 
 
 ;; 📦 XML
@@ -1016,6 +1008,7 @@ FRAME-NAME — имя фрейма, который настраивается."
           colorful-mode
           company
           company-statistics
+          consult
           counsel
           csv-mode
           dashboard
@@ -1036,6 +1029,7 @@ FRAME-NAME — имя фрейма, который настраивается."
           font-lock-studio
           format-all
           gnu-elpa-keyring-update
+          god-mode
           groovy-mode
           hl-todo
           indent-bars
@@ -1112,6 +1106,11 @@ FRAME-NAME — имя фрейма, который настраивается."
   :defer t)
 
 
+;; 📦 ASCIIDOC
+(add-to-list 'load-path "/home/dunaevsky/repo/asciidoc-mode/")
+(require 'asciidoc-mode)
+
+
 ;; 📦 AVY
 ;; https://github.com/abo-abo/avy
 ;; Множество функций для быстрого перехода к нужной строке, слову, символу и
@@ -1145,7 +1144,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
   :hook
-  ((css-ts-mode
+  ((css-mode
     emacs-lisp-mode
     html-mode
     json-ts-mode
@@ -1362,7 +1361,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
   ((conf-mode
-    css-ts-mode
+    css-mode
     dockerfile-ts-mode
     emacs-lisp-mode
     groovy-mode
@@ -1418,6 +1417,18 @@ FRAME-NAME — имя фрейма, который настраивается."
         ([f12] . format-all-buffer)))
 
 
+;; 📦 GOD-MODE
+;; Упрощение сочетаний клавиш с Ctrl: убирает Ctrl и
+;; C-a превращается в a, C-y -- в y.
+;; Но если вдруг нужно ввести просто a, а не C-a, достаточно нажать
+;; SPC
+(use-package god-mode
+  :bind
+  (:map global-map
+        ([escape] . god-local-mode))
+  :config (god-mode t))
+
+
 ;; 📦 GROOVY-MODE
 ;; https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes
 ;; Поддержка синтаксиса Groovy, который используется в Jenkinsfile
@@ -1437,7 +1448,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Красивая подсветка отступов
 (use-package indent-bars
   :hook
-  ((css-ts-mode
+  ((css-mode
     javascript-mode
     js-ts-mode
     makefile-mode
@@ -1446,7 +1457,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     python-mode
     rst-mode
     ruby-ts-mode
-    wisent-grammar-mode
     yaml-ts-mode
     ) . indent-bars-mode))
 

@@ -1008,7 +1008,6 @@ FRAME-NAME — имя фрейма, который настраивается."
           colorful-mode
           company
           company-statistics
-          consult
           counsel
           csv-mode
           dashboard
@@ -1166,17 +1165,25 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 ;; 📦 COUNSEL
 ;; https://elpa.gnu.org/packages/counsel.html
-;; Удобные функции на основе Ivy
+;; Замена встроенных команд на их более удобные аналоги.
 (use-package counsel
+  :custom
+  (counsel-mode-override-describe-bindings t "Переопределить функцию `describe-bindings'.")
   :bind
   (:map global-map
         ("C-c c" . #'counsel-compile)
         ("C-c g" . #'counsel-git)
+        ("C-h S" . #'counsel-info-lookup-symbol)
+        ("C-h a" . #'counsel-apropos)
+        ("C-h b" . #'counsel-descbinds)
         ("C-h f" . #'counsel-describe-function)
         ("C-h l" . #'counsel-find-library)
+        ("C-h o" . #'counsel-describe-symbol)
         ("C-h v" . #'counsel-describe-variable)
         ("C-x 8 RET" . #'counsel-unicode-char)
         ("C-x C-f" . #'counsel-find-file)
+        ("C-x r b" . #'counsel-bookmark)
+        ("M-g i" . #'counsel-imenu)
         ("M-x" . #'counsel-M-x)
         ("M-y" . #'counsel-yank-pop)))
 
@@ -1469,6 +1476,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; это последовательность [C-M-j].
 (use-package ivy
   :demand t
+  :custom
+  (ivy-use-selectable-prompt t "Введённую строку тоже можно выбрать.")
   :config
   (ivy-mode t)
   :bind

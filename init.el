@@ -103,6 +103,7 @@ FRAME-NAME — имя фрейма, который настраивается."
       ;; Каталог не существует
       (message (format "Каталог %s не существует." emacs-source-path)))))
 
+
 (setopt
  completion-ignore-case t ;; Игнорировать регистр при автодополнении
  create-lockfiles nil ;; Не создавать lock-файлы
@@ -116,6 +117,7 @@ FRAME-NAME — имя фрейма, который настраивается."
  inhibit-compacting-font-caches t ;; Не сжимать шрифты в памяти
  inhibit-startup-screen t ;; Не показывать приветственный экран
  initial-scratch-message nil ;; Пустой буфер *scratch*
+ kill-buffer-delete-auto-save-files t ;; Удалять файлы автосохранения при закрытии буфера
  load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
  major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
  read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
@@ -123,10 +125,12 @@ FRAME-NAME — имя фрейма, который настраивается."
  read-process-output-max (* 1024 1024) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
  redisplay-skip-fontification-on-input t ;; Не обновлять буфер, если происходит ввод
  ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
+ sentence-end-double-space nil ;; Устаревшее требование
  show-trailing-whitespace t ;; Подсветка висячих пробелов
  standard-indent 4 ;; Отступ по умолчанию
  tab-always-indent 'complete ;; Если можно — выровнять текст, иначе — автодополнение.
  use-dialog-box nil ;; Диалоговые окна ОС не нужны
+ use-file-dialog nil ;; Файловые диалоги тоже не нужны
  use-short-answers t ;; Краткие ответы вместо длинных
  user-full-name "Dunaevsky Maxim" ;; Имя пользователя
  user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты
@@ -319,6 +323,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Встроенный пакет для управления настройками кастомизации
 (use-package custom
   :custom
+  (custom-buffer-done-kill t "Закрывать буферы customize при выходе из них")
   (custom-safe-themes t "Все темы считаем безопасными"))
 
 
@@ -354,7 +359,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Встроенный пакет для работы с файлами и каталогами.
 (use-package dired
   :custom
-  (dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
+  (dired-free-space nil "Информация о занятом и свободном месте в отдельной строке")
   ;; Без этой настройки при каждой смене каталога Dired будет создавать новый буфер
   (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
   ;; Дополнительные параметры вызова команды ls
@@ -387,6 +392,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     po-mode
     python-mode
     rst-mode
+    ruby-mode
     ruby-ts-mode
     sh-mode
     tex-mode
@@ -413,6 +419,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     nxml-mode
     python-mode
     rst-mode
+    ruby-mode
     ruby-ts-mode) . electric-indent-local-mode))
 
 
@@ -444,6 +451,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     org-mode
     python-mode
     ruby-mode
+    ruby-ts-mode
     tex-mode
     text-mode
     yaml-ts-mode) . electric-pair-local-mode))
@@ -495,6 +503,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 FLYMAKE
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
+  :custom
+  (flymake-show-diagnostics-at-end-of-line 'fancy "Красивые сообщения диагностики")
   :bind (:map emacs-lisp-mode-map
 	      ("M-n" . flymake-goto-next-error)
 	      ("M-p" . flymake-goto-prev-error))
@@ -622,7 +632,8 @@ FRAME-NAME — имя фрейма, который настраивается."
       ("YAML" (mode . yaml-ts-mode))
       ("Makefile" (mode . makefile-mode))
       ("Python" (mode . python-mode))
-      ("Ruby" (mode . ruby-ts-mode))
+      ("Ruby" (or (mode . ruby-mode)
+                  (mode . ruby-ts-mode)))
       ("SSH keys" (name . ".+\\.pub\\'"))
       ("Shell-script" (mode . sh-mode))
       ("SQL" (mode . sql-mode))
@@ -647,6 +658,12 @@ FRAME-NAME — имя фрейма, который настраивается."
   :hook
   (ibuffer-mode . ibuffer-auto-mode)
   (ibuffer-mode . (lambda ()(ibuffer-switch-to-saved-filter-groups "default"))))
+
+
+;; 📦 IMENU
+(use-package imenu
+  :custom
+  (setq imenu-auto-rescan t))
 
 
 ;; 📦 JS-MODE
@@ -840,6 +857,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   (blink-matching-paren t "Мигать, когда скобки парные")
   (indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
+  (next-line-add-newlines nil "Не добавлять пустую строку при прокрутке")
   (save-interprogram-paste-before-kill t "Сохранять данные в kill ring перед попаданием нового фрагмента")
   (size-indication-mode nil "Не показывать размера буфера в mode-line")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
@@ -907,7 +925,7 @@ FRAME-NAME — имя фрейма, который настраивается."
      (space-mark   ?\xA0 [?\xA4]     [?_])        ;; Неразрывный пробел
      (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
      (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
-  (whitespace-line-column 1000 "По умолчанию подсвечиваются длинные строки. Не надо этого делать.")
+  (whitespace-line-column nil "Используем значение fill-column")
   :hook
   ((conf-mode
     css-mode
@@ -941,19 +959,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Перемещение между окнами Emacs.
 (use-package windmove
   :config
-  (windmove-default-keybindings 'ctrl)
-  (windmove-swap-states-default-keybindings 'meta)
-  (windmove-mode t))
-
-
-;; 📦 WINNER-MODE
-;; Встроенный пакет для управления состояниями окон.
-;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Window-Convenience.html
-;; Для управления конфигурациями окон используются последовательности
-;; [C-c <left>] и [C-c <right>]
-(use-package winner
-  :config
-  (winner-mode t))
+  (windmode-default-keybindings)
+  (windmove-mode t)
+  (windmove-swap-states-default-keybindings 'meta))
 
 
 ;; 📦 WINDOW
@@ -1300,24 +1308,26 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; - HTML:       sudo npm -g install vscode-langservers-extracted
 ;; - Markdown:   sudo snap install marksman
 ;; - Python:     pip3 install jedi-language-server
-;; - ReST        pip3 install esbonio
+;; - ReST:       pip3 install esbonio
 ;;               Создать в корне проекта файл .dir-locals.el и задать значение
 ;;               переменной `eglot-workspace-configuration'.
+;; - Ruby:       sudo gem install ruby-lsp
 ;; - YAML:       sudo npm -g install yaml-language-server
 (use-package eglot
   :defer t
   :custom
+  (eglot-autoshutdown t "Автоматически выключить сервер при закрытии последнего буфера")
   (eglot-events-buffer-config '(
                                 :size 0 ;; Выключить ведение буфера событий
                                 :format 'lisp ;; Формат Lisp для логов
                                 )
                               "Настройки буфера событий Eglot")
   :config
+  (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) .("bundle" "exec" "ruby-lsp")))
   (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
   (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
-  (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "rubocop" "--lsp")))
   (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
   :bind
   (:map eglot-mode-map
@@ -1329,10 +1339,10 @@ FRAME-NAME — имя фрейма, который настраивается."
     dockerfile-ts-mode
     markdown-mode
     python-mode
+    ruby-mode
     ruby-ts-mode
     rust-mode
-    yaml-ts-mode
-    ) . eglot-ensure))
+    yaml-ts-mode) . eglot-ensure))
 
 
 ;; 📦 ELDOC-MODE
@@ -1515,11 +1525,13 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 ;; 📦 LIN
 ;; https://github.com/protesilaos/lin
-;; Почти то же самое, что и `hl-line-mode', только лучше.
-;; TODO: в чём именно?
+;; Почти то же самое, что и `hl-line-mode', только
+;; Font Face более разумные.
 (use-package lin
-  :config
-  (lin-global-mode t))
+  :hook
+  (dired-mode . lin-mode)
+  (prog-mode . lin-mode)
+  (text-mode . lin-mode))
 
 
 ;; 📦 MAGIT
@@ -1543,7 +1555,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
   :hook
-  ((emacs-lisp-mode
+  ((asciidoc-mode
+    emacs-lisp-mode
     makefile-mode
     markdown-mode
     python-mode

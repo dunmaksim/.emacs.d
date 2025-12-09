@@ -173,7 +173,11 @@ FRAME-NAME — имя фрейма, который настраивается."
 (keymap-global-set "C-<prior>" 'previous-buffer)
 
 ;; Закрыть буфер по нажатию [C-x k]
-(keymap-global-set "C-x k" (lambda() (interactive) (kill-buffer (current-buffer))))
+(defun init-el-kill-current-buffer ()
+  "Закрыть активный буфер."
+  (interactive)
+  (kill-buffer (current-buffer)))
+(keymap-global-set "C-x k" 'init-el-kill-current-buffer)
 
 ;; Вставка длинного тире по нажатию [M--]
 (keymap-global-set "M--" (lambda() (interactive) (insert "—")))
@@ -543,6 +547,7 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-x O" . previous-window-any-frame) ;; Перейти в предыдущее окно
         ;; Перейти в следующее окно
         ("C-x o" . next-window-any-frame)
+        ("M-O" . previous-window-any-frame)
         ("M-o" . next-window-any-frame)))
 
 
@@ -882,6 +887,11 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("<f7>" . sort-lines)))
 
+;; 📦 TAB-BAR-MODE
+;; Вкладки в верхней части окна.
+(use-package tab-bar
+  :config (tab-bar-mode t))
+
 
 ;; 📦 TEXT-MODE
 ;; Все режимы на базе `text-mode'
@@ -1071,7 +1081,8 @@ FRAME-NAME — имя фрейма, который настраивается."
           vundo
           which-key
           yasnippet
-          yasnippet-snippets))
+          yasnippet-snippets
+          zenburn-theme))
 
 (dolist (pkg package-selected-packages)
   (unless (package-installed-p pkg)
@@ -1130,9 +1141,9 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-'" . #'avy-goto-char)))
 
 
-;; 📦 BREADCRUMP
-;; TODO
-;; Вывод пути к файлу в заголовке окна
+;; 📦 BREADCRUMB
+;; https://elpa.gnu.org/packages/breadcrumb.html
+;; Вывод пути к файлу в верхней части окна
 (use-package breadcrumb
   :config (breadcrumb-mode t))
 
@@ -1827,7 +1838,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
 ;; Набор сниппетов для `yasnippet'
 (use-package yasnippet-snippets)
-(load-theme 'ef-elea-dark t)
+
+(load-theme 'ef-autumn t)
 
 (provide 'init.el)
 ;;; init.el ends here

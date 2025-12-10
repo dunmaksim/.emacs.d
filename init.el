@@ -955,6 +955,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     po-mode
     python-mode
     rst-mode
+    ruby-mode
     ruby-ts-mode
     sh-mode
     snippet-mode ;; Yasnippet
@@ -969,7 +970,6 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Перемещение между окнами Emacs.
 (use-package windmove
   :config
-  (windmode-default-keybindings)
   (windmove-mode t)
   (windmove-swap-states-default-keybindings 'meta))
 

@@ -887,10 +887,10 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("<f7>" . sort-lines)))
 
-;; 📦 TAB-BAR-MODE
-;; Вкладки в верхней части окна.
-(use-package tab-bar
-  :config (tab-bar-mode t))
+;; ;; 📦 TAB-BAR-MODE
+;; ;; Вкладки в верхней части окна.
+;; (use-package tab-bar
+;;   :config (tab-bar-mode t))
 
 
 ;; 📦 TEXT-MODE
@@ -1399,8 +1399,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     latex-mode
     lisp-data-mode
     makefile-mode
-    markdown-mode
-    markdown-mode
     nxml-mode
     python-mode
     rst-mode

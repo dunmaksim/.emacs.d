@@ -6,7 +6,7 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
-(defconst init-el-font-height 16 "Размер шрифта по умолчанию.")
+(defconst init-el-font-height 15 "Размер шрифта по умолчанию.")
 
 (defun init-el-set-font-height ()
   "Установка размера шрифта.
@@ -354,7 +354,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
   :hook
   (after-init . desktop-read)
-  (server-after-make-frame . desktop-read)
   (kill-emacs . (lambda () (desktop-save user-emacs-directory t)))
   (server-done . desktop-save))
 
@@ -383,7 +382,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     csv-mode
     dockerfile-ts-mode
     emacs-lisp-mode
-    groovy-mode
     html-mode
     js-ts-mode
     json-ts-mode
@@ -941,7 +939,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     css-mode
     dockerfile-ts-mode
     emacs-lisp-mode
-    groovy-mode
     html-mode
     js-ts-mode
     json-ts-mode
@@ -1047,7 +1044,6 @@ FRAME-NAME — имя фрейма, который настраивается."
           format-all
           gnu-elpa-keyring-update
           god-mode
-          groovy-mode
           hl-todo
           indent-bars
           ivy
@@ -1392,7 +1388,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     css-mode
     dockerfile-ts-mode
     emacs-lisp-mode
-    groovy-mode
     html-mode
     js-ts-mode
     json-ts-mode
@@ -1453,13 +1448,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ([escape] . god-local-mode))
   :config (god-mode t))
-
-
-;; 📦 GROOVY-MODE
-;; https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes
-;; Поддержка синтаксиса Groovy, который используется в Jenkinsfile
-(use-package groovy-mode
-  :mode ("Jenkinsfile\\'"))
 
 
 ;; 📦 HL-TODO

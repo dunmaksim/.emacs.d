@@ -1536,6 +1536,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
 (use-package magit
+  :vc (
+       :url "https://github.com/magit/magit.git"
+       :rev "v4.4.2")
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   (magit-show-long-lines-warning nil "Выключить предупреждения про длинные строки.")

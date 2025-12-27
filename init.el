@@ -207,6 +207,12 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 (init-el-check-archive-contents)
 
+(defun init-el-upgrade-builtin-package (pkg)
+  "Обновление встроенного пакета PKG из архива."
+  (unless (alist-get pkg package-alist)
+    (package-upgrade pkg)))
+
+
 ;; Проверим наличие пакета `gnu-elpa-keyring-update'.
 ;; В некоторых случаях без него Emacs не может проверить цифровые
 ;; подписи пакетов.
@@ -219,6 +225,10 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; В новых версиях Emacs он встроенный, но в старых его может не быть.
 (unless (package-installed-p 'use-package)
   (package-install 'use-package t))
+
+;; Если `use-package' встроенный, обновим из архива GNU ELPA.
+(unless (alist-get 'use-package package-alist)
+  (package-upgrade 'use-package))
 
 (require 'use-package)
 
@@ -505,11 +515,14 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 FLYMAKE
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
+  :init
+  (unless (alist-get 'flymake package-alist)
+    (package-upgrade 'flymake))
   :custom
   (flymake-show-diagnostics-at-end-of-line 'fancy "Красивые сообщения диагностики")
   :bind (:map emacs-lisp-mode-map
-	      ("M-n" . flymake-goto-next-error)
-	      ("M-p" . flymake-goto-prev-error))
+              ("M-n" . flymake-goto-next-error)
+              ("M-p" . flymake-goto-prev-error))
   :hook ((emacs-lisp-mode) . flymake-mode))
 
 
@@ -730,6 +743,27 @@ FRAME-NAME — имя фрейма, который настраивается."
   (emacs-lisp-mode . prettify-symbols-mode)) ;; Будем показывать глифы вместо некоторых конструкций
 
 
+;; 📦 PROJECT
+;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
+(use-package project
+  :pin "gnu"
+  :init (unless (alist-get 'project package-alist)
+          (package-upgrade 'project)))
+
+
+;; 📦 PYTHON-MODE
+;; Встроенный пакет для работы с Python через TreeSitter
+(use-package python
+  :pin "gnu"
+  :init
+  (unless (alist-get 'python package-alist)
+    (package-upgrade 'python))
+  :custom
+  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
+  (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
+  (python-indent-offset 4 "Отступ по умолчанию — 4 пробела"))
+
+
 ;; 📦 RECENTF-MODE
 ;; Встроенный пакет, позволяет просматривать и быстро переходить к последним
 ;; открытым файлам
@@ -784,17 +818,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :mode
   ("\\.rb\\'"
    "Vagrantfile\\'"))
-
-
-;; 📦 RUST-MODE
-;; https://github.com/rust-lang/rust-mode
-;; Поддержка языка Rust: https://rust-lang.org/
-(use-package rust-mode
-  :mode ("\\.rs\\'" . rust-mode)
-  :custom
-  (rust-format-on-save t "Автоматическое форматирование буфера при сохранении.")
-  :config
-  (add-hook 'rust-mode-hook (lambda () (setq indent-tabs-mode nil))))
 
 
 ;; 📦 SAVEPLACE
@@ -914,6 +937,22 @@ FRAME-NAME — имя фрейма, который настраивается."
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
+;; 📦 TRACK-CHANGES
+;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
+(use-package track-changes
+  :pin "gnu"
+  :init (unless (alist-get 'track-changes package-alist)
+          (package-upgrade 'track-changes)))
+
+
+;; 📦 TRAMP
+;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
+(use-package tramp
+  :pin "gnu"
+  :init (unless (alist-get 'tramp package-alist)
+          (package-upgrade 'tramp)))
+
+
 ;; 📦 UNIQUIFY
 ;; Встроенный пакет.
 ;; Используется для поддержания уникальности названий буферов, путей и т. д.
@@ -980,6 +1019,14 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
         ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
+
+
+;; 📦 WINDOW-TOOL-BAR
+;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
+(use-package window-tool-bar
+  :pin "gnu"
+  :init (unless (alist-get 'window-tool-bar package-alist)
+          (package-upgrade 'window-tool-bar)))
 
 
 ;; 📦 XML
@@ -1137,6 +1184,14 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-'" . #'avy-goto-char)))
 
 
+;; 📦 BIND-KEY
+;; Часть `use-package', но мы будем обновлять его из архивов.
+(use-package bind-key
+  :pin "gnu"
+  :init (unless (alist-get 'bind-key package-alist)
+          (package-upgrade 'bind-key)))
+
+
 ;; 📦 BREADCRUMB
 ;; https://elpa.gnu.org/packages/breadcrumb.html
 ;; Вывод пути к файлу в верхней части окна
@@ -1243,6 +1298,24 @@ FRAME-NAME — имя фрейма, который настраивается."
   (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
 
 
+
+;; 📦 DIFF-HL
+;; https://github.com/dgutov/diff-hl
+;; Показывает небольшие маркеры рядом с незафиксированными изменениями.
+;; Дополняет функциональность git-gutter, который показывает изменения только в
+;; обычных буферах. Этот пакет умеет работать с dired и другими режимами.
+(use-package diff-hl
+  :hook
+  ((asciidoc-mode
+    emacs-lisp-mode
+    makefile-mode
+    markdown-mode
+    python-mode
+    rst-mode
+    yaml-ts-mode). diff-hl-mode)
+  ((dired-mode . diff-hl-dired-mode)))
+
+
 ;; 📦 DOOM-MODELINE
 ;; https://github.com/seagle0128/doom-modeline
 ;; Красивая строка статуса
@@ -1295,6 +1368,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
+  :init (unless (alist-get 'editorconfig package-alist)
+          (package-upgrade 'editorconfig))
   :config
   (editorconfig-mode t))
 
@@ -1321,6 +1396,10 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; - Ruby:       sudo gem install ruby-lsp
 ;; - YAML:       sudo npm -g install yaml-language-server
 (use-package eglot
+  :pin "gnu"
+  :init
+  (unless (alist-get 'eglot package-alist)
+    (package-upgrade 'eglot))
   :defer t
   :custom
   (eglot-autoshutdown t "Автоматически выключить сервер при закрытии последнего буфера")
@@ -1356,6 +1435,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Programming-Language-Doc.html
 ;; Отображение подсказок при работе с Emacs Lisp
 (use-package eldoc
+  :pin "gnu"
+  :init (unless (alist-get 'eldoc package-alist)
+          (package-upgrade 'eldoc))
   :config
   (global-eldoc-mode nil)
   :custom
@@ -1365,17 +1447,13 @@ FRAME-NAME — имя фрейма, который настраивается."
     lisp-interaction-mode) . eldoc-mode))
 
 
-;; 📦 ELPY
-;; https://elpy.readthedocs.io/en/latest/index.html
-;; Emacs Lisp Python IDE
-(use-package elpy
-  :config (elpy-enable))
-
-
 ;; 📦 FLYCHECK
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
+  :vc (
+       :url "https://github.com/flycheck/flycheck.git"
+       :rev "v35.0")
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
@@ -1436,18 +1514,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :bind
   (:map global-map
         ([f12] . format-all-buffer)))
-
-
-;; 📦 GOD-MODE
-;; Упрощение сочетаний клавиш с Ctrl: убирает Ctrl и
-;; C-a превращается в a, C-y -- в y.
-;; Но если вдруг нужно ввести просто a, а не C-a, достаточно нажать
-;; SPC
-(use-package god-mode
-  :bind
-  (:map global-map
-        ([escape] . god-local-mode))
-  :config (god-mode t))
 
 
 ;; 📦 HL-TODO
@@ -1548,23 +1614,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (after-save . magit-after-save-refresh-buffers))
 
 
-;; 📦 DIFF-HL
-;; https://github.com/dgutov/diff-hl
-;; Показывает небольшие маркеры рядом с незафиксированными изменениями.
-;; Дополняет функциональность git-gutter, который показывает изменения только в
-;; обычных буферах. Этот пакет умеет работать с dired и другими режимами.
-(use-package diff-hl
-  :hook
-  ((asciidoc-mode
-    emacs-lisp-mode
-    makefile-mode
-    markdown-mode
-    python-mode
-    rst-mode
-    yaml-ts-mode). diff-hl-mode)
-  ((dired-mode . diff-hl-dired-mode)))
-
-
 ;; 📦 MARKDOWN MODE
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
@@ -1636,6 +1685,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (use-package org
+  :pin "gnu"
+  :init (unless (alist-get 'org package-alist)
+          (package-upgrade 'org))
   :defer t
   :config
   (setq-local
@@ -1704,15 +1756,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom))
 
 
-;; 📦 PYTHON-MODE
-;; Встроенный пакет для работы с Python через TreeSitter
-(use-package python
-  :custom
-  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
-  (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
-  (python-indent-offset 4 "Отступ по умолчанию — 4 пробела"))
-
-
 ;; 📦 RG
 ;; https://rgel.readthedocs.io/en/latest/usage.html
 ;; Интерфейс к утилите `ripgrep', которая почти как `grep', только лучше,
@@ -1729,6 +1772,18 @@ FRAME-NAME — имя фрейма, который настраивается."
   :custom
   (default-input-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
+
+
+;; 📦 RUST-MODE
+;; https://github.com/rust-lang/rust-mode
+;; Поддержка языка Rust: https://rust-lang.org/
+(use-package rust-mode
+  :pin "nongnu"
+  :mode ("\\.rs\\'" . rust-mode)
+  :custom
+  (rust-format-on-save t "Автоматическое форматирование буфера при сохранении.")
+  :config
+  (add-hook 'rust-mode-hook (lambda () (setq indent-tabs-mode nil))))
 
 
 ;; 📦 STANDARD THEMES
@@ -1799,6 +1854,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
 (use-package which-key
+  :init
+  (unless (alist-get 'which-key package-alist)
+    (package-upgrade 'which-key))
   :custom
   (which-key-compute-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-dont-use-unicode nil "Используем Unicode")

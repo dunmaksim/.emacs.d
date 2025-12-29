@@ -406,6 +406,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     rst-mode
     ruby-mode
     ruby-ts-mode
+    sed-mode
     sh-mode
     tex-mode
     text-mode
@@ -464,6 +465,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     python-mode
     ruby-mode
     ruby-ts-mode
+    sed-mode
     tex-mode
     text-mode
     yaml-ts-mode) . electric-pair-local-mode))
@@ -515,6 +517,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 FLYMAKE
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
+  :pin "gnu"
+  :ensure t
   :init
   (unless (alist-get 'flymake package-alist)
     (package-upgrade 'flymake))
@@ -949,6 +953,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
 (use-package tramp
   :pin "gnu"
+  :ensure t
   :init (unless (alist-get 'tramp package-alist)
           (package-upgrade 'tramp)))
 
@@ -993,6 +998,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     rst-mode
     ruby-mode
     ruby-ts-mode
+    sed-mode
     sh-mode
     snippet-mode ;; Yasnippet
     sql-mode
@@ -1025,6 +1031,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
 (use-package window-tool-bar
   :pin "gnu"
+  :ensure t
   :init (unless (alist-get 'window-tool-bar package-alist)
           (package-upgrade 'window-tool-bar)))
 
@@ -1058,88 +1065,16 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
 
 
-(setopt package-selected-packages
-        '(apheleia
-          adjust-parens
-          all
-          async
-          auctex
-          avy
-          breadcrumb
-          buffer-env
-          colorful-mode
-          company
-          company-statistics
-          counsel
-          csv-mode
-          dashboard
-          denote
-          diff-hl
-          doom-modeline
-          edit-indirect
-          editorconfig
-          ef-themes
-          eglot
-          eldoc
-          elpy
-          flycheck
-          flycheck-inline
-          flycheck-eglot
-          flycheck-rust
-          flymake
-          font-lock-studio
-          format-all
-          gnu-elpa-keyring-update
-          god-mode
-          hl-todo
-          indent-bars
-          ivy
-          ivy-hydra
-          jinx
-          lin
-          magit
-          markdown-mode
-          modus-themes
-          multiple-cursors
-          nerd-icons
-          nerd-icons-completion
-          nerd-icons-dired
-          nerd-icons-ibuffer
-          org
-          package-lint
-          plantuml-mode
-          po-mode
-          posframe
-          project
-          projectile
-          pulsar
-          python
-          rg
-          russian-techwriter
-          rust-mode
-          standard-themes
-          swiper
-          symbols-outline
-          tramp
-          vundo
-          which-key
-          yasnippet
-          yasnippet-snippets
-          zenburn-theme))
-
-(dolist (pkg package-selected-packages)
-  (unless (package-installed-p pkg)
-    (progn
-      (init-el-check-archive-contents)
-      (package-install pkg t))))
-
-
 ;; 📦 APHELEIA
 ;; https://github.com/radian-software/apheleia
 ;; Автоформат буфера перед сохранением.
 (use-package apheleia
+  :pin "melpa-stable"
+  :ensure t
   :custom
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
+  :bind (:map global-map
+              ("<f12>" . apheleia-format-buffer))
   :hook
   ((emacs-lisp-mode
     python-mode
@@ -1149,7 +1084,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 AUCTEX
 ;; IDE для работы с TeX
 ;; https://www.gnu.org/software/auctex/index.html
-(use-package auctex)
+(use-package auctex
+  :pin "gnu"
+  :ensure t)
 
 
 ;; 📦 ALL
@@ -1157,14 +1094,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Это аналог `occur', только все найденные строки помещаются в отдельный буфер,
 ;; где их можно отредактировать, не прыгая по всему буферу. После изменений
 ;; достаточно нажать C-c C-c, и изменения отразятся в основном буфере
-(use-package all)
-
-
-;; 📦 ANSIBLE
-;; https://gitlab.com/emacs-ansible/emacs-ansible
-;; Дополнительные возможности при работе с YAML-файлами Ansible
-(use-package ansible
-  :defer t)
+(use-package all
+  :ensure t
+  :pin "gnu")
 
 
 ;; 📦 ASCIIDOC
@@ -1177,6 +1109,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Множество функций для быстрого перехода к нужной строке, слову, символу и
 ;; так далее.
 (use-package avy
+  :pin "gnu"
+  :ensure t
   :bind
   (:map global-map
         ("M-g f" . #'avy-goto-line)
@@ -1188,6 +1122,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Часть `use-package', но мы будем обновлять его из архивов.
 (use-package bind-key
   :pin "gnu"
+  :ensure t
   :init (unless (alist-get 'bind-key package-alist)
           (package-upgrade 'bind-key)))
 
@@ -1196,6 +1131,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://elpa.gnu.org/packages/breadcrumb.html
 ;; Вывод пути к файлу в верхней части окна
 (use-package breadcrumb
+  :pin "gnu"
+  :ensure t
   :config (breadcrumb-mode t))
 
 
@@ -1203,6 +1140,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/astoff/buffer-env
 ;; Переменные окружения для отдельного буфера. Почти ENVRC, только от GNU
 (use-package buffer-env
+  :pin "gnu"
+  :ensure t
   :config
   (add-hook 'hack-local-variables-hook #'buffer-env-update)
   (add-hook 'comint-mode-hook #'buffer-env-update))
@@ -1212,6 +1151,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
+  :pin "gnu"
+  :ensure t
   :hook
   ((css-mode
     emacs-lisp-mode
@@ -1223,6 +1164,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 COMPANY
 ;; https://company-mode.github.io/
 (use-package company
+  :pin "gnu"
+  :ensure t
   :hook (after-init . global-company-mode))
 
 
@@ -1230,6 +1173,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/company-mode/company-statistics
 ;; Сортирует кандидаты по частоте использования
 (use-package company-statistics
+  :pin "gnu"
+  :ensure t
   :hook (after-init . company-statistics-mode))
 
 
@@ -1237,6 +1182,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://elpa.gnu.org/packages/counsel.html
 ;; Замена встроенных команд на их более удобные аналоги.
 (use-package counsel
+  :pin "gnu"
+  :ensure t
   :custom
   (counsel-mode-override-describe-bindings t "Переопределить функцию `describe-bindings'.")
   :bind
@@ -1262,12 +1209,16 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
 (use-package csv-mode
+  :pin "gnu"
+  :ensure t
   :mode ("\\.csv\\'" . csv-mode))
 
 
 ;; 📦 DASHBOARD
 ;; https://github.com/emacs-dashboard/emacs-dashboard
 (use-package dashboard
+  :pin "melpa-stable"
+  :ensure t
   :custom
   (dashboard-banner-logo-title "Добро пожаловать!")
   (dashboard-center-content t)
@@ -1294,6 +1245,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
 (use-package denote
+  :pin "gnu"
+  :ensure t
   :custom
   (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
 
@@ -1305,6 +1258,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Дополняет функциональность git-gutter, который показывает изменения только в
 ;; обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
+  :pin "gnu"
+  :ensure t
   :hook
   ((asciidoc-mode
     emacs-lisp-mode
@@ -1320,6 +1275,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/seagle0128/doom-modeline
 ;; Красивая строка статуса
 (use-package doom-modeline
+  :pin "melpa-stable"
+  :ensure t
   :custom
   (doom-modeline-battery nil "У меня нет батареи, показывать нечего")
   (doom-modeline-buffer-file-name-style 'truncate-upto-project)
@@ -1360,6 +1317,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
+  :pin "nongnu"
+  :ensure t
   :bind (:map global-map
               ("C-c '" . edit-indirect-region)))
 
@@ -1368,6 +1327,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
+  :pin "gnu"
+  :ensure t
   :init (unless (alist-get 'editorconfig package-alist)
           (package-upgrade 'editorconfig))
   :config
@@ -1376,7 +1337,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 ;; 📦 EF-THEMES
 ;; https://github.com/protesilaos/ef-themes.git
-(use-package ef-themes)
+(use-package ef-themes
+  :pin "gnu"
+  :ensure t)
 
 
 ;; 📦 EGLOT
@@ -1397,6 +1360,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; - YAML:       sudo npm -g install yaml-language-server
 (use-package eglot
   :pin "gnu"
+  :ensure t
   :init
   (unless (alist-get 'eglot package-alist)
     (package-upgrade 'eglot))
@@ -1436,6 +1400,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Отображение подсказок при работе с Emacs Lisp
 (use-package eldoc
   :pin "gnu"
+  :ensure t
   :init (unless (alist-get 'eldoc package-alist)
           (package-upgrade 'eldoc))
   :config
@@ -1451,9 +1416,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
-  :vc (
-       :url "https://github.com/flycheck/flycheck.git"
-       :rev "v35.0")
+  :pin "nongnu"
+  :ensure t
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
@@ -1482,44 +1446,12 @@ FRAME-NAME — имя фрейма, который настраивается."
     ) . flycheck-mode))
 
 
-;; 📦 FLYCHECK-INLINE
-;; https://github.com/flycheck/flycheck-inline
-;; Вывод сообщений об ошибках в позиции курсора.
-(use-package flycheck-inline
-  :hook
-  (flycheck-mode . flycheck-inline-mode))
-
-
-;; 📦 FLYCHECK-EGLOT
-;; https://github.com/flycheck/flycheck-eglot
-;; Поддержка Eglot
-(use-package flycheck-eglot
-  :after (flycheck eglot)
-  :config (global-flycheck-eglot-mode t))
-
-
-;; 📦 FLYCHECK-RUST
-;; https://github.com/flycheck/flycheck-rust
-;; Улучшенная работа с Rust
-(use-package flycheck-rust
-  :hook
-  (rust-mode . flycheck-rust-setup))
-
-
-;; 📦 FORMAT-ALL
-;; https://github.com/lassik/emacs-format-all-the-code
-;; Форматирование кода с помощью разных внешних средств.
-(use-package format-all
-  :defer t
-  :bind
-  (:map global-map
-        ([f12] . format-all-buffer)))
-
-
 ;; 📦 HL-TODO
 ;; https://github.com/tarsius/hl-todo
 ;; Подсветка TODO, FIXME и т. п.
 (use-package hl-todo
+  :pin "melpa-stable"
+  :ensure t
   :config (global-hl-todo-mode t))
 
 
@@ -1527,6 +1459,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/jdtsmith/indent-bars
 ;; Красивая подсветка отступов
 (use-package indent-bars
+  :pin "gnu"
+  :ensure t
   :hook
   ((css-mode
     javascript-mode
@@ -1548,6 +1482,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
 ;; это последовательность [C-M-j].
 (use-package ivy
+  :pin "gnu"
+  :ensure t
   :demand t
   :custom
   (ivy-use-selectable-prompt t "Введённую строку тоже можно выбрать.")
@@ -1562,6 +1498,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://elpa.gnu.org/packages/ivy-hydra.html
 ;; Дополнительные сочетания клавиш для IVY.
 (use-package ivy-hydra
+  :pin "gnu"
+  :ensure t
   :demand t
   :after ivy
   :requires ivy)
@@ -1573,6 +1511,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; а вообще во всём буфере.
 ;; В Debian требует для работы пакеты `libenchant2-dev' и `pkgconf'.
 (use-package jinx
+  :pin "gnu"
+  :ensure t
   :custom
   (jinx-languages "ru_RU en_US")
   :hook ((emacs-lisp-mode
@@ -1591,6 +1531,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Почти то же самое, что и `hl-line-mode', только
 ;; Font Face более разумные.
 (use-package lin
+  :pin "gnu"
+  :ensure t
   :hook
   (dired-mode . lin-mode)
   (prog-mode . lin-mode)
@@ -1602,9 +1544,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
 (use-package magit
-  :vc (
-       :url "https://github.com/magit/magit.git"
-       :rev "v4.4.2")
+  :pin "nongnu"
+  :ensure t
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   (magit-show-long-lines-warning nil "Выключить предупреждения про длинные строки.")
@@ -1618,6 +1559,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (use-package markdown-mode
+  :pin "nongnu"
+  :ensure t
   :custom
   (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
   (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
@@ -1629,13 +1572,17 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 ;; 📦 MODUS-THEMES
 ;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
-(use-package modus-themes)
+(use-package modus-themes
+  :pin "gnu"
+  :ensure t)
 
 
 ;; 📦 MULTIPLE CURSORS
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (use-package multiple-cursors
+  :pin "nongnu"
+  :ensure t
   :custom (mc/always-run-for-all t "Не задавать лишних вопросов.")
   :init
   (keymap-global-unset "M-<down-mouse-1>")
@@ -1646,39 +1593,6 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-<" . mc/mark-previous-like-this)
         ("C-c C-<" . mc/mark-all-like-this)
         ("M-<mouse-1>" . mc/add-cursor-on-click)))
-
-
-;; 📦 NERD-ICONS
-;; https://github.com/rainstormstudio/nerd-icons.el
-;; Для установки самих шрифтов следует использовать команду `nerd-icons-install-fonts'.
-;; В Debian Linux шрифты будут загружены в каталог `~/.local/share/fonts'. Рекомендуется
-;; скопировать их в `/usr/local/share/fonts/'.
-(use-package nerd-icons
-  :custom
-  (nerd-icons-color-icons t "Использовать цветные иконки."))
-
-
-;; 📦 NERD-ICONS-COMPLETION
-;; https://github.com/rainstormstudio/nerd-icons-completion
-;; Иконки в автозавершении ввода.
-(use-package nerd-icons-completion
-  :config (nerd-icons-completion-mode t))
-
-
-;; 📦 NERD-ICONS-DIRED
-;; https://github.com/rainstormstudio/nerd-icons-dired
-;; Иконки в `dired'.
-(use-package nerd-icons-dired
-  :after (dired nerd-icons)
-  :hook (dired-mode . nerd-icons-dired-mode))
-
-
-;; 📦 NERD-ICONS-IBUFFER
-;; https://github.com/seagle0128/nerd-icons-ibuffer
-;; Отображение иконок в ibuffer
-(use-package nerd-icons-ibuffer
-  :after (ibuffer nerd-icons)
-  :hook (ibuffer-mode . nerd-icons-ibuffer-mode))
 
 
 ;; 📦 ORG-MODE
@@ -1699,13 +1613,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/purcell/package-lint
 ;; Проверка кода пакетов Emacs.
 (use-package package-lint
+  :pin "melpa-stable"
+  :ensure t
   :defer t)
-
-
-;; 📦 PLANTUML-MODE
-;; https://github.com/skuro/plantuml-mode
-;; Пакет для работы с PlantUML
-(use-package plantuml-mode)
 
 
 ;; 📦 PO-MODE
@@ -1715,7 +1625,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; * gettext
 ;; * gettext-el: если po-mode из архивов не работает
 (use-package po-mode
-  :pin "melpa")
+  :pin "melpa"
+  :ensure t)
 
 
 ;; 📦 PROJECTILE
@@ -1725,6 +1636,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; файлы. В крайнем случае сгодится пустой файл .projectile
 ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
 (use-package projectile
+  :pin "nongnu"
+  :ensure t
   :bind-keymap
   ("C-x p" . projectile-command-map)
   ("C-c p" . projectile-command-map)
@@ -1744,6 +1657,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://github.com/protesilaos/pulsar
 ;; Этот пакет требует Emacs 27.1 или новее
 (use-package pulsar
+  :pin "gnu"
+  :ensure t
   :custom
   (pulsar-pulse t)
   (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
@@ -1756,40 +1671,39 @@ FRAME-NAME — имя фрейма, который настраивается."
   (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom))
 
 
-;; 📦 RG
-;; https://rgel.readthedocs.io/en/latest/usage.html
-;; Интерфейс к утилите `ripgrep', которая почти как `grep', только лучше,
-;; быстрее и написана на Rust.
-(use-package rx
-  :config (rg-enable-default-bindings))
-
-
 ;; 📦 RUSSIAN-TECHWRITER
 ;; Метод ввода для технических писателей.
 ;; В отличие от russian-computer, позволяет использовать лигатуры.
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
+  :ensure t
   :custom
   (default-input-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
 
 
-;; 📦 RUST-MODE
-;; https://github.com/rust-lang/rust-mode
-;; Поддержка языка Rust: https://rust-lang.org/
-(use-package rust-mode
+;; 📦 SED-MODE
+;; Режим для работы с файлами команд `sed'.
+(use-package sed-mode
+  :pin "gnu"
+  :ensure t
+  :mode ("\\.sed\\'" . sed-mode))
+
+
+;; 📦 SOLARIZED-THEME
+;; https://github.com/bbatsov/solarized-emacs
+;; Темы Solarized
+(use-package solarized-theme
   :pin "nongnu"
-  :mode ("\\.rs\\'" . rust-mode)
-  :custom
-  (rust-format-on-save t "Автоматическое форматирование буфера при сохранении.")
-  :config
-  (add-hook 'rust-mode-hook (lambda () (setq indent-tabs-mode nil))))
+  :ensure t)
 
 
 ;; 📦 STANDARD THEMES
 ;; https://github.com/protesilaos/standard-themes
 ;; Улучшенные темы на основе стандартных
 (use-package standard-themes
+  :pin "gnu"
+  :ensure t
   :custom
   (standard-themes-bold-constructs t)
   (standard-themes-italic-constructs t))
@@ -1800,28 +1714,12 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
 ;; `isearch-backward'.
 (use-package swiper
+  :pin "gnu"
+  :ensure t
   :bind
   (:map global-map
         ("C-s" . #'swiper-isearch)
         ("C-r" . #'swiper-isearch-backward)))
-
-
-;; SYMBOLS-OUTLINE
-;; https://github.com/liushihao456/symbols-outline.el
-;; Показывает переменные, функции, заголовки и другие части файла
-;; в отдельном окне и позволяет быстро перемещаться между ними.
-;; Для корректной работы нужна утилита ctags. В Debian Linux это пакет
-;; universal-ctags
-(use-package symbols-outline
-  :custom
-  (symbols-outline-window-width 40 "Ширина окна")
-  :bind (:map global-map
-              ("C-c i" . symbols-outline-show))
-  :hook
-  ((emacs-lisp-mode
-    markdown-mode
-    python-mode
-    rst-mode) . symbols-outline-follow-mode))
 
 
 ;; VUNDO
@@ -1843,6 +1741,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; q -- закрыть
 ;; C-c C-s -- сохранить изменения
 (use-package vundo
+  :pin "gnu"
+  :ensure t
   :init
   (keymap-global-unset "C-z")
   :bind (:map global-map
@@ -1854,6 +1754,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
 (use-package which-key
+  :pin "gnu"
+  :ensure t
   :init
   (unless (alist-get 'which-key package-alist)
     (package-upgrade 'which-key))
@@ -1873,6 +1775,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; https://elpa.gnu.org/packages/yasnippet.html
 ;; Библиотека для управления сниппетами. Требуется для расширения функций Eglot.
 (use-package yasnippet
+  :pin "gnu"
+  :ensure t
   :init
   ;; Проверим существование каталога snippets. При отсутствии — создадим.
   (let ((yas-snippets-dir (expand-file-name "snippets" user-emacs-directory)))
@@ -1884,9 +1788,11 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 YASNIPPET-SNIPPETS
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
 ;; Набор сниппетов для `yasnippet'
-(use-package yasnippet-snippets)
+(use-package yasnippet-snippets
+  :ensure t)
 
-(load-theme 'ef-autumn t)
+;; (load-theme 'ef-autumn t)
+(load-theme 'solarized-selenized-black t)
 
 (provide 'init.el)
 ;;; init.el ends here

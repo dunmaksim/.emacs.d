@@ -105,10 +105,12 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 
 (setopt
+ case-fold-search t ;; Игнорировать регистр при поиске.
  completion-ignore-case t ;; Игнорировать регистр при автодополнении
  create-lockfiles nil ;; Не создавать lock-файлы
  cursor-in-non-selected-windows nil ;; Отключить курсор в неактивных окнах
  cursor-type 'bar ;; Курсор в виде вертикальной черты
+ default-directory "~/repo/" ;; Директория по умолчанию
  default-input-method "russian-computer" ;; Метод ввода по умолчанию
  default-transient-input-method "russian-computer" ;; Временный метод ввода
  delete-by-moving-to-trash t ;; Удалять файлы в Корзину
@@ -319,7 +321,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 COMPILE
 (use-package compile
   :custom
-  (compilation-scroll-output t "Автоматическая прокрутка содержимого буфера *compile*"))
+  (compilation-read-command nil "Будем запрашивать команду только один раз.")
+  (compilation-scroll-output 'first-error "Остановимся на первой ошибке."))
 
 
 ;; 📦 CONF-MODE
@@ -483,6 +486,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Это встроенный пакет для управления файлами
 (use-package files
   :custom
+  (confirm-kill-processes nil "Прерывать процессы без лишних вопросов.")
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
   (enable-local-eval t "Разрешить вызов `eval' в `.dir-locals.el'")
   (enable-local-variables :all "Считать все переменные из файлов `.dir-locals.el' безопасными")
@@ -887,6 +891,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   (blink-matching-paren t "Мигать, когда скобки парные")
   (indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
+  (kill-whole-line t "Удалять логическую строку, а не видимую.")
   (next-line-add-newlines nil "Не добавлять пустую строку при прокрутке")
   (save-interprogram-paste-before-kill t "Сохранять данные в kill ring перед попаданием нового фрагмента")
   (size-indication-mode nil "Не показывать размера буфера в mode-line")
@@ -1159,6 +1164,13 @@ FRAME-NAME — имя фрейма, который настраивается."
     html-mode
     json-ts-mode
     yaml-ts-mode) . colorful-mode))
+
+
+;; 📦 COMP-RUN
+;; Встроенный пакет для управления настройками компиляции
+(use-package comp-run
+  :custom
+  (native-comp-async-report-warnings-errors 'silent "Проблемы нативной компиляции — не мои проблемы, не надо их показывать."))
 
 
 ;; 📦 COMPANY
@@ -1467,9 +1479,9 @@ FRAME-NAME — имя фрейма, который настраивается."
     js-ts-mode
     makefile-mode
     markdown-mode
-    markdown-mode
     python-mode
     rst-mode
+    ruby-mode
     ruby-ts-mode
     yaml-ts-mode
     ) . indent-bars-mode))
@@ -1690,14 +1702,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :mode ("\\.sed\\'" . sed-mode))
 
 
-;; 📦 SOLARIZED-THEME
-;; https://github.com/bbatsov/solarized-emacs
-;; Темы Solarized
-(use-package solarized-theme
-  :pin "nongnu"
-  :ensure t)
-
-
 ;; 📦 STANDARD THEMES
 ;; https://github.com/protesilaos/standard-themes
 ;; Улучшенные темы на основе стандартных
@@ -1791,8 +1795,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package yasnippet-snippets
   :ensure t)
 
-;; (load-theme 'ef-autumn t)
-(load-theme 'solarized-selenized-black t)
+(load-theme 'ef-bio t)
+;; (load-theme 'deeper-blue)
+
 
 (provide 'init.el)
 ;;; init.el ends here

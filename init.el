@@ -123,6 +123,8 @@ FRAME-NAME — имя фрейма, который настраивается."
  load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
  major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
  read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
+ read-extended-command-predicate #'command-completion-default-include-p ;; Скрыть команды, которые нельзя выполнить в буфере
+ read-buffer-completion-ignore-case t ;; Игнорировать регистр при вводе названия буфера
  read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
  read-process-output-max (* 1024 1024) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
  redisplay-skip-fontification-on-input t ;; Не обновлять буфер, если происходит ввод
@@ -316,6 +318,13 @@ FRAME-NAME — имя фрейма, который настраивается."
   (checkdoc-minor-mode-string " CheckDoc")
   :hook
   (emacs-lisp-mode . checkdoc-minor-mode))
+
+
+;; 📦 COMP-RUN
+;; Встроенный пакет для управления настройками компиляции
+(use-package comp-run
+  :custom
+  (native-comp-async-report-warnings-errors 'silent "Проблемы нативной компиляции — не мои проблемы, не надо их показывать."))
 
 
 ;; 📦 COMPILE
@@ -917,11 +926,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("<f7>" . sort-lines)))
 
-;; ;; 📦 TAB-BAR-MODE
-;; ;; Вкладки в верхней части окна.
-;; (use-package tab-bar
-;;   :config (tab-bar-mode t))
-
 
 ;; 📦 TEXT-MODE
 ;; Все режимы на базе `text-mode'
@@ -1118,7 +1122,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :bind
   (:map global-map
-        ("M-g f" . #'avy-goto-line)
+        ;; ("M-g f" . #'avy-goto-line)
         ("M-g w" . #'avy-goto-word-0)
         ("C-'" . #'avy-goto-char)))
 
@@ -1166,28 +1170,41 @@ FRAME-NAME — имя фрейма, который настраивается."
     yaml-ts-mode) . colorful-mode))
 
 
-;; 📦 COMP-RUN
-;; Встроенный пакет для управления настройками компиляции
-(use-package comp-run
+;; 📦 CONSULT
+;; https://elpa.gnu.org/packages/consult.html
+;; Команды для поиска и навигации на базе встроенной функции `completing-read'.
+(use-package consult
+  :pin "gnu"
+  :ensure t
   :custom
-  (native-comp-async-report-warnings-errors 'silent "Проблемы нативной компиляции — не мои проблемы, не надо их показывать."))
+  (completion-in-region-function #'consult-completion-in-region)
+  :bind (:map global-map
+              ;; Буферы
+              ("C-x b" . #'consult-buffer)
+              ("C-x 4 b" . #'consult-buffer-other-window)
+              ("C-x 5 b" . #'consult-buffer-other-frame)
+              ("C-x t b" . #'consult-buffer-other-tab)
+              ;; Закладки
+              ("C-x r b" . #'consult-bookmark)
+              ;; Kill ring
+              ("M-y" . #'consult-yank-from-kill-ring)
+              ;; Быстрый переход к строке и позиции в ней line:col
+              ("M-g g" . #'consult-goto-line)
+              ;; imenu через Consult
+              ("M-g i" . #'consult-imenu)
+              ;; Поиск
+              ("C-s" . #'consult-line))
+  :config
+  (add-to-list 'consult-preview-allowed-hooks 'hl-todo-mode))
 
 
-;; 📦 COMPANY
-;; https://company-mode.github.io/
-(use-package company
+;; 📦 CORFU
+;; https://elpa.gnu.org/packages/corfu.html
+;; Расширение для автодополнения в буфере.
+(use-package corfu
   :pin "gnu"
   :ensure t
-  :hook (after-init . global-company-mode))
-
-
-;; 📦 COMPANY-STATISTICS
-;; https://github.com/company-mode/company-statistics
-;; Сортирует кандидаты по частоте использования
-(use-package company-statistics
-  :pin "gnu"
-  :ensure t
-  :hook (after-init . company-statistics-mode))
+  :config (global-corfu-mode t))
 
 
 ;; 📦 COUNSEL
@@ -1211,10 +1228,11 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-h v" . #'counsel-describe-variable)
         ("C-x 8 RET" . #'counsel-unicode-char)
         ("C-x C-f" . #'counsel-find-file)
-        ("C-x r b" . #'counsel-bookmark)
-        ("M-g i" . #'counsel-imenu)
-        ("M-x" . #'counsel-M-x)
-        ("M-y" . #'counsel-yank-pop)))
+        ;; ("C-x r b" . #'counsel-bookmark)
+        ;; ("M-g i" . #'counsel-imenu)
+        ;; ("M-x" . #'counsel-M-x)
+        ;; ("M-y" . #'counsel-yank-pop)
+        ))
 
 
 ;; 📦 CSV-MODE
@@ -1501,9 +1519,11 @@ FRAME-NAME — имя фрейма, который настраивается."
   (ivy-use-selectable-prompt t "Введённую строку тоже можно выбрать.")
   :config
   (ivy-mode t)
-  :bind
-  (:map global-map
-        ("C-x b" . #'ivy-switch-buffer)))
+  ;; :bind
+  ;; (:map global-map
+  ;;       ("C-x b" . #'ivy-switch-buffer)
+  ;;       )
+  )
 
 
 ;; 📦 IVY-HYDRA
@@ -1713,17 +1733,27 @@ FRAME-NAME — имя фрейма, который настраивается."
   (standard-themes-italic-constructs t))
 
 
-;; 📦 SWIPER
-;; https://elpa.gnu.org/packages/swiper.html
-;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
-;; `isearch-backward'.
-(use-package swiper
+;; 📦 VERTICO
+;; https://elpa.gnu.org/packages/vertico.html
+;; Автодополнение на базе встроенной функциональности.
+(use-package vertico
   :pin "gnu"
   :ensure t
+  :config (vertico-mode t)
   :bind
-  (:map global-map
-        ("C-s" . #'swiper-isearch)
-        ("C-r" . #'swiper-isearch-backward)))
+  (:map vertico-map
+        ("TAB" . #'minibuffer-complete)))
+
+
+;; 📦 VERTICO-DIRECTORY
+;; Дополнение к VERTICO для ввода путей к директориям.
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word)))
 
 
 ;; VUNDO

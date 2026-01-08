@@ -750,7 +750,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   (use-package pixel-scroll
     :config
     (pixel-scroll-mode t)
-    (pixel-scroll-precision-mode)))
+    (pixel-scroll-precision-mode t)))
 
 
 ;; 📦 PROG-MODE
@@ -765,7 +765,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package project
   :pin "gnu"
   :init (unless (alist-get 'project package-alist)
-          (package-upgrade 'project)))
+          (package-upgrade 'project))
+  :custom
+  (project-prune-zombie-projects t "Автоматически удалять не найденные проекты."))
 
 
 ;; 📦 PYTHON-MODE

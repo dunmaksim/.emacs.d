@@ -1283,7 +1283,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
 
 
-
 ;; 📦 DIFF-HL
 ;; https://github.com/dgutov/diff-hl
 ;; Показывает небольшие маркеры рядом с незафиксированными изменениями.
@@ -1636,6 +1635,8 @@ FRAME-NAME — имя фрейма, который настраивается."
   :pin "gnu"
   :init (unless (alist-get 'org package-alist)
           (package-upgrade 'org))
+  :custom
+  (org-agenda-files '("~/Notes/"))
   :defer t
   :config
   (setq-local

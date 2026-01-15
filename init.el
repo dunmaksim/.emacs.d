@@ -191,17 +191,15 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Настроим архивы:
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
 ;; Настроим приоритеты архивов. Чем выше — тем лучше.
 (setopt package-archive-priorities
-        '(("gnu" . 40)
-          ("nongnu" . 30)
-          ("melpa-stable" . 20)
-          ("melpa" . 10)))
+        '(("gnu" . 2)
+          ("nongnu" . 1)))
+;; ("melpa-stable" . 20)
+;; ("melpa" . 10)))
 
 (defun init-el-check-archive-contents ()
   "Проверим наличие списка пакетов в архивах.
@@ -535,8 +533,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :init
   (unless (alist-get 'flymake package-alist)
     (package-upgrade 'flymake))
-  :custom
-  (flymake-show-diagnostics-at-end-of-line 'fancy "Красивые сообщения диагностики")
   :bind (:map emacs-lisp-mode-map
               ("M-n" . flymake-goto-next-error)
               ("M-p" . flymake-goto-prev-error))
@@ -555,7 +551,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     (ispell-program-name (cond ((file-executable-p "/usr/bin/hunspell") "hunspell")
                                ((file-executable-p "/usr/bin/aspell") "aspell")
                                ((file-executable-p "/usr/bin/nuspell") "nuspell")
-                               ;; Ничего не установлено
+                               ;; Ничего не установлено?
                                (t nil)))
     :hook
     ((text-mode . flyspell-mode)

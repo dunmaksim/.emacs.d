@@ -1217,7 +1217,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :config
   (global-diff-hl-mode t)
   :hook
-  (magit-post-refresh . diff-hl-magit-post-refresh)
   (dired-mode . diff-hl-dired-mode))
 
 

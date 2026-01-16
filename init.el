@@ -928,14 +928,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
-;; 📦 TRACK-CHANGES
-;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
-(use-package track-changes
-  :pin "gnu"
-  :init (unless (alist-get 'track-changes package-alist)
-          (package-upgrade 'track-changes)))
-
-
 ;; 📦 UNIQUIFY
 ;; Встроенный пакет.
 ;; Используется для поддержания уникальности названий буферов, путей и т. д.
@@ -1439,19 +1431,6 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("M-p" . jinx-previous)))
 
 
-;; 📦 LIN
-;; https://github.com/protesilaos/lin
-;; Почти то же самое, что и `hl-line-mode', только
-;; Font Face более разумные.
-(use-package lin
-  :pin "gnu"
-  :ensure t
-  :hook
-  (dired-mode . lin-mode)
-  (prog-mode . lin-mode)
-  (text-mode . lin-mode))
-
-
 ;; 📦 MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.
@@ -1513,7 +1492,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Иконки нужны для некоторых других пакетов
 (use-package nerd-icons
   :vc (:url "https://github.com/rainstormstudio/nerd-icons.el.git"
-       :rev :newest))
+            :rev :newest))
 
 
 ;; 📦 ORG-MODE
@@ -1532,26 +1511,6 @@ FRAME-NAME — имя фрейма, который настраивается."
    word-wrap t))      ;; Перенос длинных строк
 
 
-;; 📦 PACKAGE-LINT
-;; https://github.com/purcell/package-lint
-;; Проверка кода пакетов Emacs.
-(use-package package-lint
-  :pin "melpa-stable"
-  :ensure t
-  :defer t)
-
-
-;; 📦 PO-MODE
-;; https://www.gnu.org/software/gettext/manual/html_node/Installation.html
-;; Работа с файлами локализации.
-;; Необходимо установить в систему эти пакеты:
-;; * gettext
-;; * gettext-el: если po-mode из архивов не работает
-(use-package po-mode
-  :pin "melpa"
-  :ensure t)
-
-
 ;; 📦 PROJECTILE
 ;; https://docs.projectile.mx/projectile/installation.html
 ;; Управление проектами. Чтобы каталог считался проектом, он должен быть
@@ -1566,7 +1525,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   ("C-c p" . projectile-command-map)
   :bind
   (:map global-map
-        ("<f6>" . projectile-test-project)
         ("<f9>" . projectile-compile-project))
   :custom
   (projectile-completion-system 'ivy)
@@ -1599,7 +1557,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; В отличие от russian-computer, позволяет использовать лигатуры.
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
-  :ensure t
+  :vc (:url "https://github.com/dunmaksim/emacs-russian-techwriter-input-method.git"
+            :rev :newest)
   :custom
   (default-input-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
@@ -1611,17 +1570,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :pin "gnu"
   :ensure t
   :mode ("\\.sed\\'" . sed-mode))
-
-
-;; 📦 STANDARD THEMES
-;; https://github.com/protesilaos/standard-themes
-;; Улучшенные темы на основе стандартных
-(use-package standard-themes
-  :pin "gnu"
-  :ensure t
-  :custom
-  (standard-themes-bold-constructs t)
-  (standard-themes-italic-constructs t))
 
 
 ;; 📦 SWIPER
@@ -1729,7 +1677,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t)
 
 (load-theme 'ef-bio t)
-
 
 (provide 'init.el)
 ;;; init.el ends here

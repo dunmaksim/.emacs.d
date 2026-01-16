@@ -194,12 +194,11 @@ FRAME-NAME — имя фрейма, который настраивается."
 (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 (package-initialize)
 
-;; Настроим приоритеты архивов. Чем выше — тем лучше.
+;; Приоритеты архивов: чем выше, тем лучше.
 (setopt package-archive-priorities
         '(("gnu" . 2)
           ("nongnu" . 1)))
-;; ("melpa-stable" . 20)
-;; ("melpa" . 10)))
+
 
 (defun init-el-check-archive-contents ()
   "Проверим наличие списка пакетов в архивах.
@@ -294,7 +293,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; буферами.
 (use-package autorevert
   :custom
-  (auto-revert-check-vc-info t "Автоматически обновлять статусную строку")
+  (auto-revert-check-vc-info t "Автоматически обновлять статусную строку при использовании VCS")
   (global-auto-revert-non-file-buffers t "Автообновление не только файловых буферов.")
   :config
   (global-auto-revert-mode t)
@@ -756,16 +755,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (emacs-lisp-mode . prettify-symbols-mode)) ;; Будем показывать глифы вместо некоторых конструкций
 
 
-;; 📦 PROJECT
-;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
-(use-package project
-  :pin "gnu"
-  :init (unless (alist-get 'project package-alist)
-          (package-upgrade 'project))
-  :custom
-  (project-prune-zombie-projects t "Автоматически удалять не найденные проекты."))
-
-
 ;; 📦 PYTHON-MODE
 ;; Встроенный пакет для работы с Python через TreeSitter
 (use-package python
@@ -855,16 +844,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (savehist-mode t))
 
 
-;; 📦 SEMANTIC
-;; Встроенный аналог TreeSitter
-(use-package semantic
-  :config
-  (add-to-list 'semantic-default-submodes 'global-semanticdb-minor-mode)
-  (add-to-list 'semantic-default-submodes 'global-semantic-idle-scheduler-mode)
-  (add-to-list 'semantic-default-submodes 'global-semantic-idle-completions-mode)
-  (semantic-mode t))
-
-
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет для работы со скриптами Shell.
 (use-package sh-script
@@ -911,10 +890,10 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
-  (compilation-mode . visual-line-mode)
-  (markdown-mode . visual-line-mode)
-  (messages-buffer-mode . visual-line-mode)
-  (text-mode . visual-line-mode))
+  ((compilation-mode . visual-line-mode)
+   (markdown-mode . visual-line-mode)
+   (messages-buffer-mode . visual-line-mode)
+   (text-mode . visual-line-mode)))
 
 
 ;; 📦 SORT
@@ -923,12 +902,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :bind
   (:map global-map
         ("<f7>" . sort-lines)))
-
-
-;; 📦 TEXT-MODE
-;; Все режимы на базе `text-mode'
-(use-package text-mode
-  :mode ("\\.adoc\\'" . text-mode))
 
 
 ;; 📦 TOOLBAR
@@ -956,15 +929,6 @@ FRAME-NAME — имя фрейма, который настраивается."
           (package-upgrade 'track-changes)))
 
 
-;; 📦 TRAMP
-;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
-(use-package tramp
-  :pin "gnu"
-  :ensure t
-  :init (unless (alist-get 'tramp package-alist)
-          (package-upgrade 'tramp)))
-
-
 ;; 📦 UNIQUIFY
 ;; Встроенный пакет.
 ;; Используется для поддержания уникальности названий буферов, путей и т. д.
@@ -986,7 +950,8 @@ FRAME-NAME — имя фрейма, который настраивается."
      (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
   (whitespace-line-column nil "Используем значение fill-column")
   :hook
-  ((conf-mode
+  ((asciidoc-mode
+    conf-mode
     css-mode
     dockerfile-ts-mode
     emacs-lisp-mode
@@ -1010,7 +975,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     snippet-mode ;; Yasnippet
     sql-mode
     tex-mode
-    text-mode
     yaml-ts-mode) . whitespace-mode))
 
 
@@ -1032,15 +996,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
         ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
-
-
-;; 📦 WINDOW-TOOL-BAR
-;; Встроенный пакет, но мы будем обновлять его из GNU ELPA.
-(use-package window-tool-bar
-  :pin "gnu"
-  :ensure t
-  :init (unless (alist-get 'window-tool-bar package-alist)
-          (package-upgrade 'window-tool-bar)))
 
 
 ;; 📦 XML
@@ -1071,13 +1026,13 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
 
-
 ;; 📦 APHELEIA
 ;; https://github.com/radian-software/apheleia
 ;; Автоформат буфера перед сохранением.
 (use-package apheleia
-  :pin "melpa-stable"
-  :ensure t
+  :vc
+  (:url "https://github.com/radian-software/apheleia.git"
+        :rev "v4.4.2")
   :custom
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
   :bind (:map global-map
@@ -1085,7 +1040,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :hook
   ((emacs-lisp-mode
     python-mode
-    ruby-ts-mode) . apheleia-mode))
+    ruby-ts-mode) . #'apheleia-mode))
 
 
 ;; 📦 AUCTEX
@@ -1168,41 +1123,41 @@ FRAME-NAME — имя фрейма, который настраивается."
     yaml-ts-mode) . colorful-mode))
 
 
-;; 📦 CONSULT
-;; https://elpa.gnu.org/packages/consult.html
-;; Команды для поиска и навигации на базе встроенной функции `completing-read'.
-(use-package consult
-  :pin "gnu"
-  :ensure t
-  :custom
-  (completion-in-region-function #'consult-completion-in-region)
-  :bind (:map global-map
-              ;; Буферы
-              ("C-x b" . #'consult-buffer)
-              ("C-x 4 b" . #'consult-buffer-other-window)
-              ("C-x 5 b" . #'consult-buffer-other-frame)
-              ("C-x t b" . #'consult-buffer-other-tab)
-              ;; Закладки
-              ("C-x r b" . #'consult-bookmark)
-              ;; Kill ring
-              ("M-y" . #'consult-yank-from-kill-ring)
-              ;; Быстрый переход к строке и позиции в ней line:col
-              ("M-g g" . #'consult-goto-line)
-              ;; imenu через Consult
-              ("M-g i" . #'consult-imenu)
-              ;; Поиск
-              ("C-s" . #'consult-line))
-  :config
-  (add-to-list 'consult-preview-allowed-hooks 'hl-todo-mode))
+;; ;; 📦 CONSULT
+;; ;; https://elpa.gnu.org/packages/consult.html
+;; ;; Команды для поиска и навигации на базе встроенной функции `completing-read'.
+;; (use-package consult
+;;   :pin "gnu"
+;;   :ensure t
+;;   :custom
+;;   (completion-in-region-function #'consult-completion-in-region)
+;;   :bind (:map global-map
+;;               ;; Буферы
+;;               ("C-x b" . #'consult-buffer)
+;;               ("C-x 4 b" . #'consult-buffer-other-window)
+;;               ("C-x 5 b" . #'consult-buffer-other-frame)
+;;               ("C-x t b" . #'consult-buffer-other-tab)
+;;               ;; Закладки
+;;               ("C-x r b" . #'consult-bookmark)
+;;               ;; Kill ring
+;;               ("M-y" . #'consult-yank-from-kill-ring)
+;;               ;; Быстрый переход к строке и позиции в ней line:col
+;;               ("M-g g" . #'consult-goto-line)
+;;               ;; imenu через Consult
+;;               ("M-g i" . #'consult-imenu)
+;;               ;; Поиск
+;;               ("C-s" . #'consult-line))
+;;   :config
+;;   (add-to-list 'consult-preview-allowed-hooks 'hl-todo-mode))
 
 
-;; 📦 CORFU
-;; https://elpa.gnu.org/packages/corfu.html
-;; Расширение для автодополнения в буфере.
-(use-package corfu
-  :pin "gnu"
-  :ensure t
-  :config (global-corfu-mode t))
+;; ;; 📦 CORFU
+;; ;; https://elpa.gnu.org/packages/corfu.html
+;; ;; Расширение для автодополнения в буфере.
+;; (use-package corfu
+;;   :pin "gnu"
+;;   :ensure t
+;;   :config (global-corfu-mode t))
 
 
 ;; 📦 COUNSEL
@@ -1217,6 +1172,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("C-c c" . #'counsel-compile)
         ("C-c g" . #'counsel-git)
+        ("C-c j" . #'counsel-file-jump)
         ("C-h S" . #'counsel-info-lookup-symbol)
         ("C-h a" . #'counsel-apropos)
         ("C-h b" . #'counsel-descbinds)
@@ -1226,11 +1182,10 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-h v" . #'counsel-describe-variable)
         ("C-x 8 RET" . #'counsel-unicode-char)
         ("C-x C-f" . #'counsel-find-file)
-        ;; ("C-x r b" . #'counsel-bookmark)
-        ;; ("M-g i" . #'counsel-imenu)
-        ;; ("M-x" . #'counsel-M-x)
-        ;; ("M-y" . #'counsel-yank-pop)
-        ))
+        ("C-x r b" . #'counsel-bookmark)
+        ("M-g i" . #'counsel-imenu)
+        ("M-x" . #'counsel-M-x)
+        ("M-y" . #'counsel-yank-pop)))
 
 
 ;; 📦 CSV-MODE
@@ -1240,33 +1195,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :pin "gnu"
   :ensure t
   :mode ("\\.csv\\'" . csv-mode))
-
-
-;; 📦 DASHBOARD
-;; https://github.com/emacs-dashboard/emacs-dashboard
-(use-package dashboard
-  :pin "melpa-stable"
-  :ensure t
-  :custom
-  (dashboard-banner-logo-title "Добро пожаловать!")
-  (dashboard-center-content t)
-  (dashboard-items '((projects . 10)
-                     (recents . 15)
-                     (bookmarks . 5)))
-  (dashboard-item-names '(("Agenda for the coming week:" . "Список дел на следующую неделю:")
-                          ("Agenda for today:" . "Список дел на сегодня:")
-                          ("Bookmarks:" . "Закладки:")
-                          ("Projects:" . "Проекты:")
-                          ("Recent Files:" . "Последние открытые файлы:")
-                          ("Registers:" . "Регистры:")))
-  (dashboard-icon-type 'nerd-icons "Современные иконки.")
-  (dashboard-display-icons-p t "Показывать иконки.")
-  (dashboard-projects-backend 'projectile "Используем продвинутый менеджер проектов.")
-  (dashboard-remove-missing-entry t "Не показывать битые ссылки.")
-  (dashboard-set-heading-icons t)
-  (dashboard-set-file-icons t)
-  (initial-buffer-choice (lambda ()(get-buffer-create dashboard-buffer-name)))
-  :config (dashboard-setup-startup-hook))
 
 
 ;; 📦 DENOTE
@@ -1287,49 +1215,11 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package diff-hl
   :pin "gnu"
   :ensure t
+  :config
+  (global-diff-hl-mode t)
   :hook
-  ((asciidoc-mode
-    emacs-lisp-mode
-    makefile-mode
-    markdown-mode
-    python-mode
-    rst-mode
-    yaml-ts-mode). diff-hl-mode)
-  ((dired-mode . diff-hl-dired-mode)))
-
-
-;; 📦 DOOM-MODELINE
-;; https://github.com/seagle0128/doom-modeline
-;; Красивая строка статуса
-(use-package doom-modeline
-  :pin "melpa-stable"
-  :ensure t
-  :custom
-  (doom-modeline-battery nil "У меня нет батареи, показывать нечего")
-  (doom-modeline-buffer-file-name-style 'truncate-upto-project)
-  (doom-modeline-buffer-modification-icon t "Иконка наличия изменений")
-  (doom-modeline-buffer-name t "Название буфера")
-  (doom-modeline-buffer-state-icon t "Иконка состояния буфера")
-  (doom-modeline-env-enable-python t "Отслеживать окружения Python")
-  (doom-modeline-env-enable-ruby t "Отслеживать окружения Ruby")
-  (doom-modeline-env-version t "Версия окружения")
-  (doom-modeline-highlight-modified-buffer-name "Подсвечивать название изменённого буфера")
-  (doom-modeline-icon t "Поддержка иконок")
-  (doom-modeline-irc nil "Не показывать статус IRC")
-  (doom-modeline-lsp t "Статус LSP")
-  (doom-modeline-lsp-icon t "Иконка LSP-сервера")
-  (doom-modeline-major-mode-color-icon t "Цветная иконка основного режима")
-  (doom-modeline-major-mode-icon t "Иконка основного режима")
-  (doom-modeline-modal t "Вывод названия модального режима, если он активен")
-  (doom-modeline-modal-icon t "Иконка модального режима, если он активен")
-  (doom-modeline-project-name t "Название проекта")
-  (doom-modeline-support-imenu t "Поддержка imenu")
-  (doom-modeline-total-line-number t "Общее количество строк")
-  (doom-modeline-total-line-number t "Общее количество строк")
-  (doom-modeline-vcs-display-function #'doom-modeline-vcs-name "Функция получения названия текущей ветки VCS")
-  (doom-modeline-vcs-max-length 30 "Видим имена длинных веток")
-  (doom-modeline-workspace-name t "Название рабочего пространства")
-  :config (doom-modeline-mode t))
+  (magit-post-refresh . diff-hl-magit-post-refresh)
+  (dired-mode . diff-hl-dired-mode))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1473,15 +1363,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     ) . flycheck-mode))
 
 
-;; 📦 HL-TODO
-;; https://github.com/tarsius/hl-todo
-;; Подсветка TODO, FIXME и т. п.
-(use-package hl-todo
-  :pin "melpa-stable"
-  :ensure t
-  :config (global-hl-todo-mode t))
-
-
 ;; 📦 INDENT-BARS
 ;; https://github.com/jdtsmith/indent-bars
 ;; Красивая подсветка отступов
@@ -1512,15 +1393,11 @@ FRAME-NAME — имя фрейма, который настраивается."
   :pin "gnu"
   :ensure t
   :demand t
-  :custom
-  (ivy-use-selectable-prompt t "Введённую строку тоже можно выбрать.")
   :config
   (ivy-mode t)
-  ;; :bind
-  ;; (:map global-map
-  ;;       ("C-x b" . #'ivy-switch-buffer)
-  ;;       )
-  )
+  :bind
+  (:map global-map
+        ("C-x b" . #'ivy-switch-buffer)))
 
 
 ;; 📦 IVY-HYDRA
@@ -1622,6 +1499,14 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-<" . mc/mark-previous-like-this)
         ("C-c C-<" . mc/mark-all-like-this)
         ("M-<mouse-1>" . mc/add-cursor-on-click)))
+
+
+;; 📦 NERD-ICONS
+;; https://github.com/rainstormstudio/nerd-icons.el
+;; Иконки нужны для некоторых других пакетов
+(use-package nerd-icons
+  :vc (:url "https://github.com/rainstormstudio/nerd-icons.el.git"
+       :rev :newest))
 
 
 ;; 📦 ORG-MODE
@@ -1732,6 +1617,19 @@ FRAME-NAME — имя фрейма, который настраивается."
   (standard-themes-italic-constructs t))
 
 
+;; 📦 SWIPER
+;; https://elpa.gnu.org/packages/swiper.html
+;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
+;; `isearch-backward'.
+(use-package swiper
+  :pin "gnu"
+  :ensure t
+  :bind
+  (:map global-map
+        ("C-s" . #'swiper-isearch)
+        ("C-r" . #'swiper-isearch-backward)))
+
+
 ;; 📦 VERTICO
 ;; https://elpa.gnu.org/packages/vertico.html
 ;; Автодополнение на базе встроенной функциональности.
@@ -1779,8 +1677,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :init
   (keymap-global-unset "C-z")
   :bind (:map global-map
-              ("C-z" . vundo))
-  :config (vundo-mode t))
+              ("C-z" . vundo)))
 
 
 ;; 📦 WHICH-KEY MODE
@@ -1825,7 +1722,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t)
 
 (load-theme 'ef-bio t)
-;; (load-theme 'deeper-blue)
 
 
 (provide 'init.el)

@@ -1141,6 +1141,32 @@ FRAME-NAME — имя фрейма, который настраивается."
   :config (global-corfu-mode t))
 
 
+;; 📦 COUNSEL
+;; https://elpa.gnu.org/packages/counsel.html
+;; Замена встроенных команд на их более удобные аналоги.
+(use-package counsel
+  :pin "gnu"
+  :ensure t
+  :bind
+  (:map global-map
+        ("C-c c" . #'counsel-compile)
+        ("C-c g" . #'counsel-git)
+        ("C-c j" . #'counsel-file-jump)
+        ("C-h S" . #'counsel-info-lookup-symbol)
+        ("C-h a" . #'counsel-apropos)
+        ("C-h b" . #'counsel-descbinds)
+        ("C-h f" . #'counsel-describe-function)
+        ("C-h l" . #'counsel-find-library)
+        ("C-h o" . #'counsel-describe-symbol)
+        ("C-h v" . #'counsel-describe-variable)
+        ("C-x 8 RET" . #'counsel-unicode-char)
+        ("C-x C-f" . #'counsel-find-file)
+        ("C-x r b" . #'counsel-bookmark)
+        ("M-g i" . #'counsel-imenu)
+        ("M-x" . #'counsel-M-x)
+        ("M-y" . #'counsel-yank-pop)))
+
+
 ;; 📦 CSV-MODE
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
@@ -1335,32 +1361,21 @@ FRAME-NAME — имя фрейма, который настраивается."
     ) . indent-bars-mode))
 
 
-;; ;; 📦 IVY
-;; ;; https://elpa.gnu.org/packages/ivy.html
-;; ;; https://elpa.gnu.org/packages/doc/ivy.html
-;; ;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
-;; ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
-;; ;; это последовательность [C-M-j].
-;; (use-package ivy
-;;   :pin "gnu"
-;;   :ensure t
-;;   :demand t
-;;   :config
-;;   (ivy-mode t)
-;;   :bind
-;;   (:map global-map
-;;         ("C-x b" . #'ivy-switch-buffer)))
-
-
-;; 📦 IVY-HYDRA
-;; https://elpa.gnu.org/packages/ivy-hydra.html
-;; Дополнительные сочетания клавиш для IVY.
-(use-package ivy-hydra
+;; 📦 IVY
+;; https://elpa.gnu.org/packages/ivy.html
+;; https://elpa.gnu.org/packages/doc/ivy.html
+;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
+;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
+;; это последовательность [C-M-j].
+(use-package ivy
   :pin "gnu"
   :ensure t
   :demand t
-  :after ivy
-  :requires ivy)
+  :config
+  (ivy-mode t)
+  :bind
+  (:map global-map
+        ("C-x b" . #'ivy-switch-buffer)))
 
 
 ;; 📦 JINX

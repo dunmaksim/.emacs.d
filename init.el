@@ -762,6 +762,16 @@ FRAME-NAME — имя фрейма, который настраивается."
   (emacs-lisp-mode . prettify-symbols-mode)) ;; Будем показывать глифы вместо некоторых конструкций
 
 
+;; 📦 PROJECT
+;; Управление проектами на самом базовом уровне.
+(use-package project
+  :pin "gnu"
+  :ensure t
+  :init
+  (unless (alist-get 'project package-alist)
+    (package-upgrade 'project)))
+
+
 ;; 📦 PYTHON-MODE
 ;; Встроенный пакет для работы с Python через TreeSitter
 (use-package python
@@ -1122,69 +1132,13 @@ FRAME-NAME — имя фрейма, который настраивается."
     yaml-ts-mode) . colorful-mode))
 
 
-;; ;; 📦 CONSULT
-;; ;; https://elpa.gnu.org/packages/consult.html
-;; ;; Команды для поиска и навигации на базе встроенной функции `completing-read'.
-;; (use-package consult
-;;   :pin "gnu"
-;;   :ensure t
-;;   :custom
-;;   (completion-in-region-function #'consult-completion-in-region)
-;;   :bind (:map global-map
-;;               ;; Буферы
-;;               ("C-x b" . #'consult-buffer)
-;;               ("C-x 4 b" . #'consult-buffer-other-window)
-;;               ("C-x 5 b" . #'consult-buffer-other-frame)
-;;               ("C-x t b" . #'consult-buffer-other-tab)
-;;               ;; Закладки
-;;               ("C-x r b" . #'consult-bookmark)
-;;               ;; Kill ring
-;;               ("M-y" . #'consult-yank-from-kill-ring)
-;;               ;; Быстрый переход к строке и позиции в ней line:col
-;;               ("M-g g" . #'consult-goto-line)
-;;               ;; imenu через Consult
-;;               ("M-g i" . #'consult-imenu)
-;;               ;; Поиск
-;;               ("C-s" . #'consult-line))
-;;   :config
-;;   (add-to-list 'consult-preview-allowed-hooks 'hl-todo-mode))
-
-
-;; ;; 📦 CORFU
-;; ;; https://elpa.gnu.org/packages/corfu.html
-;; ;; Расширение для автодополнения в буфере.
-;; (use-package corfu
-;;   :pin "gnu"
-;;   :ensure t
-;;   :config (global-corfu-mode t))
-
-
-;; 📦 COUNSEL
-;; https://elpa.gnu.org/packages/counsel.html
-;; Замена встроенных команд на их более удобные аналоги.
-(use-package counsel
+;; 📦 CORFU
+;; https://elpa.gnu.org/packages/corfu.html
+;; Расширение для автодополнения в буфере.
+(use-package corfu
   :pin "gnu"
   :ensure t
-  :custom
-  (counsel-mode-override-describe-bindings t "Переопределить функцию `describe-bindings'.")
-  :bind
-  (:map global-map
-        ("C-c c" . #'counsel-compile)
-        ("C-c g" . #'counsel-git)
-        ("C-c j" . #'counsel-file-jump)
-        ("C-h S" . #'counsel-info-lookup-symbol)
-        ("C-h a" . #'counsel-apropos)
-        ("C-h b" . #'counsel-descbinds)
-        ("C-h f" . #'counsel-describe-function)
-        ("C-h l" . #'counsel-find-library)
-        ("C-h o" . #'counsel-describe-symbol)
-        ("C-h v" . #'counsel-describe-variable)
-        ("C-x 8 RET" . #'counsel-unicode-char)
-        ("C-x C-f" . #'counsel-find-file)
-        ("C-x r b" . #'counsel-bookmark)
-        ("M-g i" . #'counsel-imenu)
-        ("M-x" . #'counsel-M-x)
-        ("M-y" . #'counsel-yank-pop)))
+  :config (global-corfu-mode t))
 
 
 ;; 📦 CSV-MODE
@@ -1381,21 +1335,21 @@ FRAME-NAME — имя фрейма, который настраивается."
     ) . indent-bars-mode))
 
 
-;; 📦 IVY
-;; https://elpa.gnu.org/packages/ivy.html
-;; https://elpa.gnu.org/packages/doc/ivy.html
-;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
-;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
-;; это последовательность [C-M-j].
-(use-package ivy
-  :pin "gnu"
-  :ensure t
-  :demand t
-  :config
-  (ivy-mode t)
-  :bind
-  (:map global-map
-        ("C-x b" . #'ivy-switch-buffer)))
+;; ;; 📦 IVY
+;; ;; https://elpa.gnu.org/packages/ivy.html
+;; ;; https://elpa.gnu.org/packages/doc/ivy.html
+;; ;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
+;; ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
+;; ;; это последовательность [C-M-j].
+;; (use-package ivy
+;;   :pin "gnu"
+;;   :ensure t
+;;   :demand t
+;;   :config
+;;   (ivy-mode t)
+;;   :bind
+;;   (:map global-map
+;;         ("C-x b" . #'ivy-switch-buffer)))
 
 
 ;; 📦 IVY-HYDRA
@@ -1551,6 +1505,18 @@ FRAME-NAME — имя фрейма, который настраивается."
   (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom))
 
 
+;; 📦 RAINBOW-DELIMITERS
+;; https://github.com/Fanael/rainbow-delimiters
+;; Подсветка парных скобок одним цветом
+(use-package rainbow-delimiters
+  :pin "nongnu"
+  :ensure t
+  :hook
+  (asciidoc-mode . rainbow-delimiters-mode)
+  (emacs-list-mode . rainbow-delimiters-mode)
+  (markdown-mode . rainbow-delimiters-mode))
+
+
 ;; 📦 RUSSIAN-TECHWRITER
 ;; Метод ввода для технических писателей.
 ;; В отличие от russian-computer, позволяет использовать лигатуры.
@@ -1582,29 +1548,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map
         ("C-s" . #'swiper-isearch)
         ("C-r" . #'swiper-isearch-backward)))
-
-
-;; 📦 VERTICO
-;; https://elpa.gnu.org/packages/vertico.html
-;; Автодополнение на базе встроенной функциональности.
-(use-package vertico
-  :pin "gnu"
-  :ensure t
-  :config (vertico-mode t)
-  :bind
-  (:map vertico-map
-        ("TAB" . #'minibuffer-complete)))
-
-
-;; 📦 VERTICO-DIRECTORY
-;; Дополнение к VERTICO для ввода путей к директориям.
-(use-package vertico-directory
-  :after vertico
-  :ensure nil
-  :bind (:map vertico-map
-              ("RET" . vertico-directory-enter)
-              ("DEL" . vertico-directory-delete-char)
-              ("M-DEL" . vertico-directory-delete-word)))
 
 
 ;; VUNDO
@@ -1655,25 +1598,25 @@ FRAME-NAME — имя фрейма, который настраивается."
   (which-key-mode t))
 
 
-;; 📦 YASNIPPET
-;; https://elpa.gnu.org/packages/yasnippet.html
-;; Библиотека для управления сниппетами. Требуется для расширения функций Eglot.
-(use-package yasnippet
-  :pin "gnu"
-  :ensure t
-  :init
-  ;; Проверим существование каталога snippets. При отсутствии — создадим.
-  (let ((yas-snippets-dir (expand-file-name "snippets" user-emacs-directory)))
-    (unless (file-directory-p yas-snippets-dir)
-      (make-directory yas-snippets-dir)))
-  :config (yas-global-mode t))
+;; ;; 📦 YASNIPPET
+;; ;; https://elpa.gnu.org/packages/yasnippet.html
+;; ;; Библиотека для управления сниппетами. Требуется для расширения функций Eglot.
+;; (use-package yasnippet
+;;   :pin "gnu"
+;;   :ensure t
+;;   :init
+;;   ;; Проверим существование каталога snippets. При отсутствии — создадим.
+;;   (let ((yas-snippets-dir (expand-file-name "snippets" user-emacs-directory)))
+;;     (unless (file-directory-p yas-snippets-dir)
+;;       (make-directory yas-snippets-dir)))
+;;   :config (yas-global-mode t))
 
 
-;; 📦 YASNIPPET-SNIPPETS
-;; https://github.com/AndreaCrotti/yasnippet-snippets
-;; Набор сниппетов для `yasnippet'
-(use-package yasnippet-snippets
-  :ensure t)
+;; ;; 📦 YASNIPPET-SNIPPETS
+;; ;; https://github.com/AndreaCrotti/yasnippet-snippets
+;; ;; Набор сниппетов для `yasnippet'
+;; (use-package yasnippet-snippets
+;;   :ensure t)
 
 (load-theme 'ef-bio t)
 

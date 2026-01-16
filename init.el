@@ -595,6 +595,13 @@ FRAME-NAME — имя фрейма, который настраивается."
   (:map global-map ("<f6>" . find-grep)))
 
 
+;; 📦 HL-LINE-MODE
+;; Подсветка активной строки.
+(use-package hl-line
+  :config
+  (global-hl-line-mode t))
+
+
 ;; 📦 HTML-MODE
 ;; Встроенный пакет для работы с HTML и SGML.
 (use-package html-mode

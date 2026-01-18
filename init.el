@@ -1268,7 +1268,7 @@ FRAME-NAME — имя фрейма, который настраивается."
                                 )
                               "Настройки буфера событий Eglot")
   :config
-  (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) .("bundle" "exec" "ruby-lsp")))
+  (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) . ("bundle" "exec" "ruby-lsp")))
   (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
@@ -1479,26 +1479,26 @@ FRAME-NAME — имя фрейма, который настраивается."
    word-wrap t))      ;; Перенос длинных строк
 
 
-;; 📦 PROJECTILE
-;; https://docs.projectile.mx/projectile/installation.html
-;; Управление проектами. Чтобы каталог считался проектом, он должен быть
-;; под контролем любой системы версионирования, либо содержать специальные
-;; файлы. В крайнем случае сгодится пустой файл .projectile
-;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
-(use-package projectile
-  :pin "nongnu"
-  :ensure t
-  :bind-keymap
-  ("C-x p" . projectile-command-map)
-  ("C-c p" . projectile-command-map)
-  :bind
-  (:map global-map
-        ("<f9>" . projectile-compile-project))
-  :custom
-  (projectile-completion-system 'ivy)
-  (projectile-switch-project-action 'projectile-dired)
-  :config
-  (projectile-mode t))
+;; ;; 📦 PROJECTILE
+;; ;; https://docs.projectile.mx/projectile/installation.html
+;; ;; Управление проектами. Чтобы каталог считался проектом, он должен быть
+;; ;; под контролем любой системы версионирования, либо содержать специальные
+;; ;; файлы. В крайнем случае сгодится пустой файл .projectile
+;; ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
+;; (use-package projectile
+;;   :pin "nongnu"
+;;   :ensure t
+;;   :bind-keymap
+;;   ("C-x p" . projectile-command-map)
+;;   ("C-c p" . projectile-command-map)
+;;   :bind
+;;   (:map global-map
+;;         ("<f9>" . projectile-compile-project))
+;;   :custom
+;;   (projectile-completion-system 'ivy)
+;;   (projectile-switch-project-action 'projectile-dired)
+;;   :config
+;;   (projectile-mode t))
 
 
 ;; 📦 PULSAR

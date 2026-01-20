@@ -764,6 +764,16 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 ;; 📦 PROJECT
 ;; Управление проектами на самом базовом уровне.
+;; [C-x p p] — переключение.
+;; [C-x p D] — Dired.
+;; [C-x p d] — выбрать каталог.
+;; [C-x p f] — выбрать файл.
+;; [C-x p k] — закрыть открытые файлы проекта.
+;; [C-x p C-b] — показать список буферов проекта.
+;; [C-x p b] — переключение буферов в рамках проекта.
+;; [C-x p c] — компиляция проекта.
+;; [C-x p s] — Shell в текущем проекте.
+;; [C-x p e] — EShell в текущем проекте.
 (use-package project
   :pin "gnu"
   :ensure t
@@ -1173,7 +1183,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package csv-mode
   :pin "gnu"
   :ensure t
-  :mode ("\\.csv\\'" . csv-mode))
+  :mode ("\\.csv\\'" . csv-mode)
+  :hook
+  (csv-mode . csv-guess-set-separator)) ;; Попытаемся угадать `csv-separator' на основе содержимого файла.
 
 
 ;; 📦 DENOTE
@@ -1226,6 +1238,8 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :init (unless (alist-get 'editorconfig package-alist)
           (package-upgrade 'editorconfig))
+  :custom
+  (editorconfig-mode-lighter "🐁 ")
   :config
   (editorconfig-mode t))
 
@@ -1341,24 +1355,24 @@ FRAME-NAME — имя фрейма, который настраивается."
     ) . flycheck-mode))
 
 
-;; 📦 INDENT-BARS
-;; https://github.com/jdtsmith/indent-bars
-;; Красивая подсветка отступов
-(use-package indent-bars
-  :pin "gnu"
-  :ensure t
-  :hook
-  ((css-mode
-    javascript-mode
-    js-ts-mode
-    makefile-mode
-    markdown-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    ruby-ts-mode
-    yaml-ts-mode
-    ) . indent-bars-mode))
+;; ;; 📦 INDENT-BARS
+;; ;; https://github.com/jdtsmith/indent-bars
+;; ;; Красивая подсветка отступов
+;; (use-package indent-bars
+;;   :pin "gnu"
+;;   :ensure t
+;;   :hook
+;;   ((css-mode
+;;     javascript-mode
+;;     js-ts-mode
+;;     makefile-mode
+;;     markdown-mode
+;;     python-mode
+;;     rst-mode
+;;     ruby-mode
+;;     ruby-ts-mode
+;;     yaml-ts-mode
+;;     ) . indent-bars-mode))
 
 
 ;; 📦 IVY
@@ -1376,6 +1390,15 @@ FRAME-NAME — имя фрейма, который настраивается."
   :bind
   (:map global-map
         ("C-x b" . #'ivy-switch-buffer)))
+
+
+;; 📦 JINJA2-MODE
+;; https://elpa.nongnu.org/nongnu/jinja2-mode.html
+;; Режим для работы с шаблонами Jinja2
+(use-package jinja2-mode
+  :pin "nongnu"
+  :ensure t
+  :mode ("\\.j2" . jinja2-mode))
 
 
 ;; 📦 JINX
@@ -1455,14 +1478,6 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("M-<mouse-1>" . mc/add-cursor-on-click)))
 
 
-;; 📦 NERD-ICONS
-;; https://github.com/rainstormstudio/nerd-icons.el
-;; Иконки нужны для некоторых других пакетов
-(use-package nerd-icons
-  :vc (:url "https://github.com/rainstormstudio/nerd-icons.el.git"
-            :rev :newest))
-
-
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
@@ -1529,6 +1544,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :hook
   (asciidoc-mode . rainbow-delimiters-mode)
   (emacs-list-mode . rainbow-delimiters-mode)
+  (lisp-data-mode . rainbow-delimiters-mode)
   (markdown-mode . rainbow-delimiters-mode))
 
 

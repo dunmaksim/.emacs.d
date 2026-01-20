@@ -713,6 +713,16 @@ FRAME-NAME — имя фрейма, который настраивается."
   ("\\(\\.js[mx]\\|\\.har\\)\\'" . js-ts-mode))
 
 
+;; 📦 JSONRPC
+;; https://elpa.gnu.org/packages/jsonrpc.html
+;; Пакет для работы с JSON. Зависимость Eglot.
+(use-package jsonrpc
+  :pin "gnu"
+  :init
+  (unless (alist-get 'jsonrpc package-alist)
+    (package-upgrade 'jsonrpc)))
+
+
 ;; 📦 JSON-TS-MODE
 ;; Встроенный пакет для работы с JSON через TreeSitter
 (use-package json-ts-mode

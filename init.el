@@ -208,11 +208,6 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 (init-el-check-archive-contents)
 
-(defun init-el-upgrade-builtin-package (pkg)
-  "Обновление встроенного пакета PKG из архива."
-  (unless (alist-get pkg package-alist)
-    (package-upgrade pkg)))
-
 
 ;; Проверим наличие пакета `gnu-elpa-keyring-update'.
 ;; В некоторых случаях без него Emacs не может проверить цифровые

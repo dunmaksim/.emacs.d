@@ -121,12 +121,13 @@ FRAME-NAME — имя фрейма, который настраивается."
  initial-scratch-message nil ;; Пустой буфер *scratch*
  kill-buffer-delete-auto-save-files t ;; Удалять файлы автосохранения при закрытии буфера
  load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
+ long-line-threshold (* long-line-threshold 2) ;; Вдвое увеличим порог
  major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
  read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
- read-extended-command-predicate #'command-completion-default-include-p ;; Скрыть команды, которые нельзя выполнить в буфере
  read-buffer-completion-ignore-case t ;; Игнорировать регистр при вводе названия буфера
+ read-extended-command-predicate #'command-completion-default-include-p ;; Скрыть команды, которые нельзя выполнить в буфере
  read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
- read-process-output-max (* 1024 1024) ;; Увеличим чанк чтения для LSP: по умолчанию 65535
+ read-process-output-max (* read-process-output-max 2) ;; Увеличим чанк чтения для LSP в 2 раза
  redisplay-skip-fontification-on-input t ;; Не обновлять буфер, если происходит ввод
  ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
  sentence-end-double-space nil ;; Устаревшее требование
@@ -262,14 +263,14 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("<f5>" . treesit-explore-mode)))
 
 
-;; 📦 ABBREV-MODE
-;; Встроенный пакет.
-;; Использование аббревиатур -- фрагментов текста, которые при вводе
-;; определённой последовательности символов заменяются на другую.
-(use-package abbrev
-  :hook
-  ((markdown-mode
-    rst-mode) . abbrev-mode))
+;; ;; 📦 ABBREV-MODE
+;; ;; Встроенный пакет.
+;; ;; Использование аббревиатур -- фрагментов текста, которые при вводе
+;; ;; определённой последовательности символов заменяются на другую.
+;; (use-package abbrev
+;;   :hook
+;;   ((markdown-mode
+;;     rst-mode) . abbrev-mode))
 
 
 ;; 📦 ANSI-COLOR
@@ -693,7 +694,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 IMENU
 (use-package imenu
   :custom
-  (setq imenu-auto-rescan t))
+  (imenu-auto-rescan t))
 
 
 ;; 📦 JS-MODE
@@ -791,9 +792,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Встроенный пакет для работы с Python через TreeSitter
 (use-package python
   :pin "gnu"
-  :init
-  (unless (alist-get 'python package-alist)
-    (package-upgrade 'python))
+  ;; :init
+  ;; (unless (alist-get 'python package-alist)
+  ;;   (package-upgrade 'python))
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
@@ -953,6 +954,15 @@ FRAME-NAME — имя фрейма, который настраивается."
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
+;; 📦 TRANSIENT
+;; Встроенный пакет, который нужно обновить, чтобы нормально работал MAGIT.
+(use-package transient
+  :pin "gnu"
+  :init
+  (unless (alist-get 'transient package-alist)
+    (package-upgrade 'transient)))
+
+
 ;; 📦 UNIQUIFY
 ;; Встроенный пакет.
 ;; Используется для поддержания уникальности названий буферов, путей и т. д.
@@ -1000,15 +1010,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     sql-mode
     tex-mode
     yaml-ts-mode) . whitespace-mode))
-
-
-;; 📦 WINDMOVE
-;; Встроенный пакет для быстрого переключения окон.
-;; Перемещение между окнами Emacs.
-(use-package windmove
-  :config
-  (windmove-mode t)
-  (windmove-swap-states-default-keybindings 'meta))
 
 
 ;; 📦 WINDOW
@@ -1243,8 +1244,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :init (unless (alist-get 'editorconfig package-alist)
           (package-upgrade 'editorconfig))
-  :custom
-  (editorconfig-mode-lighter "🐁 ")
   :config
   (editorconfig-mode t))
 
@@ -1275,9 +1274,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package eglot
   :pin "gnu"
   :ensure t
-  :init
-  (unless (alist-get 'eglot package-alist)
-    (package-upgrade 'eglot))
+  ;; :init
+  ;; (unless (alist-get 'eglot package-alist)
+  ;;   (package-upgrade 'eglot))
   :defer t
   :custom
   (eglot-autoshutdown t "Автоматически выключить сервер при закрытии последнего буфера")
@@ -1315,8 +1314,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package eldoc
   :pin "gnu"
   :ensure t
-  :init (unless (alist-get 'eldoc package-alist)
-          (package-upgrade 'eldoc))
+  ;; :init (unless (alist-get 'eldoc package-alist)
+  ;;         (package-upgrade 'eldoc))
   :config
   (global-eldoc-mode nil)
   :custom
@@ -1360,24 +1359,24 @@ FRAME-NAME — имя фрейма, который настраивается."
     ) . flycheck-mode))
 
 
-;; ;; 📦 INDENT-BARS
-;; ;; https://github.com/jdtsmith/indent-bars
-;; ;; Красивая подсветка отступов
-;; (use-package indent-bars
-;;   :pin "gnu"
-;;   :ensure t
-;;   :hook
-;;   ((css-mode
-;;     javascript-mode
-;;     js-ts-mode
-;;     makefile-mode
-;;     markdown-mode
-;;     python-mode
-;;     rst-mode
-;;     ruby-mode
-;;     ruby-ts-mode
-;;     yaml-ts-mode
-;;     ) . indent-bars-mode))
+;; 📦 INDENT-BARS
+;; https://github.com/jdtsmith/indent-bars
+;; Красивая подсветка отступов
+(use-package indent-bars
+  :pin "gnu"
+  :ensure t
+  :hook
+  ((css-mode
+    javascript-mode
+    js-ts-mode
+    makefile-mode
+    markdown-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    ruby-ts-mode
+    yaml-ts-mode
+    ) . indent-bars-mode))
 
 
 ;; 📦 IVY
@@ -1436,11 +1435,10 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
-  (magit-show-long-lines-warning nil "Выключить предупреждения про длинные строки.")
   :hook
-  (magit-mode . magit-auto-revert-mode)
+  (after-save . magit-after-save-refresh-buffers)
   (after-save . magit-after-save-refresh-status)
-  (after-save . magit-after-save-refresh-buffers))
+  (magit-mode . magit-auto-revert-mode))
 
 
 ;; 📦 MARKDOWN MODE
@@ -1456,13 +1454,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   :config (setq-local word-wrap t)
   :bind (:map markdown-mode-map
               ("M-." . markdown-follow-thing-at-point)))
-
-
-;; 📦 MODUS-THEMES
-;; https://www.gnu.org/software/emacs/manual/html_node/modus-themes/index.html
-(use-package modus-themes
-  :pin "gnu"
-  :ensure t)
 
 
 ;; 📦 MULTIPLE CURSORS
@@ -1633,29 +1624,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :config
   (which-key-mode t))
 
-
-;; ;; 📦 YASNIPPET
-;; ;; https://elpa.gnu.org/packages/yasnippet.html
-;; ;; Библиотека для управления сниппетами. Требуется для расширения функций Eglot.
-;; (use-package yasnippet
-;;   :pin "gnu"
-;;   :ensure t
-;;   :init
-;;   ;; Проверим существование каталога snippets. При отсутствии — создадим.
-;;   (let ((yas-snippets-dir (expand-file-name "snippets" user-emacs-directory)))
-;;     (unless (file-directory-p yas-snippets-dir)
-;;       (make-directory yas-snippets-dir)))
-;;   :config (yas-global-mode t))
-
-
-;; ;; 📦 YASNIPPET-SNIPPETS
-;; ;; https://github.com/AndreaCrotti/yasnippet-snippets
-;; ;; Набор сниппетов для `yasnippet'
-;; (use-package yasnippet-snippets
-;;   :ensure t)
-
 (load-theme 'ef-bio t)
 
 (provide 'init.el)
-;;; init.el ends here
-(put 'overwrite-mode 'disabled t)
+;; ;;; init.el ends here

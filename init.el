@@ -752,6 +752,15 @@ FRAME-NAME — имя фрейма, который настраивается."
   (show-paren-mode t)) ;; Подсвечивать парные скобки
 
 
+;; 📦 PEG
+;; Встроенный пакет, который мы просто обновим из GNU ELPA
+(use-package peg
+  :pin "gnu"
+  :ensure t
+  :init (unless (alist-get 'peg package-alist)
+          (package-upgrade 'peg)))
+
+
 ;; 📦 PIXEL-SCROLL
 ;; Встроенный пакет, позволяет плавно прокручивать текст
 (when (package-installed-p 'pixel-scroll)
@@ -792,9 +801,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Встроенный пакет для работы с Python через TreeSitter
 (use-package python
   :pin "gnu"
-  ;; :init
-  ;; (unless (alist-get 'python package-alist)
-  ;;   (package-upgrade 'python))
+  :init
+  (unless (alist-get 'python package-alist)
+    (package-upgrade 'python))
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
@@ -937,6 +946,15 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("<f7>" . sort-lines)))
 
 
+;; 📦 SVG
+;; Встроенный пакет, который мы просто обновим из GNU ELPA
+(use-package svg
+  :pin "gnu"
+  :ensure t
+  :init (unless (alist-get 'svg package-alist)
+          (package-upgrade 'svg)))
+
+
 ;; 📦 TOOLBAR
 ;; Встроенный пакет, недоступный в Emacs NOX
 (when (fboundp 'tool-bar-mode)
@@ -952,6 +970,24 @@ FRAME-NAME — имя фрейма, который настраивается."
   (use-package tooltip
     :config
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
+
+
+;; ;; 📦 TRACK-CHANGES
+;; ;; Встроенный пакет, обновлять который будем из архива
+;; (use-package track-changes
+;;   :pin "gnu"
+;;   :init
+;;   (unless (alist-get 'track-changes package-alist)
+;;     (package-upgrade 'track-changes)))
+
+
+;; 📦 TRAMP
+;; Встроенный пакет, который мы просто обновим из GNU ELPA
+(use-package tramp
+  :pin "gnu"
+  :ensure t
+  :init (unless (alist-get 'tramp package-alist)
+          (package-upgrade 'tramp)))
 
 
 ;; 📦 TRANSIENT
@@ -1035,6 +1071,15 @@ FRAME-NAME — имя фрейма, который настраивается."
   :mode
   ("\\.pom\\'"
    "\\.xml\\'"))
+
+
+;; ;; 📦 XREF
+;; ;; Встроенный пакет, который просто обновим из GNU ELPA
+;; (use-package xref
+;;   :pin "gnu"
+;;   :ensure t
+;;   :init (unless (alist-get 'xref package-alist)
+;;           (package-upgrade 'xref)))
 
 
 ;; 📦 YAML-TS-MODE
@@ -1274,9 +1319,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package eglot
   :pin "gnu"
   :ensure t
-  ;; :init
-  ;; (unless (alist-get 'eglot package-alist)
-  ;;   (package-upgrade 'eglot))
+  :init
+  (unless (alist-get 'eglot package-alist)
+    (package-upgrade 'eglot))
   :defer t
   :custom
   (eglot-autoshutdown t "Автоматически выключить сервер при закрытии последнего буфера")
@@ -1314,8 +1359,8 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package eldoc
   :pin "gnu"
   :ensure t
-  ;; :init (unless (alist-get 'eldoc package-alist)
-  ;;         (package-upgrade 'eldoc))
+  :init (unless (alist-get 'eldoc package-alist)
+          (package-upgrade 'eldoc))
   :config
   (global-eldoc-mode nil)
   :custom
@@ -1628,3 +1673,4 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 (provide 'init.el)
 ;; ;;; init.el ends here
+(put 'overwrite-mode 'disabled t)

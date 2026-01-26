@@ -263,14 +263,14 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("<f5>" . treesit-explore-mode)))
 
 
-;; ;; 📦 ABBREV-MODE
-;; ;; Встроенный пакет.
-;; ;; Использование аббревиатур -- фрагментов текста, которые при вводе
-;; ;; определённой последовательности символов заменяются на другую.
-;; (use-package abbrev
-;;   :hook
-;;   ((markdown-mode
-;;     rst-mode) . abbrev-mode))
+;; 📦 ABBREV-MODE
+;; Встроенный пакет.
+;; Использование аббревиатур -- фрагментов текста, которые при вводе
+;; определённой последовательности символов заменяются на другую.
+(use-package abbrev
+  :hook
+  ((markdown-mode
+    rst-mode) . abbrev-mode))
 
 
 ;; 📦 ANSI-COLOR
@@ -291,8 +291,8 @@ FRAME-NAME — имя фрейма, который настраивается."
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку при использовании VCS")
   (global-auto-revert-non-file-buffers t "Автообновление не только файловых буферов.")
-  :config
-  (global-auto-revert-mode t)
+  ;; :config
+  ;; (global-auto-revert-mode t)
   :hook
   (dired-mode . auto-revert-mode))
 
@@ -369,14 +369,15 @@ FRAME-NAME — имя фрейма, который настраивается."
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
   :hook
   (after-init . desktop-read)
-  (kill-emacs . (lambda () (desktop-save user-emacs-directory t)))
-  (server-done . desktop-save))
+  (kill-emacs . (lambda () (desktop-save user-emacs-directory t))))
+  ;; (server-done . desktop-save))
 
 
 ;; 📦 DIRED
 ;; Встроенный пакет для работы с файлами и каталогами.
 (use-package dired
   :custom
+  (dired-recursive-copies 'always "Всегда копировать каталоги рекурсивно.")
   (dired-free-space nil "Информация о занятом и свободном месте в отдельной строке")
   ;; Без этой настройки при каждой смене каталога Dired будет создавать новый буфер
   (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
@@ -972,13 +973,13 @@ FRAME-NAME — имя фрейма, который настраивается."
     (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
-;; ;; 📦 TRACK-CHANGES
-;; ;; Встроенный пакет, обновлять который будем из архива
-;; (use-package track-changes
-;;   :pin "gnu"
-;;   :init
-;;   (unless (alist-get 'track-changes package-alist)
-;;     (package-upgrade 'track-changes)))
+;; 📦 TRACK-CHANGES
+;; Встроенный пакет, обновлять который будем из архива
+(use-package track-changes
+  :pin "gnu"
+  :init
+  (unless (alist-get 'track-changes package-alist)
+    (package-upgrade 'track-changes)))
 
 
 ;; 📦 TRAMP
@@ -1480,10 +1481,11 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
-  :hook
-  (after-save . magit-after-save-refresh-buffers)
-  (after-save . magit-after-save-refresh-status)
-  (magit-mode . magit-auto-revert-mode))
+  ;; :hook
+  ;; (after-save . magit-after-save-refresh-buffers)
+  ;; (after-save . magit-after-save-refresh-status)
+  :config
+  (magit-auto-revert-mode t))
 
 
 ;; 📦 MARKDOWN MODE

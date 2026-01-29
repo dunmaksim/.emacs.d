@@ -1472,6 +1472,18 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("M-p" . jinx-previous)))
 
 
+;; 📦 LIN
+;; https://github.com/protesilaos/lin
+;; Более умная подсветка активной строки, чем `hl-line-mode'.
+(use-package lin
+  :pin "gnu"
+  :ensure t
+  :hook
+  (asciidoc-mode . lin-mode)
+  (emacs-lisp-mode . lin-mode)
+  (markdown-mode . lin-mode))
+
+
 ;; 📦 MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.

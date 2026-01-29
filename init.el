@@ -1493,9 +1493,9 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
-  ;; :hook
-  ;; (after-save . magit-after-save-refresh-buffers)
-  ;; (after-save . magit-after-save-refresh-status)
+  :hook
+  (after-save . magit-after-save-refresh-buffers)
+  (after-save . magit-after-save-refresh-status)
   :config
   (magit-auto-revert-mode t))
 

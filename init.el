@@ -1332,11 +1332,12 @@ FRAME-NAME — имя фрейма, который настраивается."
                                 )
                               "Настройки буфера событий Eglot")
   :config
-  (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) . ("bundle" "exec" "ruby-lsp")))
   (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
   (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+  (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "ruby-lsp")))
+  (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "ruby-lsp")))
   (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
   :bind
   (:map eglot-mode-map
@@ -1350,7 +1351,6 @@ FRAME-NAME — имя фрейма, который настраивается."
     python-mode
     ruby-mode
     ruby-ts-mode
-    rust-mode
     yaml-ts-mode) . eglot-ensure))
 
 

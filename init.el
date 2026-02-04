@@ -884,18 +884,25 @@ FRAME-NAME — имя фрейма, который настраивается."
   (kill-emacs . savehist-save)
   :config
   (add-to-list 'delete-frame-functions 'savehist-save)
+  (add-to-list 'savehist-additional-variables 'command-history)
+  (add-to-list 'savehist-additional-variables 'compile-history)
+  (add-to-list 'savehist-additional-variables 'regexp-search-ring)
+  (add-to-list 'savehist-additional-variables 'search-ring)
+  (add-to-list 'savehist-additional-variables 'shell-command-history)
   (savehist-mode t))
 
 
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет для работы со скриптами Shell.
+;; Можно было бы использовать `bash-ts-mode', но нужна более новая версия
+;; TreeSitter
 (use-package sh-script
   :mode
-  ("\\.bash_aliases\\'"
-   "\\.bashrc\\'"
-   "\\.envrc\\'"
-   "\\.profile\\'"
-   "\\.sh\\'"))
+  ("\\.bash_aliases\\'" . sh-mode)
+  ("\\.bashrc\\'" . sh-mode)
+  ("\\.envrc\\'" . sh-mode)
+  ("\\.profile\\'" . sh-mode)
+  ("\\.sh\\'" . sh-mode))
 
 
 ;; 📦 SHELL-MODE
@@ -927,8 +934,10 @@ FRAME-NAME — имя фрейма, который настраивается."
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
   (auto-save-mode t)
-  (keymap-global-unset "<insert>" t) ;; Режим перезаписи не нужен
+  (column-number-mode t)
   (disable-command 'overwrite-mode)
+  (keymap-global-unset "<insert>" t) ;; Режим перезаписи не нужен
+  (line-number-mode t)
   :bind
   (:map global-map
         ("C-z" . undo)) ;; Отмена на Ctrl+Z
@@ -1334,8 +1343,9 @@ FRAME-NAME — имя фрейма, который настраивается."
   :config
   (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
-  (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
+  ;; (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
   (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
+  (add-to-list 'eglot-server-programs '(python-ts-mode . ("jedi-language-server")))
   (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "ruby-lsp")))
   (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "ruby-lsp")))
   (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
@@ -1345,13 +1355,14 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-c C-r" . eglot-rename)
         ("C-c C-f" . eglot-format-buffer))
   :hook
-  ((ansible-mode
-    dockerfile-ts-mode
-    markdown-mode
-    python-mode
-    ruby-mode
-    ruby-ts-mode
-    yaml-ts-mode) . eglot-ensure))
+  (ansible-mode . eglot-ensure)
+  (dockerfile-ts-mode . eglot-ensure)
+  ;; (markdown-mode . eglot-ensure)
+  (python-mode . eglot-ensure)
+  (python-ts-mode . eglot-ensure)
+  (ruby-mode . eglot-ensure)
+  (ruby-ts-mode . eglot-ensure)
+  (yaml-ts-mode . eglot-ensure))
 
 
 ;; 📦 ELDOC-MODE
@@ -1413,6 +1424,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :hook
   ((css-mode
+    emacs-lisp-mode
     javascript-mode
     js-ts-mode
     makefile-mode

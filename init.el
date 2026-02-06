@@ -884,7 +884,6 @@ FRAME-NAME — имя фрейма, который настраивается."
   (kill-emacs . savehist-save)
   :config
   (add-to-list 'delete-frame-functions 'savehist-save)
-  (add-to-list 'savehist-additional-variables 'command-history)
   (add-to-list 'savehist-additional-variables 'compile-history)
   (add-to-list 'savehist-additional-variables 'regexp-search-ring)
   (add-to-list 'savehist-additional-variables 'search-ring)

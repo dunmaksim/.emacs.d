@@ -412,6 +412,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     rst-mode
     ruby-mode
     ruby-ts-mode
+    rust-mode
     sed-mode
     sh-mode
     tex-mode
@@ -471,6 +472,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     python-mode
     ruby-mode
     ruby-ts-mode
+    rust-mode
     sed-mode
     tex-mode
     text-mode
@@ -1049,6 +1051,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     rst-mode
     ruby-mode
     ruby-ts-mode
+    rust-mode
     sed-mode
     sh-mode
     snippet-mode ;; Yasnippet
@@ -1234,7 +1237,9 @@ FRAME-NAME — имя фрейма, который настраивается."
         ("C-x r b" . #'counsel-bookmark)
         ("M-g i" . #'counsel-imenu)
         ("M-x" . #'counsel-M-x)
-        ("M-y" . #'counsel-yank-pop)))
+        ("M-y" . #'counsel-yank-pop))
+  :custom
+  (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history))
 
 
 ;; 📦 CSV-MODE
@@ -1408,7 +1413,9 @@ FRAME-NAME — имя фрейма, который настраивается."
     nxml-mode
     python-mode
     rst-mode
+    ruby-mode
     ruby-ts-mode
+    rust-mode
     sh-mode
     sql-mode
     yaml-ts-mode
@@ -1432,6 +1439,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     rst-mode
     ruby-mode
     ruby-ts-mode
+    rust-mode
     yaml-ts-mode
     ) . indent-bars-mode))
 
@@ -1560,6 +1568,15 @@ FRAME-NAME — имя фрейма, который настраивается."
    word-wrap t))      ;; Перенос длинных строк
 
 
+;; 📦 PO-MODE
+;; https://elpa.gnu.org/packages/po-mode.html
+;; Пакет для работы с файлами переводов в формате `.po'.
+(use-package po-mode
+  :pin "gnu"
+  :ensure t
+  :mode ("\\.po\\'" . po-mode))
+
+
 ;; ;; 📦 PROJECTILE
 ;; ;; https://docs.projectile.mx/projectile/installation.html
 ;; ;; Управление проектами. Чтобы каталог считался проектом, он должен быть
@@ -1624,6 +1641,15 @@ FRAME-NAME — имя фрейма, который настраивается."
   :custom
   (default-input-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
+
+
+;; 📦 RUST-MODE
+;; https://github.com/rust-lang/rust-mode
+;; Поддержка языка Rust
+(use-package rust-mode
+  :pin "nongnu"
+  :ensure t
+  :mode ("\\.rs\\'" . rust-mode))
 
 
 ;; 📦 SED-MODE

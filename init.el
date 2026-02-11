@@ -394,6 +394,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :hook
   ((c-mode
     conf-mode
+    conf-toml-mode
     css-mode
     csv-mode
     dockerfile-ts-mode
@@ -476,6 +477,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     sed-mode
     tex-mode
     text-mode
+    conf-toml-mode
     yaml-ts-mode) . electric-pair-local-mode))
 
 
@@ -1144,8 +1146,10 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 
 ;; 📦 ASCIIDOC
-(add-to-list 'load-path "/home/dunaevsky/repo/asciidoc-mode/")
-(require 'asciidoc-mode)
+(let ((asciidoc-repo-dir . (format "/home/%s/repo/asciidoc-mode/" user-login-name)))
+  (when (file-exists-p asciidoc-repo-dir)
+    (add-to-list 'load-path asciidoc-repo-dir)
+    (require 'asciidoc-mode)))
 
 
 ;; 📦 AVY
@@ -1157,9 +1161,9 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :bind
   (:map global-map
-        ;; ("M-g f" . #'avy-goto-line)
-        ("M-g w" . #'avy-goto-word-0)
-        ("C-'" . #'avy-goto-char)))
+        ("M-g f" . avy-goto-line)
+        ("M-g w" . avy-goto-word-0)
+        ("C-'" . avy-goto-char)))
 
 
 ;; 📦 BIND-KEY

@@ -239,6 +239,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 ;; 📦 TREESIT
 ;; Встроенный пакет для работы с TreeSitter
+(require 'treesit)
 (use-package treesit
   :init
   ;; Проверим существование подкаталога tree-sitter. При необходимости создадим.
@@ -253,6 +254,8 @@ FRAME-NAME — имя фрейма, который настраивается."
   (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
   (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
   (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
+  ;; Нужна более новая версия TreeSitter в самом Emacs
+  ;; (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
   (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.2" "src/"))
   ;; Сборка и установка грамматик
   (dolist (source treesit-language-source-alist)
@@ -615,6 +618,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; 📦 IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 ;; По нажатию F2 выводит список открытых буферов.
+(require 'ibuffer)
 (use-package ibuffer
   :custom
   (ibuffer-formats '((mark      ;; Отметка
@@ -648,6 +652,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 ;; 📦 IBUF-EXT
 ;; Встроенный пакет с дополнительными настройками `ibuffer'.
+(require 'ibuf-ext)
 (use-package ibuf-ext
   :custom
   (ibuffer-saved-filter-groups                    ;; Группы по умолчанию
@@ -1121,10 +1126,12 @@ FRAME-NAME — имя фрейма, который настраивается."
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
   :bind (:map global-map
               ("<f12>" . apheleia-format-buffer))
-  :hook
-  ((emacs-lisp-mode
-    python-mode
-    ruby-ts-mode) . #'apheleia-mode))
+  :config
+  (when (fboundp 'apheleia-mode)
+    (add-hook 'emacs-lisp-mode-hook 'apheleia-mode)
+    (add-hook 'python-mode-hook 'apheleia-mode)
+    (add-hook 'ruby-mode-hook 'apheleia-mode)
+    (add-hook 'ruby-ts-mode-hook 'apheleia-mode)))
 
 
 ;; 📦 AUCTEX
@@ -1146,7 +1153,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 
 ;; 📦 ASCIIDOC
-(let ((asciidoc-repo-dir . (format "/home/%s/repo/asciidoc-mode/" user-login-name)))
+(let ((asciidoc-repo-dir (format "/home/%s/repo/asciidoc-mode/" user-login-name)))
   (when (file-exists-p asciidoc-repo-dir)
     (add-to-list 'load-path asciidoc-repo-dir)
     (require 'asciidoc-mode)))
@@ -1181,7 +1188,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package breadcrumb
   :pin "gnu"
   :ensure t
-  :config (breadcrumb-mode t))
+  :config
+  (when (fboundp 'breadcrumb-mode)
+    (breadcrumb-mode t)))
 
 
 ;; 📦 BUFFER-ENV
@@ -1191,8 +1200,9 @@ FRAME-NAME — имя фрейма, который настраивается."
   :pin "gnu"
   :ensure t
   :config
-  (add-hook 'hack-local-variables-hook #'buffer-env-update)
-  (add-hook 'comint-mode-hook #'buffer-env-update))
+  (when (fboundp 'buffer-env-update)
+    (add-hook 'hack-local-variables-hook #'buffer-env-update)
+    (add-hook 'comint-mode-hook #'buffer-env-update)))
 
 
 ;; 📦 COLORFUL-MODE
@@ -1215,7 +1225,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 (use-package corfu
   :pin "gnu"
   :ensure t
-  :config (global-corfu-mode t))
+  :config
+  (when (fboundp 'global-corfu-mode)
+    (global-corfu-mode t)))
 
 
 ;; 📦 COUNSEL
@@ -1276,9 +1288,11 @@ FRAME-NAME — имя фрейма, который настраивается."
   :pin "gnu"
   :ensure t
   :config
-  (global-diff-hl-mode t)
-  :hook
-  (dired-mode . diff-hl-dired-mode))
+  (progn
+    (when (fboundp 'global-diff-hl-mode)
+      (global-diff-hl-mode t))
+    (when (fboundp 'diff-hl-dired-mode)
+      (add-hook 'dired-mode-hook 'diff-hl-dired-mode))))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1459,10 +1473,11 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :demand t
   :config
-  (ivy-mode t)
-  :bind
-  (:map global-map
-        ("C-x b" . #'ivy-switch-buffer)))
+  (progn
+    (when (fboundp 'ivy-mode)
+      (ivy-mode t))
+    (when (fboundp 'ivy-switch-buffer)
+      (bind-key "C-x b" 'ivy-switch-buffer global-map))))
 
 
 ;; 📦 JINJA2-MODE
@@ -1520,7 +1535,8 @@ FRAME-NAME — имя фрейма, который настраивается."
   (after-save . magit-after-save-refresh-buffers)
   (after-save . magit-after-save-refresh-status)
   :config
-  (magit-auto-revert-mode t))
+  (when (fboundp 'magit-auto-revert-mode)
+    (magit-auto-revert-mode t)))
 
 
 ;; 📦 MARKDOWN MODE
@@ -1724,8 +1740,8 @@ FRAME-NAME — имя фрейма, который настраивается."
   :config
   (which-key-mode t))
 
-(load-theme 'ef-bio t)
+(load-theme 'ef-elea-dark t)
 
 (provide 'init.el)
-;; ;;; init.el ends here
+;;; init.el ends here
 (put 'overwrite-mode 'disabled t)

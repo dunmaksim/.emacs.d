@@ -200,6 +200,9 @@ FRAME-NAME — имя фрейма, который настраивается."
         '(("gnu" . 2)
           ("nongnu" . 1)))
 
+;; Не надо регистрировать как проекты пакеты, установленные с помощью
+;; `package-vc-install'.
+(setopt package-vc-register-as-project nil)
 
 (defun init-el-check-archive-contents ()
   "Проверим наличие списка пакетов в архивах.
@@ -1646,7 +1649,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :hook
   (asciidoc-mode . rainbow-delimiters-mode)
-  (emacs-list-mode . rainbow-delimiters-mode)
+  (emacs-lisp-mode . rainbow-delimiters-mode)
   (lisp-data-mode . rainbow-delimiters-mode)
   (markdown-mode . rainbow-delimiters-mode))
 
@@ -1740,7 +1743,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :config
   (which-key-mode t))
 
-(load-theme 'ef-elea-dark t)
+(load-theme 'ef-maris-dark t)
 
 (provide 'init.el)
 ;;; init.el ends here

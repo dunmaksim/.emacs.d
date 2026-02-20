@@ -6,7 +6,7 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
 
-(defconst init-el-font-height 15 "Размер шрифта по умолчанию.")
+(defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
 
 (defun init-el-set-font-height ()
   "Установка размера шрифта.
@@ -376,7 +376,7 @@ FRAME-NAME — имя фрейма, который настраивается."
   :hook
   (after-init . desktop-read)
   (kill-emacs . (lambda () (desktop-save user-emacs-directory t))))
-  ;; (server-done . desktop-save))
+;; (server-done . desktop-save))
 
 
 ;; 📦 DIRED
@@ -890,6 +890,7 @@ FRAME-NAME — имя фрейма, который настраивается."
 
 ;; 📦 SAVEHIST
 ;; Встроенный пакет для запоминания истории команд
+(require 'savehist)
 (use-package savehist
   :hook
   (server-done . savehist-save)
@@ -1693,7 +1694,9 @@ FRAME-NAME — имя фрейма, который настраивается."
   :bind
   (:map global-map
         ("C-s" . #'swiper-isearch)
-        ("C-r" . #'swiper-isearch-backward)))
+        ("C-r" . #'swiper-isearch-backward))
+  :config
+  (add-to-list 'savehist-additional-variables 'swiper-history))
 
 
 ;; VUNDO

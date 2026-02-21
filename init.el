@@ -275,8 +275,9 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; определённой последовательности символов заменяются на другую.
 (use-package abbrev
   :hook
-  ((markdown-mode
-    rst-mode) . abbrev-mode))
+  (asciidoc-mode . abbrev-mode)
+  (markdown-mode . abbrev-mode)
+  (rst-mode . abbrev-mode))
 
 
 ;; 📦 ANSI-COLOR
@@ -587,10 +588,11 @@ FRAME-NAME — имя фрейма, который настраивается."
 ;; Возможны варианты (зависит от основного режима).
 (use-package goto-addr
   :hook
-  ((emacs-lisp-mode
-    html-mode
-    markdown-mode
-    rst-mode) . goto-address-mode))
+  (asciidoc-mode . goto-address-mode)
+  (emacs-lisp-mode . goto-address-mode)
+  (html-mode . goto-address-mode)
+  (markdown-mode . goto-address-mode)
+  (rst-mode . goto-address-mode))
 
 
 ;; 📦 GREP
@@ -665,8 +667,7 @@ FRAME-NAME — имя фрейма, который настраивается."
                         (mode . lisp-data-mode)))
       ("Org" (mode . org-mode))
       ("AsciiDoc" (filename . ".+\\.adoc\\'"))
-      ("Markdown" (or (mode . markdown-mode)
-                      (filename . ".+\\.md\\'")))
+      ("Markdown" (mode . markdown-mode))
       ("ReStructured Text" (or (mode . rst-mode)
                                (filename . ".+\\.rst\\'")))
       ("CONF / INI" (or (mode . conf-mode)
@@ -1451,19 +1452,20 @@ FRAME-NAME — имя фрейма, который настраивается."
   :pin "gnu"
   :ensure t
   :hook
-  ((css-mode
-    emacs-lisp-mode
-    javascript-mode
-    js-ts-mode
-    makefile-mode
-    markdown-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    ruby-ts-mode
-    rust-mode
-    yaml-ts-mode
-    ) . indent-bars-mode))
+  (css-mode . indent-bars-mode)
+  (css-ts-mode . indent-bars-mode)
+  (emacs-lisp-mode . indent-bars-mode)
+  (javascript-mode . indent-bars-mode)
+  (js-ts-mode . indent-bars-mode)
+  (makefile-mode . indent-bars-mode)
+  (markdown-mode . indent-bars-mode)
+  (python-mode . indent-bars-mode)
+  (rst-mode . indent-bars-mode)
+  (ruby-mode . indent-bars-mode)
+  (ruby-ts-mode . indent-bars-mode)
+  (rust-mode . indent-bars-mode)
+  (rust-ts-mode . indent-bars-mode)
+  (yaml-ts-mode . indent-bars-mode))
 
 
 ;; 📦 IVY
@@ -1503,9 +1505,11 @@ FRAME-NAME — имя фрейма, который настраивается."
   :ensure t
   :custom
   (jinx-languages "ru_RU en_US")
-  :hook ((emacs-lisp-mode
-          markdown-mode
-          text-mode) . jinx-mode)
+  :hook
+  (asciidoc-mode . jinx-mode)
+  (emacs-lisp-mode . jinx-mode)
+  (markdown-mode . jinx-mode)
+  (rst-mode . jinx-mode)
   :bind
   (:map global-map
         ("M-$" . jinx-correct)

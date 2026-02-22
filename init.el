@@ -49,18 +49,27 @@
 ;; Настройки, специфичные для графического режима
 (defun setup-gui-settings (&optional frame-name)
   "Настройки, необходимые при запуске EMACS в графической среде.
-FRAME-NAME — имя фрейма, который настраивается."
+FRAME-NAME — название настраиваемого фрейма."
   (when (display-graphic-p frame-name) ;; Фрейм графический
     ;; Получаем список шрифтов
-    (let ((font-families (font-family-list)))
-      (let ((preferred-font-family (cond ((member "Lilex" font-families) "Lilex")
-                                         ((member "SauceCodePro NFP" font-families) "SauceCodePro NFP")
-                                         ((member "FiraCode Nerd Font Mono" font-families) "FiraCode Nerd Font Mono")
-                                         ((member "Fira Code" font-families) "Fira Code")
-                                         ((member "DejaVu Sans Mono Nerd" font-families) "DejaVu Sans Mono Nerd")
-                                         ((member "DejaVu Sans Mono" font-families) "DejaVu Sans Mono")
-                                         ((member "Source Code Pro" font-families) "Source Code Pro")
-                                         ((member "Consolas" font-families) "Consolas")
+    (let ((font-families (font-family-list))
+          (lilex "Lilex")
+          (sauce-code-pro "SauceCodePro NFP")
+          (fira-code-nerd-font-mono "FiraCode Nerd Font Mono")
+          (fira-code "Fira Code")
+          (dejavu-sans-mono-nerd "DejaVu Sans Mono Nerd")
+          (dejavu-sans-mono "DejaVu Sans Mono")
+          (source-code-pro "Source Code Pro")
+          (consolas "Consolas"))
+      ;; Мои любимые шрифты, от самого любимого к менее любимому
+      (let ((preferred-font-family (cond ((member lilex font-families) lilex)
+                                         ((member sauce-code-pro font-families) sauce-code-pro)
+                                         ((member fira-code-nerd-font-mono font-families) fira-code-nerd-font-mono)
+                                         ((member fira-code font-families) fira-code)
+                                         ((member dejavu-sans-mono-nerd font-families) dejavu-sans-mono-nerd)
+                                         ((member dejavu-sans-mono font-families) dejavu-sans-mono)
+                                         ((member source-code-pro font-families) source-code-pro)
+                                         ((member consolas font-families) consolas)
                                          (t nil))))
         (when preferred-font-family
           (progn
@@ -766,6 +775,16 @@ FRAME-NAME — имя фрейма, который настраивается."
   (show-paren-mode t)) ;; Подсвечивать парные скобки
 
 
+;; 📦 OUTLINE
+;; Управление видимостью блоков кода
+(use-package outline
+  :hook
+  (asciidoc-mode . outline-minor-mode)
+  (emacs-lisp-mode . outline-minor-mode)
+  (markdown-mode . outline-minor-mode)
+  (rst-mode . outline-minor-mode))
+
+
 ;; 📦 PEG
 ;; Встроенный пакет, который мы просто обновим из GNU ELPA
 (use-package peg
@@ -1064,6 +1083,7 @@ FRAME-NAME — имя фрейма, который настраивается."
     ruby-mode
     ruby-ts-mode
     rust-mode
+    rust-ts-mode
     sed-mode
     sh-mode
     snippet-mode ;; Yasnippet
@@ -1131,12 +1151,12 @@ FRAME-NAME — имя фрейма, который настраивается."
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
   :bind (:map global-map
               ("<f12>" . apheleia-format-buffer))
-  :config
-  (when (fboundp 'apheleia-mode)
-    (add-hook 'emacs-lisp-mode-hook 'apheleia-mode)
-    (add-hook 'python-mode-hook 'apheleia-mode)
-    (add-hook 'ruby-mode-hook 'apheleia-mode)
-    (add-hook 'ruby-ts-mode-hook 'apheleia-mode)))
+  :hook
+  (emacs-lisp-mode . apheleia-mode)
+  (python-mode . apheleia-mode)
+  (python-ts-mode . apheleia-mode)
+  (ruby-mode . apheleia-mode)
+  (ruby-ts-mode . apheleia-mode))
 
 
 ;; 📦 AUCTEX

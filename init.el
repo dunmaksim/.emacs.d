@@ -251,7 +251,6 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 TREESIT
 ;; Встроенный пакет для работы с TreeSitter
-(require 'treesit)
 (use-package treesit
   :init
   ;; Проверим существование подкаталога tree-sitter. При необходимости создадим.
@@ -268,6 +267,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
   ;; Нужна более новая версия TreeSitter в самом Emacs
   ;; (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
+  (add-to-list 'treesit-language-source-alist '(typst "https://github.com/uben0/tree-sitter-typst.git"))
   (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.2" "src/"))
   ;; Сборка и установка грамматик
   (dolist (source treesit-language-source-alist)
@@ -434,6 +434,7 @@ FRAME-NAME — название настраиваемого фрейма."
     sh-mode
     tex-mode
     text-mode
+    xml-mode
     yaml-ts-mode) . display-line-numbers-mode))
 
 
@@ -651,9 +652,9 @@ FRAME-NAME — название настраиваемого фрейма."
                       (name 35 -1) ;; Имя буфера: 32 знака, при необходимости — расширить на сколько нужно
                       " "
                       filename)))  ;; Имя файла
-  (ibuffer-default-sorting-mode 'filename/process "Сортировать файлы по имени / процессу")
+  (ibuffer-default-sorting-mode 'major-mode "Сортировать файлы по основному режиму")
   (ibuffer-display-summary nil "Не показывать строку ИТОГО")
-  (ibuffer-eliding-string "…" "Если строка не уместилась, показать этот символ")
+  (ibuffer-eliding-string "…" "Если строка не уместилась, показать этот знак")
   (ibuffer-expert t "Не запрашивать подтверждение для опасных операций")
   (ibuffer-shrink-to-minimum-size t "Минимальный размер буфера по умолчанию")
   (ibuffer-truncate-lines nil "Не обкусывать длинные строки")
@@ -669,33 +670,35 @@ FRAME-NAME — название настраиваемого фрейма."
 (require 'ibuf-ext)
 (use-package ibuf-ext
   :custom
-  (ibuffer-saved-filter-groups                    ;; Группы по умолчанию
+  (ibuffer-saved-filter-groups ;; Группы по умолчанию
    '(("default"
       ("Dired" (mode . dired-mode))
       ("Emacs Lisp" (or (mode . emacs-lisp-mode)
                         (mode . lisp-data-mode)))
       ("Org" (mode . org-mode))
-      ("AsciiDoc" (filename . ".+\\.adoc\\'"))
+      ("AsciiDoc" (mode . asciidoc-mode))
       ("Markdown" (mode . markdown-mode))
-      ("ReStructured Text" (or (mode . rst-mode)
-                               (filename . ".+\\.rst\\'")))
+      ("ReStructured Text" (mode . rst-mode))
       ("CONF / INI" (or (mode . conf-mode)
-                        (mode . editorconfig-conf-mode)
-                        (filename . ".+\\.conf\\'")))
-      ("XML" (mode . nxml-mode))
+                        (mode . editorconfig-conf-mode)))
+      ("XML" (or (mode . nxml-mode)
+                 (mode . xml-mode)))
       ("YAML" (mode . yaml-ts-mode))
       ("Makefile" (mode . makefile-mode))
       ("Python" (mode . python-mode))
       ("Ruby" (or (mode . ruby-mode)
                   (mode . ruby-ts-mode)))
-      ("SSH keys" (name . ".+\\.pub\\'"))
+      ("SSH keys" (name . "\\.pub\\'"))
       ("Shell-script" (mode . sh-mode))
       ("SQL" (mode . sql-mode))
       ("Web" (or (mode . html-mode)
+                 (mode . json-mode)
+                 (mode . json-ts-mode)
+                 (mode . js-mode)
                  (mode . js-ts-mode)))
       ("Magit" (or (mode . magit-status-mode)
                    (mode . magit-log-mode)
-                   (name . "*magit*")
+                   (name . "\\*magit\\*")
                    (name . "git-monitor")))
       ("Commands" (or (mode . compilation-mode)
                       (mode . eshell-mode)
@@ -706,7 +709,7 @@ FRAME-NAME — название настраиваемого фрейма."
                    (name . "\\*Customize\\*")
                    (name . "\\*Help\\*")
                    (name . "\\*Echo\\*")
-                   (name . "\\*Minibuf*"))))))
+                   (name . "\\*Minibuf\\*"))))))
   (ibuffer-hidden-filter-groups (list "*Internal*" )) ;; Не показывать эти буферы
   (ibuffer-show-empty-filter-groups nil) ;; Не показывать пустые группы
   :hook
@@ -766,6 +769,20 @@ FRAME-NAME — название настраиваемого фрейма."
   :bind
   (:map global-map
         ("M-'" . comment-or-uncomment-region)))
+
+
+;; 📦 nXML
+;; Встроенный пакет для работы с диалектами XML
+(use-package nxml-mode
+  :custom
+  (nxml-attribute-indent 4 "Выравнивание атрибутов")
+  (nxml-auto-insert-xml-declaration-flag nil "Не вставлять декларацию")
+  (nxml-bind-meta-tab-to-complete-flag t "Использовать TAB для завершения ввода")
+  (nxml-child-indent 4 "Выравнивание дочерних элементов")
+  (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
+  :mode
+  ("\\.pom\\'" . nxml-mode)
+  ("\\.xml\\'" . nxml-mode))
 
 
 ;; 📦 PAREN
@@ -1103,27 +1120,13 @@ FRAME-NAME — название настраиваемого фрейма."
         ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
 
 
-;; 📦 XML
-;; Встроенный пакет для работы с диалектами XML
-(use-package xml
-  :custom
-  (nxml-attribute-indent 4 "Выравнивание атрибутов")
-  (nxml-auto-insert-xml-declaration-flag nil "Не вставлять декларацию")
-  (nxml-bind-meta-tab-to-complete-flag t "Использовать TAB для завершения ввода")
-  (nxml-child-indent 4 "Выравнивание дочерних элементов")
-  (nxml-slash-auto-complete-flag t "Закрывать теги по вводу /")
-  :mode
-  ("\\.pom\\'"
-   "\\.xml\\'"))
-
-
-;; ;; 📦 XREF
-;; ;; Встроенный пакет, который просто обновим из GNU ELPA
-;; (use-package xref
-;;   :pin "gnu"
-;;   :ensure t
-;;   :init (unless (alist-get 'xref package-alist)
-;;           (package-upgrade 'xref)))
+;; 📦 XREF
+;; Встроенный пакет, который просто обновим из GNU ELPA
+(use-package xref
+  :pin "gnu"
+  :ensure t
+  :init (unless (alist-get 'xref package-alist)
+          (package-upgrade 'xref)))
 
 
 ;; 📦 YAML-TS-MODE
@@ -1625,28 +1628,6 @@ FRAME-NAME — название настраиваемого фрейма."
   :mode ("\\.po\\'" . po-mode))
 
 
-;; ;; 📦 PROJECTILE
-;; ;; https://docs.projectile.mx/projectile/installation.html
-;; ;; Управление проектами. Чтобы каталог считался проектом, он должен быть
-;; ;; под контролем любой системы версионирования, либо содержать специальные
-;; ;; файлы. В крайнем случае сгодится пустой файл .projectile
-;; ;; Подробнее здесь: https://docs.projectile.mx/projectile/projects.html
-;; (use-package projectile
-;;   :pin "nongnu"
-;;   :ensure t
-;;   :bind-keymap
-;;   ("C-x p" . projectile-command-map)
-;;   ("C-c p" . projectile-command-map)
-;;   :bind
-;;   (:map global-map
-;;         ("<f9>" . projectile-compile-project))
-;;   :custom
-;;   (projectile-completion-system 'ivy)
-;;   (projectile-switch-project-action 'projectile-dired)
-;;   :config
-;;   (projectile-mode t))
-
-
 ;; 📦 PULSAR
 ;; Вспыхивание строки, к которой переместился курсор
 ;; https://github.com/protesilaos/pulsar
@@ -1717,10 +1698,20 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :bind
   (:map global-map
-        ("C-s" . #'swiper-isearch)
-        ("C-r" . #'swiper-isearch-backward))
+        ("C-s" . 'swiper-isearch)
+        ("C-r" . 'swiper-isearch-backward))
   :config
   (add-to-list 'savehist-additional-variables 'swiper-history))
+
+
+;; 📦 TYPST-TS-MODE
+;; https://codeberg.org/meow_king/typst-ts-mode/
+;; Поддержка формата Typst с помощью TreeSitter
+(use-package typst-ts-mode
+  :pin "nongnu"
+  :ensure t
+  :mode
+  ("\\.typ\\'" . typst-ts-mode))
 
 
 ;; VUNDO

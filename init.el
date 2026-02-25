@@ -383,10 +383,11 @@ FRAME-NAME — название настраиваемого фрейма."
   (desktop-save-mode t)
   (add-to-list 'delete-frame-functions 'desktop-save)
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
+  (add-to-list 'desktop-modes-not-to-save 'image-mode)
   :hook
   (after-init . desktop-read)
-  (kill-emacs . (lambda () (desktop-save user-emacs-directory t))))
-;; (server-done . desktop-save))
+  (kill-emacs . (lambda () (desktop-save user-emacs-directory t)))
+  (server-done . desktop-save))
 
 
 ;; 📦 DIRED
@@ -1014,6 +1015,13 @@ FRAME-NAME — название настраиваемого фрейма."
           (package-upgrade 'svg)))
 
 
+;; 📦 TEXINFO
+;; Встроенный пакет для работы с файлами Texinfo
+(use-package texinfo
+  :mode
+  ("\\.texi\\'" . texinfo-mode))
+
+
 ;; 📦 TOOLBAR
 ;; Встроенный пакет, недоступный в Emacs NOX
 (when (fboundp 'tool-bar-mode)
@@ -1067,6 +1075,15 @@ FRAME-NAME — название настраиваемого фрейма."
   (uniquify-separator "/" "Разделять буферы с похожими именами, используя /"))
 
 
+;; 📦 VERILOG-MODE
+;; Просто обновим его из GNU ELPA
+(use-package verilog-mode
+  :pin "gnu"
+  :init
+  (unless (alist-get 'verilog-mode package-alist)
+    (package-upgrade 'verilog-mode)))
+
+
 ;; 📦 WHITESPACE MODE
 ;; Встроенный пакет.
 ;; Отображение невидимых символов.
@@ -1106,6 +1123,7 @@ FRAME-NAME — название настраиваемого фрейма."
     snippet-mode ;; Yasnippet
     sql-mode
     tex-mode
+    texinfo-mode
     yaml-ts-mode) . whitespace-mode))
 
 
@@ -1118,6 +1136,16 @@ FRAME-NAME — название настраиваемого фрейма."
   (:map global-map
         ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
         ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
+
+
+;; 📦 WINDOW-TOOL-BAR
+;; Просто обновим из GNU ELPA
+(use-package window-tool-bar
+  :pin "gnu"
+  :init
+  (unless (alist-get 'window-tool-bar package-alist)
+    (package-upgrade 'window-tool-bar)))
+
 
 
 ;; 📦 XREF
@@ -1550,7 +1578,13 @@ FRAME-NAME — название настраиваемого фрейма."
   :hook
   (asciidoc-mode . lin-mode)
   (emacs-lisp-mode . lin-mode)
-  (markdown-mode . lin-mode))
+  (ibuffer-mode . lin-mode)
+  (markdown-mode . lin-mode)
+  (rst-mode . lin-mode)
+  (ruby-mode . lin-mode)
+  (ruby-ts-mode . lin-mode)
+  (rust-mode . lin-mode)
+  (yaml-ts-mode . lin-mode))
 
 
 ;; 📦 MAGIT

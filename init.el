@@ -697,8 +697,9 @@ FRAME-NAME — название настраиваемого фрейма."
                  (mode . json-ts-mode)
                  (mode . js-mode)
                  (mode . js-ts-mode)))
-      ("Magit" (or (mode . magit-status-mode)
+      ("Magit" (or (mode . magit-diff-mode)
                    (mode . magit-log-mode)
+                   (mode . magit-status-mode)
                    (name . "\\*magit\\*")
                    (name . "git-monitor")))
       ("Commands" (or (mode . compilation-mode)
@@ -733,7 +734,9 @@ FRAME-NAME — название настраиваемого фрейма."
   (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case.")
   :mode
   ("\\.js\\'" . js-ts-mode)
-  ("\\(\\.js[mx]\\|\\.har\\)\\'" . js-ts-mode))
+  ("\\.jsm\\'" . js-ts-mode)
+  ("\\.jsx\\'" . js-ts-mode)
+  ("\\.har\\'" . js-ts-mode))
 
 
 ;; 📦 JSONRPC
@@ -754,7 +757,8 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 MAKEFILE
 ;; Встроенный пакет для работы с `Makefile'.
-(use-package make-mode)
+(use-package make-mode
+  :mode ("Makefile\\'" . makefile-mode))
 
 
 ;; 📦 MINIBUFFER
@@ -762,14 +766,6 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package minibuffer
   :custom
   (completions-detailed t "Подробные подсказки в минибуфере"))
-
-
-;; 📦 NEW-COMMENT
-;; Встроенный пакет для работы с комментариями.
-(use-package newcomment
-  :bind
-  (:map global-map
-        ("M-'" . comment-or-uncomment-region)))
 
 
 ;; 📦 nXML

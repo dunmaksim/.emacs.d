@@ -306,11 +306,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package autorevert
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку при использовании VCS")
-  (global-auto-revert-non-file-buffers t "Автообновление не только файловых буферов.")
-  ;; :config
-  ;; (global-auto-revert-mode t)
-  :hook
-  (dired-mode . auto-revert-mode))
+  (global-auto-revert-non-file-buffers t "Автообновление не только файловых буферов."))
 
 
 ;; 📦 CALENDAR
@@ -387,19 +383,20 @@ FRAME-NAME — название настраиваемого фрейма."
   :hook
   (after-init . desktop-read)
   (kill-emacs . (lambda () (desktop-save user-emacs-directory t)))
-  (server-done . desktop-save))
+  (server-done . (lambda () (desktop-save user-emacs-directory t))))
 
 
 ;; 📦 DIRED
 ;; Встроенный пакет для работы с файлами и каталогами.
 (use-package dired
   :custom
-  (dired-recursive-copies 'always "Всегда копировать каталоги рекурсивно.")
+  (dired-auto-revert-buffer t "Обновлять содержимое при повторном переходе в каталог")
   (dired-free-space nil "Информация о занятом и свободном месте в отдельной строке")
   ;; Без этой настройки при каждой смене каталога Dired будет создавать новый буфер
   (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
   ;; Дополнительные параметры вызова команды ls
   (dired-listing-switches "-l --human-readable --all --group-directories-first --dired")
+  (dired-recursive-copies 'always "Всегда копировать каталоги рекурсивно.")
   (dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов")
   :init
   (add-hook 'dired-mode-hook 'dired-hide-details-mode))
@@ -434,7 +431,6 @@ FRAME-NAME — название настраиваемого фрейма."
     sed-mode
     sh-mode
     tex-mode
-    text-mode
     xml-mode
     yaml-ts-mode) . display-line-numbers-mode))
 
@@ -761,11 +757,11 @@ FRAME-NAME — название настраиваемого фрейма."
   :mode ("Makefile\\'" . makefile-mode))
 
 
-;; 📦 MINIBUFFER
-;; Встроенный пакет для управления поведением минибуфера.
-(use-package minibuffer
-  :custom
-  (completions-detailed t "Подробные подсказки в минибуфере"))
+;; ;; 📦 MINIBUFFER
+;; ;; Встроенный пакет для управления поведением минибуфера.
+;; (use-package minibuffer
+;;   :custom
+;;   (setq completions-detailed t "Подробные подсказки в минибуфере"))
 
 
 ;; 📦 nXML
@@ -864,7 +860,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (recentf-max-saved-items 100 "Помнить последние 100 файлов")
   (recentf-save-file (locate-user-emacs-file "recentf") "Хранить список в файле .emacs.d/recentf")
-  :config (recentf-mode t))
+  :config
+  (recentf-mode t))
 
 
 ;; 📦 REPEAT-MODE
@@ -909,8 +906,8 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет для работы с Ruby.
 (use-package ruby-ts-mode
   :mode
-  ("\\.rb\\'"
-   "Vagrantfile\\'"))
+  ("\\.rb\\'" . ruby-ts-mode)
+  ("\\Vagrantfile\\'" . ruby-ts-mode))
 
 
 ;; 📦 SAVEPLACE
@@ -980,10 +977,10 @@ FRAME-NAME — название настраиваемого фрейма."
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
   (auto-save-mode t)
-  (column-number-mode t)
-  (disable-command 'overwrite-mode)
+  (column-number-mode t) ;; Номер колонки в mode-line
   (keymap-global-unset "<insert>" t) ;; Режим перезаписи не нужен
-  (line-number-mode t)
+  (line-number-mode t) ;; Номер строки в mode-line
+  (put 'overwrite-mode 'disabled t) ;; Выключить `overwrite-mode'.
   :bind
   (:map global-map
         ("C-z" . undo)) ;; Отмена на Ctrl+Z
@@ -1114,6 +1111,7 @@ FRAME-NAME — название настраиваемого фрейма."
     ruby-ts-mode
     rust-mode
     rust-ts-mode
+    sass-mode
     sed-mode
     sh-mode
     snippet-mode ;; Yasnippet
@@ -1512,6 +1510,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (ruby-ts-mode . indent-bars-mode)
   (rust-mode . indent-bars-mode)
   (rust-ts-mode . indent-bars-mode)
+  (sass-mode . indent-bars-mode)
   (yaml-ts-mode . indent-bars-mode))
 
 
@@ -1526,11 +1525,10 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :demand t
   :config
-  (progn
-    (when (fboundp 'ivy-mode)
-      (ivy-mode t))
-    (when (fboundp 'ivy-switch-buffer)
-      (bind-key "C-x b" 'ivy-switch-buffer global-map))))
+  (ivy-mode t)
+  :bind
+  (:map global-map
+        ("C-x b" . ivy-switch-buffer)))
 
 
 ;; 📦 JINJA2-MODE
@@ -1568,6 +1566,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 LIN
 ;; https://github.com/protesilaos/lin
 ;; Более умная подсветка активной строки, чем `hl-line-mode'.
+(message "Загрузка lin-mode")
 (use-package lin
   :pin "gnu"
   :ensure t
@@ -1706,14 +1705,23 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/rust-lang/rust-mode
 ;; Поддержка языка Rust
 (use-package rust-mode
-  :pin "nongnu"
+  :pin "nongnu"                         ; Comment
   :ensure t
   :mode ("\\.rs\\'" . rust-mode))
 
 
+;; 📦 SASS-MODE
+;; https://github.com/nex3/haml/tree/master
+;; Таблицы стилей, созданные с помощью SASS
+(use-package sass-mode
+  :pin "nongnu"
+  :ensure t
+  :mode ("\\.sass\\'" . sass-mode))
+
+
 ;; 📦 SED-MODE
 ;; Режим для работы с файлами команд `sed'.
-(use-package sed-mode
+(use-package sed-mode                   ;
   :pin "gnu"
   :ensure t
   :mode ("\\.sed\\'" . sed-mode))
@@ -1795,4 +1803,3 @@ FRAME-NAME — название настраиваемого фрейма."
 
 (provide 'init.el)
 ;;; init.el ends here
-(put 'overwrite-mode 'disabled t)

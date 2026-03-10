@@ -19,6 +19,7 @@
          (convert-standard-filename "custom.el")
          user-emacs-directory)) ;; Файл для сохранения пользовательских настроек, сделанных в customize.
 
+
 ;; Загрузим настройки сразу, чтобы они не переопределяли параметры из `init.el'.
 (when (file-exists-p custom-file)
   (load custom-file))
@@ -264,7 +265,6 @@ FRAME-NAME — название настраиваемого фрейма."
   (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.1" "src/"))
   (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
   (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
-  (add-to-list 'treesit-language-source-alist '(ruby "https://github.com/tree-sitter/tree-sitter-ruby.git" "v0.23.1"))
   ;; Нужна более новая версия TreeSitter в самом Emacs
   ;; (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
   (add-to-list 'treesit-language-source-alist '(typst "https://github.com/uben0/tree-sitter-typst.git"))
@@ -284,9 +284,9 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; определённой последовательности символов заменяются на другую.
 (use-package abbrev
   :hook
-  (asciidoc-mode . abbrev-mode)
-  (markdown-mode . abbrev-mode)
-  (rst-mode . abbrev-mode))
+  ((asciidoc-mode
+    markdown-mode
+    rst-mode) . abbrev-mode))
 
 
 ;; 📦 ANSI-COLOR
@@ -366,6 +366,10 @@ FRAME-NAME — название настраиваемого фрейма."
   (delete-selection-mode t)) ;; Удалять выделенный фрагмент при вводе текста
 
 
+(defun init-el-save-desktop ()
+  "Сохраняет рабочий стол без лишних вопросов."
+  (desktop-save user-emacs-directory t))
+
 ;; 📦 DESKTOP
 ;; Сохранение состояния Emacs между сессиями.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
@@ -382,8 +386,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (add-to-list 'desktop-modes-not-to-save 'image-mode)
   :hook
   (after-init . desktop-read)
-  (kill-emacs . (lambda () (desktop-save user-emacs-directory t)))
-  (server-done . (lambda () (desktop-save user-emacs-directory t))))
+  (kill-emacs . init-el-save-desktop)
+  (server-done . init-el-save-desktop))
 
 
 ;; 📦 DIRED
@@ -406,14 +410,17 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет для показа номеров строк
 (use-package display-line-numbers
   :hook
-  ((c-mode
+  ((asciidoc-mode
+    c-mode
     conf-mode
     conf-toml-mode
     css-mode
     csv-mode
     dockerfile-ts-mode
     emacs-lisp-mode
+    haml-mode
     html-mode
+    javascript-mode
     js-ts-mode
     json-ts-mode
     latex-mode
@@ -595,11 +602,11 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Возможны варианты (зависит от основного режима).
 (use-package goto-addr
   :hook
-  (asciidoc-mode . goto-address-mode)
-  (emacs-lisp-mode . goto-address-mode)
-  (html-mode . goto-address-mode)
-  (markdown-mode . goto-address-mode)
-  (rst-mode . goto-address-mode))
+  ((asciidoc-mode
+    emacs-lisp-mode
+    html-mode
+    markdown-mode
+    rst-mode) . goto-address-mode))
 
 
 ;; 📦 GREP
@@ -748,7 +755,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 JSON-TS-MODE
 ;; Встроенный пакет для работы с JSON через TreeSitter
 (use-package json-ts-mode
-  :mode "\\.json\\'")
+  :mode ("\\.json\\'" . json-ts-mode))
 
 
 ;; 📦 MAKEFILE
@@ -757,11 +764,11 @@ FRAME-NAME — название настраиваемого фрейма."
   :mode ("Makefile\\'" . makefile-mode))
 
 
-;; ;; 📦 MINIBUFFER
-;; ;; Встроенный пакет для управления поведением минибуфера.
-;; (use-package minibuffer
-;;   :custom
-;;   (setq completions-detailed t "Подробные подсказки в минибуфере"))
+;; 📦 MINIBUFFER
+;; Встроенный пакет для управления поведением минибуфера.
+(use-package minibuffer
+  :custom
+  (setq completions-detailed t "Подробные подсказки в минибуфере"))
 
 
 ;; 📦 nXML
@@ -789,10 +796,10 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Управление видимостью блоков кода
 (use-package outline
   :hook
-  (asciidoc-mode . outline-minor-mode)
-  (emacs-lisp-mode . outline-minor-mode)
-  (markdown-mode . outline-minor-mode)
-  (rst-mode . outline-minor-mode))
+  ((asciidoc-mode
+    emacs-lisp-mode
+    markdown-mode
+    rst-mode) . outline-minor-mode))
 
 
 ;; 📦 PEG
@@ -904,10 +911,10 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 RUBY-TS-MODE
 ;; Встроенный пакет для работы с Ruby.
-(use-package ruby-ts-mode
+(use-package ruby-mode
   :mode
-  ("\\.rb\\'" . ruby-ts-mode)
-  ("\\Vagrantfile\\'" . ruby-ts-mode))
+  ("\\.rb\\'" . ruby-mode)
+  ("\\Vagrantfile\\'" . ruby-mode))
 
 
 ;; 📦 SAVEPLACE
@@ -924,8 +931,8 @@ FRAME-NAME — название настраиваемого фрейма."
 (require 'savehist)
 (use-package savehist
   :hook
-  (server-done . savehist-save)
-  (kill-emacs . savehist-save)
+  ((server-done
+    kil-emacs) . savehist-save)
   :config
   (add-to-list 'delete-frame-functions 'savehist-save)
   (add-to-list 'savehist-additional-variables 'compile-history)
@@ -985,10 +992,9 @@ FRAME-NAME — название настраиваемого фрейма."
   (:map global-map
         ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
-  ((compilation-mode . visual-line-mode)
-   (markdown-mode . visual-line-mode)
-   (messages-buffer-mode . visual-line-mode)
-   (text-mode . visual-line-mode)))
+  ((compilation-mode
+    messages-buffer-mode
+    text-mode) . visual-line-mode))
 
 
 ;; 📦 SORT
@@ -1094,6 +1100,7 @@ FRAME-NAME — название настраиваемого фрейма."
     css-mode
     dockerfile-ts-mode
     emacs-lisp-mode
+    haml-mode
     html-mode
     js-ts-mode
     json-ts-mode
@@ -1110,8 +1117,6 @@ FRAME-NAME — название настраиваемого фрейма."
     ruby-mode
     ruby-ts-mode
     rust-mode
-    rust-ts-mode
-    sass-mode
     sed-mode
     sh-mode
     snippet-mode ;; Yasnippet
@@ -1141,7 +1146,6 @@ FRAME-NAME — название настраиваемого фрейма."
     (package-upgrade 'window-tool-bar)))
 
 
-
 ;; 📦 XREF
 ;; Встроенный пакет, который просто обновим из GNU ELPA
 (use-package xref
@@ -1155,11 +1159,11 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет для работы с YAML через TreeSitter
 (use-package yaml-ts-mode
   :mode
-  ("\\.ansible\\-lint\\'"
-   "\\.clang\\-tidy\\'"
-   "\\.ya?ml\\'"
-   "\\.yamllint\\'"
-   "\\.yfm\\'"))
+  ("\\.ansible\\-lint\\'" . yaml-ts-mode)
+  ("\\.clang\\-tidy\\'" . yaml-ts-mode)
+  ("\\.ya?ml\\'" . yaml-ts-mode)
+  ("\\.yamllint\\'" . yaml-ts-mode)
+  ("\\.yfm\\'" . yaml-ts-mode))
 
 
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
@@ -1171,17 +1175,18 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package apheleia
   :vc
   (:url "https://github.com/radian-software/apheleia.git"
-        :rev "v4.4.2")
+        :rev "v4.4.3")
   :custom
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
   :bind (:map global-map
               ("<f12>" . apheleia-format-buffer))
   :hook
-  (emacs-lisp-mode . apheleia-mode)
-  (python-mode . apheleia-mode)
-  (python-ts-mode . apheleia-mode)
-  (ruby-mode . apheleia-mode)
-  (ruby-ts-mode . apheleia-mode))
+  ((emacs-lisp-mode
+    python-mode
+    python-ts-mode
+    ruby-mode
+    ruby-ts-mode
+    yaml-ts-mode) . apheleia-mode))
 
 
 ;; 📦 AUCTEX
@@ -1263,7 +1268,9 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :hook
   ((css-mode
+    css-ts-mode
     emacs-lisp-mode
+    haml-mode
     html-mode
     json-ts-mode
     yaml-ts-mode) . colorful-mode))
@@ -1418,23 +1425,20 @@ FRAME-NAME — название настраиваемого фрейма."
   ;; (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
   (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
   (add-to-list 'eglot-server-programs '(python-ts-mode . ("jedi-language-server")))
-  (add-to-list 'eglot-server-programs '(ruby-mode . ("bundle" "exec" "ruby-lsp")))
-  (add-to-list 'eglot-server-programs '(ruby-ts-mode . ("bundle" "exec" "ruby-lsp")))
   (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
   :bind
   (:map eglot-mode-map
-        ("C-c C-d" . eldoc)
+        ;; ("C-c C-d" . eldoc)
         ("C-c C-r" . eglot-rename)
         ("C-c C-f" . eglot-format-buffer))
   :hook
-  (ansible-mode . eglot-ensure)
-  (dockerfile-ts-mode . eglot-ensure)
-  ;; (markdown-mode . eglot-ensure)
-  (python-mode . eglot-ensure)
-  (python-ts-mode . eglot-ensure)
-  (ruby-mode . eglot-ensure)
-  (ruby-ts-mode . eglot-ensure)
-  (yaml-ts-mode . eglot-ensure))
+  ((ansible-mode
+    dockerfile-ts-mode
+    python-mode
+    python-ts-mode
+    ruby-mode
+    ruby-ts-mode
+    yaml-ts-mode) . eglot-ensure))
 
 
 ;; 📦 ELDOC-MODE
@@ -1443,12 +1447,12 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package eldoc
   :pin "gnu"
   :ensure t
-  :init (unless (alist-get 'eldoc package-alist)
-          (package-upgrade 'eldoc))
+  ;; :init (unless (alist-get 'eldoc package-alist)
+  ;;         (package-upgrade 'eldoc))
   :config
   (global-eldoc-mode nil)
   :custom
-  (eldoc-minor-mode-string nil "Не надо показывать ничего в строке статуса.")
+  (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
   :hook
   ((emacs-lisp-mode
     lisp-interaction-mode) . eldoc-mode))
@@ -1470,8 +1474,10 @@ FRAME-NAME — название настраиваемого фрейма."
   :hook
   ((conf-mode
     css-mode
+    css-ts-mode
     dockerfile-ts-mode
     emacs-lisp-mode
+    haml-mode
     html-mode
     js-ts-mode
     json-ts-mode
@@ -1486,8 +1492,7 @@ FRAME-NAME — название настраиваемого фрейма."
     rust-mode
     sh-mode
     sql-mode
-    yaml-ts-mode
-    ) . flycheck-mode))
+    yaml-ts-mode) . flycheck-mode))
 
 
 ;; 📦 INDENT-BARS
@@ -1497,21 +1502,20 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin "gnu"
   :ensure t
   :hook
-  (css-mode . indent-bars-mode)
-  (css-ts-mode . indent-bars-mode)
-  (emacs-lisp-mode . indent-bars-mode)
-  (javascript-mode . indent-bars-mode)
-  (js-ts-mode . indent-bars-mode)
-  (makefile-mode . indent-bars-mode)
-  (markdown-mode . indent-bars-mode)
-  (python-mode . indent-bars-mode)
-  (rst-mode . indent-bars-mode)
-  (ruby-mode . indent-bars-mode)
-  (ruby-ts-mode . indent-bars-mode)
-  (rust-mode . indent-bars-mode)
-  (rust-ts-mode . indent-bars-mode)
-  (sass-mode . indent-bars-mode)
-  (yaml-ts-mode . indent-bars-mode))
+  ((css-mode
+    css-ts-mode
+    emacs-lisp-mode
+    haml-mode
+    javascript-mode
+    js-ts-mode
+    makefile-mode
+    markdown-mode
+    python-mode
+    rst-mode
+    ruby-mode
+    ruby-ts-mode
+    rust-mode
+    yaml-ts-mode) . indent-bars-mode))
 
 
 ;; 📦 IVY
@@ -1551,10 +1555,10 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (jinx-languages "ru_RU en_US")
   :hook
-  (asciidoc-mode . jinx-mode)
-  (emacs-lisp-mode . jinx-mode)
-  (markdown-mode . jinx-mode)
-  (rst-mode . jinx-mode)
+  ((asciidoc-mode
+    emacs-lisp-mode
+    markdown-mode
+    rst-mode) . jinx-mode)
   :bind
   (:map global-map
         ("M-$" . jinx-correct)
@@ -1566,20 +1570,19 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 LIN
 ;; https://github.com/protesilaos/lin
 ;; Более умная подсветка активной строки, чем `hl-line-mode'.
-(message "Загрузка lin-mode")
 (use-package lin
   :pin "gnu"
   :ensure t
   :hook
-  (asciidoc-mode . lin-mode)
-  (emacs-lisp-mode . lin-mode)
-  (ibuffer-mode . lin-mode)
-  (markdown-mode . lin-mode)
-  (rst-mode . lin-mode)
-  (ruby-mode . lin-mode)
-  (ruby-ts-mode . lin-mode)
-  (rust-mode . lin-mode)
-  (yaml-ts-mode . lin-mode))
+  ((asciidoc-mode
+    emacs-lisp-mode
+    ibuffer-mode
+    markdown-mode
+    rst-mode
+    ruby-mode
+    ruby-ts-mode
+    rust-mode
+    yaml-ts-mode) . lin-mode))
 
 
 ;; 📦 MAGIT
@@ -1595,8 +1598,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (after-save . magit-after-save-refresh-buffers)
   (after-save . magit-after-save-refresh-status)
   :config
-  (when (fboundp 'magit-auto-revert-mode)
-    (magit-auto-revert-mode t)))
+  (magit-auto-revert-mode t))
 
 
 ;; 📦 MARKDOWN MODE
@@ -1683,10 +1685,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin "nongnu"
   :ensure t
   :hook
-  (asciidoc-mode . rainbow-delimiters-mode)
-  (emacs-lisp-mode . rainbow-delimiters-mode)
-  (lisp-data-mode . rainbow-delimiters-mode)
-  (markdown-mode . rainbow-delimiters-mode))
+  ((prog-mode
+    text-mode) . rainbow-delimiters-mode))
 
 
 ;; 📦 RUSSIAN-TECHWRITER
@@ -1705,23 +1705,23 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/rust-lang/rust-mode
 ;; Поддержка языка Rust
 (use-package rust-mode
-  :pin "nongnu"                         ; Comment
+  :pin "nongnu"
   :ensure t
   :mode ("\\.rs\\'" . rust-mode))
 
 
 ;; 📦 SASS-MODE
-;; https://github.com/nex3/haml/tree/master
+;; https://github.com/nex3/haml-mode
 ;; Таблицы стилей, созданные с помощью SASS
 (use-package sass-mode
   :pin "nongnu"
   :ensure t
-  :mode ("\\.sass\\'" . sass-mode))
+  :mode ("\\.sass\\'" . haml-mode))
 
 
 ;; 📦 SED-MODE
 ;; Режим для работы с файлами команд `sed'.
-(use-package sed-mode                   ;
+(use-package sed-mode
   :pin "gnu"
   :ensure t
   :mode ("\\.sed\\'" . sed-mode))

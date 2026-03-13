@@ -127,6 +127,9 @@ FRAME-NAME — название настраиваемого фрейма."
  gc-cons-threshold (* 2 gc-cons-threshold) ;; Увеличить размер памяти для сборщика мусора
  highlight-nonselected-windows nil ;; Не подсвечивать неактивные окна
  inhibit-compacting-font-caches t ;; Не сжимать шрифты в памяти
+ inhibit-splash-screen t ;; Не показывать заставку
+ inhibit-startup-buffer-menu t ;; Выключить меню буферов при запуске
+ inhibit-startup-echo-area-message user-login-name
  inhibit-startup-screen t ;; Не показывать приветственный экран
  initial-scratch-message nil ;; Пустой буфер *scratch*
  kill-buffer-delete-auto-save-files t ;; Удалять файлы автосохранения при закрытии буфера
@@ -540,6 +543,8 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет.
 ;; Отображение рекомендуемой границы символов.
 (use-package display-fill-column-indicator
+  :custom
+  (fill-column 120 "По умолчанию 70, что мало")
   :hook
   ((emacs-lisp-mode
     js-ts-mode
@@ -554,10 +559,11 @@ FRAME-NAME — название настраиваемого фрейма."
   :init
   (unless (alist-get 'flymake package-alist)
     (package-upgrade 'flymake))
-  :bind (:map emacs-lisp-mode-map
-              ("M-n" . flymake-goto-next-error)
-              ("M-p" . flymake-goto-prev-error))
-  :hook ((emacs-lisp-mode) . flymake-mode))
+  :bind
+  (:map emacs-lisp-mode-map
+        ("M-n" . flymake-goto-next-error)
+        ("M-p" . flymake-goto-prev-error))
+  :hook (emacs-lisp-mode . flymake-mode))
 
 
 ;; 📦 FLYSPELL-MODE
@@ -629,9 +635,8 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет для работы с HTML и SGML.
 (use-package html-mode
   :mode
-  ("\\.hbs\\'"
-   "\\.html\\'"
-   "\\.jinja\\'"))
+  ("\\.hbs\\'" . html-mode)
+  ("\\.html\\'" . html-mode))
 
 
 ;; 📦 IBUFFER
@@ -1178,8 +1183,9 @@ FRAME-NAME — название настраиваемого фрейма."
         :rev "v4.4.3")
   :custom
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
-  :bind (:map global-map
-              ("<f12>" . apheleia-format-buffer))
+  :bind
+  (:map global-map
+        ("<f12>" . apheleia-format-buffer))
   :hook
   ((emacs-lisp-mode
     python-mode
@@ -1282,9 +1288,10 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package corfu
   :pin "gnu"
   :ensure t
+  :custom
+  (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
   :config
-  (when (fboundp 'global-corfu-mode)
-    (global-corfu-mode t)))
+  (global-corfu-mode t))
 
 
 ;; 📦 COUNSEL
@@ -1366,8 +1373,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package edit-indirect
   :pin "nongnu"
   :ensure t
-  :bind (:map global-map
-              ("C-c '" . edit-indirect-region)))
+  :bind
+  (:map global-map
+        ("C-c '" . edit-indirect-region)))
 
 
 ;; 📦 EDITORCONFIG
@@ -1541,7 +1549,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package jinja2-mode
   :pin "nongnu"
   :ensure t
-  :mode ("\\.j2" . jinja2-mode))
+  :mode
+  ("\\.j2\\'" . jinja2-mode)
+  ("\\.jinja\\'" . jinja2-mode))
 
 
 ;; 📦 JINX
@@ -1611,9 +1621,9 @@ FRAME-NAME — название настраиваемого фрейма."
   (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
   (markdown-header-scaling-values '(1.0 1.0 1.0 1.0 1.0 1.0) "Все заголовки одной высоты")
   (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
-  :config (setq-local word-wrap t)
-  :bind (:map markdown-mode-map
-              ("M-." . markdown-follow-thing-at-point)))
+  :bind
+  (:map markdown-mode-map
+        ("M-." . markdown-follow-thing-at-point)))
 
 
 ;; 📦 MULTIPLE CURSORS
@@ -1775,8 +1785,9 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :init
   (keymap-global-unset "C-z")
-  :bind (:map global-map
-              ("C-z" . vundo)))
+  :bind
+  (:map global-map
+        ("C-z" . vundo)))
 
 
 ;; 📦 WHICH-KEY MODE

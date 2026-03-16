@@ -4,8 +4,6 @@
 
 ;;; Code:
 
-(defalias 'yes-or-no-p 'y-or-n-p) ;; Использовать y и n вместо yes и no (сокращает объём вводимого текста для подтверждения команд)
-
 (defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
 
 (defun init-el-set-font-height ()
@@ -203,19 +201,18 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 PACKAGE
 ;; Настроим архивы:
-(require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-(package-initialize)
+(with-eval-after-load 'package
+  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+  (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+  (package-initialize)
 
-;; Приоритеты архивов: чем выше, тем лучше.
-(setopt package-archive-priorities
-        '(("gnu" . 2)
-          ("nongnu" . 1)))
+  (setopt package-archive-priorities ;; Приоритеты архивов: чем выше, тем лучше.
+          '(("gnu" . 2)
+            ("nongnu" . 1))
+          package-vc-register-as-project nil) ;; Не надо регистрировать как проекты пакеты, установленные с помощью `package-vc-install'.
 
-;; Не надо регистрировать как проекты пакеты, установленные с помощью
-;; `package-vc-install'.
-(setopt package-vc-register-as-project nil)
+  )
+
 
 (defun init-el-check-archive-contents ()
   "Проверим наличие списка пакетов в архивах.
@@ -263,15 +260,40 @@ FRAME-NAME — название настраиваемого фрейма."
       (make-directory ts-lib-dir)))
   :config
   ;; Грамматики
-  (add-to-list 'treesit-language-source-alist '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile.git" "v0.2.0" "src/"))
-  (add-to-list 'treesit-language-source-alist '(javascript "https://github.com/tree-sitter/tree-sitter-javascript.git" "v0.23.1" "src/"))
-  (add-to-list 'treesit-language-source-alist '(jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc.git" "v0.23.1" "src/"))
-  (add-to-list 'treesit-language-source-alist '(json "https://github.com/tree-sitter/tree-sitter-json.git" "v0.24.8"))
-  (add-to-list 'treesit-language-source-alist '(make "https://github.com/tree-sitter-grammars/tree-sitter-make.git" "v1.1.1" "src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(dockerfile
+                 "https://github.com/camdencheek/tree-sitter-dockerfile.git"
+                 "v0.2.0"
+                 "src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(javascript
+                 "https://github.com/tree-sitter/tree-sitter-javascript.git"
+                 "v0.23.1"
+                 "src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(jsdoc
+                 "https://github.com/tree-sitter/tree-sitter-jsdoc.git"
+                 "v0.23.1"
+                 "src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(json
+                 "https://github.com/tree-sitter/tree-sitter-json.git"
+                 "v0.24.8"))
+  (add-to-list 'treesit-language-source-alist
+               '(make
+                 "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
+                 "v1.1.1"
+                 "src/"))
   ;; Нужна более новая версия TreeSitter в самом Emacs
   ;; (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
-  (add-to-list 'treesit-language-source-alist '(typst "https://github.com/uben0/tree-sitter-typst.git"))
-  (add-to-list 'treesit-language-source-alist '(yaml "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git" "v0.7.2" "src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(typst
+                 "https://github.com/uben0/tree-sitter-typst.git"))
+  (add-to-list 'treesit-language-source-alist
+               '(yaml
+                 "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
+                 "v0.7.2"
+                 "src/"))
   ;; Сборка и установка грамматик
   (dolist (source treesit-language-source-alist)
     (unless (treesit-ready-p (car source))

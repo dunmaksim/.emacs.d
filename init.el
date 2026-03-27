@@ -1313,7 +1313,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
   :config
-  (global-corfu-mode t))
+  (corfu-indexed-mode t) ;; Номера возле вариантов завершения
+  (global-corfu-mode t)) ;; Включим глобально
 
 
 ;; 📦 COUNSEL

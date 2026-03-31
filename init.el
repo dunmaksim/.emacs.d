@@ -1676,11 +1676,7 @@ FRAME-NAME — название настраиваемого фрейма."
           (package-upgrade 'org))
   :custom
   (org-agenda-files '("~/Notes/"))
-  :defer t
-  :config
-  (setq-local
-   truncate-lines nil ;; Не обрезать строки
-   word-wrap t))      ;; Перенос длинных строк
+  :defer t)
 
 
 ;; 📦 PO-MODE

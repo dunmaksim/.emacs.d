@@ -1765,8 +1765,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :bind
   (:map global-map
-        ("C-s" . 'swiper-isearch)
-        ("C-r" . 'swiper-isearch-backward))
+        ("C-s" . swiper-isearch)
+        ("C-r" . swiper-isearch-backward))
   :config
   (add-to-list 'savehist-additional-variables 'swiper-history))
 

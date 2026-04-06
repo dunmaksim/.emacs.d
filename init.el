@@ -603,8 +603,16 @@ FRAME-NAME — название настраиваемого фрейма."
                                ;; Ничего не установлено?
                                (t nil)))
     :hook
-    ((text-mode . flyspell-mode)
-     (emacs-lisp-mode . flyspell-prog-mode))))
+    ((css-mode . flyspell-prog-mode)
+     (css-ts-mode . flyspell-prog-mode)
+     (emacs-lisp-mode . flyspell-prog-mode)
+     (js-mode . flyspell-prog-mode)
+     (js-ts-mode . flyspell-prog-mode)
+     (python-mode . flyspell-prog-mode)
+     (python-ts-mode . flyspell-prog-mode)
+     (ruby-mode . flyspell-prog-mode)
+     (ruby-ts-mode . flyspell-prog-mode)
+     (text-mode . flyspell-mode))))
 
 
 ;; 📦 FRAME

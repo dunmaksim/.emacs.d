@@ -879,7 +879,9 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'project package-alist)
-    (package-upgrade 'project)))
+    (package-upgrade 'project))
+  :config
+  (add-to-list 'project-switch-commands '(project-shell "Shell")))
 
 
 ;; 📦 PYTHON-MODE

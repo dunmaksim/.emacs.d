@@ -111,8 +111,13 @@ FRAME-NAME — название настраиваемого фрейма."
       ;; Каталог не существует
       (message (format "Каталог %s не существует." emacs-source-path)))))
 
+;; Настраиваем порядок выравнивания для текста слева направо
+;; Это должно увеличить производительность на больших буферах.
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
 
 (setopt
+ bidi-inhibit-bpa t ;; Выключить поддержку двунаправленных текстов
  case-fold-search t ;; Игнорировать регистр при поиске.
  completion-ignore-case t ;; Игнорировать регистр при автодополнении
  create-lockfiles nil ;; Не создавать lock-файлы
@@ -138,7 +143,7 @@ FRAME-NAME — название настраиваемого фрейма."
  read-buffer-completion-ignore-case t ;; Игнорировать регистр при вводе названия буфера
  read-extended-command-predicate #'command-completion-default-include-p ;; Скрыть команды, которые нельзя выполнить в буфере
  read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
- read-process-output-max (* read-process-output-max 2) ;; Увеличим чанк чтения для LSP в 2 раза
+ read-process-output-max (* read-process-output-max 4) ;; Увеличим чанк чтения для LSP в 4 раза
  redisplay-skip-fontification-on-input t ;; Не обновлять буфер, если происходит ввод
  ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
  sentence-end-double-space nil ;; Устаревшее требование
@@ -1384,6 +1389,8 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package diff-hl
   :pin "gnu"
   :ensure t
+  :custom
+  (diff-hl-update-async t "Асинхронное обновление состояния.")
   :config
   (progn
     (when (fboundp 'global-diff-hl-mode)

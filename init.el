@@ -302,10 +302,7 @@ FRAME-NAME — название настраиваемого фрейма."
   ;; Сборка и установка грамматик
   (dolist (source treesit-language-source-alist)
     (unless (treesit-ready-p (car source))
-      (treesit-install-language-grammar (car source))))
-  :bind
-  (:map global-map
-        ("<f5>" . treesit-explore-mode)))
+      (treesit-install-language-grammar (car source)))))
 
 
 ;; 📦 ABBREV-MODE
@@ -323,8 +320,8 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package ansi-color
   :custom
   (ansi-color-for-compilation-mode t "Расцветка буфера *compile*")
-  :hook
-  (compilation-filter . ansi-color-compilation-filter))
+  :config
+  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
 
 
 ;; 📦 AUTOREVERT
@@ -374,10 +371,10 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF
 (use-package conf-mode
   :mode
-  ("\\.env\\'"
-   "\\.flake8\\'"
-   "\\.pylintrc\\'"
-   "\\inventory\\'"))
+  ("\\.env\\'" . conf-mode)
+  ("\\.flake8\\'" . conf-mode)
+  ("\\.pylintrc\\'" . conf-mode)
+  ("\\inventory\\'" . conf-mode))
 
 
 ;; 📦 CUSTOM
@@ -476,8 +473,8 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет на базе TreeSitter для работы с Dockerfile.
 (use-package dockerfile-ts-mode
   :mode
-  ("\\Containerfile\\'"
-   "\\Dockerfile\\'"))
+  ("\\Containerfile\\'" . dockerfile-ts-mode)
+  ("\\Dockerfile\\'" . dockerfile-ts-mode))
 
 
 ;; 📦 ELECTRIC-INDENT MODE
@@ -884,9 +881,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'project package-alist)
-    (package-upgrade 'project))
-  :config
-  (add-to-list 'project-switch-commands '(project-shell "Shell")))
+    (package-upgrade 'project)))
 
 
 ;; 📦 PYTHON-MODE
@@ -1301,6 +1296,25 @@ FRAME-NAME — название настраиваемого фрейма."
   (when (fboundp 'buffer-env-update)
     (add-hook 'hack-local-variables-hook #'buffer-env-update)
     (add-hook 'comint-mode-hook #'buffer-env-update)))
+
+
+;; 📦 CAPE
+;; https://github.com/minad/cape
+;; Бэкенды для CORFU
+(use-package cape
+  :pin "gnu"
+  :ensure t
+  :custom
+  (cape-dict-file '("/usr/share/doc/hunspell/en_US.dic"
+                    "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
+  :config
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-dict)
+  (add-hook 'completion-at-point-functions #'cape-elisp-symbol)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-history)
+  (add-hook 'completion-at-point-functions #'cape-keyword)
+  (add-hook 'completion-at-point-functions #'cape-rfc1345))
 
 
 ;; 📦 COLORFUL-MODE

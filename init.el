@@ -1051,11 +1051,26 @@ FRAME-NAME — название настраиваемого фрейма."
           (package-upgrade 'svg)))
 
 
+;; 📦 TAB-BAR-MODE
+(use-package tab-bar
+  :bind
+  (:map global-map
+        ("C-<tab>" . tab-bar-switch-to-next-tab)
+        ("C-S-<tab>" . tab-bar-switch-to-prev-tab)))
+
+
 ;; 📦 TEXINFO
 ;; Встроенный пакет для работы с файлами Texinfo
 (use-package texinfo
   :mode
   ("\\.texi\\'" . texinfo-mode))
+
+
+;; 📦 TEXT-MODE
+;; Базовые настройки для всех режимов на базе `text-mode'.
+(use-package text-mode
+  :custom
+  (text-mode-ispell-word-completion nil "Конфликтует с CORFU, поэтому выключаем."))
 
 
 ;; 📦 TOOLBAR
@@ -1167,11 +1182,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет, отвечает за управление размерами окон
 (use-package window
   :custom
-  (window-resize-pixelwise t "Делить окна по пикселям, а не по символам.")
-  :bind
-  (:map global-map
-        ("C-S-<iso-lefttab>" . next-buffer) ;; [Ctrl+Tab]       Вернуться в предыдущий буфер
-        ("C-<tab>" . previous-buffer)))     ;; [Ctrl+Shift+Tab] Следующий буфер
+  (window-resize-pixelwise t "Делить окна по пикселям, а не по символам."))
 
 
 ;; 📦 WINDOW-TOOL-BAR
@@ -1305,10 +1316,11 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin "gnu"
   :ensure t
   :custom
+  ;; TODO: добавить код, определяющий наличие словарей.
   (cape-dict-file '("/usr/share/doc/hunspell/en_US.dic"
                     "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
   :config
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-dict)
   (add-hook 'completion-at-point-functions #'cape-elisp-symbol)
   (add-hook 'completion-at-point-functions #'cape-file)
@@ -1340,7 +1352,9 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin "gnu"
   :ensure t
   :custom
+  ;; (corfu-auto t "Включим автоматический показ вариантов автодополнения.")
   (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
+  (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
   :config
   (corfu-indexed-mode t) ;; Номера возле вариантов завершения
   (global-corfu-mode t)) ;; Включим глобально

@@ -260,7 +260,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package treesit
   :init
   ;; Проверим существование подкаталога tree-sitter. При необходимости создадим.
-  (let ((ts-lib-dir (expand-file-name "tree-sitter" user-emacs-directory)))
+  (let ((ts-lib-dir (locate-user-emacs-file "tree-sitter")))
     (unless (file-directory-p ts-lib-dir)
       (make-directory ts-lib-dir)))
   :config
@@ -578,7 +578,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 FLYMAKE
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init
   (unless (alist-get 'flymake package-alist)
@@ -783,7 +783,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://elpa.gnu.org/packages/jsonrpc.html
 ;; Пакет для работы с JSON. Зависимость Eglot.
 (use-package jsonrpc
-  :pin "gnu"
+  :pin gnu
   :init
   (unless (alist-get 'jsonrpc package-alist)
     (package-upgrade 'jsonrpc)))
@@ -842,7 +842,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 PEG
 ;; Встроенный пакет, который мы просто обновим из GNU ELPA
 (use-package peg
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init (unless (alist-get 'peg package-alist)
           (package-upgrade 'peg)))
@@ -877,7 +877,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; [C-x p s] — Shell в текущем проекте.
 ;; [C-x p e] — EShell в текущем проекте.
 (use-package project
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init
   (unless (alist-get 'project package-alist)
@@ -887,7 +887,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 PYTHON-MODE
 ;; Встроенный пакет для работы с Python через TreeSitter
 (use-package python
-  :pin "gnu"
+  :pin gnu
   :init
   (unless (alist-get 'python package-alist)
     (package-upgrade 'python))
@@ -1045,7 +1045,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 SVG
 ;; Встроенный пакет, который мы просто обновим из GNU ELPA
 (use-package svg
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init (unless (alist-get 'svg package-alist)
           (package-upgrade 'svg)))
@@ -1093,7 +1093,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 TRACK-CHANGES
 ;; Встроенный пакет, обновлять который будем из архива
 (use-package track-changes
-  :pin "gnu"
+  :pin gnu
   :init
   (unless (alist-get 'track-changes package-alist)
     (package-upgrade 'track-changes)))
@@ -1102,7 +1102,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 TRAMP
 ;; Встроенный пакет, который мы просто обновим из GNU ELPA
 (use-package tramp
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init (unless (alist-get 'tramp package-alist)
           (package-upgrade 'tramp)))
@@ -1111,7 +1111,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 TRANSIENT
 ;; Встроенный пакет, который нужно обновить, чтобы нормально работал MAGIT.
 (use-package transient
-  :pin "gnu"
+  :pin gnu
   :init
   (unless (alist-get 'transient package-alist)
     (package-upgrade 'transient)))
@@ -1129,7 +1129,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 VERILOG-MODE
 ;; Просто обновим его из GNU ELPA
 (use-package verilog-mode
-  :pin "gnu"
+  :pin gnu
   :init
   (unless (alist-get 'verilog-mode package-alist)
     (package-upgrade 'verilog-mode)))
@@ -1188,7 +1188,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 WINDOW-TOOL-BAR
 ;; Просто обновим из GNU ELPA
 (use-package window-tool-bar
-  :pin "gnu"
+  :pin gnu
   :init
   (unless (alist-get 'window-tool-bar package-alist)
     (package-upgrade 'window-tool-bar)))
@@ -1197,7 +1197,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 XREF
 ;; Встроенный пакет, который просто обновим из GNU ELPA
 (use-package xref
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init (unless (alist-get 'xref package-alist)
           (package-upgrade 'xref)))
@@ -1242,7 +1242,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; IDE для работы с TeX
 ;; https://www.gnu.org/software/auctex/index.html
 (use-package auctex
-  :pin "gnu"
+  :pin gnu
   :ensure t)
 
 
@@ -1253,7 +1253,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; достаточно нажать C-c C-c, и изменения отразятся в основном буфере
 (use-package all
   :ensure t
-  :pin "gnu")
+  :pin gnu)
 
 
 ;; 📦 ASCIIDOC
@@ -1268,7 +1268,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Множество функций для быстрого перехода к нужной строке, слову, символу и
 ;; так далее.
 (use-package avy
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :bind
   (:map global-map
@@ -1280,7 +1280,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 BIND-KEY
 ;; Часть `use-package', но мы будем обновлять его из архивов.
 (use-package bind-key
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init (unless (alist-get 'bind-key package-alist)
           (package-upgrade 'bind-key)))
@@ -1290,7 +1290,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://elpa.gnu.org/packages/breadcrumb.html
 ;; Вывод пути к файлу в верхней части окна
 (use-package breadcrumb
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :config
   (when (fboundp 'breadcrumb-mode)
@@ -1301,7 +1301,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/astoff/buffer-env
 ;; Переменные окружения для отдельного буфера. Почти ENVRC, только от GNU
 (use-package buffer-env
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :config
   (when (fboundp 'buffer-env-update)
@@ -1313,7 +1313,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/minad/cape
 ;; Бэкенды для CORFU
 (use-package cape
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :custom
   ;; TODO: добавить код, определяющий наличие словарей.
@@ -1333,7 +1333,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
 (use-package colorful-mode
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :hook
   ((css-mode
@@ -1349,7 +1349,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://elpa.gnu.org/packages/corfu.html
 ;; Расширение для автодополнения в буфере.
 (use-package corfu
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :custom
   ;; (corfu-auto t "Включим автоматический показ вариантов автодополнения.")
@@ -1364,35 +1364,18 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://elpa.gnu.org/packages/counsel.html
 ;; Замена встроенных команд на их более удобные аналоги.
 (use-package counsel
-  :pin "gnu"
+  :pin gnu
   :ensure t
-  :bind
-  (:map global-map
-        ("C-c c" . #'counsel-compile)
-        ("C-c g" . #'counsel-git)
-        ("C-c j" . #'counsel-file-jump)
-        ("C-h S" . #'counsel-info-lookup-symbol)
-        ("C-h a" . #'counsel-apropos)
-        ("C-h b" . #'counsel-descbinds)
-        ("C-h f" . #'counsel-describe-function)
-        ("C-h l" . #'counsel-find-library)
-        ("C-h o" . #'counsel-describe-symbol)
-        ("C-h v" . #'counsel-describe-variable)
-        ("C-x 8 RET" . #'counsel-unicode-char)
-        ("C-x C-f" . #'counsel-find-file)
-        ("C-x r b" . #'counsel-bookmark)
-        ("M-g i" . #'counsel-imenu)
-        ("M-x" . #'counsel-M-x)
-        ("M-y" . #'counsel-yank-pop))
-  :custom
-  (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history))
+  :config
+  (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
+  (counsel-mode t))
 
 
 ;; 📦 CSV-MODE
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
 (use-package csv-mode
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :mode ("\\.csv\\'" . csv-mode)
   :hook
@@ -1403,7 +1386,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://protesilaos.com/emacs/denote
 ;; Режим для управления заметками
 (use-package denote
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :custom
   (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
@@ -1415,7 +1398,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Дополняет функциональность git-gutter, который показывает изменения только в
 ;; обычных буферах. Этот пакет умеет работать с dired и другими режимами.
 (use-package diff-hl
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :custom
   (diff-hl-update-async t "Асинхронное обновление состояния.")
@@ -1450,7 +1433,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init (unless (alist-get 'editorconfig package-alist)
           (package-upgrade 'editorconfig))
@@ -1461,7 +1444,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 EF-THEMES
 ;; https://github.com/protesilaos/ef-themes.git
 (use-package ef-themes
-  :pin "gnu"
+  :pin gnu
   :ensure t)
 
 
@@ -1482,7 +1465,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; - Ruby:       sudo gem install ruby-lsp
 ;; - YAML:       sudo npm -g install yaml-language-server
 (use-package eglot
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init
   (unless (alist-get 'eglot package-alist)
@@ -1521,7 +1504,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Programming-Language-Doc.html
 ;; Отображение подсказок при работе с Emacs Lisp
 (use-package eldoc
-  :pin "gnu"
+  :pin gnu
   :ensure t
   ;; :init (unless (alist-get 'eldoc package-alist)
   ;;         (package-upgrade 'eldoc))
@@ -1538,7 +1521,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://www.flycheck.org/
 ;; Проверка синтаксиса на лету с помощью статических анализаторов
 (use-package flycheck
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
@@ -1575,7 +1558,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/jdtsmith/indent-bars
 ;; Красивая подсветка отступов
 (use-package indent-bars
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :hook
   ((css-mode
@@ -1601,7 +1584,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
 ;; это последовательность [C-M-j].
 (use-package ivy
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :demand t
   :config
@@ -1628,7 +1611,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; а вообще во всём буфере.
 ;; В Debian требует для работы пакеты `libenchant2-dev' и `pkgconf'.
 (use-package jinx
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :custom
   (jinx-languages "ru_RU en_US")
@@ -1649,7 +1632,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/protesilaos/lin
 ;; Более умная подсветка активной строки, чем `hl-line-mode'.
 (use-package lin
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :hook
   ((asciidoc-mode
@@ -1716,7 +1699,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (use-package org
-  :pin "gnu"
+  :pin gnu
   :init (unless (alist-get 'org package-alist)
           (package-upgrade 'org))
   :custom
@@ -1728,7 +1711,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://elpa.gnu.org/packages/po-mode.html
 ;; Пакет для работы с файлами переводов в формате `.po'.
 (use-package po-mode
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :mode ("\\.po\\'" . po-mode))
 
@@ -1738,7 +1721,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/protesilaos/pulsar
 ;; Этот пакет требует Emacs 27.1 или новее
 (use-package pulsar
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :custom
   (pulsar-pulse t)
@@ -1796,7 +1779,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 SED-MODE
 ;; Режим для работы с файлами команд `sed'.
 (use-package sed-mode
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :mode ("\\.sed\\'" . sed-mode))
 
@@ -1806,7 +1789,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
 ;; `isearch-backward'.
 (use-package swiper
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :bind
   (:map global-map
@@ -1845,7 +1828,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; q -- закрыть
 ;; C-c C-s -- сохранить изменения
 (use-package vundo
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init
   (keymap-global-unset "C-z")
@@ -1858,7 +1841,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
 (use-package which-key
-  :pin "gnu"
+  :pin gnu
   :ensure t
   :init
   (unless (alist-get 'which-key package-alist)

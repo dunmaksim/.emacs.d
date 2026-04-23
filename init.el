@@ -99,7 +99,7 @@ FRAME-NAME — название настраиваемого фрейма."
                                    emacs-major-version
                                    emacs-minor-version)))
     ;; Проверим, существует ли каталог
-    (if (file-exists-p emacs-source-path)
+    (if (file-directory-p emacs-source-path)
         ;; Проверяем, пуст ли каталог
         (if (directory-empty-p emacs-source-path)
             ;; Каталог пуст
@@ -1258,7 +1258,7 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 ASCIIDOC
 (let ((asciidoc-repo-dir (format "/home/%s/repo/asciidoc-mode/" user-login-name)))
-  (when (file-exists-p asciidoc-repo-dir)
+  (when (file-directory-p asciidoc-repo-dir)
     (add-to-list 'load-path asciidoc-repo-dir)
     (require 'asciidoc-mode)))
 
@@ -1389,7 +1389,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :custom
-  (denote-directory (expand-file-name "~/Notes/") "Каталог для хранения заметок."))
+  (denote-directory (expand-file-name "~/Документы/Notes/") "Каталог для хранения заметок."))
 
 
 ;; 📦 DIFF-HL
@@ -1422,7 +1422,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 4. Нажимаем [C-c], чтобы вернуться в основной буфер и подтвердить изменения,
 ;; либо [C-c C-k], чтобы отменить правки.
 (use-package edit-indirect
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :bind
   (:map global-map
@@ -1598,7 +1598,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://elpa.nongnu.org/nongnu/jinja2-mode.html
 ;; Режим для работы с шаблонами Jinja2
 (use-package jinja2-mode
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :mode
   ("\\.j2\\'" . jinja2-mode)
@@ -1651,7 +1651,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Magic + Git + Diff-HL.
 ;; Лучшее средство для работы с Git.
 (use-package magit
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
@@ -1666,7 +1666,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/jrblevin/markdown-mode
 ;; Режим для работы с файлами в формате Markdown
 (use-package markdown-mode
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :custom
   (markdown-fontify-code-blocks-natively t "Подсвечивать синтаксис в примерах кода")
@@ -1681,7 +1681,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/magnars/multiple-cursors.el
 ;; Позволяет использовать мультикурсорность.
 (use-package multiple-cursors
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :custom (mc/always-run-for-all t "Не задавать лишних вопросов.")
   :init
@@ -1703,7 +1703,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :init (unless (alist-get 'org package-alist)
           (package-upgrade 'org))
   :custom
-  (org-agenda-files '("~/Notes/"))
+  (org-agenda-files '("~/Документы/Notes/"))
   :defer t)
 
 
@@ -1739,7 +1739,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/Fanael/rainbow-delimiters
 ;; Подсветка парных скобок одним цветом
 (use-package rainbow-delimiters
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :hook
   ((prog-mode
@@ -1762,7 +1762,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/rust-lang/rust-mode
 ;; Поддержка языка Rust
 (use-package rust-mode
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :mode ("\\.rs\\'" . rust-mode))
 
@@ -1771,7 +1771,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/nex3/haml-mode
 ;; Таблицы стилей, созданные с помощью SASS
 (use-package sass-mode
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :mode ("\\.sass\\'" . haml-mode))
 
@@ -1799,11 +1799,26 @@ FRAME-NAME — название настраиваемого фрейма."
   (add-to-list 'savehist-additional-variables 'swiper-history))
 
 
+;; 📦 TEMPEL
+;; https://elpa.gnu.org/packages/doc/tempel.html
+;; Сниппеты
+(use-package tempel
+  :pin gnu
+  :ensure t
+  :bind
+  (:map global-map
+        ("M-+" . tempel-complete)
+        ("M-*" . tempel-insert)))
+;; :custom
+;; (tempel-path '((expand-file-name "templates/asciidoc.eld" user-emacs-directory)
+;;                (expand-file-name "templates/emacs-lisp.eld" user-emacs-directory))))
+
+
 ;; 📦 TYPST-TS-MODE
 ;; https://codeberg.org/meow_king/typst-ts-mode/
 ;; Поддержка формата Typst с помощью TreeSitter
 (use-package typst-ts-mode
-  :pin "nongnu"
+  :pin nongnu
   :ensure t
   :mode
   ("\\.typ\\'" . typst-ts-mode))

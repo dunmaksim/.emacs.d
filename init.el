@@ -214,6 +214,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (setopt package-archive-priorities ;; Приоритеты архивов: чем выше, тем лучше.
           '(("gnu" . 2)
             ("nongnu" . 1))
+          package-native-compile t ;; Компиляция пакетов в нативный код при установке
           package-vc-register-as-project nil) ;; Не надо регистрировать как проекты пакеты, установленные с помощью `package-vc-install'.
 
   )

@@ -215,9 +215,8 @@ FRAME-NAME — название настраиваемого фрейма."
           '(("gnu" . 2)
             ("nongnu" . 1))
           package-native-compile t ;; Компиляция пакетов в нативный код при установке
-          package-vc-register-as-project nil) ;; Не надо регистрировать как проекты пакеты, установленные с помощью `package-vc-install'.
-
-  )
+          package-vc-register-as-project nil)) ;; Не надо регистрировать как проекты пакеты,
+;; установленные с помощью `package-vc-install'.
 
 
 (defun init-el-check-archive-contents ()
@@ -1283,8 +1282,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package bind-key
   :pin gnu
   :ensure t
-  :init (unless (alist-get 'bind-key package-alist)
-          (package-upgrade 'bind-key)))
+  :init
+  (unless (alist-get 'bind-key package-alist)
+    (package-upgrade 'bind-key)))
 
 
 ;; 📦 BREADCRUMB
@@ -1346,6 +1346,27 @@ FRAME-NAME — название настраиваемого фрейма."
     yaml-ts-mode) . colorful-mode))
 
 
+;; 📦 CONSULT
+;; https://github.com/minad/consult
+;; Поиск и навигация на базе встроенной функции `completing-read'.
+(use-package consult
+  :pin gnu
+  :ensure t
+  :bind
+  (:map global-map
+        ("C-x b" . consult-buffer)
+        ("C-c h" . consult-history)
+        ("C-x 4 b" . consult-buffer-other-window)
+        ("C-x 5 b" . consult-buffer-other-frame)
+        ("C-x t b" . consult-buffer-other-tab)
+        ("C-x p b" . consult-project-buffer)
+        ("M-y" . consult-yank-pop)
+        ("M-g g" . consult-goto-line)
+        ("M-g o" . consult-outline)
+        ("M-g i" . consult-imenu)
+        ("C-x r b" . consult-bookmark)))
+
+
 ;; 📦 CORFU
 ;; https://elpa.gnu.org/packages/corfu.html
 ;; Расширение для автодополнения в буфере.
@@ -1361,15 +1382,15 @@ FRAME-NAME — название настраиваемого фрейма."
   (global-corfu-mode t)) ;; Включим глобально
 
 
-;; 📦 COUNSEL
-;; https://elpa.gnu.org/packages/counsel.html
-;; Замена встроенных команд на их более удобные аналоги.
-(use-package counsel
-  :pin gnu
-  :ensure t
-  :config
-  (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
-  (counsel-mode t))
+;; ;; 📦 COUNSEL
+;; ;; https://elpa.gnu.org/packages/counsel.html
+;; ;; Замена встроенных команд на их более удобные аналоги.
+;; (use-package counsel
+;;   :pin gnu
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
+;;   (counsel-mode t))
 
 
 ;; 📦 CSV-MODE
@@ -1578,21 +1599,21 @@ FRAME-NAME — название настраиваемого фрейма."
     yaml-ts-mode) . indent-bars-mode))
 
 
-;; 📦 IVY
-;; https://elpa.gnu.org/packages/ivy.html
-;; https://elpa.gnu.org/packages/doc/ivy.html
-;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
-;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
-;; это последовательность [C-M-j].
-(use-package ivy
-  :pin gnu
-  :ensure t
-  :demand t
-  :config
-  (ivy-mode t)
-  :bind
-  (:map global-map
-        ("C-x b" . ivy-switch-buffer)))
+;; ;; 📦 IVY
+;; ;; https://elpa.gnu.org/packages/ivy.html
+;; ;; https://elpa.gnu.org/packages/doc/ivy.html
+;; ;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
+;; ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
+;; ;; это последовательность [C-M-j].
+;; (use-package ivy
+;;   :pin gnu
+;;   :ensure t
+;;   :demand t
+;;   :config
+;;   (ivy-mode t)
+;;   :bind
+;;   (:map global-map
+;;         ("C-x b" . ivy-switch-buffer)))
 
 
 ;; 📦 JINJA2-MODE
@@ -1617,10 +1638,10 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (jinx-languages "ru_RU en_US")
   :hook
-  ((asciidoc-mode
-    emacs-lisp-mode
-    markdown-mode
-    rst-mode) . jinx-mode)
+  (asciidoc-mode . jinx-mode)
+  (emacs-lisp-mode . jinx-mode)
+  (markdown-mode . jinx-mode)
+  (rst-mode . jinx-mode)
   :bind
   (:map global-map
         ("M-$" . jinx-correct)
@@ -1809,10 +1830,12 @@ FRAME-NAME — название настраиваемого фрейма."
   :bind
   (:map global-map
         ("M-+" . tempel-complete)
-        ("M-*" . tempel-insert)))
-;; :custom
-;; (tempel-path '((expand-file-name "templates/asciidoc.eld" user-emacs-directory)
-;;                (expand-file-name "templates/emacs-lisp.eld" user-emacs-directory))))
+        ("M-*" . tempel-insert))
+  :custom
+  (tempel-path `(,(expand-file-name "templates/asciidoc.eld" user-emacs-directory)
+                 ,(expand-file-name "templates/emacs-lisp.eld" user-emacs-directory)
+                 ,(expand-file-name "templates/markdown.eld" user-emacs-directory)
+                 ,(expand-file-name "templates/rst.eld" user-emacs-directory))))
 
 
 ;; 📦 TYPST-TS-MODE
@@ -1823,6 +1846,18 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :mode
   ("\\.typ\\'" . typst-ts-mode))
+
+
+;; VERTICO
+;; https://github.com/minad/vertico
+;; Автодополнение в минибуфере, основанное на встроенном механизме `completing-read'.
+(use-package vertico
+  :pin gnu
+  :ensure t
+  :custom
+  (completion-in-region-function #'consult-completion-in-region)
+  :config
+  (vertico-mode t))
 
 
 ;; VUNDO

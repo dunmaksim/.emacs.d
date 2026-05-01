@@ -1806,6 +1806,14 @@ FRAME-NAME — название настраиваемого фрейма."
   :mode ("\\.sed\\'" . sed-mode))
 
 
+;; 📦 STANDARD THEMES
+;; https://github.com/protesilaos/standard-themes
+;; Темы на базе стандартных, но лучше
+(use-package standard-themes
+  :pin gnu
+  :ensure t)
+
+
 ;; 📦 SWIPER
 ;; https://elpa.gnu.org/packages/swiper.html
 ;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
@@ -1908,7 +1916,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :config
   (which-key-mode t))
 
-(load-theme 'ef-maris-dark t)
+(load-theme 'standard-dark-tinted t)
 
 (provide 'init.el)
 ;;; init.el ends here

@@ -1382,15 +1382,15 @@ FRAME-NAME — название настраиваемого фрейма."
   (global-corfu-mode t)) ;; Включим глобально
 
 
-;; ;; 📦 COUNSEL
-;; ;; https://elpa.gnu.org/packages/counsel.html
-;; ;; Замена встроенных команд на их более удобные аналоги.
-;; (use-package counsel
-;;   :pin gnu
-;;   :ensure t
-;;   :config
-;;   (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
-;;   (counsel-mode t))
+;; 📦 COUNSEL
+;; https://elpa.gnu.org/packages/counsel.html
+;; Замена встроенных команд на их более удобные аналоги.
+(use-package counsel
+  :pin gnu
+  :ensure t
+  :config
+  (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
+  (counsel-mode t))
 
 
 ;; 📦 CSV-MODE
@@ -1599,21 +1599,21 @@ FRAME-NAME — название настраиваемого фрейма."
     yaml-ts-mode) . indent-bars-mode))
 
 
-;; ;; 📦 IVY
-;; ;; https://elpa.gnu.org/packages/ivy.html
-;; ;; https://elpa.gnu.org/packages/doc/ivy.html
-;; ;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
-;; ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
-;; ;; это последовательность [C-M-j].
-;; (use-package ivy
-;;   :pin gnu
-;;   :ensure t
-;;   :demand t
-;;   :config
-;;   (ivy-mode t)
-;;   :bind
-;;   (:map global-map
-;;         ("C-x b" . ivy-switch-buffer)))
+;; 📦 IVY
+;; https://elpa.gnu.org/packages/ivy.html
+;; https://elpa.gnu.org/packages/doc/ivy.html
+;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
+;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
+;; это последовательность [C-M-j].
+(use-package ivy
+  :pin gnu
+  :ensure t
+  :demand t
+  :config
+  (ivy-mode t)
+  :bind
+  (:map global-map
+        ("C-x b" . ivy-switch-buffer)))
 
 
 ;; 📦 JINJA2-MODE
@@ -1856,16 +1856,16 @@ FRAME-NAME — название настраиваемого фрейма."
   ("\\.typ\\'" . typst-ts-mode))
 
 
-;; VERTICO
-;; https://github.com/minad/vertico
-;; Автодополнение в минибуфере, основанное на встроенном механизме `completing-read'.
-(use-package vertico
-  :pin gnu
-  :ensure t
-  :custom
-  (completion-in-region-function #'consult-completion-in-region)
-  :config
-  (vertico-mode t))
+;; ;; VERTICO
+;; ;; https://github.com/minad/vertico
+;; ;; Автодополнение в минибуфере, основанное на встроенном механизме `completing-read'.
+;; (use-package vertico
+;;   :pin gnu
+;;   :ensure t
+;;   :custom
+;;   (completion-in-region-function #'consult-completion-in-region)
+;;   :config
+;;   (vertico-mode t))
 
 
 ;; VUNDO

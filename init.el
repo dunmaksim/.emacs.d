@@ -359,6 +359,16 @@ FRAME-NAME — название настраиваемого фрейма."
   (native-comp-async-report-warnings-errors 'silent "Проблемы нативной компиляции — не мои проблемы, не надо их показывать."))
 
 
+;; 📦 COMPAT
+;; Встроенный пакет, реализующий новый API для старых версий Emacs
+(use-package compat
+  :pin gnu
+  :ensure t
+  :init
+  (unless (alist-get 'compay package-alist)
+    (package-upgrade 'compat)))
+
+
 ;; 📦 COMPILE
 (use-package compile
   :custom
@@ -1657,15 +1667,15 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :hook
-  ((asciidoc-mode
-    emacs-lisp-mode
-    ibuffer-mode
-    markdown-mode
-    rst-mode
-    ruby-mode
-    ruby-ts-mode
-    rust-mode
-    yaml-ts-mode) . lin-mode))
+  (asciidoc-mode . lin-mode)
+  (emacs-lisp-mode . lin-mode)
+  (ibuffer-mode . lin-mode)
+  (markdown-mode . lin-mode)
+  (rst-mode . lin-mode)
+  (ruby-mode . lin-mode)
+  (ruby-ts-mode . lin-mode)
+  (rust-mode . lin-mode)
+  (yaml-ts-mode . lin-mode))
 
 
 ;; 📦 MAGIT

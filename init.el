@@ -365,7 +365,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :init
-  (unless (alist-get 'compay package-alist)
+  (unless (alist-get 'compat package-alist)
     (package-upgrade 'compat)))
 
 
@@ -1538,8 +1538,8 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package eldoc
   :pin gnu
   :ensure t
-  ;; :init (unless (alist-get 'eldoc package-alist)
-  ;;         (package-upgrade 'eldoc))
+  :init (unless (alist-get 'eldoc package-alist)
+          (package-upgrade 'eldoc))
   :config
   (global-eldoc-mode nil)
   :custom

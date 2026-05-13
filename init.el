@@ -206,6 +206,7 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 PACKAGE
 ;; Настроим архивы:
+(require 'package)
 (with-eval-after-load 'package
   (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
   (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)

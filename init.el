@@ -1560,7 +1560,6 @@ FRAME-NAME — название настраиваемого фрейма."
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
   (flycheck-indication-mode 'left-fringe "Место размещения маркера ошибки — левая граница")
-  (flycheck-markdown-markdownlint-cli-config "~/.emacs.d/.markdownlintrc" "Файл настроек Markdownlint")
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
@@ -1927,7 +1926,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :config
   (which-key-mode t))
 
-(load-theme 'standard-dark-tinted t)
+(load-theme 'ef-maris-dark t)
 
 (provide 'init.el)
 ;;; init.el ends here

@@ -267,6 +267,16 @@ FRAME-NAME — название настраиваемого фрейма."
   :config
   ;; Грамматики
   (add-to-list 'treesit-language-source-alist
+               '(asciidoc
+                 "https://github.com/cathaysia/tree-sitter-asciidoc.git"
+                 "v0.3.0"
+                 "tree-sitter-asciidoc_inline/src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(asciidoc
+                 "https://github.com/cathaysia/tree-sitter-asciidoc.git"
+                 "v0.3.0"
+                 "tree-sitter-asciidoc/src/"))
+  (add-to-list 'treesit-language-source-alist
                '(dockerfile
                  "https://github.com/camdencheek/tree-sitter-dockerfile.git"
                  "v0.2.0"
@@ -290,11 +300,25 @@ FRAME-NAME — название настраиваемого фрейма."
                  "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
                  "v1.1.1"
                  "src/"))
-  ;; Нужна более новая версия TreeSitter в самом Emacs
-  ;; (add-to-list 'treesit-language-source-alist '(rust "https://github.com/tree-sitter/tree-sitter-rust.git" "v0.24.0"))
+  (add-to-list 'treesit-language-source-alist
+               '(python
+                 "https://github.com/tree-sitter/tree-sitter-python.git"
+                 "v0.23.6"
+                 "src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(ruby
+                 "https://github.com/tree-sitter/tree-sitter-ruby.git"
+                 "v0.23.1"
+                 "src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(rust
+                 "https://github.com/tree-sitter/tree-sitter-rust.git"
+                 "v0.23.3"))
   (add-to-list 'treesit-language-source-alist
                '(typst
-                 "https://github.com/uben0/tree-sitter-typst.git"))
+                 "https://github.com/uben0/tree-sitter-typst.git"
+                 "0.11"
+                 "src/"))
   (add-to-list 'treesit-language-source-alist
                '(yaml
                  "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
@@ -440,8 +464,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (dired-listing-switches "-l --human-readable --all --group-directories-first --dired")
   (dired-recursive-copies 'always "Всегда копировать каталоги рекурсивно.")
   (dired-recursive-deletes 'always "Не задавать лишних вопросов при удалении не-пустых каталогов")
-  :init
-  (add-hook 'dired-mode-hook 'dired-hide-details-mode))
+  :hook
+  (dired-mode . dired-hide-details-mode))
 
 
 ;; 📦 DISPLAY-LINE-NUMBERS-MODE
@@ -855,8 +879,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package peg
   :pin gnu
   :ensure t
-  :init (unless (alist-get 'peg package-alist)
-          (package-upgrade 'peg)))
+  :init
+  (unless (alist-get 'peg package-alist)
+    (package-upgrade 'peg)))
 
 
 ;; 📦 PIXEL-SCROLL
@@ -1058,8 +1083,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package svg
   :pin gnu
   :ensure t
-  :init (unless (alist-get 'svg package-alist)
-          (package-upgrade 'svg)))
+  :init
+  (unless (alist-get 'svg package-alist)
+    (package-upgrade 'svg)))
 
 
 ;; 📦 TAB-BAR-MODE
@@ -1115,8 +1141,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package tramp
   :pin gnu
   :ensure t
-  :init (unless (alist-get 'tramp package-alist)
-          (package-upgrade 'tramp)))
+  :init
+  (unless (alist-get 'tramp package-alist)
+    (package-upgrade 'tramp)))
 
 
 ;; 📦 TRANSIENT
@@ -1210,8 +1237,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package xref
   :pin gnu
   :ensure t
-  :init (unless (alist-get 'xref package-alist)
-          (package-upgrade 'xref)))
+  :init
+  (unless (alist-get 'xref package-alist)
+    (package-upgrade 'xref)))
 
 
 ;; 📦 YAML-TS-MODE
@@ -1305,8 +1333,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :config
-  (when (fboundp 'breadcrumb-mode)
-    (breadcrumb-mode t)))
+  (breadcrumb-mode t))
 
 
 ;; 📦 BUFFER-ENV
@@ -1468,8 +1495,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package editorconfig
   :pin gnu
   :ensure t
-  :init (unless (alist-get 'editorconfig package-alist)
-          (package-upgrade 'editorconfig))
+  :init
+  (unless (alist-get 'editorconfig package-alist)
+    (package-upgrade 'editorconfig))
   :config
   (editorconfig-mode t))
 
@@ -1539,8 +1567,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package eldoc
   :pin gnu
   :ensure t
-  :init (unless (alist-get 'eldoc package-alist)
-          (package-upgrade 'eldoc))
+  :init
+  (unless (alist-get 'eldoc package-alist)
+    (package-upgrade 'eldoc))
   :config
   (global-eldoc-mode nil)
   :custom
@@ -1732,8 +1761,9 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Органайзер, заметки и так далее
 (use-package org
   :pin gnu
-  :init (unless (alist-get 'org package-alist)
-          (package-upgrade 'org))
+  :init
+  (unless (alist-get 'org package-alist)
+    (package-upgrade 'org))
   :custom
   (org-agenda-files '("~/Документы/Notes/"))
   :defer t)

@@ -270,12 +270,12 @@ FRAME-NAME — название настраиваемого фрейма."
                '(asciidoc
                  "https://github.com/cathaysia/tree-sitter-asciidoc.git"
                  "v0.3.0"
-                 "tree-sitter-asciidoc_inline/src/"))
+                 "tree-sitter-asciidoc/src/"))
   (add-to-list 'treesit-language-source-alist
-               '(asciidoc
+               '(asciidoc-inline
                  "https://github.com/cathaysia/tree-sitter-asciidoc.git"
                  "v0.3.0"
-                 "tree-sitter-asciidoc/src/"))
+                 "tree-sitter-asciidoc_inline/src/"))
   (add-to-list 'treesit-language-source-alist
                '(dockerfile
                  "https://github.com/camdencheek/tree-sitter-dockerfile.git"
@@ -300,6 +300,16 @@ FRAME-NAME — название настраиваемого фрейма."
                  "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
                  "v1.1.1"
                  "src/"))
+  (add-to-list 'treesit-language-source-alist
+               '(markdown
+                 "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+                 "v0.4.1"
+                 "tree-sitter-markdown/src"))
+  (add-to-list 'treesit-language-source-alist
+               '(markdown-inline
+                 "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+                 "v0.4.1"
+                 "tree-sitter-markdown-inline/src"))
   (add-to-list 'treesit-language-source-alist
                '(python
                  "https://github.com/tree-sitter/tree-sitter-python.git"
@@ -337,6 +347,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package abbrev
   :hook
   ((asciidoc-mode
+    asciidoc-ts-mode
     markdown-mode
     rst-mode) . abbrev-mode))
 
@@ -473,6 +484,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package display-line-numbers
   :hook
   ((asciidoc-mode
+    asciidoc-ts-mode
     c-mode
     conf-mode
     conf-toml-mode
@@ -676,6 +688,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package goto-addr
   :hook
   ((asciidoc-mode
+    asciidoc-ts-mode
     emacs-lisp-mode
     html-mode
     markdown-mode
@@ -752,7 +765,8 @@ FRAME-NAME — название настраиваемого фрейма."
       ("Emacs Lisp" (or (mode . emacs-lisp-mode)
                         (mode . lisp-data-mode)))
       ("Org" (mode . org-mode))
-      ("AsciiDoc" (mode . asciidoc-mode))
+      ("AsciiDoc" (or (mode . asciidoc-mode)
+                      (mode . asciidoc-ts-mode)))
       ("Markdown" (mode . markdown-mode))
       ("ReStructured Text" (mode . rst-mode))
       ("CONF / INI" (or (mode . conf-mode)
@@ -869,6 +883,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package outline
   :hook
   ((asciidoc-mode
+    asciidoc-ts-mode
     emacs-lisp-mode
     markdown-mode
     rst-mode) . outline-minor-mode))
@@ -1186,6 +1201,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (whitespace-line-column nil "Используем значение fill-column")
   :hook
   ((asciidoc-mode
+    asciidoc-ts-mode
     conf-mode
     css-mode
     dockerfile-ts-mode
@@ -1295,11 +1311,18 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin gnu)
 
 
-;; 📦 ASCIIDOC
-(let ((asciidoc-repo-dir (format "/home/%s/repo/asciidoc-mode/" user-login-name)))
+;; ;; 📦 ASCIIDOC
+;; (let ((asciidoc-repo-dir (format "/home/%s/repo/asciidoc-mode/" user-login-name)))
+;;   (when (file-directory-p asciidoc-repo-dir)
+;;     (add-to-list 'load-path asciidoc-repo-dir)
+;;     (require 'asciidoc-mode)))
+
+
+;; 📦 ASCIIDOC-TS
+(let ((asciidoc-repo-dir (format "/home/%s/repo/asciidoc-ts-mode" user-login-name)))
   (when (file-directory-p asciidoc-repo-dir)
     (add-to-list 'load-path asciidoc-repo-dir)
-    (require 'asciidoc-mode)))
+    (require 'asciidoc-ts-mode)))
 
 
 ;; 📦 AVY
@@ -1678,6 +1701,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (jinx-languages "ru_RU en_US")
   :hook
   (asciidoc-mode . jinx-mode)
+  (asciidoc-ts-mode . jinx-mode)
   (emacs-lisp-mode . jinx-mode)
   (markdown-mode . jinx-mode)
   (rst-mode . jinx-mode)
@@ -1696,15 +1720,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :hook
-  (asciidoc-mode . lin-mode)
-  (emacs-lisp-mode . lin-mode)
-  (ibuffer-mode . lin-mode)
-  (markdown-mode . lin-mode)
-  (rst-mode . lin-mode)
-  (ruby-mode . lin-mode)
-  (ruby-ts-mode . lin-mode)
-  (rust-mode . lin-mode)
-  (yaml-ts-mode . lin-mode))
+  (text-mode . lin-mode)
+  (prog-mode . lin-mode))
 
 
 ;; 📦 MAGIT

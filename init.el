@@ -277,6 +277,12 @@ FRAME-NAME — название настраиваемого фрейма."
                  "v0.3.0"
                  "tree-sitter-asciidoc_inline/src/"))
   (add-to-list 'treesit-language-source-alist
+               '(bash
+                 "https://github.com/tree-sitter/tree-sitter-bash.git"
+                 ;; "v0.25.1" ;; ABI v15
+                 ;; "v0.25.0" ;; ABI v15
+                 "v0.23.3"))
+  (add-to-list 'treesit-language-source-alist
                '(dockerfile
                  "https://github.com/camdencheek/tree-sitter-dockerfile.git"
                  "v0.2.0"

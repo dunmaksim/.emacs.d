@@ -890,6 +890,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :hook
   ((asciidoc-mode
     asciidoc-ts-mode
+    bash-ts-mode
     emacs-lisp-mode
     markdown-mode
     rst-mode) . outline-minor-mode))
@@ -1005,10 +1006,12 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 RUBY-TS-MODE
 ;; Встроенный пакет для работы с Ruby.
-(use-package ruby-mode
+(use-package ruby-ts-mode
+  :init
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
   :mode
-  ("\\.rb\\'" . ruby-mode)
-  ("\\Vagrantfile\\'" . ruby-mode))
+  ("\\.rb\\'" . ruby-ts-mode)
+  ("\\Vagrantfile\\'" . ruby-ts-mode))
 
 
 ;; 📦 SAVEPLACE
@@ -1038,15 +1041,16 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет для работы со скриптами Shell.
-;; Можно было бы использовать `bash-ts-mode', но нужна более новая версия
-;; TreeSitter
 (use-package sh-script
+  :init
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
   :mode
-  ("\\.bash_aliases\\'" . sh-mode)
-  ("\\.bashrc\\'" . sh-mode)
-  ("\\.envrc\\'" . sh-mode)
-  ("\\.profile\\'" . sh-mode)
-  ("\\.sh\\'" . sh-mode))
+  ("\\.bash_aliases\\'" . bash-ts-mode)
+  ("\\.bashrc\\'" . bash-ts-mode)
+  ("\\.envrc\\'" . bash-ts-mode)
+  ("\\.profile\\'" . bash-ts-mode)
+  ("\\.sh\\'" . bash-ts-mode))
+
 
 
 ;; 📦 SHELL-MODE
@@ -1208,6 +1212,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :hook
   ((asciidoc-mode
     asciidoc-ts-mode
+    bash-ts-mode
     conf-mode
     css-mode
     dockerfile-ts-mode
@@ -1621,7 +1626,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
-  ((conf-mode
+  ((bash-ts-mode
+    conf-mode
     css-mode
     css-ts-mode
     dockerfile-ts-mode

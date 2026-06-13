@@ -13,9 +13,9 @@
 
 (require 'custom)
 (setopt custom-file
-        (expand-file-name
-         (convert-standard-filename "custom.el")
-         user-emacs-directory)) ;; Файл для сохранения пользовательских настроек, сделанных в customize.
+  (expand-file-name
+    (convert-standard-filename "custom.el")
+    user-emacs-directory)) ;; Файл для сохранения пользовательских настроек, сделанных в customize.
 
 
 ;; Загрузим настройки сразу, чтобы они не переопределяли параметры из `init.el'.
@@ -32,17 +32,17 @@
   ;; Это формат X Logical Font Description Conventions, XLFD
   ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
   (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-                          font-family
-                          init-el-font-height)
-                  nil ;; Не сохранять установленный ранее размер
-                  t   ;; Применить ко всем фреймам
-                  t)  ;; Игнорировать настройки, сделанные через `customize'
+                    font-family
+                    init-el-font-height)
+    nil ;; Не сохранять установленный ранее размер
+    t   ;; Применить ко всем фреймам
+    t)  ;; Игнорировать настройки, сделанные через `customize'
   (set-face-attribute
-   'default ;; Font Face по умолчанию
-   nil      ;; Применить ко всем фреймам
-   ;; Атрибуты шрифта
-   :height (* init-el-font-height 10)
-   :family font-family))
+    'default ;; Font Face по умолчанию
+    nil      ;; Применить ко всем фреймам
+    ;; Атрибуты шрифта
+    :height (* init-el-font-height 10)
+    :family font-family))
 
 
 ;; Настройки, специфичные для графического режима
@@ -52,24 +52,24 @@ FRAME-NAME — название настраиваемого фрейма."
   (when (display-graphic-p frame-name) ;; Фрейм графический
     ;; Получаем список шрифтов
     (let ((font-families (font-family-list))
-          (lilex "Lilex")
-          (sauce-code-pro "SauceCodePro NFP")
-          (fira-code-nerd-font-mono "FiraCode Nerd Font Mono")
-          (fira-code "Fira Code")
-          (dejavu-sans-mono-nerd "DejaVu Sans Mono Nerd")
-          (dejavu-sans-mono "DejaVu Sans Mono")
-          (source-code-pro "Source Code Pro")
-          (consolas "Consolas"))
+           (lilex "Lilex")
+           (sauce-code-pro "SauceCodePro NFP")
+           (fira-code-nerd-font-mono "FiraCode Nerd Font Mono")
+           (fira-code "Fira Code")
+           (dejavu-sans-mono-nerd "DejaVu Sans Mono Nerd")
+           (dejavu-sans-mono "DejaVu Sans Mono")
+           (source-code-pro "Source Code Pro")
+           (consolas "Consolas"))
       ;; Мои любимые шрифты, от самого любимого к менее любимому
       (let ((preferred-font-family (cond ((member lilex font-families) lilex)
-                                         ((member sauce-code-pro font-families) sauce-code-pro)
-                                         ((member fira-code-nerd-font-mono font-families) fira-code-nerd-font-mono)
-                                         ((member fira-code font-families) fira-code)
-                                         ((member dejavu-sans-mono-nerd font-families) dejavu-sans-mono-nerd)
-                                         ((member dejavu-sans-mono font-families) dejavu-sans-mono)
-                                         ((member source-code-pro font-families) source-code-pro)
-                                         ((member consolas font-families) consolas)
-                                         (t nil))))
+                                     ((member sauce-code-pro font-families) sauce-code-pro)
+                                     ((member fira-code-nerd-font-mono font-families) fira-code-nerd-font-mono)
+                                     ((member fira-code font-families) fira-code)
+                                     ((member dejavu-sans-mono-nerd font-families) dejavu-sans-mono-nerd)
+                                     ((member dejavu-sans-mono font-families) dejavu-sans-mono)
+                                     ((member source-code-pro font-families) source-code-pro)
+                                     ((member consolas font-families) consolas)
+                                     (t nil))))
         (when preferred-font-family
           (progn
             (message (format "Шрифт по умолчанию: %s" preferred-font-family))
@@ -96,67 +96,67 @@ FRAME-NAME — название настраиваемого фрейма."
   ;; Поищем исходный код в /usr/share/emacs/X.Y/src/, где X и Y мажорная и
   ;; минорная версия Emacs соответственно.
   (let ((emacs-source-path (format "/usr/share/emacs/%d.%d/src/"
-                                   emacs-major-version
-                                   emacs-minor-version)))
+                             emacs-major-version
+                             emacs-minor-version)))
     ;; Проверим, существует ли каталог
     (if (file-directory-p emacs-source-path)
-        ;; Проверяем, пуст ли каталог
-        (if (directory-empty-p emacs-source-path)
-            ;; Каталог пуст
-            (message (format "Каталог %s пуст." emacs-source-path))
-          ;; Каталог не пуст
-          (progn
-            (setopt source-directory emacs-source-path)
-            (message (format "Исходный код обнаружен в каталоге %s" emacs-source-path))))
+      ;; Проверяем, пуст ли каталог
+      (if (directory-empty-p emacs-source-path)
+        ;; Каталог пуст
+        (message (format "Каталог %s пуст." emacs-source-path))
+        ;; Каталог не пуст
+        (progn
+          (setopt source-directory emacs-source-path)
+          (message (format "Исходный код обнаружен в каталоге %s" emacs-source-path))))
       ;; Каталог не существует
       (message (format "Каталог %s не существует." emacs-source-path)))))
 
 ;; Настраиваем порядок выравнивания для текста слева направо
 ;; Это должно увеличить производительность на больших буферах.
 (setq-default bidi-display-reordering 'left-to-right
-              bidi-paragraph-direction 'left-to-right)
+  bidi-paragraph-direction 'left-to-right)
 
 (setopt
- bidi-inhibit-bpa t ;; Выключить поддержку двунаправленных текстов
- case-fold-search t ;; Игнорировать регистр при поиске.
- completion-ignore-case t ;; Игнорировать регистр при автодополнении
- create-lockfiles nil ;; Не создавать lock-файлы
- cursor-in-non-selected-windows nil ;; Отключить курсор в неактивных окнах
- cursor-type 'bar ;; Курсор в виде вертикальной черты
- default-directory "~/repo/" ;; Директория по умолчанию
- default-input-method "russian-computer" ;; Метод ввода по умолчанию
- default-transient-input-method "russian-computer" ;; Временный метод ввода
- delete-by-moving-to-trash t ;; Удалять файлы в Корзину
- gc-cons-threshold (* 2 gc-cons-threshold) ;; Увеличить размер памяти для сборщика мусора
- highlight-nonselected-windows nil ;; Не подсвечивать неактивные окна
- inhibit-compacting-font-caches t ;; Не сжимать шрифты в памяти
- inhibit-splash-screen t ;; Не показывать заставку
- inhibit-startup-buffer-menu t ;; Выключить меню буферов при запуске
- inhibit-startup-echo-area-message user-login-name
- inhibit-startup-screen t ;; Не показывать приветственный экран
- initial-scratch-message nil ;; Пустой буфер *scratch*
- kill-buffer-delete-auto-save-files t ;; Удалять файлы автосохранения при закрытии буфера
- load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
- long-line-threshold (* long-line-threshold 2) ;; Вдвое увеличим порог
- major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
- read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
- read-buffer-completion-ignore-case t ;; Игнорировать регистр при вводе названия буфера
- read-extended-command-predicate #'command-completion-default-include-p ;; Скрыть команды, которые нельзя выполнить в буфере
- read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
- read-process-output-max (* read-process-output-max 4) ;; Увеличим чанк чтения для LSP в 4 раза
- redisplay-skip-fontification-on-input t ;; Не обновлять буфер, если происходит ввод
- ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
- sentence-end-double-space nil ;; Устаревшее требование
- show-trailing-whitespace t ;; Подсветка висячих пробелов
- standard-indent 4 ;; Отступ по умолчанию
- tab-always-indent 'complete ;; Если можно — выровнять текст, иначе — автодополнение.
- use-dialog-box nil ;; Диалоговые окна ОС не нужны
- use-file-dialog nil ;; Файловые диалоги тоже не нужны
- use-short-answers t ;; Краткие ответы вместо длинных
- user-full-name "Dunaevsky Maxim" ;; Имя пользователя
- user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты
- vc-follow-symlinks t ;; Переходить по ссылкам без лишних вопросов
- visible-bell t) ;; Мигать буфером при переходе в него
+  bidi-inhibit-bpa t ;; Выключить поддержку двунаправленных текстов
+  case-fold-search t ;; Игнорировать регистр при поиске.
+  completion-ignore-case t ;; Игнорировать регистр при автодополнении
+  create-lockfiles nil ;; Не создавать lock-файлы
+  cursor-in-non-selected-windows nil ;; Отключить курсор в неактивных окнах
+  cursor-type 'bar ;; Курсор в виде вертикальной черты
+  default-directory "~/repo/" ;; Директория по умолчанию
+  default-input-method "russian-computer" ;; Метод ввода по умолчанию
+  default-transient-input-method "russian-computer" ;; Временный метод ввода
+  delete-by-moving-to-trash t ;; Удалять файлы в Корзину
+  gc-cons-threshold (* 2 gc-cons-threshold) ;; Увеличить размер памяти для сборщика мусора
+  highlight-nonselected-windows nil ;; Не подсвечивать неактивные окна
+  inhibit-compacting-font-caches t ;; Не сжимать шрифты в памяти
+  inhibit-splash-screen t ;; Не показывать заставку
+  inhibit-startup-buffer-menu t ;; Выключить меню буферов при запуске
+  inhibit-startup-echo-area-message user-login-name
+  inhibit-startup-screen t ;; Не показывать приветственный экран
+  initial-scratch-message nil ;; Пустой буфер *scratch*
+  kill-buffer-delete-auto-save-files t ;; Удалять файлы автосохранения при закрытии буфера
+  load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
+  long-line-threshold (* long-line-threshold 2) ;; Вдвое увеличим порог
+  major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
+  read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
+  read-buffer-completion-ignore-case t ;; Игнорировать регистр при вводе названия буфера
+  read-extended-command-predicate #'command-completion-default-include-p ;; Скрыть команды, которые нельзя выполнить в буфере
+  read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
+  read-process-output-max (* read-process-output-max 4) ;; Увеличим чанк чтения для LSP в 4 раза
+  redisplay-skip-fontification-on-input t ;; Не обновлять буфер, если происходит ввод
+  ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
+  sentence-end-double-space nil ;; Устаревшее требование
+  show-trailing-whitespace t ;; Подсветка висячих пробелов
+  standard-indent 4 ;; Отступ по умолчанию
+  tab-always-indent 'complete ;; Если можно — выровнять текст, иначе — автодополнение.
+  use-dialog-box nil ;; Диалоговые окна ОС не нужны
+  use-file-dialog nil ;; Файловые диалоги тоже не нужны
+  use-short-answers t ;; Краткие ответы вместо длинных
+  user-full-name "Dunaevsky Maxim" ;; Имя пользователя
+  user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты
+  vc-follow-symlinks t ;; Переходить по ссылкам без лишних вопросов
+  visible-bell t) ;; Мигать буфером при переходе в него
 
 
 ;; Буфер *scratch* не нужен, если вы не программист Emacs Lisp
@@ -213,10 +213,10 @@ FRAME-NAME — название настраиваемого фрейма."
   (package-initialize)
 
   (setopt package-archive-priorities ;; Приоритеты архивов: чем выше, тем лучше.
-          '(("gnu" . 2)
-            ("nongnu" . 1))
-          package-native-compile t ;; Компиляция пакетов в нативный код при установке
-          package-vc-register-as-project nil)) ;; Не надо регистрировать как проекты пакеты,
+    '(("gnu" . 2)
+       ("nongnu" . 1))
+    package-native-compile t ;; Компиляция пакетов в нативный код при установке
+    package-vc-register-as-project nil)) ;; Не надо регистрировать как проекты пакеты,
 ;; установленные с помощью `package-vc-install'.
 
 
@@ -251,9 +251,9 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Настройки отладочного режима
 (when init-file-debug
   (setopt debug-on-error t ;; Автоматически перейти в режим отладки при ошибках.
-          use-package-compute-statistics t ;; Сбор статистики `use-package'
-          use-package-expand-minimally t ;; Минимальное раскрытие кода.
-          use-package-verbose t)) ;; Подробный режим работы `use-package'.
+    use-package-compute-statistics t ;; Сбор статистики `use-package'
+    use-package-expand-minimally t ;; Минимальное раскрытие кода.
+    use-package-verbose t)) ;; Подробный режим работы `use-package'.
 
 
 ;; 📦 TREESIT
@@ -267,79 +267,79 @@ FRAME-NAME — название настраиваемого фрейма."
   :config
   ;; Грамматики
   (add-to-list 'treesit-language-source-alist
-               '(asciidoc
-                 "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-                 "v0.3.0"
-                 "tree-sitter-asciidoc/src/"))
+    '(asciidoc
+       "https://github.com/cathaysia/tree-sitter-asciidoc.git"
+       "v0.3.0"
+       "tree-sitter-asciidoc/src/"))
   (add-to-list 'treesit-language-source-alist
-               '(asciidoc-inline
-                 "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-                 "v0.3.0"
-                 "tree-sitter-asciidoc_inline/src/"))
+    '(asciidoc-inline
+       "https://github.com/cathaysia/tree-sitter-asciidoc.git"
+       "v0.3.0"
+       "tree-sitter-asciidoc_inline/src/"))
   (add-to-list 'treesit-language-source-alist
-               '(bash
-                 "https://github.com/tree-sitter/tree-sitter-bash.git"
-                 ;; "v0.25.1" ;; ABI v15
-                 ;; "v0.25.0" ;; ABI v15
-                 "v0.23.3"))
+    '(bash
+       "https://github.com/tree-sitter/tree-sitter-bash.git"
+       ;; "v0.25.1" ;; ABI v15
+       ;; "v0.25.0" ;; ABI v15
+       "v0.23.3"))
   (add-to-list 'treesit-language-source-alist
-               '(dockerfile
-                 "https://github.com/camdencheek/tree-sitter-dockerfile.git"
-                 "v0.2.0"
-                 "src/"))
+    '(dockerfile
+       "https://github.com/camdencheek/tree-sitter-dockerfile.git"
+       "v0.2.0"
+       "src/"))
   (add-to-list 'treesit-language-source-alist
-               '(javascript
-                 "https://github.com/tree-sitter/tree-sitter-javascript.git"
-                 "v0.23.1"
-                 "src/"))
+    '(javascript
+       "https://github.com/tree-sitter/tree-sitter-javascript.git"
+       "v0.23.1"
+       "src/"))
   (add-to-list 'treesit-language-source-alist
-               '(jsdoc
-                 "https://github.com/tree-sitter/tree-sitter-jsdoc.git"
-                 "v0.23.1"
-                 "src/"))
+    '(jsdoc
+       "https://github.com/tree-sitter/tree-sitter-jsdoc.git"
+       "v0.23.1"
+       "src/"))
   (add-to-list 'treesit-language-source-alist
-               '(json
-                 "https://github.com/tree-sitter/tree-sitter-json.git"
-                 "v0.24.8"))
+    '(json
+       "https://github.com/tree-sitter/tree-sitter-json.git"
+       "v0.24.8"))
   (add-to-list 'treesit-language-source-alist
-               '(make
-                 "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
-                 "v1.1.1"
-                 "src/"))
+    '(make
+       "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
+       "v1.1.1"
+       "src/"))
   (add-to-list 'treesit-language-source-alist
-               '(markdown
-                 "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
-                 "v0.4.1"
-                 "tree-sitter-markdown/src"))
+    '(markdown
+       "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+       "v0.4.1"
+       "tree-sitter-markdown/src"))
   (add-to-list 'treesit-language-source-alist
-               '(markdown-inline
-                 "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
-                 "v0.4.1"
-                 "tree-sitter-markdown-inline/src"))
+    '(markdown-inline
+       "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+       "v0.4.1"
+       "tree-sitter-markdown-inline/src"))
   (add-to-list 'treesit-language-source-alist
-               '(python
-                 "https://github.com/tree-sitter/tree-sitter-python.git"
-                 "v0.23.6"
-                 "src/"))
+    '(python
+       "https://github.com/tree-sitter/tree-sitter-python.git"
+       "v0.23.6"
+       "src/"))
   (add-to-list 'treesit-language-source-alist
-               '(ruby
-                 "https://github.com/tree-sitter/tree-sitter-ruby.git"
-                 "v0.23.1"
-                 "src/"))
+    '(ruby
+       "https://github.com/tree-sitter/tree-sitter-ruby.git"
+       "v0.23.1"
+       "src/"))
   (add-to-list 'treesit-language-source-alist
-               '(rust
-                 "https://github.com/tree-sitter/tree-sitter-rust.git"
-                 "v0.23.3"))
+    '(rust
+       "https://github.com/tree-sitter/tree-sitter-rust.git"
+       "v0.23.3"))
   (add-to-list 'treesit-language-source-alist
-               '(typst
-                 "https://github.com/uben0/tree-sitter-typst.git"
-                 "0.11"
-                 "src/"))
+    '(typst
+       "https://github.com/uben0/tree-sitter-typst.git"
+       "0.11"
+       "src/"))
   (add-to-list 'treesit-language-source-alist
-               '(yaml
-                 "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
-                 "v0.7.2"
-                 "src/"))
+    '(yaml
+       "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
+       "v0.7.2"
+       "src/"))
   ;; Сборка и установка грамматик
   (dolist (source treesit-language-source-alist)
     (unless (treesit-ready-p (car source))
@@ -353,9 +353,9 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package abbrev
   :hook
   ((asciidoc-mode
-    asciidoc-ts-mode
-    markdown-mode
-    rst-mode) . abbrev-mode))
+     asciidoc-ts-mode
+     markdown-mode
+     rst-mode) . abbrev-mode))
 
 
 ;; 📦 ANSI-COLOR
@@ -489,37 +489,36 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет для показа номеров строк
 (use-package display-line-numbers
   :hook
-  ((asciidoc-mode
-    asciidoc-ts-mode
-    c-mode
-    conf-mode
-    conf-toml-mode
-    css-mode
-    csv-mode
-    dockerfile-ts-mode
-    emacs-lisp-mode
-    haml-mode
-    html-mode
-    javascript-mode
-    js-ts-mode
-    json-ts-mode
-    latex-mode
-    lisp-data-mode
-    makefile-mode
-    markdown-mode
-    mhtml-mode
-    nxml-mode
-    po-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    ruby-ts-mode
-    rust-mode
-    sed-mode
-    sh-mode
-    tex-mode
-    xml-mode
-    yaml-ts-mode) . display-line-numbers-mode))
+  ((asciidoc-ts-mode
+     c-mode
+     conf-mode
+     conf-toml-mode
+     css-mode
+     csv-mode
+     dockerfile-ts-mode
+     emacs-lisp-mode
+     haml-mode
+     html-mode
+     javascript-mode
+     js-ts-mode
+     json-ts-mode
+     latex-mode
+     lisp-data-mode
+     makefile-mode
+     markdown-mode
+     mhtml-mode
+     nxml-mode
+     po-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     ruby-ts-mode
+     rust-mode
+     sed-mode
+     sh-mode
+     tex-mode
+     xml-mode
+     yaml-ts-mode) . display-line-numbers-mode))
 
 
 ;; 📦 DOCKERFILE-TS-MODE
@@ -536,13 +535,13 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package electric
   :hook
   ((emacs-lisp-mode
-    markdown-mode
-    mhtml-mode
-    nxml-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    ruby-ts-mode) . electric-indent-local-mode))
+     markdown-mode
+     mhtml-mode
+     nxml-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     ruby-ts-mode) . electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -560,26 +559,26 @@ FRAME-NAME — название настраиваемого фрейма."
   (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”)
   :hook
   ((conf-mode
-    css-mode
-    emacs-lisp-data-mode
-    emacs-lisp-mode
-    html-mode
-    js-ts-mode
-    json-ts-mode
-    lisp-data-mode
-    markdown-mode
-    mhtml-mode
-    nxml-mode
-    org-mode
-    python-mode
-    ruby-mode
-    ruby-ts-mode
-    rust-mode
-    sed-mode
-    tex-mode
-    text-mode
-    conf-toml-mode
-    yaml-ts-mode) . electric-pair-local-mode))
+     css-mode
+     emacs-lisp-data-mode
+     emacs-lisp-mode
+     html-mode
+     js-ts-mode
+     json-ts-mode
+     lisp-data-mode
+     markdown-mode
+     mhtml-mode
+     nxml-mode
+     org-mode
+     python-mode
+     ruby-mode
+     ruby-ts-mode
+     rust-mode
+     sed-mode
+     tex-mode
+     text-mode
+     conf-toml-mode
+     yaml-ts-mode) . electric-pair-local-mode))
 
 
 ;; 📦 FACE-REMAP
@@ -613,6 +612,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
   (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
   (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
 
 
@@ -624,8 +625,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (fill-column 120 "По умолчанию 70, что мало")
   :hook
   ((emacs-lisp-mode
-    js-ts-mode
-    yaml-ts-mode) . display-fill-column-indicator-mode))
+     js-ts-mode
+     yaml-ts-mode) . display-fill-column-indicator-mode))
 
 
 ;; 📦 FLYMAKE
@@ -638,8 +639,8 @@ FRAME-NAME — название настраиваемого фрейма."
     (package-upgrade 'flymake))
   :bind
   (:map emacs-lisp-mode-map
-        ("M-n" . flymake-goto-next-error)
-        ("M-p" . flymake-goto-prev-error))
+    ("M-n" . flymake-goto-next-error)
+    ("M-p" . flymake-goto-prev-error))
   :hook (emacs-lisp-mode . flymake-mode))
 
 
@@ -653,21 +654,21 @@ FRAME-NAME — название настраиваемого фрейма."
     :custom
     ;; Выбираем желаемую утилиту для проверки орфографии
     (ispell-program-name (cond ((file-executable-p "/usr/bin/hunspell") "hunspell")
-                               ((file-executable-p "/usr/bin/aspell") "aspell")
-                               ((file-executable-p "/usr/bin/nuspell") "nuspell")
-                               ;; Ничего не установлено?
-                               (t nil)))
+                           ((file-executable-p "/usr/bin/aspell") "aspell")
+                           ((file-executable-p "/usr/bin/nuspell") "nuspell")
+                           ;; Ничего не установлено?
+                           (t nil)))
     :hook
     ((css-mode . flyspell-prog-mode)
-     (css-ts-mode . flyspell-prog-mode)
-     (emacs-lisp-mode . flyspell-prog-mode)
-     (js-mode . flyspell-prog-mode)
-     (js-ts-mode . flyspell-prog-mode)
-     (python-mode . flyspell-prog-mode)
-     (python-ts-mode . flyspell-prog-mode)
-     (ruby-mode . flyspell-prog-mode)
-     (ruby-ts-mode . flyspell-prog-mode)
-     (text-mode . flyspell-mode))))
+      (css-ts-mode . flyspell-prog-mode)
+      (emacs-lisp-mode . flyspell-prog-mode)
+      (js-mode . flyspell-prog-mode)
+      (js-ts-mode . flyspell-prog-mode)
+      (python-mode . flyspell-prog-mode)
+      (python-ts-mode . flyspell-prog-mode)
+      (ruby-mode . flyspell-prog-mode)
+      (ruby-ts-mode . flyspell-prog-mode)
+      (text-mode . flyspell-mode))))
 
 
 ;; 📦 FRAME
@@ -680,11 +681,11 @@ FRAME-NAME — название настраиваемого фрейма."
   (frame-resize-pixelwise t "Размер фреймов считать по пикселям а не по символам")
   :bind
   (:map global-map
-        ("C-x O" . previous-window-any-frame) ;; Перейти в предыдущее окно
-        ;; Перейти в следующее окно
-        ("C-x o" . next-window-any-frame)
-        ("M-O" . previous-window-any-frame)
-        ("M-o" . next-window-any-frame)))
+    ("C-x O" . previous-window-any-frame) ;; Перейти в предыдущее окно
+    ;; Перейти в следующее окно
+    ("C-x o" . next-window-any-frame)
+    ("M-O" . previous-window-any-frame)
+    ("M-o" . next-window-any-frame)))
 
 
 ;; 📦 GOTO-ADDRESS-MODE
@@ -694,11 +695,11 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package goto-addr
   :hook
   ((asciidoc-mode
-    asciidoc-ts-mode
-    emacs-lisp-mode
-    html-mode
-    markdown-mode
-    rst-mode) . goto-address-mode))
+     asciidoc-ts-mode
+     emacs-lisp-mode
+     html-mode
+     markdown-mode
+     rst-mode) . goto-address-mode))
 
 
 ;; 📦 GREP
@@ -732,21 +733,21 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package ibuffer
   :custom
   (ibuffer-formats '((mark      ;; Отметка
-                      modified  ;; Буфер изменён?
-                      read-only ;; Только чтение?
-                      locked    ;; Заблокирован?
-                      " "
-                      (name 35 45 :left :elide) ;; Имя буфера: от 30 до 40 знаков
-                      " "
-                      (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
-                      " "
-                      filename-and-process)     ;; Имя файла и процесс
-                     ;; Сокращённый формат
-                     (mark      ;; Отметка?
-                      " "
-                      (name 35 -1) ;; Имя буфера: 32 знака, при необходимости — расширить на сколько нужно
-                      " "
-                      filename)))  ;; Имя файла
+                       modified  ;; Буфер изменён?
+                       read-only ;; Только чтение?
+                       locked    ;; Заблокирован?
+                       " "
+                       (name 35 45 :left :elide) ;; Имя буфера: от 30 до 40 знаков
+                       " "
+                       (mode 8 -1 :left)         ;; Активный режим: от 8 знаков по умолчанию, при необходимости увеличить
+                       " "
+                       filename-and-process)     ;; Имя файла и процесс
+                      ;; Сокращённый формат
+                      (mark      ;; Отметка?
+                        " "
+                        (name 35 -1) ;; Имя буфера: 32 знака, при необходимости — расширить на сколько нужно
+                        " "
+                        filename)))  ;; Имя файла
   (ibuffer-default-sorting-mode 'major-mode "Сортировать файлы по основному режиму")
   (ibuffer-display-summary nil "Не показывать строку ИТОГО")
   (ibuffer-eliding-string "…" "Если строка не уместилась, показать этот знак")
@@ -766,42 +767,42 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package ibuf-ext
   :custom
   (ibuffer-saved-filter-groups ;; Группы по умолчанию
-   '(("default"
-      ("Dired" (mode . dired-mode))
-      ("Emacs Lisp" (or (mode . emacs-lisp-mode)
+    '(("default"
+        ("Dired" (mode . dired-mode))
+        ("Emacs Lisp" (or (mode . emacs-lisp-mode)
                         (mode . lisp-data-mode)))
-      ("Org" (mode . org-mode))
-      ("AsciiDoc" (or (mode . asciidoc-mode)
+        ("Org" (mode . org-mode))
+        ("AsciiDoc" (or (mode . asciidoc-mode)
                       (mode . asciidoc-ts-mode)))
-      ("Markdown" (mode . markdown-mode))
-      ("ReStructured Text" (mode . rst-mode))
-      ("CONF / INI" (or (mode . conf-mode)
+        ("Markdown" (mode . markdown-mode))
+        ("ReStructured Text" (mode . rst-mode))
+        ("CONF / INI" (or (mode . conf-mode)
                         (mode . editorconfig-conf-mode)))
-      ("XML" (or (mode . nxml-mode)
+        ("XML" (or (mode . nxml-mode)
                  (mode . xml-mode)))
-      ("YAML" (mode . yaml-ts-mode))
-      ("Makefile" (mode . makefile-mode))
-      ("Python" (mode . python-mode))
-      ("Ruby" (or (mode . ruby-mode)
+        ("YAML" (mode . yaml-ts-mode))
+        ("Makefile" (mode . makefile-mode))
+        ("Python" (mode . python-mode))
+        ("Ruby" (or (mode . ruby-mode)
                   (mode . ruby-ts-mode)))
-      ("SSH keys" (name . "\\.pub\\'"))
-      ("Shell-script" (mode . sh-mode))
-      ("SQL" (mode . sql-mode))
-      ("Web" (or (mode . html-mode)
+        ("SSH keys" (name . "\\.pub\\'"))
+        ("Shell-script" (mode . sh-mode))
+        ("SQL" (mode . sql-mode))
+        ("Web" (or (mode . html-mode)
                  (mode . json-mode)
                  (mode . json-ts-mode)
                  (mode . js-mode)
                  (mode . js-ts-mode)))
-      ("Magit" (or (mode . magit-diff-mode)
+        ("Magit" (or (mode . magit-diff-mode)
                    (mode . magit-log-mode)
                    (mode . magit-status-mode)
                    (name . "\\*magit\\*")
                    (name . "git-monitor")))
-      ("Commands" (or (mode . compilation-mode)
+        ("Commands" (or (mode . compilation-mode)
                       (mode . eshell-mode)
                       (mode . shell-mode)
                       (mode . term-mode)))
-      ("Emacs" (or (name . "\\*scratch\\*")
+        ("Emacs" (or (name . "\\*scratch\\*")
                    (name . "\\*Messages\\*")
                    (name . "\\*Customize\\*")
                    (name . "\\*Help\\*")
@@ -889,11 +890,11 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package outline
   :hook
   ((asciidoc-mode
-    asciidoc-ts-mode
-    bash-ts-mode
-    emacs-lisp-mode
-    markdown-mode
-    rst-mode) . outline-minor-mode))
+     asciidoc-ts-mode
+     bash-ts-mode
+     emacs-lisp-mode
+     markdown-mode
+     rst-mode) . outline-minor-mode))
 
 
 ;; 📦 PEG
@@ -981,8 +982,8 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package replace
   :bind
   (:map global-map
-        ("<f3>" . replace-string)
-        ("<f4>" . replace-regexp)))
+    ("<f3>" . replace-string)
+    ("<f4>" . replace-regexp)))
 
 
 ;; 📦 RST-MODE
@@ -996,19 +997,17 @@ FRAME-NAME — название настраиваемого фрейма."
   (rst-indent-literal-minimized 3)
   (rst-indent-width 3)
   (rst-preferred-adornments '((?# over-and-under 1)
-                              (?* over-and-under 1)
-                              (?= simple 0)
-                              (?- simple 0)
-                              (?^ simple 0)
-                              (?\" simple 0)))
+                               (?* over-and-under 1)
+                               (?= simple 0)
+                               (?- simple 0)
+                               (?^ simple 0)
+                               (?\" simple 0)))
   (rst-toc-indent 3))
 
 
 ;; 📦 RUBY-TS-MODE
 ;; Встроенный пакет для работы с Ruby.
 (use-package ruby-ts-mode
-  :init
-  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
   :mode
   ("\\.rb\\'" . ruby-ts-mode)
   ("\\Vagrantfile\\'" . ruby-ts-mode))
@@ -1029,7 +1028,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package savehist
   :hook
   ((server-done
-    kil-emacs) . savehist-save)
+     kil-emacs) . savehist-save)
   :config
   (add-to-list 'delete-frame-functions 'savehist-save)
   (add-to-list 'savehist-additional-variables 'compile-history)
@@ -1042,8 +1041,6 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет для работы со скриптами Shell.
 (use-package sh-script
-  :init
-  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
   :mode
   ("\\.bash_aliases\\'" . bash-ts-mode)
   ("\\.bashrc\\'" . bash-ts-mode)
@@ -1073,7 +1070,6 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (backward-delete-char-untabify-method 'hungry "Удалять все символы выравнивания при нажатии [Backspace]")
   (blink-matching-paren t "Мигать, когда скобки парные")
-  (indent-tabs-mode nil "Отключить `indent-tabs-mode'.")
   (kill-do-not-save-duplicates t "Не добавлять строку в kill-ring, если там уже есть такая же")
   (kill-whole-line t "Удалять логическую строку, а не видимую.")
   (next-line-add-newlines nil "Не добавлять пустую строку при прокрутке")
@@ -1088,11 +1084,12 @@ FRAME-NAME — название настраиваемого фрейма."
   (put 'overwrite-mode 'disabled t) ;; Выключить `overwrite-mode'.
   :bind
   (:map global-map
-        ("C-z" . undo)) ;; Отмена на Ctrl+Z
+    ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
   ((compilation-mode
-    messages-buffer-mode
-    text-mode) . visual-line-mode))
+     messages-buffer-mode
+     prog-mode
+     text-mode) . visual-line-mode))
 
 
 ;; 📦 SORT
@@ -1100,7 +1097,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package sort
   :bind
   (:map global-map
-        ("<f7>" . sort-lines)))
+    ("<f7>" . sort-lines)))
 
 
 ;; 📦 SVG
@@ -1117,8 +1114,8 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package tab-bar
   :bind
   (:map global-map
-        ("C-<tab>" . tab-bar-switch-to-next-tab)
-        ("C-S-<tab>" . tab-bar-switch-to-prev-tab)))
+    ("C-<tab>" . tab-bar-switch-to-next-tab)
+    ("C-S-<tab>" . tab-bar-switch-to-prev-tab)))
 
 
 ;; 📦 TEXINFO
@@ -1204,43 +1201,43 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package whitespace
   :custom
   (whitespace-display-mappings ;; Отображение нечитаемых символов
-   '((space-mark   ?\    [?\xB7]     [?.])        ;; Пробел
-     (space-mark   ?\xA0 [?\xA4]     [?_])        ;; Неразрывный пробел
-     (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
-     (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
+    '((space-mark   ?\    [?\xB7]     [?.])        ;; Пробел
+       (space-mark   ?\xA0 [?\xA4]     [?_])        ;; Неразрывный пробел
+       (newline-mark ?\n   [?¶ ?\n]    [?$ ?\n])    ;; Конец строки
+       (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
   (whitespace-line-column nil "Используем значение fill-column")
   :hook
   ((asciidoc-mode
-    asciidoc-ts-mode
-    bash-ts-mode
-    conf-mode
-    css-mode
-    dockerfile-ts-mode
-    emacs-lisp-mode
-    haml-mode
-    html-mode
-    js-ts-mode
-    json-ts-mode
-    latex-mode
-    lisp-data-mode
-    makefile-gmake-mode
-    makefile-mode
-    markdown-mode
-    nxml-mode
-    org-mode
-    po-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    ruby-ts-mode
-    rust-mode
-    sed-mode
-    sh-mode
-    snippet-mode ;; Yasnippet
-    sql-mode
-    tex-mode
-    texinfo-mode
-    yaml-ts-mode) . whitespace-mode))
+     asciidoc-ts-mode
+     bash-ts-mode
+     conf-mode
+     css-mode
+     dockerfile-ts-mode
+     emacs-lisp-mode
+     haml-mode
+     html-mode
+     js-ts-mode
+     json-ts-mode
+     latex-mode
+     lisp-data-mode
+     makefile-gmake-mode
+     makefile-mode
+     markdown-mode
+     nxml-mode
+     org-mode
+     po-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     ruby-ts-mode
+     rust-mode
+     sed-mode
+     sh-mode
+     snippet-mode ;; Yasnippet
+     sql-mode
+     tex-mode
+     texinfo-mode
+     yaml-ts-mode) . whitespace-mode))
 
 
 ;; 📦 WINDOW
@@ -1287,21 +1284,22 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; https://github.com/radian-software/apheleia
 ;; Автоформат буфера перед сохранением.
 (use-package apheleia
-  :vc
-  (:url "https://github.com/radian-software/apheleia.git"
-        :rev "v4.4.3")
+  :vc (
+        :url "https://github.com/radian-software/apheleia.git"
+        :rev "v4.5.0")
   :custom
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
   :bind
   (:map global-map
-        ("<f12>" . apheleia-format-buffer))
+    ("<f12>" . apheleia-format-buffer))
   :hook
   ((emacs-lisp-mode
-    python-mode
-    python-ts-mode
-    ruby-mode
-    ruby-ts-mode
-    yaml-ts-mode) . apheleia-mode))
+     json-ts-mode
+     python-mode
+     python-ts-mode
+     ruby-mode
+     ruby-ts-mode
+     yaml-ts-mode) . apheleia-mode))
 
 
 ;; 📦 AUCTEX
@@ -1345,9 +1343,9 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :bind
   (:map global-map
-        ("M-g f" . avy-goto-line)
-        ("M-g w" . avy-goto-word-0)
-        ("C-'" . avy-goto-char)))
+    ("M-g f" . avy-goto-line)
+    ("M-g w" . avy-goto-word-0)
+    ("C-'" . avy-goto-char)))
 
 
 ;; 📦 BIND-KEY
@@ -1391,7 +1389,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   ;; TODO: добавить код, определяющий наличие словарей.
   (cape-dict-file '("/usr/share/doc/hunspell/en_US.dic"
-                    "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
+                     "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
   :config
   ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-dict)
@@ -1410,12 +1408,12 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :hook
   ((css-mode
-    css-ts-mode
-    emacs-lisp-mode
-    haml-mode
-    html-mode
-    json-ts-mode
-    yaml-ts-mode) . colorful-mode))
+     css-ts-mode
+     emacs-lisp-mode
+     haml-mode
+     html-mode
+     json-ts-mode
+     yaml-ts-mode) . colorful-mode))
 
 
 ;; 📦 CONSULT
@@ -1426,17 +1424,17 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :bind
   (:map global-map
-        ("C-x b" . consult-buffer)
-        ("C-c h" . consult-history)
-        ("C-x 4 b" . consult-buffer-other-window)
-        ("C-x 5 b" . consult-buffer-other-frame)
-        ("C-x t b" . consult-buffer-other-tab)
-        ("C-x p b" . consult-project-buffer)
-        ("M-y" . consult-yank-pop)
-        ("M-g g" . consult-goto-line)
-        ("M-g o" . consult-outline)
-        ("M-g i" . consult-imenu)
-        ("C-x r b" . consult-bookmark)))
+    ("C-x b" . consult-buffer)
+    ("C-c h" . consult-history)
+    ("C-x 4 b" . consult-buffer-other-window)
+    ("C-x 5 b" . consult-buffer-other-frame)
+    ("C-x t b" . consult-buffer-other-tab)
+    ("C-x p b" . consult-project-buffer)
+    ("M-y" . consult-yank-pop)
+    ("M-g g" . consult-goto-line)
+    ("M-g o" . consult-outline)
+    ("M-g i" . consult-imenu)
+    ("C-x r b" . consult-bookmark)))
 
 
 ;; 📦 CORFU
@@ -1520,7 +1518,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :bind
   (:map global-map
-        ("C-c '" . edit-indirect-region)))
+    ("C-c '" . edit-indirect-region)))
 
 
 ;; 📦 EDITORCONFIG
@@ -1569,10 +1567,10 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (eglot-autoshutdown t "Автоматически выключить сервер при закрытии последнего буфера")
   (eglot-events-buffer-config '(
-                                :size 0 ;; Выключить ведение буфера событий
-                                :format 'lisp ;; Формат Lisp для логов
-                                )
-                              "Настройки буфера событий Eglot")
+                                 :size 0 ;; Выключить ведение буфера событий
+                                 :format 'lisp ;; Формат Lisp для логов
+                                 )
+    "Настройки буфера событий Eglot")
   :config
   (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
@@ -1582,17 +1580,17 @@ FRAME-NAME — название настраиваемого фрейма."
   (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
   :bind
   (:map eglot-mode-map
-        ;; ("C-c C-d" . eldoc)
-        ("C-c C-r" . eglot-rename)
-        ("C-c C-f" . eglot-format-buffer))
+    ;; ("C-c C-d" . eldoc)
+    ("C-c C-r" . eglot-rename)
+    ("C-c C-f" . eglot-format-buffer))
   :hook
   ((ansible-mode
-    dockerfile-ts-mode
-    python-mode
-    python-ts-mode
-    ruby-mode
-    ruby-ts-mode
-    yaml-ts-mode) . eglot-ensure))
+     dockerfile-ts-mode
+     python-mode
+     python-ts-mode
+     ruby-mode
+     ruby-ts-mode
+     yaml-ts-mode) . eglot-ensure))
 
 
 ;; 📦 ELDOC-MODE
@@ -1610,7 +1608,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
   :hook
   ((emacs-lisp-mode
-    lisp-interaction-mode) . eldoc-mode))
+     lisp-interaction-mode) . eldoc-mode))
 
 
 ;; 📦 FLYCHECK
@@ -1627,27 +1625,27 @@ FRAME-NAME — название настраиваемого фрейма."
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
   ((bash-ts-mode
-    conf-mode
-    css-mode
-    css-ts-mode
-    dockerfile-ts-mode
-    emacs-lisp-mode
-    haml-mode
-    html-mode
-    js-ts-mode
-    json-ts-mode
-    latex-mode
-    lisp-data-mode
-    makefile-mode
-    nxml-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    ruby-ts-mode
-    rust-mode
-    sh-mode
-    sql-mode
-    yaml-ts-mode) . flycheck-mode))
+     conf-mode
+     css-mode
+     css-ts-mode
+     dockerfile-ts-mode
+     emacs-lisp-mode
+     haml-mode
+     html-mode
+     js-ts-mode
+     json-ts-mode
+     latex-mode
+     lisp-data-mode
+     makefile-mode
+     nxml-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     ruby-ts-mode
+     rust-mode
+     sh-mode
+     sql-mode
+     yaml-ts-mode) . flycheck-mode))
 
 
 ;; 📦 INDENT-BARS
@@ -1658,19 +1656,19 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :hook
   ((css-mode
-    css-ts-mode
-    emacs-lisp-mode
-    haml-mode
-    javascript-mode
-    js-ts-mode
-    makefile-mode
-    markdown-mode
-    python-mode
-    rst-mode
-    ruby-mode
-    ruby-ts-mode
-    rust-mode
-    yaml-ts-mode) . indent-bars-mode))
+     css-ts-mode
+     emacs-lisp-mode
+     haml-mode
+     javascript-mode
+     js-ts-mode
+     makefile-mode
+     markdown-mode
+     python-mode
+     rst-mode
+     ruby-mode
+     ruby-ts-mode
+     rust-mode
+     yaml-ts-mode) . indent-bars-mode))
 
 
 ;; 📦 IVY
@@ -1687,7 +1685,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (ivy-mode t)
   :bind
   (:map global-map
-        ("C-x b" . ivy-switch-buffer)))
+    ("C-x b" . ivy-switch-buffer)))
 
 
 ;; 📦 JINJA2-MODE
@@ -1719,10 +1717,10 @@ FRAME-NAME — название настраиваемого фрейма."
   (rst-mode . jinx-mode)
   :bind
   (:map global-map
-        ("M-$" . jinx-correct)
-        ("C-M-$" . jinx-languages)
-        ("M-n" . jinx-next)
-        ("M-p" . jinx-previous)))
+    ("M-$" . jinx-correct)
+    ("C-M-$" . jinx-languages)
+    ("M-n" . jinx-next)
+    ("M-p" . jinx-previous)))
 
 
 ;; 📦 LIN
@@ -1764,7 +1762,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (markdown-list-indent-width 4 "Размер отступа для выравнивания вложенных списков")
   :bind
   (:map markdown-mode-map
-        ("M-." . markdown-follow-thing-at-point)))
+    ("M-." . markdown-follow-thing-at-point)))
 
 
 ;; 📦 MULTIPLE CURSORS
@@ -1778,11 +1776,11 @@ FRAME-NAME — название настраиваемого фрейма."
   (keymap-global-unset "M-<down-mouse-1>")
   :bind
   (:map global-map
-        ("C-S-c C-S-c" . mc/edit-lines)
-        ("C->" . mc/mark-next-like-this)
-        ("C-<" . mc/mark-previous-like-this)
-        ("C-c C-<" . mc/mark-all-like-this)
-        ("M-<mouse-1>" . mc/add-cursor-on-click)))
+    ("C-S-c C-S-c" . mc/edit-lines)
+    ("C->" . mc/mark-next-like-this)
+    ("C-<" . mc/mark-previous-like-this)
+    ("C-c C-<" . mc/mark-all-like-this)
+    ("M-<mouse-1>" . mc/add-cursor-on-click)))
 
 
 ;; 📦 ORG-MODE
@@ -1834,7 +1832,7 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :hook
   ((prog-mode
-    text-mode) . rainbow-delimiters-mode))
+     text-mode) . rainbow-delimiters-mode))
 
 
 ;; 📦 RUSSIAN-TECHWRITER
@@ -1842,8 +1840,9 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; В отличие от russian-computer, позволяет использовать лигатуры.
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
-  :vc (:url "https://github.com/dunmaksim/emacs-russian-techwriter-input-method.git"
-            :rev :newest)
+  :vc (
+        :url "https://github.com/dunmaksim/emacs-russian-techwriter-input-method.git"
+        :rev :newest)
   :custom
   (default-input-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
@@ -1892,8 +1891,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :bind
   (:map global-map
-        ("C-s" . swiper-isearch)
-        ("C-r" . swiper-isearch-backward))
+    ("C-s" . swiper-isearch)
+    ("C-r" . swiper-isearch-backward))
   :config
   (add-to-list 'savehist-additional-variables 'swiper-history))
 
@@ -1906,13 +1905,13 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :bind
   (:map global-map
-        ("M-+" . tempel-complete)
-        ("M-*" . tempel-insert))
+    ("M-+" . tempel-complete)
+    ("M-*" . tempel-insert))
   :custom
   (tempel-path `(,(expand-file-name "templates/asciidoc.eld" user-emacs-directory)
-                 ,(expand-file-name "templates/emacs-lisp.eld" user-emacs-directory)
-                 ,(expand-file-name "templates/markdown.eld" user-emacs-directory)
-                 ,(expand-file-name "templates/rst.eld" user-emacs-directory))))
+                  ,(expand-file-name "templates/emacs-lisp.eld" user-emacs-directory)
+                  ,(expand-file-name "templates/markdown.eld" user-emacs-directory)
+                  ,(expand-file-name "templates/rst.eld" user-emacs-directory))))
 
 
 ;; 📦 TYPST-TS-MODE
@@ -1962,7 +1961,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (keymap-global-unset "C-z")
   :bind
   (:map global-map
-        ("C-z" . vundo)))
+    ("C-z" . vundo)))
 
 
 ;; 📦 WHICH-KEY MODE

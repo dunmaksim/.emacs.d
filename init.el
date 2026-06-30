@@ -659,7 +659,8 @@ FRAME-NAME — название настраиваемого фрейма."
                            ;; Ничего не установлено?
                            (t nil)))
     :hook
-    ((css-mode . flyspell-prog-mode)
+    ((asciidoc-ts-mode .flyspell-mode)
+      (css-mode . flyspell-prog-mode)
       (css-ts-mode . flyspell-prog-mode)
       (emacs-lisp-mode . flyspell-prog-mode)
       (js-mode . flyspell-prog-mode)
@@ -972,9 +973,7 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
   :config
-  (repeat-mode t)
-  :hook
-  (text-mode . repeat-mode))
+  (repeat-mode t))
 
 
 ;; 📦 REPLACE
@@ -1090,7 +1089,8 @@ FRAME-NAME — название настраиваемого фрейма."
   ((compilation-mode
      messages-buffer-mode
      prog-mode
-     text-mode) . visual-line-mode))
+     text-mode
+     ) . visual-line-mode))
 
 
 ;; 📦 SORT
@@ -1975,17 +1975,15 @@ FRAME-NAME — название настраиваемого фрейма."
   (unless (alist-get 'which-key package-alist)
     (package-upgrade 'which-key))
   :custom
+  (which-key-popup-type 'minibuffer "Будем показывать подсказки прямо в минибуфере")
   (which-key-compute-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-dont-use-unicode nil "Используем Unicode")
-  (which-key-idle-delay 2 "Задержка появления подсказки")
-  (which-key-idle-secondary-delay 0.05 "Ещё одна задержка появления подсказки")
   (which-key-lighter nil "Справимся и так, не надо ничего показывать в строке статуса.")
   (which-key-separator " → " "Разделитель сочетаний и команд")
-  (which-key-show-major-mode t "То же самое что и [C-h m], но в формате which-key")
   :config
   (which-key-mode t))
 
-(load-theme 'ef-maris-dark t)
+(load-theme 'ef-night t)
 
 (provide 'init.el)
 ;;; init.el ends here

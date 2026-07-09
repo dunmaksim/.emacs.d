@@ -193,6 +193,10 @@ FRAME-NAME — название настраиваемого фрейма."
 (keymap-global-set "C-<next>" 'next-buffer) ;;
 (keymap-global-set "C-<prior>" 'previous-buffer)
 
+
+;; Включим вставку знаков через C-x C-8.
+(keymap-global-set "C-x C-8" 'insert-char)
+
 ;; Закрыть буфер по нажатию [C-x k]
 (defun init-el-kill-current-buffer ()
   "Закрыть активный буфер."
@@ -207,16 +211,15 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 PACKAGE
 ;; Настроим архивы:
 (require 'package)
-(with-eval-after-load 'package
-  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-  (add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-  (package-initialize)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+(package-initialize)
 
-  (setopt package-archive-priorities ;; Приоритеты архивов: чем выше, тем лучше.
-    '(("gnu" . 2)
-       ("nongnu" . 1))
-    package-native-compile t ;; Компиляция пакетов в нативный код при установке
-    package-vc-register-as-project nil)) ;; Не надо регистрировать как проекты пакеты,
+(setopt package-archive-priorities ;; Приоритеты архивов: чем выше, тем лучше.
+  '(("gnu" . 2)
+     ("nongnu" . 1))
+  package-native-compile t ;; Компиляция пакетов в нативный код при установке
+  package-vc-register-as-project nil) ;; Не надо регистрировать как проекты пакеты,
 ;; установленные с помощью `package-vc-install'.
 
 
@@ -730,7 +733,6 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 IBUFFER
 ;; Встроенный пакет для удобной работы с буферами.
 ;; По нажатию F2 выводит список открытых буферов.
-(require 'ibuffer)
 (use-package ibuffer
   :custom
   (ibuffer-formats '((
@@ -765,7 +767,6 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 IBUF-EXT
 ;; Встроенный пакет с дополнительными настройками `ibuffer'.
-(require 'ibuf-ext)
 (use-package ibuf-ext
   :custom
   (ibuffer-saved-filter-groups ;; Группы по умолчанию
@@ -1024,17 +1025,19 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; 📦 SAVEHIST
 ;; Встроенный пакет для запоминания истории команд
-(require 'savehist)
 (use-package savehist
+  :defer nil
   :hook
-  ((server-done
-     kil-emacs) . savehist-save)
+  (kill-emacs . savehist-save)
+  (server-done . savehist-save)
+  :custom
+  (savehist-additional-variables
+    '(compile-history
+       regexp-search-ring
+       search-ring
+       shell-command-history))
   :config
   (add-to-list 'delete-frame-functions 'savehist-save)
-  (add-to-list 'savehist-additional-variables 'compile-history)
-  (add-to-list 'savehist-additional-variables 'regexp-search-ring)
-  (add-to-list 'savehist-additional-variables 'search-ring)
-  (add-to-list 'savehist-additional-variables 'shell-command-history)
   (savehist-mode t))
 
 
@@ -1130,7 +1133,9 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Базовые настройки для всех режимов на базе `text-mode'.
 (use-package text-mode
   :custom
-  (text-mode-ispell-word-completion nil "Конфликтует с CORFU, поэтому выключаем."))
+  (text-mode-ispell-word-completion nil "Конфликтует с CORFU, поэтому выключаем.")
+  :mode
+  ("\\Jenkinsfile\\'" . text-mode))
 
 
 ;; 📦 TOOLBAR
@@ -1319,13 +1324,6 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package all
   :ensure t
   :pin gnu)
-
-
-;; ;; 📦 ASCIIDOC
-;; (let ((asciidoc-repo-dir (format "/home/%s/repo/asciidoc-mode/" user-login-name)))
-;;   (when (file-directory-p asciidoc-repo-dir)
-;;     (add-to-list 'load-path asciidoc-repo-dir)
-;;     (require 'asciidoc-mode)))
 
 
 ;; 📦 ASCIIDOC-TS
@@ -1742,6 +1740,7 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package magit
   :pin nongnu
   :ensure t
+  :defer nil
   :custom
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   :hook

@@ -1689,11 +1689,11 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (jinx-languages "ru_RU en_US")
   :hook
-  (asciidoc-mode . jinx-mode)
-  (asciidoc-ts-mode . jinx-mode)
-  (emacs-lisp-mode . jinx-mode)
-  (markdown-mode . jinx-mode)
-  (rst-mode . jinx-mode)
+  ((asciidoc-ts-mode
+     dockerfile-ts-mode
+     emacs-lisp-mode
+     markdown-mode
+     rst-mode) . jinx-mode)
   :bind
   (:map global-map
     ("M-$" . jinx-correct)
@@ -1962,7 +1962,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :config
   (which-key-mode t))
 
-(load-theme 'ef-night t)
+;; (load-theme 'ef-night t)
+(load-theme 'standard-dark-tinted t)
 
 (provide 'init.el)
 ;;; init.el ends here

@@ -647,34 +647,6 @@ FRAME-NAME — название настраиваемого фрейма."
   :hook (emacs-lisp-mode . flymake-mode))
 
 
-;; 📦 FLYSPELL-MODE
-;; Встроенный пакет.
-;; Проверка орфографии с помощью словарей.
-;; Использовать пакет только в том случае, когда дело происходит в
-;; Linux и Hunspell, Aspell и Nuspell доступны.
-(when (string-equal system-type "gnu/linux")
-  (use-package flyspell
-    :custom
-    ;; Выбираем желаемую утилиту для проверки орфографии
-    (ispell-program-name (cond ((file-executable-p "/usr/bin/hunspell") "hunspell")
-                           ((file-executable-p "/usr/bin/aspell") "aspell")
-                           ((file-executable-p "/usr/bin/nuspell") "nuspell")
-                           ;; Ничего не установлено?
-                           (t nil)))
-    :hook
-    ((asciidoc-ts-mode .flyspell-mode)
-      (css-mode . flyspell-prog-mode)
-      (css-ts-mode . flyspell-prog-mode)
-      (emacs-lisp-mode . flyspell-prog-mode)
-      (js-mode . flyspell-prog-mode)
-      (js-ts-mode . flyspell-prog-mode)
-      (python-mode . flyspell-prog-mode)
-      (python-ts-mode . flyspell-prog-mode)
-      (ruby-mode . flyspell-prog-mode)
-      (ruby-ts-mode . flyspell-prog-mode)
-      (text-mode . flyspell-mode))))
-
-
 ;; 📦 FRAME
 ;; Встроенный пакет.
 ;; Управление фреймами.

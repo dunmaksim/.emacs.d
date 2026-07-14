@@ -1473,6 +1473,14 @@ FRAME-NAME — название настраиваемого фрейма."
       (add-hook 'dired-mode-hook 'diff-hl-dired-mode))))
 
 
+;; 📦 DORIC-THEMES
+;; https://github.com/protesilaos/doric-themes
+;; Темы с упором на красивые шрифты
+(use-package doric-themes
+  :pin gnu
+  :ensure t)
+
+
 ;; 📦 EDIT-INDIRECT
 ;; https://github.com/Fanael/edit-indirect
 ;; Позволяет редактировать выделенный регион в отдельном буфере.

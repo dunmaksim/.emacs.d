@@ -605,19 +605,19 @@ FRAME-NAME — название настраиваемого фрейма."
   (require-final-newline t "Требовать новую строку в конце файлов")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
   :config
+  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   (add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
   (add-to-list 'safe-local-variable-values '(electric-pair-preserve-balance . t))
   (add-to-list 'safe-local-variable-values '(emacs-lisp-docstring-fill-column . 80))
   (add-to-list 'safe-local-variable-values '(fill-column . 120))
   (add-to-list 'safe-local-variable-values '(fill-column . 80))
   (add-to-list 'safe-local-variable-values '(frozen_string_literal . true))
-  (add-to-list 'safe-local-variable-values '(lexical-binding . t))
-  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
+  (add-to-list 'safe-local-variable-values '(lexical-binding . t)))
 
 
 ;; 📦 FILL-COLUMN
@@ -1471,14 +1471,6 @@ FRAME-NAME — название настраиваемого фрейма."
       (global-diff-hl-mode t))
     (when (fboundp 'diff-hl-dired-mode)
       (add-hook 'dired-mode-hook 'diff-hl-dired-mode))))
-
-
-;; 📦 DORIC-THEMES
-;; https://github.com/protesilaos/doric-themes
-;; Темы с упором на красивые шрифты
-(use-package doric-themes
-  :pin gnu
-  :ensure t)
 
 
 ;; 📦 EDIT-INDIRECT

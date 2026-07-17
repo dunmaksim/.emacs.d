@@ -1087,11 +1087,14 @@ FRAME-NAME — название настраиваемого фрейма."
 
 
 ;; 📦 TAB-BAR-MODE
+;; Встроенный пакет для управления вкладками
 (use-package tab-bar
   :bind
   (:map global-map
     ("C-<tab>" . tab-bar-switch-to-next-tab)
-    ("C-S-<tab>" . tab-bar-switch-to-prev-tab)))
+    ("C-S-<tab>" . tab-bar-switch-to-prev-tab))
+  :config
+  (tab-bar-mode t))
 
 
 ;; 📦 TEXINFO

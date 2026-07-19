@@ -421,6 +421,18 @@ FRAME-NAME — название настраиваемого фрейма."
   (compilation-scroll-output 'first-error "Остановимся на первой ошибке."))
 
 
+;; 📦 COMPLETION-PREVIEW
+;; Встроенный пакет, показывающий вариант автозавершения прямо в строке
+(use-package completion-preview
+  :hook
+  (css-ts-mode . completion-preview-mode)
+  (dockerfile-ts-mode . completion-preview-mode)
+  (emacs-lisp-mode . completion-preview-mode)
+  (js-ts-mode . completion-preview-mode)
+  (python-ts-mode . completion-preview-mode)
+  (ruby-ts-mode . completion-preview-mode))
+
+
 ;; 📦 CONF-MODE
 ;; Встроенный пакет.
 ;; Основной режим для редактирования конфигурационных файлов INI/CONF

@@ -460,10 +460,6 @@ FRAME-NAME — название настраиваемого фрейма."
   (delete-selection-mode t)) ;; Удалять выделенный фрагмент при вводе текста
 
 
-(defun init-el-save-desktop ()
-  "Сохраняет рабочий стол без лишних вопросов."
-  (desktop-save user-emacs-directory t))
-
 ;; 📦 DESKTOP
 ;; Сохранение состояния Emacs между сессиями.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
@@ -475,13 +471,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
   (desktop-save-mode t)
-  (add-to-list 'delete-frame-functions 'desktop-save)
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-  (add-to-list 'desktop-modes-not-to-save 'image-mode)
-  :hook
-  (after-init . desktop-read)
-  (kill-emacs . init-el-save-desktop)
-  (server-done . init-el-save-desktop))
+  (add-to-list 'desktop-modes-not-to-save 'image-mode))
 
 
 ;; 📦 DIRED
@@ -1709,15 +1700,15 @@ FRAME-NAME — название настраиваемого фрейма."
     ("M-p" . jinx-previous)))
 
 
-;; 📦 LIN
-;; https://github.com/protesilaos/lin
-;; Более умная подсветка активной строки, чем `hl-line-mode'.
-(use-package lin
-  :pin gnu
-  :ensure t
-  :hook
-  (text-mode . lin-mode)
-  (prog-mode . lin-mode))
+;; ;; 📦 LIN
+;; ;; https://github.com/protesilaos/lin
+;; ;; Более умная подсветка активной строки, чем `hl-line-mode'.
+;; (use-package lin
+;;   :pin gnu
+;;   :ensure t
+;;   :custom
+;;   (lin-gnome-accent-color-override-foreground t "Основной цвет на основе GNOME Accent Color")
+;;   :config (lin-global-mode t))
 
 
 ;; 📦 MAGIT

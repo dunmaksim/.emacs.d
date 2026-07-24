@@ -952,16 +952,6 @@ FRAME-NAME — название настраиваемого фрейма."
   (repeat-mode t))
 
 
-;; 📦 REPLACE
-;; Встроенный пакет.
-;; Функции поиска и замены текста.
-(use-package replace
-  :bind
-  (:map global-map
-    ("<f3>" . replace-string)
-    ("<f4>" . replace-regexp)))
-
-
 ;; 📦 RST-MODE
 ;; Встроенный пакет для редактирования reStructutedText
 ;; https://www.writethedocs.org/guide/writing/reStructuredText/

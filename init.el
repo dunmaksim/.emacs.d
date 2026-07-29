@@ -1699,17 +1699,6 @@ FRAME-NAME — название настраиваемого фрейма."
     ("M-p" . jinx-previous)))
 
 
-;; ;; 📦 LIN
-;; ;; https://github.com/protesilaos/lin
-;; ;; Более умная подсветка активной строки, чем `hl-line-mode'.
-;; (use-package lin
-;;   :pin gnu
-;;   :ensure t
-;;   :custom
-;;   (lin-gnome-accent-color-override-foreground t "Основной цвет на основе GNOME Accent Color")
-;;   :config (lin-global-mode t))
-
-
 ;; 📦 MAGIT
 ;; https://magit.vc/
 ;; Magic + Git + Diff-HL.

@@ -1391,17 +1391,27 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :bind
   (:map global-map
-    ("C-x b" . consult-buffer)
+    ("C-c M-x" . consult-mode-command)
     ("C-c h" . consult-history)
+    ("C-c h" . consult-history)
+    ("C-c i" . consult-info)
+    ("C-c m" . consult-man)
+    ("C-s" . consult-line)
     ("C-x 4 b" . consult-buffer-other-window)
     ("C-x 5 b" . consult-buffer-other-frame)
-    ("C-x t b" . consult-buffer-other-tab)
+    ("C-x b" . consult-buffer)
     ("C-x p b" . consult-project-buffer)
-    ("M-y" . consult-yank-pop)
+    ("C-x r b" . consult-bookmark)
+    ("C-x t b" . consult-buffer-other-tab)
     ("M-g g" . consult-goto-line)
-    ("M-g o" . consult-outline)
     ("M-g i" . consult-imenu)
-    ("C-x r b" . consult-bookmark)))
+    ("M-s l" . consult-line)
+    ("M-s L" . consult-line-multi)
+    ("M-g o" . consult-outline)
+    ("M-e" . consult-isearch-history)
+    ("M-y" . consult-yank-pop))
+  :hook
+  (consult-after-jump . pulsar-pulse-line))
 
 
 ;; 📦 CORFU
@@ -1411,7 +1421,6 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :custom
-  ;; (corfu-auto t "Включим автоматический показ вариантов автодополнения.")
   (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
   (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
   :config
@@ -1638,21 +1647,21 @@ FRAME-NAME — название настраиваемого фрейма."
      yaml-ts-mode) . indent-bars-mode))
 
 
-;; 📦 IVY
-;; https://elpa.gnu.org/packages/ivy.html
-;; https://elpa.gnu.org/packages/doc/ivy.html
-;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
-;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
-;; это последовательность [C-M-j].
-(use-package ivy
-  :pin gnu
-  :ensure t
-  :demand t
-  :config
-  (ivy-mode t)
-  :bind
-  (:map global-map
-    ("C-x b" . ivy-switch-buffer)))
+;; ;; 📦 IVY
+;; ;; https://elpa.gnu.org/packages/ivy.html
+;; ;; https://elpa.gnu.org/packages/doc/ivy.html
+;; ;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
+;; ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
+;; ;; это последовательность [C-M-j].
+;; (use-package ivy
+;;   :pin gnu
+;;   :ensure t
+;;   :demand t
+;;   :config
+;;   (ivy-mode t)
+;;   :bind
+;;   (:map global-map
+;;     ("C-x b" . ivy-switch-buffer)))
 
 
 ;; 📦 JINJA2-MODE

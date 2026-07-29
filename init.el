@@ -1848,19 +1848,19 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t)
 
 
-;; 📦 SWIPER
-;; https://elpa.gnu.org/packages/swiper.html
-;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
-;; `isearch-backward'.
-(use-package swiper
-  :pin gnu
-  :ensure t
-  :bind
-  (:map global-map
-    ("C-s" . swiper-isearch)
-    ("C-r" . swiper-isearch-backward))
-  :config
-  (add-to-list 'savehist-additional-variables 'swiper-history))
+;; ;; 📦 SWIPER
+;; ;; https://elpa.gnu.org/packages/swiper.html
+;; ;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
+;; ;; `isearch-backward'.
+;; (use-package swiper
+;;   :pin gnu
+;;   :ensure t
+;;   :bind
+;;   (:map global-map
+;;     ("C-s" . swiper-isearch)
+;;     ("C-r" . swiper-isearch-backward))
+;;   :config
+;;   (add-to-list 'savehist-additional-variables 'swiper-history))
 
 
 ;; 📦 TEMPEL

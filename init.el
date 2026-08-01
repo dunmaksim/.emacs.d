@@ -693,8 +693,8 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 HL-LINE-MODE
 ;; Подсветка активной строки.
 (use-package hl-line
-  :config
-  (global-hl-line-mode t))
+  :hook
+  (after-init . global-hl-line-mode))
 
 
 ;; 📦 HTML-MODE
@@ -1358,9 +1358,11 @@ FRAME-NAME — название настраиваемого фрейма."
   (cape-dict-file '("/usr/share/doc/hunspell/en_US.dic"
                      "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
   :config
-  ;; (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
   (add-hook 'completion-at-point-functions #'cape-dict)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
   (add-hook 'completion-at-point-functions #'cape-elisp-symbol)
+  (add-hook 'completion-at-point-functions #'cape-emoji)
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-history)
   (add-hook 'completion-at-point-functions #'cape-keyword)
@@ -1425,7 +1427,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
   :config
   (corfu-indexed-mode t) ;; Номера возле вариантов завершения
-  (global-corfu-mode t)) ;; Включим глобально
+  :hook
+  (after-init . global-corfu-mode)) ;; Включим глобально
 
 
 ;; 📦 COUNSEL
@@ -1436,7 +1439,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :config
   (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
-  (counsel-mode t))
+  :hook
+  (after-init . counsel-mode))
 
 
 ;; 📦 CSV-MODE
@@ -1470,12 +1474,9 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t
   :custom
   (diff-hl-update-async t "Асинхронное обновление состояния.")
-  :config
-  (progn
-    (when (fboundp 'global-diff-hl-mode)
-      (global-diff-hl-mode t))
-    (when (fboundp 'diff-hl-dired-mode)
-      (add-hook 'dired-mode-hook 'diff-hl-dired-mode))))
+  :hook
+  (after-init . global-diff-hl-mode)
+  (dired-mode . diff-hl-dired-mode))
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1621,8 +1622,11 @@ FRAME-NAME — название настраиваемого фрейма."
      rust-mode
      sh-mode
      sql-mode
-     yaml-ts-mode) . flycheck-mode))
-
+     yaml-ts-mode) . flycheck-mode)
+  :hook
+  ((after-init . global-flycheck-eglot-mode)
+    (after-init . global-flycheck-lsp-mode)
+    (after-init . global-flycheck-annotate-mode)))
 
 ;; 📦 INDENT-BARS
 ;; https://github.com/jdtsmith/indent-bars
@@ -1712,8 +1716,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :hook
   (after-save . magit-after-save-refresh-buffers)
   (after-save . magit-after-save-refresh-status)
-  :config
-  (magit-auto-revert-mode t))
+  :hook
+  (after-init . magit-auto-revert-mode))
 
 
 ;; 📦 MARKDOWN MODE
@@ -1874,7 +1878,7 @@ FRAME-NAME — название настраиваемого фрейма."
     ("M-+" . tempel-complete)
     ("M-*" . tempel-insert))
   :custom
-  (tempel-path `(,(expand-file-name "templates/asciidoc.eld" user-emacs-directory)
+  (tempel-path `(,(expand-file-name "templates/asciidoc-ts.eld" user-emacs-directory)
                   ,(expand-file-name "templates/emacs-lisp.eld" user-emacs-directory)
                   ,(expand-file-name "templates/markdown.eld" user-emacs-directory)
                   ,(expand-file-name "templates/rst.eld" user-emacs-directory))))
@@ -1890,16 +1894,17 @@ FRAME-NAME — название настраиваемого фрейма."
   ("\\.typ\\'" . typst-ts-mode))
 
 
-;; ;; VERTICO
-;; ;; https://github.com/minad/vertico
-;; ;; Автодополнение в минибуфере, основанное на встроенном механизме `completing-read'.
-;; (use-package vertico
-;;   :pin gnu
-;;   :ensure t
-;;   :custom
-;;   (completion-in-region-function #'consult-completion-in-region)
-;;   :config
-;;   (vertico-mode t))
+;; VERTICO
+;; https://github.com/minad/vertico
+;; Автодополнение в минибуфере, основанное на встроенном механизме `completing-read'.
+(use-package vertico
+  :pin gnu
+  :ensure t
+  :custom
+  (completion-in-region-function #'consult-completion-in-region)
+  (compoletion-styles '(basic substring partial-completion flex))
+  :config
+  (vertico-mode t))
 
 
 ;; VUNDO
@@ -1945,8 +1950,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (which-key-dont-use-unicode nil "Используем Unicode")
   (which-key-lighter nil "Справимся и так, не надо ничего показывать в строке статуса.")
   (which-key-separator " → " "Разделитель сочетаний и команд")
-  :config
-  (which-key-mode t))
+  :hook
+  (after-init . which-key-mode))
 
 ;; (load-theme 'ef-night t)
 (load-theme 'standard-dark-tinted t)

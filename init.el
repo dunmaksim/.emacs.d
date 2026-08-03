@@ -6,11 +6,6 @@
 
 (defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
 
-(defun init-el-set-font-height ()
-  "Установка размера шрифта.
-Размер шрифта устанавливается в pt в 10 раз больше чем указано в FONT-HEIGHT."
-  (set-face-attribute 'default nil :height (* init-el-font-height 10)))
-
 (require 'custom)
 (setopt custom-file
   (expand-file-name
@@ -27,26 +22,9 @@
 ;;; равно будет выполнен.
 ;;; По этой же причине здесь нет ничего, что могло бы сломаться.
 
-(defun init-el-set-font (font-family)
-  "Эта функция устанавливает семейство шрифтов FONT-FAMILY как предпочтительное."
-  ;; Это формат X Logical Font Description Conventions, XLFD
-  ;; https://www.x.org/releases/X11R7.7/doc/xorg-docs/xlfd/xlfd.html
-  (set-frame-font (format "-*-%s-normal-normal-normal-*-%d-*-*-*-m-0-iso10646-1"
-                    font-family
-                    init-el-font-height)
-    nil ;; Не сохранять установленный ранее размер
-    t   ;; Применить ко всем фреймам
-    t)  ;; Игнорировать настройки, сделанные через `customize'
-  (set-face-attribute
-    'default ;; Font Face по умолчанию
-    nil      ;; Применить ко всем фреймам
-    ;; Атрибуты шрифта
-    :height (* init-el-font-height 10)
-    :family font-family))
-
 
 ;; Настройки, специфичные для графического режима
-(defun setup-gui-settings (&optional frame-name)
+(defun init-el-set-fonts (&optional frame-name)
   "Настройки, необходимые при запуске EMACS в графической среде.
 FRAME-NAME — название настраиваемого фрейма."
   (when (display-graphic-p frame-name) ;; Фрейм графический
@@ -61,31 +39,36 @@ FRAME-NAME — название настраиваемого фрейма."
            (source-code-pro "Source Code Pro")
            (consolas "Consolas"))
       ;; Мои любимые шрифты, от самого любимого к менее любимому
-      (let ((preferred-font-family (cond ((member lilex font-families) lilex)
-                                     ((member sauce-code-pro font-families) sauce-code-pro)
-                                     ((member fira-code-nerd-font-mono font-families) fira-code-nerd-font-mono)
-                                     ((member fira-code font-families) fira-code)
-                                     ((member dejavu-sans-mono-nerd font-families) dejavu-sans-mono-nerd)
-                                     ((member dejavu-sans-mono font-families) dejavu-sans-mono)
-                                     ((member source-code-pro font-families) source-code-pro)
-                                     ((member consolas font-families) consolas)
-                                     (t nil))))
-        (when preferred-font-family
-          (progn
-            (message (format "Шрифт по умолчанию: %s" preferred-font-family))
-            (init-el-set-font preferred-font-family)))))))
+      (let ((preferred-font-family
+              (cond
+                ((member lilex font-families) lilex)
+                ((member sauce-code-pro font-families) sauce-code-pro)
+                ((member fira-code-nerd-font-mono font-families) fira-code-nerd-font-mono)
+                ((member fira-code font-families) fira-code)
+                ((member dejavu-sans-mono-nerd font-families) dejavu-sans-mono-nerd)
+                ((member dejavu-sans-mono font-families) dejavu-sans-mono)
+                ((member source-code-pro font-families) source-code-pro)
+                ((member consolas font-families) consolas)
+                (t nil))))
+        (set-face-attribute
+          'default ;; Font Face по умолчанию
+          nil      ;; Применить ко всем фреймам
+          ;; Атрибуты шрифта
+          :family preferred-font-family
+          :height (* init-el-font-height 10))))))
+
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 ;; Настройка шрифтов для обычного режима
-(add-hook 'after-init-hook (lambda ()(setup-gui-settings (selected-frame))))
-;; Настройка шрифтов при работе в режиме сервера
-(add-hook 'server-after-make-frame-hook (lambda ()(setup-gui-settings (selected-frame))))
-;; Настройка шрифтов в новых фреймах в любом режиме
-(add-to-list 'after-make-frame-functions 'setup-gui-settings)
+(add-hook 'after-init-hook (lambda ()(init-el-set-fonts (selected-frame))))
+;; настройка шрифтов при работе в режиме сервера
+(add-hook 'server-after-make-frame-hook (lambda ()(init-el-set-fonts (selected-frame))))
+;; настройка шрифтов в новых фреймах в любом режиме
+(add-to-list 'after-make-frame-functions 'init-el-set-fonts)
 
-
-(global-font-lock-mode t)  ;; Отображать шрифты красиво, используя Font Face's
+;; Отображать шрифты красиво, используя Font Face's
+(add-hook 'after-init-hook global-font-lock-mode)
 
 
 ;; Определение пути к каталогу с исходным кодом
@@ -113,7 +96,8 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; Настраиваем порядок выравнивания для текста слева направо
 ;; Это должно увеличить производительность на больших буферах.
-(setq-default bidi-display-reordering 'left-to-right
+(setq-default
+  bidi-display-reordering 'left-to-right
   bidi-paragraph-direction 'left-to-right)
 
 (setopt
@@ -196,13 +180,6 @@ FRAME-NAME — название настраиваемого фрейма."
 
 ;; Включим вставку знаков через C-x C-8.
 (keymap-global-set "C-x C-8" 'insert-char)
-
-;; Закрыть буфер по нажатию [C-x k]
-(defun init-el-kill-current-buffer ()
-  "Закрыть активный буфер."
-  (interactive)
-  (kill-buffer (current-buffer)))
-(keymap-global-set "C-x k" 'init-el-kill-current-buffer)
 
 ;; Вставка длинного тире по нажатию [M--]
 (keymap-global-set "M--" (lambda() (interactive) (insert "—")))
@@ -664,7 +641,9 @@ FRAME-NAME — название настраиваемого фрейма."
     ;; Перейти в следующее окно
     ("C-x o" . next-window-any-frame)
     ("M-O" . previous-window-any-frame)
-    ("M-o" . next-window-any-frame)))
+    ("M-o" . next-window-any-frame))
+  :hook
+  (after-init . undelete-frame-mode))
 
 
 ;; 📦 GOTO-ADDRESS-MODE
@@ -1431,16 +1410,16 @@ FRAME-NAME — название настраиваемого фрейма."
   (after-init . global-corfu-mode)) ;; Включим глобально
 
 
-;; 📦 COUNSEL
-;; https://elpa.gnu.org/packages/counsel.html
-;; Замена встроенных команд на их более удобные аналоги.
-(use-package counsel
-  :pin gnu
-  :ensure t
-  :config
-  (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
-  :hook
-  (after-init . counsel-mode))
+;; ;; 📦 COUNSEL
+;; ;; https://elpa.gnu.org/packages/counsel.html
+;; ;; Замена встроенных команд на их более удобные аналоги.
+;; (use-package counsel
+;;   :pin gnu
+;;   :ensure t
+;;   :config
+;;   (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
+;;   :hook
+;;   (after-init . counsel-mode))
 
 
 ;; 📦 CSV-MODE
@@ -1661,8 +1640,8 @@ FRAME-NAME — название настраиваемого фрейма."
 ;;   :pin gnu
 ;;   :ensure t
 ;;   :demand t
-;;   :config
-;;   (ivy-mode t)
+;;   :hook
+;;   (after-init . ivy-mode)
 ;;   :bind
 ;;   (:map global-map
 ;;     ("C-x b" . ivy-switch-buffer)))

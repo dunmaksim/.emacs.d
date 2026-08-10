@@ -1389,7 +1389,6 @@ FRAME-NAME — название настраиваемого фрейма."
     ("M-s l" . consult-line)
     ("M-s L" . consult-line-multi)
     ("M-g o" . consult-outline)
-    ("M-e" . consult-isearch-history)
     ("M-y" . consult-yank-pop))
   :hook
   (consult-after-jump . pulsar-pulse-line))
@@ -1694,9 +1693,7 @@ FRAME-NAME — название настраиваемого фрейма."
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
   :hook
   (after-save . magit-after-save-refresh-buffers)
-  (after-save . magit-after-save-refresh-status)
-  :hook
-  (after-init . magit-auto-revert-mode))
+  (after-save . magit-after-save-refresh-status))
 
 
 ;; 📦 MARKDOWN MODE

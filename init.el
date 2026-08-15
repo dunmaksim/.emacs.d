@@ -433,8 +433,8 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет.
 ;; Используется для управления удалением выделенного текста.
 (use-package delsel
-  :config
-  (delete-selection-mode t)) ;; Удалять выделенный фрагмент при вводе текста
+  :hook
+  (after-init . delete-selection-mode)) ;; Удалять выделенный фрагмент при вводе текста
 
 
 ;; 📦 DESKTOP
@@ -447,9 +447,11 @@ FRAME-NAME — название настраиваемого фрейма."
   (desktop-restore-frames t "Восстанавливать фреймы.")
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
-  (desktop-save-mode t)
+  ;; Буферы с этими режимами мы сохранять не будем
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
-  (add-to-list 'desktop-modes-not-to-save 'image-mode))
+  (add-to-list 'desktop-modes-not-to-save 'image-mode)
+  :hook
+  (after-init . desktop-save-mode))
 
 
 ;; 📦 DIRED
@@ -838,8 +840,8 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; 📦 PAREN
 ;; Подсветка парных скобок.
 (use-package paren
-  :config
-  (show-paren-mode t)) ;; Подсвечивать парные скобки
+  :hook
+  (after-init . show-paren-mode))
 
 
 ;; 📦 OUTLINE
@@ -868,9 +870,9 @@ FRAME-NAME — название настраиваемого фрейма."
 ;; Встроенный пакет, позволяет плавно прокручивать текст
 (when (package-installed-p 'pixel-scroll)
   (use-package pixel-scroll
-    :config
-    (pixel-scroll-mode t)
-    (pixel-scroll-precision-mode t)))
+    :hook
+    (after-init . pixel-scroll-mode)
+    (after-init . pixel-scroll-precision-mode)))
 
 
 ;; 📦 PROG-MODE
@@ -920,15 +922,15 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (recentf-max-saved-items 100 "Помнить последние 100 файлов")
   (recentf-save-file (locate-user-emacs-file "recentf") "Хранить список в файле .emacs.d/recentf")
-  :config
-  (recentf-mode t))
+  :hook
+  (after-init . recentf-mode))
 
 
 ;; 📦 REPEAT-MODE
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
-  :config
-  (repeat-mode t))
+  :hook
+  (after-init . repeat-mode))
 
 
 ;; 📦 RST-MODE
@@ -963,17 +965,14 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package saveplace
   :custom
   (save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
-  :config
-  (save-place-mode t))
+  :hook
+  (after-init . save-place-mode))
 
 
 ;; 📦 SAVEHIST
 ;; Встроенный пакет для запоминания истории команд
 (use-package savehist
   :defer nil
-  :hook
-  (kill-emacs . savehist-save)
-  (server-done . savehist-save)
   :custom
   (savehist-additional-variables
     '(compile-history
@@ -982,7 +981,10 @@ FRAME-NAME — название настраиваемого фрейма."
        shell-command-history))
   :config
   (add-to-list 'delete-frame-functions 'savehist-save)
-  (savehist-mode t))
+  :hook
+  (kill-emacs . savehist-save)
+  (server-done . savehist-save)
+  (after-init . savehist-mode))
 
 
 ;; 📦 SHELL-SCRIPT-MODE
@@ -994,7 +996,6 @@ FRAME-NAME — название настраиваемого фрейма."
   ("\\.envrc\\'" . bash-ts-mode)
   ("\\.profile\\'" . bash-ts-mode)
   ("\\.sh\\'" . bash-ts-mode))
-
 
 
 ;; 📦 SHELL-MODE
@@ -1024,18 +1025,18 @@ FRAME-NAME — название настраиваемого фрейма."
   (size-indication-mode nil "Не показывать размера буфера в mode-line")
   (suggest-key-bindings t "Показывать подсказку клавиатурной комбинации для команды")
   :config
-  (auto-save-mode t)
-  (column-number-mode t) ;; Номер колонки в mode-line
   (keymap-global-unset "<insert>" t) ;; Режим перезаписи не нужен
-  (line-number-mode t) ;; Номер строки в mode-line
   (put 'overwrite-mode 'disabled t) ;; Выключить `overwrite-mode'.
   :bind
   (:map global-map
     ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
+  (after-init . auto-save-mode)     ;; Включим режим автосохранения
+  (after-init . column-number-mode) ;; Номер колонки в mode-line
+  (after-init . line-number-mode)   ;; Номер строки в mode-line
   ((compilation-mode
      messages-buffer-mode
-     prog-mode
+     prog-mode-
      text-mode
      ) . visual-line-mode))
 
@@ -1065,8 +1066,8 @@ FRAME-NAME — название настраиваемого фрейма."
   (:map global-map
     ("C-<tab>" . tab-bar-switch-to-next-tab)
     ("C-S-<tab>" . tab-bar-switch-to-prev-tab))
-  :config
-  (tab-bar-mode t))
+  :hook
+  (after-init . tab-bar-mode))
 
 
 ;; 📦 TEXINFO
@@ -1103,7 +1104,7 @@ FRAME-NAME — название настраиваемого фрейма."
 
 
 ;; 📦 TRACK-CHANGES
-;; Встроенный пакет, обновлять который будем из архива
+;; Встроенный пакет, который мы просто обновим из GNU ELPA
 (use-package track-changes
   :pin gnu
   :init
@@ -1131,8 +1132,7 @@ FRAME-NAME — название настраиваемого фрейма."
 
 
 ;; 📦 UNIQUIFY
-;; Встроенный пакет.
-;; Используется для поддержания уникальности названий буферов, путей и т. д.
+;; Встроенный пакет для поддержания уникальности названий буферов, путей и т. д.
 (use-package uniquify
   :custom
   (uniquify-buffer-name-style 'forward "Показывать каталог перед именем файла, если буферы одинаковые (по умолчанию имя<каталог>)")
@@ -1140,7 +1140,7 @@ FRAME-NAME — название настраиваемого фрейма."
 
 
 ;; 📦 VERILOG-MODE
-;; Просто обновим его из GNU ELPA
+;; Встроенный пакет. Просто обновим его из GNU ELPA
 (use-package verilog-mode
   :pin gnu
   :init
@@ -1201,7 +1201,7 @@ FRAME-NAME — название настраиваемого фрейма."
 
 
 ;; 📦 WINDOW-TOOL-BAR
-;; Просто обновим из GNU ELPA
+;; Встроенный пакет, который просто обновим из GNU ELPA
 (use-package window-tool-bar
   :pin gnu
   :init
@@ -1310,20 +1310,19 @@ FRAME-NAME — название настраиваемого фрейма."
 (use-package breadcrumb
   :pin gnu
   :ensure t
-  :config
-  (breadcrumb-mode t))
+  :hook
+  (after-init . breadcrumb-mode))
 
 
 ;; 📦 BUFFER-ENV
 ;; https://github.com/astoff/buffer-env
-;; Переменные окружения для отдельного буфера. Почти ENVRC, только от GNU
+;; Переменные окружения для отдельного буфера.
 (use-package buffer-env
   :pin gnu
   :ensure t
-  :config
-  (when (fboundp 'buffer-env-update)
-    (add-hook 'hack-local-variables-hook #'buffer-env-update)
-    (add-hook 'comint-mode-hook #'buffer-env-update)))
+  :hook
+  (hack-local-variables . buffer-env-update)
+  (comint-mode-hook . buffer-env-update))
 
 
 ;; 📦 CAPE
@@ -1337,15 +1336,15 @@ FRAME-NAME — название настраиваемого фрейма."
   (cape-dict-file '("/usr/share/doc/hunspell/en_US.dic"
                      "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
   :config
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-dict)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block)
-  (add-hook 'completion-at-point-functions #'cape-elisp-symbol)
-  (add-hook 'completion-at-point-functions #'cape-emoji)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-history)
-  (add-hook 'completion-at-point-functions #'cape-keyword)
-  (add-hook 'completion-at-point-functions #'cape-rfc1345))
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-dict)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
+  (add-to-list 'completion-at-point-functions #'cape-emoji)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-history)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-rfc1345))
 
 
 ;; 📦 COLORFUL-MODE
@@ -1403,10 +1402,9 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
   (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
-  :config
-  (corfu-indexed-mode t) ;; Номера возле вариантов завершения
   :hook
-  (after-init . global-corfu-mode)) ;; Включим глобально
+  (after-init . global-corfu-mode) ;; Включим глобально
+  (corfu-mode . corfu-indexed-mode)) ;; Номера возле вариантов завершения
 
 
 ;; ;; 📦 COUNSEL
@@ -1485,8 +1483,10 @@ FRAME-NAME — название настраиваемого фрейма."
   :init
   (unless (alist-get 'editorconfig package-alist)
     (package-upgrade 'editorconfig))
-  :config
-  (editorconfig-mode t))
+  :mode
+  ("\\.editorconfig\\'" . editorconfig-conf-mode)
+  :hook
+  (after-init . editorconfig-mode))
 
 
 ;; 📦 EF-THEMES
@@ -1562,8 +1562,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
   :hook
-  ((emacs-lisp-mode
-     lisp-interaction-mode) . eldoc-mode))
+  (emacs-lisp-mode  . eldoc-mode)
+  (lisp-interaction-mode . eldoc-mode))
 
 
 ;; 📦 FLYCHECK
@@ -1737,9 +1737,9 @@ FRAME-NAME — название настраиваемого фрейма."
   :init
   (unless (alist-get 'org package-alist)
     (package-upgrade 'org))
+  :defer t
   :custom
-  (org-agenda-files '("~/Документы/Notes/"))
-  :defer t)
+  (org-agenda-files '("~/Документы/Notes/")))
 
 
 ;; 📦 PO-MODE
@@ -1759,15 +1759,13 @@ FRAME-NAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :custom
-  (pulsar-pulse t)
   (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
   :hook
   (after-init . pulsar-global-mode)
   (next-error . pulsar-pulse-line)
   :config
   (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
-  (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error)
-  (add-to-list 'pulsar-pulse-functions 'recenter-top-bottom))
+  (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error))
 
 
 ;; 📦 RAINBOW-DELIMITERS
@@ -1879,8 +1877,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :custom
   (completion-in-region-function #'consult-completion-in-region)
   (compoletion-styles '(basic substring partial-completion flex))
-  :config
-  (vertico-mode t))
+  :hook
+  (after-init . vertico-mode))
 
 
 ;; VUNDO
@@ -1929,8 +1927,8 @@ FRAME-NAME — название настраиваемого фрейма."
   :hook
   (after-init . which-key-mode))
 
-;; (load-theme 'ef-night t)
-(load-theme 'standard-dark-tinted t)
+(load-theme 'ef-night t)
+;; (load-theme 'standard-dark-tinted t)
 
 (provide 'init.el)
 ;;; init.el ends here

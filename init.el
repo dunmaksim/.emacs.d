@@ -24,10 +24,10 @@
 
 
 ;; Настройки, специфичные для графического режима
-(defun init-el-set-fonts (&optional frame-name)
+(defun init-el-set-fonts (&optional frame)
   "Настройки, необходимые при запуске EMACS в графической среде.
-FRAME-NAME — название настраиваемого фрейма."
-  (when (display-graphic-p frame-name) ;; Фрейм графический
+FRAME — название настраиваемого фрейма."
+  (when (display-graphic-p frame) ;; Фрейм графический
     ;; Получаем список шрифтов
     (let ((font-families (font-family-list))
            (lilex "Lilex")
@@ -1826,21 +1826,6 @@ FRAME-NAME — название настраиваемого фрейма."
   :ensure t)
 
 
-;; ;; 📦 SWIPER
-;; ;; https://elpa.gnu.org/packages/swiper.html
-;; ;; Умный поиск и отличная (в некоторых случаях) замена `isearch-forward' и
-;; ;; `isearch-backward'.
-;; (use-package swiper
-;;   :pin gnu
-;;   :ensure t
-;;   :bind
-;;   (:map global-map
-;;     ("C-s" . swiper-isearch)
-;;     ("C-r" . swiper-isearch-backward))
-;;   :config
-;;   (add-to-list 'savehist-additional-variables 'swiper-history))
-
-
 ;; 📦 TEMPEL
 ;; https://elpa.gnu.org/packages/doc/tempel.html
 ;; Сниппеты
@@ -1929,6 +1914,7 @@ FRAME-NAME — название настраиваемого фрейма."
 
 (load-theme 'ef-night t)
 ;; (load-theme 'standard-dark-tinted t)
+
 
 (provide 'init.el)
 ;;; init.el ends here

@@ -1690,10 +1690,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :defer nil
   :custom
-  (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
-  :hook
-  (after-save . magit-after-save-refresh-buffers)
-  (after-save . magit-after-save-refresh-status))
+  (magit-auto-revert-mode t "Автоматическое обновление буферов при смене ветки.")
+  (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit."))
 
 
 ;; 📦 MARKDOWN MODE

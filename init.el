@@ -1727,6 +1727,24 @@ FRAME — название настраиваемого фрейма."
     ("M-<mouse-1>" . mc/add-cursor-on-click)))
 
 
+;; NANO-MODELINE
+;; https://elpa.gnu.org/packages/nano-modeline.html
+;; Минималистичная строка статуса
+(use-package nano-modeline
+  :ensure t
+  :custom
+  (nano-modeline-position 'nano-modeline-footer "Показывать внизу")
+  :hook
+  (doc-view-mode . nano-modeline-pdf-mode)
+  (messages-buffer-mode . nano-modeline-message-mode)
+  (org-agenda-mode . nano-modeline-org-agenda-mode)
+  (org-capture-mode . nano-modeline-org-capture-mode)
+  (org-mode . nano-modeline-org-mode)
+  (prog-mode . nano-modeline-prog-mode)
+  (term-mode . nano-modeline-term-mode)
+  (text-mode . nano-modeline-text-mode))
+
+
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
@@ -1910,9 +1928,7 @@ FRAME — название настраиваемого фрейма."
   :hook
   (after-init . which-key-mode))
 
-(load-theme 'ef-night t)
-;; (load-theme 'standard-dark-tinted t)
-
+(load-theme 'ef-autumn t)
 
 (provide 'init.el)
 ;;; init.el ends here

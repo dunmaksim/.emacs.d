@@ -355,7 +355,8 @@ FRAME — название настраиваемого фрейма."
 (use-package autorevert
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку при использовании VCS")
-  (global-auto-revert-non-file-buffers t "Автообновление не только файловых буферов."))
+  :hook
+  (after-init . global-auto-revert-mode))
 
 
 ;; 📦 CALENDAR

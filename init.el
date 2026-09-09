@@ -246,75 +246,90 @@ FRAME — название настраиваемого фрейма."
       (make-directory ts-lib-dir)))
   :config
   ;; Грамматики
+  ;; ASCIIDOC
   (add-to-list 'treesit-language-source-alist
     '(asciidoc
        "https://github.com/cathaysia/tree-sitter-asciidoc.git"
        "v0.3.0"
        "tree-sitter-asciidoc/src/"))
+  ;; ASCIIDOC-INLINE
   (add-to-list 'treesit-language-source-alist
     '(asciidoc-inline
        "https://github.com/cathaysia/tree-sitter-asciidoc.git"
        "v0.3.0"
        "tree-sitter-asciidoc_inline/src/"))
+  ;; BASH
   (add-to-list 'treesit-language-source-alist
     '(bash
        "https://github.com/tree-sitter/tree-sitter-bash.git"
        ;; "v0.25.1" ;; ABI v15
        ;; "v0.25.0" ;; ABI v15
        "v0.23.3"))
+  ;; DOCKERFILE / CONTAINERFILE
   (add-to-list 'treesit-language-source-alist
     '(dockerfile
        "https://github.com/camdencheek/tree-sitter-dockerfile.git"
        "v0.2.0"
        "src/"))
+  ;; JAVASCRIPT
   (add-to-list 'treesit-language-source-alist
     '(javascript
        "https://github.com/tree-sitter/tree-sitter-javascript.git"
        "v0.23.1"
        "src/"))
+  ;; JSDOC
   (add-to-list 'treesit-language-source-alist
     '(jsdoc
        "https://github.com/tree-sitter/tree-sitter-jsdoc.git"
        "v0.23.1"
        "src/"))
+  ;; JSON
   (add-to-list 'treesit-language-source-alist
     '(json
        "https://github.com/tree-sitter/tree-sitter-json.git"
        "v0.24.8"))
+  ;; MAKE
   (add-to-list 'treesit-language-source-alist
     '(make
        "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
        "v1.1.1"
        "src/"))
+  ;; MARKDOWN
   (add-to-list 'treesit-language-source-alist
     '(markdown
        "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
        "v0.4.1"
        "tree-sitter-markdown/src"))
+  ;; MARKDOWN-INLINE
   (add-to-list 'treesit-language-source-alist
     '(markdown-inline
        "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
        "v0.4.1"
        "tree-sitter-markdown-inline/src"))
+  ;; PYTHON
   (add-to-list 'treesit-language-source-alist
     '(python
        "https://github.com/tree-sitter/tree-sitter-python.git"
        "v0.23.6"
        "src/"))
+  ;; RUBY
   (add-to-list 'treesit-language-source-alist
     '(ruby
        "https://github.com/tree-sitter/tree-sitter-ruby.git"
        "v0.23.1"
        "src/"))
+  ;; RUST
   (add-to-list 'treesit-language-source-alist
     '(rust
        "https://github.com/tree-sitter/tree-sitter-rust.git"
        "v0.23.3"))
+  ;; TYPST
   (add-to-list 'treesit-language-source-alist
     '(typst
        "https://github.com/uben0/tree-sitter-typst.git"
        "0.11"
        "src/"))
+  ;; YAML
   (add-to-list 'treesit-language-source-alist
     '(yaml
        "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
@@ -393,6 +408,7 @@ FRAME — название настраиваемого фрейма."
 
 
 ;; 📦 COMPILE
+;; Всё, что связано с компиляцией.
 (use-package compile
   :custom
   (compilation-read-command nil "Будем запрашивать команду только один раз.")
@@ -408,7 +424,8 @@ FRAME — название настраиваемого фрейма."
   (emacs-lisp-mode . completion-preview-mode)
   (js-ts-mode . completion-preview-mode)
   (python-ts-mode . completion-preview-mode)
-  (ruby-ts-mode . completion-preview-mode))
+  (ruby-ts-mode . completion-preview-mode)
+  (rust-ts-mode . completion-preview-mode))
 
 
 ;; 📦 CONF-MODE
@@ -431,8 +448,7 @@ FRAME — название настраиваемого фрейма."
 
 
 ;; 📦 DELSEL
-;; Встроенный пакет.
-;; Используется для управления удалением выделенного текста.
+;; Встроенный пакет для управления удалением выделенного текста.
 (use-package delsel
   :hook
   (after-init . delete-selection-mode)) ;; Удалять выделенный фрагмент при вводе текста
@@ -500,6 +516,7 @@ FRAME — название настраиваемого фрейма."
      ruby-mode
      ruby-ts-mode
      rust-mode
+     rust-ts-mode
      sed-mode
      sh-mode
      tex-mode
@@ -516,8 +533,8 @@ FRAME — название настраиваемого фрейма."
 
 
 ;; 📦 ELECTRIC-INDENT MODE
-;; Встроенный пакет.
-;; Автоматический отступ. В основном только мешает, лучше выключить.
+;; Встроенный пакет для управления автоматическими отступами.
+;; В основном только мешает, лучше выключить.
 (use-package electric
   :hook
   ((emacs-lisp-mode
@@ -527,7 +544,9 @@ FRAME — название настраиваемого фрейма."
      python-mode
      rst-mode
      ruby-mode
-     ruby-ts-mode) . electric-indent-local-mode))
+     ruby-ts-mode
+     rust-mode
+     rust-ts-mode) . electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -560,6 +579,7 @@ FRAME — название настраиваемого фрейма."
      ruby-mode
      ruby-ts-mode
      rust-mode
+     rust-ts-mode
      sed-mode
      tex-mode
      text-mode
@@ -589,9 +609,10 @@ FRAME — название настраиваемого фрейма."
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
   :config
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(javascript-mode . js-ts-mode))
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
   (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode))
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
   (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   (add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
@@ -627,12 +648,12 @@ FRAME — название настраиваемого фрейма."
   (:map emacs-lisp-mode-map
     ("M-n" . flymake-goto-next-error)
     ("M-p" . flymake-goto-prev-error))
-  :hook (emacs-lisp-mode . flymake-mode))
+  :hook
+  (emacs-lisp-mode . flymake-mode))
 
 
 ;; 📦 FRAME
-;; Встроенный пакет.
-;; Управление фреймами.
+;; Встроенный пакет для управления фреймами.
 (use-package frame
   :custom
   (window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
@@ -880,7 +901,11 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет, предоставляющий предка для всех программистских режимов.
 (use-package prog-mode
   :hook
-  (emacs-lisp-mode . prettify-symbols-mode)) ;; Будем показывать глифы вместо некоторых конструкций
+  ;; Будем показывать глифы вместо некоторых конструкций
+  (emacs-lisp-mode . prettify-symbols-mode)
+  (js-ts-mode . prettify-symbols-mode)
+  (rust-mode . prettify-symbols-mode)
+  (rust-ts-mode . prettify-symbols-mode))
 
 
 ;; 📦 PROJECT
@@ -1512,6 +1537,7 @@ FRAME — название настраиваемого фрейма."
 ;;               Создать в корне проекта файл .dir-locals.el и задать значение
 ;;               переменной `eglot-workspace-configuration'.
 ;; - Ruby:       sudo gem install ruby-lsp
+;; - Rust:       rustup component add rust-analyzer
 ;; - YAML:       sudo npm -g install yaml-language-server
 (use-package eglot
   :pin gnu
@@ -1546,6 +1572,8 @@ FRAME — название настраиваемого фрейма."
      python-ts-mode
      ruby-mode
      ruby-ts-mode
+     rust-mode
+     rust-ts-mode
      yaml-ts-mode) . eglot-ensure))
 
 
@@ -1811,11 +1839,11 @@ FRAME — название настраиваемого фрейма."
 
 ;; 📦 RUST-MODE
 ;; https://github.com/rust-lang/rust-mode
-;; Поддержка языка Rust
+;; Поддержка языка Rust: расширяет стандартный `rust-mode' дополнительными функциями.
 (use-package rust-mode
   :pin nongnu
   :ensure t
-  :mode ("\\.rs\\'" . rust-mode))
+  :mode ("\\.rs\\'" . rust-ts-mode))
 
 
 ;; 📦 SASS-MODE
@@ -1921,6 +1949,7 @@ FRAME — название настраиваемого фрейма."
   (unless (alist-get 'which-key package-alist)
     (package-upgrade 'which-key))
   :custom
+  (which-key-use-C-h-commands t "Страницы which-key вместо describe-prefix-bindings.")
   (which-key-popup-type 'minibuffer "Будем показывать подсказки прямо в минибуфере")
   (which-key-compute-remaps t "Выводить актуальные сочетания клавиш, а не «как должно быть»")
   (which-key-dont-use-unicode nil "Используем Unicode")

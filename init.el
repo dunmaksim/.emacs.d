@@ -425,7 +425,7 @@ FRAME — название настраиваемого фрейма."
   (js-ts-mode . completion-preview-mode)
   (python-ts-mode . completion-preview-mode)
   (ruby-ts-mode . completion-preview-mode)
-  (rust-ts-mode . completion-preview-mode))
+  (rust-mode . completion-preview-mode))
 
 
 ;; 📦 CONF-MODE
@@ -516,7 +516,6 @@ FRAME — название настраиваемого фрейма."
      ruby-mode
      ruby-ts-mode
      rust-mode
-     rust-ts-mode
      sed-mode
      sh-mode
      tex-mode
@@ -545,8 +544,7 @@ FRAME — название настраиваемого фрейма."
      rst-mode
      ruby-mode
      ruby-ts-mode
-     rust-mode
-     rust-ts-mode) . electric-indent-local-mode))
+     rust-mode) . electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -579,7 +577,6 @@ FRAME — название настраиваемого фрейма."
      ruby-mode
      ruby-ts-mode
      rust-mode
-     rust-ts-mode
      sed-mode
      tex-mode
      text-mode
@@ -612,7 +609,6 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'major-mode-remap-alist '(javascript-mode . js-ts-mode))
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
   (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(rust-mode . rust-ts-mode))
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
   (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   (add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
@@ -904,8 +900,7 @@ FRAME — название настраиваемого фрейма."
   ;; Будем показывать глифы вместо некоторых конструкций
   (emacs-lisp-mode . prettify-symbols-mode)
   (js-ts-mode . prettify-symbols-mode)
-  (rust-mode . prettify-symbols-mode)
-  (rust-ts-mode . prettify-symbols-mode))
+  (rust-mode . prettify-symbols-mode))
 
 
 ;; 📦 PROJECT
@@ -1062,7 +1057,7 @@ FRAME — название настраиваемого фрейма."
   (after-init . line-number-mode)   ;; Номер строки в mode-line
   ((compilation-mode
      messages-buffer-mode
-     prog-mode-
+     prog-mode
      text-mode
      ) . visual-line-mode))
 
@@ -1433,18 +1428,6 @@ FRAME — название настраиваемого фрейма."
   (corfu-mode . corfu-indexed-mode)) ;; Номера возле вариантов завершения
 
 
-;; ;; 📦 COUNSEL
-;; ;; https://elpa.gnu.org/packages/counsel.html
-;; ;; Замена встроенных команд на их более удобные аналоги.
-;; (use-package counsel
-;;   :pin gnu
-;;   :ensure t
-;;   :config
-;;   (add-to-list 'savehist-additional-variables 'counsel-unicode-char-history)
-;;   :hook
-;;   (after-init . counsel-mode))
-
-
 ;; 📦 CSV-MODE
 ;; https://elpa.gnu.org/packages/csv-mode.html
 ;; Поддержка CSV
@@ -1573,7 +1556,6 @@ FRAME — название настраиваемого фрейма."
      ruby-mode
      ruby-ts-mode
      rust-mode
-     rust-ts-mode
      yaml-ts-mode) . eglot-ensure))
 
 
@@ -1631,9 +1613,10 @@ FRAME — название настраиваемого фрейма."
      sql-mode
      yaml-ts-mode) . flycheck-mode)
   :hook
-  ((after-init . global-flycheck-eglot-mode)
-    (after-init . global-flycheck-lsp-mode)
-    (after-init . global-flycheck-annotate-mode)))
+  (after-init . global-flycheck-eglot-mode)
+  (after-init . global-flycheck-lsp-mode)
+  (after-init . global-flycheck-annotate-mode))
+
 
 ;; 📦 INDENT-BARS
 ;; https://github.com/jdtsmith/indent-bars
@@ -1656,23 +1639,6 @@ FRAME — название настраиваемого фрейма."
      ruby-ts-mode
      rust-mode
      yaml-ts-mode) . indent-bars-mode))
-
-
-;; ;; 📦 IVY
-;; ;; https://elpa.gnu.org/packages/ivy.html
-;; ;; https://elpa.gnu.org/packages/doc/ivy.html
-;; ;; Функции фильтрации и выбора элементов. Как Helm, но теперь в GNU ELPA.
-;; ;; При переименовании файлов рекомендуется использовать `ivy-immediate-done',
-;; ;; это последовательность [C-M-j].
-;; (use-package ivy
-;;   :pin gnu
-;;   :ensure t
-;;   :demand t
-;;   :hook
-;;   (after-init . ivy-mode)
-;;   :bind
-;;   (:map global-map
-;;     ("C-x b" . ivy-switch-buffer)))
 
 
 ;; 📦 JINJA2-MODE
@@ -1839,11 +1805,11 @@ FRAME — название настраиваемого фрейма."
 
 ;; 📦 RUST-MODE
 ;; https://github.com/rust-lang/rust-mode
-;; Поддержка языка Rust: расширяет стандартный `rust-mode' дополнительными функциями.
+;; Поддержка языка Rust: расширяет стандартный `rust-ts-mode' дополнительными функциями.
 (use-package rust-mode
   :pin nongnu
   :ensure t
-  :mode ("\\.rs\\'" . rust-ts-mode))
+  :mode ("\\.rs\\'" . rust-mode))
 
 
 ;; 📦 SASS-MODE

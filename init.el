@@ -1740,6 +1740,18 @@ FRAME — название настраиваемого фрейма."
   (text-mode . nano-modeline-text-mode))
 
 
+;; ORDERLESS
+;; https://github.com/oantolin/orderless
+;; Поиск по частичному совпадению
+(use-package orderless
+  :pin gnu
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-pcm-leading-wildcard t))
+
+
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее

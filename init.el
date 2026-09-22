@@ -596,6 +596,7 @@ FRAME — название настраиваемого фрейма."
 ;; Это встроенный пакет для управления файлами
 (use-package files
   :custom
+  (backup-inhibited t "Отключить создание резервных копий на уровне буфера.")
   (confirm-kill-processes nil "Прерывать процессы без лишних вопросов.")
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
   (enable-local-eval t "Разрешить вызов `eval' в `.dir-locals.el'")
@@ -1573,7 +1574,7 @@ FRAME — название настраиваемого фрейма."
   :custom
   (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
   :hook
-  (emacs-lisp-mode  . eldoc-mode)
+  (emacs-lisp-mode . eldoc-mode)
   (lisp-interaction-mode . eldoc-mode))
 
 
@@ -1684,9 +1685,18 @@ FRAME — название настраиваемого фрейма."
   :pin nongnu
   :ensure t
   :defer nil
+  :after magit-section
   :custom
   (magit-auto-revert-mode t "Автоматическое обновление буферов при смене ветки.")
   (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit."))
+
+
+;; 📦 MAGIT-SECTION
+;; https://magit.vc/
+;; Зависимость Magit, которая не ставится сама по себе
+(use-package magit-section
+  :pin nongnu
+  :ensure t)
 
 
 ;; 📦 MARKDOWN MODE

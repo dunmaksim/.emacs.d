@@ -97,46 +97,44 @@ FRAME — название настраиваемого фрейма."
   bidi-paragraph-direction 'left-to-right)
 
 (setopt
-  bidi-inhibit-bpa t ;; Выключить поддержку двунаправленных текстов
-  case-fold-search t ;; Игнорировать регистр при поиске.
-  completion-ignore-case t ;; Игнорировать регистр при автодополнении
-  create-lockfiles nil ;; Не создавать lock-файлы
-  cursor-in-non-selected-windows nil ;; Отключить курсор в неактивных окнах
-  cursor-type 'bar ;; Курсор в виде вертикальной черты
-  default-directory "~/repo/" ;; Директория по умолчанию
-  default-input-method "russian-computer" ;; Метод ввода по умолчанию
+  bidi-inhibit-bpa t                                ;; Выключить поддержку двунаправленных текстов
+  case-fold-search t                                ;; Игнорировать регистр при поиске.
+  completion-ignore-case t                          ;; Игнорировать регистр при автодополнении
+  create-lockfiles nil                              ;; Не создавать lock-файлы
+  cursor-in-non-selected-windows nil                ;; Отключить курсор в неактивных окнах
+  cursor-type 'bar                                  ;; Курсор в виде вертикальной черты
+  default-input-method "russian-computer"           ;; Метод ввода по умолчанию
   default-transient-input-method "russian-computer" ;; Временный метод ввода
-  delete-by-moving-to-trash t ;; Удалять файлы в Корзину
-  gc-cons-threshold (* 2 gc-cons-threshold) ;; Увеличить размер памяти для сборщика мусора
-  highlight-nonselected-windows nil ;; Не подсвечивать неактивные окна
-  inhibit-compacting-font-caches t ;; Не сжимать шрифты в памяти
-  inhibit-splash-screen t ;; Не показывать заставку
-  inhibit-startup-buffer-menu t ;; Выключить меню буферов при запуске
+  delete-by-moving-to-trash t                       ;; Удалять файлы в Корзину
+  gc-cons-threshold (* 800000 2)                    ;; Удвоим размер памяти для сборщика мусора
+  highlight-nonselected-windows nil                 ;; Не подсвечивать неактивные окна
+  inhibit-compacting-font-caches t                  ;; Не сжимать шрифты в памяти
+  inhibit-splash-screen t                           ;; Не показывать заставку
+  inhibit-startup-buffer-menu t                     ;; Выключить меню буферов при запуске
   inhibit-startup-echo-area-message user-login-name
-  inhibit-startup-screen t ;; Не показывать приветственный экран
-  initial-scratch-message nil ;; Пустой буфер *scratch*
-  kill-buffer-delete-auto-save-files t ;; Удалять файлы автосохранения при закрытии буфера
-  load-prefer-newer t ;; Если есть файл elc, но el новее, загрузить el-файл.
-  long-line-threshold (* long-line-threshold 2) ;; Вдвое увеличим порог
-  major-mode 'text-mode ;; Текстовый режим для новых буферов по умолчанию.
-  read-answer-short t ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
-  read-buffer-completion-ignore-case t ;; Игнорировать регистр при вводе названия буфера
+  inhibit-startup-screen t                          ;; Не показывать приветственный экран
+  initial-scratch-message nil                       ;; Пустой буфер *scratch*
+  initial-major-mode 'text-mode                     ;; Режим по умолчанию
+  kill-buffer-delete-auto-save-files t              ;; Удалять файлы автосохранения при закрытии буфера
+  load-prefer-newer t                               ;; Если есть файл elc, но el новее, загрузить el-файл.
+  long-line-threshold (* 50000 2)                   ;; Вдвое увеличим порог, 50000 — это по умолчанию
+  major-mode 'text-mode                             ;; Текстовый режим для новых буферов по умолчанию.
+  read-answer-short t                               ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
+  read-buffer-completion-ignore-case t              ;; Игнорировать регистр при вводе названия буфера
   read-extended-command-predicate #'command-completion-default-include-p ;; Скрыть команды, которые нельзя выполнить в буфере
-  read-file-name-completion-ignore-case t ;; Игнорировать регистр при вводе имён файлов
-  read-process-output-max (* read-process-output-max 4) ;; Увеличим чанк чтения для LSP в 4 раза
-  redisplay-skip-fontification-on-input t ;; Не обновлять буфер, если происходит ввод
-  ring-bell-function 'ignore ;; Отключить звуковое сопровождение событий
-  sentence-end-double-space nil ;; Устаревшее требование
-  show-trailing-whitespace t ;; Подсветка висячих пробелов
-  standard-indent 4 ;; Отступ по умолчанию
-  tab-always-indent 'complete ;; Если можно — выровнять текст, иначе — автодополнение.
-  use-dialog-box nil ;; Диалоговые окна ОС не нужны
-  use-file-dialog nil ;; Файловые диалоги тоже не нужны
-  use-short-answers t ;; Краткие ответы вместо длинных
-  user-full-name "Dunaevsky Maxim" ;; Имя пользователя
-  user-mail-address "dunmaksim@yandex.ru" ;; Адрес электронной почты
-  vc-follow-symlinks t ;; Переходить по ссылкам без лишних вопросов
-  visible-bell t) ;; Мигать буфером при переходе в него
+  read-file-name-completion-ignore-case t           ;; Игнорировать регистр при вводе имён файлов
+  read-process-output-max (* 65536 4)               ;; Увеличим чанк чтения для LSP в 4 раза
+  redisplay-skip-fontification-on-input t           ;; Не обновлять буфер, если происходит ввод
+  sentence-end-double-space nil                     ;; Устаревшее требование
+  standard-indent 4                                 ;; Отступ по умолчанию
+  tab-always-indent 'complete                       ;; Если можно — выровнять текст, иначе — автодополнение.
+  use-dialog-box nil                                ;; Диалоговые окна ОС не нужны
+  use-file-dialog nil                               ;; Файловые диалоги тоже не нужны
+  use-short-answers t                               ;; Краткие ответы вместо длинных
+  user-full-name "Dunaevsky Maxim"                  ;; Имя пользователя
+  user-mail-address "dunmaksim@yandex.ru"           ;; Адрес электронной почты
+  vc-follow-symlinks t                              ;; Переходить по ссылкам без лишних вопросов
+  visible-bell t)                                   ;; Мигать буфером при переходе в него
 
 
 ;; Буфер *scratch* не нужен, если вы не программист Emacs Lisp

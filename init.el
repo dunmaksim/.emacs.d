@@ -233,106 +233,80 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 TREESIT
 ;; Встроенный пакет для работы с TreeSitter
 (use-package treesit
-  :init
-  ;; Проверим существование подкаталога tree-sitter. При необходимости создадим.
-  (let ((ts-lib-dir (locate-user-emacs-file "tree-sitter")))
-    (unless (file-directory-p ts-lib-dir)
-      (make-directory ts-lib-dir)))
   :config
   ;; Грамматики
   ;; ASCIIDOC
-  (add-to-list 'treesit-language-source-alist
-    '(asciidoc
-       "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-       "v0.3.0"
-       "tree-sitter-asciidoc/src/"))
-  ;; ASCIIDOC-INLINE
-  (add-to-list 'treesit-language-source-alist
-    '(asciidoc-inline
-       "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-       "v0.3.0"
-       "tree-sitter-asciidoc_inline/src/"))
-  ;; BASH
-  (add-to-list 'treesit-language-source-alist
-    '(bash
-       "https://github.com/tree-sitter/tree-sitter-bash.git"
-       ;; "v0.25.1" ;; ABI v15
-       ;; "v0.25.0" ;; ABI v15
-       "v0.23.3"))
-  ;; DOCKERFILE / CONTAINERFILE
-  (add-to-list 'treesit-language-source-alist
-    '(dockerfile
-       "https://github.com/camdencheek/tree-sitter-dockerfile.git"
-       "v0.2.0"
-       "src/"))
-  ;; JAVASCRIPT
-  (add-to-list 'treesit-language-source-alist
-    '(javascript
-       "https://github.com/tree-sitter/tree-sitter-javascript.git"
-       "v0.23.1"
-       "src/"))
-  ;; JSDOC
-  (add-to-list 'treesit-language-source-alist
-    '(jsdoc
-       "https://github.com/tree-sitter/tree-sitter-jsdoc.git"
-       "v0.23.1"
-       "src/"))
-  ;; JSON
-  (add-to-list 'treesit-language-source-alist
-    '(json
-       "https://github.com/tree-sitter/tree-sitter-json.git"
-       "v0.24.8"))
-  ;; MAKE
-  (add-to-list 'treesit-language-source-alist
-    '(make
-       "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
-       "v1.1.1"
-       "src/"))
-  ;; MARKDOWN
-  (add-to-list 'treesit-language-source-alist
-    '(markdown
-       "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
-       "v0.4.1"
-       "tree-sitter-markdown/src"))
-  ;; MARKDOWN-INLINE
-  (add-to-list 'treesit-language-source-alist
-    '(markdown-inline
-       "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
-       "v0.4.1"
-       "tree-sitter-markdown-inline/src"))
-  ;; PYTHON
-  (add-to-list 'treesit-language-source-alist
-    '(python
-       "https://github.com/tree-sitter/tree-sitter-python.git"
-       "v0.23.6"
-       "src/"))
-  ;; RUBY
-  (add-to-list 'treesit-language-source-alist
-    '(ruby
-       "https://github.com/tree-sitter/tree-sitter-ruby.git"
-       "v0.23.1"
-       "src/"))
-  ;; RUST
-  (add-to-list 'treesit-language-source-alist
-    '(rust
-       "https://github.com/tree-sitter/tree-sitter-rust.git"
-       "v0.23.3"))
-  ;; TYPST
-  (add-to-list 'treesit-language-source-alist
-    '(typst
-       "https://github.com/uben0/tree-sitter-typst.git"
-       "0.11"
-       "src/"))
-  ;; YAML
-  (add-to-list 'treesit-language-source-alist
-    '(yaml
-       "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
-       "v0.7.2"
-       "src/"))
+  (setq treesit-language-source-alist
+    '(
+       (asciidoc
+         "https://github.com/cathaysia/tree-sitter-asciidoc.git"
+         "v0.3.0"
+         "tree-sitter-asciidoc/src/")
+       ;; ASCIIDOC-INLINE
+       (asciidoc-inline
+         "https://github.com/cathaysia/tree-sitter-asciidoc.git"
+         "v0.3.0"
+         "tree-sitter-asciidoc_inline/src/")
+       (bash
+         "https://github.com/tree-sitter/tree-sitter-bash.git"
+         ;; "v0.25.1" ;; ABI v15
+         ;; "v0.25.0" ;; ABI v15
+         "v0.23.3")
+       (dockerfile
+         "https://github.com/camdencheek/tree-sitter-dockerfile.git"
+         "v0.2.0"
+         "src/")
+       (javascript
+         "https://github.com/tree-sitter/tree-sitter-javascript.git"
+         "v0.23.1"
+         "src/")
+       (jsdoc
+         "https://github.com/tree-sitter/tree-sitter-jsdoc.git"
+         "v0.23.1"
+         "src/")
+       (json
+         "https://github.com/tree-sitter/tree-sitter-json.git"
+         "v0.24.8")
+       (make
+         "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
+         "v1.1.1"
+         "src/")
+       (markdown
+         "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+         "v0.4.1"
+         "tree-sitter-markdown/src")
+       (markdown-inline
+         "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+         "v0.4.1"
+         "tree-sitter-markdown-inline/src")
+       ;; PYTHON
+       (python
+         "https://github.com/tree-sitter/tree-sitter-python.git"
+         "v0.23.6"
+         "src/")
+       ;; RUBY
+       (ruby
+         "https://github.com/tree-sitter/tree-sitter-ruby.git"
+         "v0.23.1"
+         "src/")
+       ;; RUST
+       (rust
+         "https://github.com/tree-sitter/tree-sitter-rust.git"
+         "v0.23.3")
+       (typst
+         "https://github.com/uben0/tree-sitter-typst.git"
+         "0.11"
+         "src/")
+       (yaml
+         "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
+         "v0.7.2"
+         "src/")))
   ;; Сборка и установка грамматик
   (dolist (source treesit-language-source-alist)
-    (unless (treesit-ready-p (car source))
-      (treesit-install-language-grammar (car source)))))
+    (let ((lang (car source)))
+      (unless (treesit-ready-p lang t)
+        (with-demoted-errors "Treesit: ошибка установки грамматики: %s"
+          (treesit-install-language-grammar lang))))))
 
 
 ;; 📦 ABBREV-MODE

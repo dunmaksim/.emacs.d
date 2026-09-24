@@ -4,19 +4,6 @@
 
 ;;; Code:
 
-(defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
-
-(require 'custom)
-(setopt custom-file
-  (expand-file-name
-    (convert-standard-filename "custom.el")
-    user-emacs-directory)) ;; Файл для сохранения пользовательских настроек, сделанных в customize.
-
-
-;; Загрузим настройки сразу, чтобы они не переопределяли параметры из `init.el'.
-(when (file-exists-p custom-file)
-  (load custom-file))
-
 ;;; Здесь находятся настройки базовой функциональности Emacs.
 ;;; Даже если будут какие-то проблемы со сторонними пакетами, этот код всё
 ;;; равно будет выполнен.
@@ -24,7 +11,6 @@
 
 
 (defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
-
 
 (defconst init-el-preferred-fonts
   '(
@@ -692,46 +678,43 @@ FRAME — название настраиваемого фрейма."
   (ibuffer-saved-filter-groups ;; Группы по умолчанию
     '(("default"
         ("Dired" (mode . dired-mode))
-        ("Emacs Lisp" (or (mode . emacs-lisp-mode)
-                        (mode . lisp-data-mode)))
+        ("Emacs Lisp" (derived-mode . lisp-data-mode))
         ("Org" (mode . org-mode))
-        ("AsciiDoc" (or (mode . asciidoc-mode)
-                      (mode . asciidoc-ts-mode)))
-        ("Markdown" (mode . markdown-mode))
+        ("AsciiDoc" (mode . asciidoc-ts-mode))
+        ("Markdown" (derived-mode . markdown-mode))
         ("ReStructured Text" (mode . rst-mode))
-        ("CONF / INI" (or (mode . conf-mode)
-                        (mode . editorconfig-conf-mode)))
-        ("XML" (or (mode . nxml-mode)
-                 (mode . xml-mode)))
+        ("CONF / INI" (derived-mode . conf-mode))
+        ("XML" (mode . nxml-mode))
         ("YAML" (mode . yaml-ts-mode))
-        ("Makefile" (mode . makefile-mode))
-        ("Python" (mode . python-mode))
-        ("Ruby" (or (mode . ruby-mode)
-                  (mode . ruby-ts-mode)))
+        ("Makefile" (derived-mode . makefile-mode))
+        ("Python" (derived-mode . python-base-mode))
+        ("Ruby" (derived-mode . ruby-base-mode))
+        ("Rust" (derived-mode . rust-mode))
         ("SSH keys" (name . "\\.pub\\'"))
-        ("Shell-script" (mode . sh-mode))
+        ("Shell-script" (derived-mode . sh-base-mode))
         ("SQL" (mode . sql-mode))
-        ("Web" (or (mode . html-mode)
-                 (mode . json-mode)
+        ("Web" (or
+                 (derived-mode . sgml-mode)
                  (mode . json-ts-mode)
-                 (mode . js-mode)
-                 (mode . js-ts-mode)))
-        ("Magit" (or (mode . magit-diff-mode)
+                 (derived-mode . js-base-mode)))
+        ("Magit" (or
+                   (mode . magit-diff-mode)
                    (mode . magit-log-mode)
                    (mode . magit-status-mode)
                    (name . "\\*magit\\*")
                    (name . "git-monitor")))
-        ("Commands" (or (mode . compilation-mode)
+        ("Commands" (or
+                      (derived-mode . compilation-mode)
                       (mode . eshell-mode)
                       (mode . shell-mode)
                       (mode . term-mode)))
-        ("Emacs" (or (name . "\\*scratch\\*")
+        ("Emacs" (or
+                   (name . "\\*scratch\\*")
                    (name . "\\*Messages\\*")
                    (name . "\\*Customize\\*")
                    (name . "\\*Help\\*")
                    (name . "\\*Echo\\*")
                    (name . "\\*Minibuf\\*"))))))
-  (ibuffer-hidden-filter-groups (list "*Internal*" )) ;; Не показывать эти буферы
   (ibuffer-show-empty-filter-groups nil) ;; Не показывать пустые группы
   :hook
   (ibuffer-mode . ibuffer-auto-mode)
@@ -765,7 +748,8 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :init
   (unless (alist-get 'jsonrpc package-alist)
-    (package-upgrade 'jsonrpc)))
+    (with-demoted-errors "Ошибка обновления `json-rpc': %s"
+      (package-upgrade 'jsonrpc))))
 
 
 ;; 📦 JSON-TS-MODE
@@ -784,7 +768,13 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет для управления поведением минибуфера.
 (use-package minibuffer
   :custom
-  (setq completions-detailed t "Подробные подсказки в минибуфере"))
+  (completion-category-overrides ;; Расширим список методов работы с автодополнением
+    '(
+       (buffer (styles . (basic substring flex)))
+       )
+    )
+  (completions-detailed t "Подробные подсказки в минибуфере")
+  (completions-format 'one-column "Вертикальные подсказки в одну колонку"))
 
 
 ;; 📦 nXML
@@ -804,6 +794,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 PAREN
 ;; Подсветка парных скобок.
 (use-package paren
+  :defer t
   :hook
   (after-init . show-paren-mode))
 
@@ -827,13 +818,15 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'peg package-alist)
-    (package-upgrade 'peg)))
+    (with-demoted-errors "Ошибка обновления `peg': %s"
+      (package-upgrade 'peg))))
 
 
 ;; 📦 PIXEL-SCROLL
 ;; Встроенный пакет, позволяет плавно прокручивать текст
 (when (package-installed-p 'pixel-scroll)
   (use-package pixel-scroll
+    :defer t
     :hook
     (after-init . pixel-scroll-mode)
     (after-init . pixel-scroll-precision-mode)))
@@ -866,7 +859,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'project package-alist)
-    (package-upgrade 'project)))
+    (with-demoted-errors "Ошибка обновления `project': %s"
+      (package-upgrade 'project))))
 
 
 ;; 📦 PYTHON-MODE
@@ -875,7 +869,8 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :init
   (unless (alist-get 'python package-alist)
-    (package-upgrade 'python))
+    (with-demoted-errors "Ошибка обновления `python': %s"
+      (package-upgrade 'python)))
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
@@ -886,6 +881,7 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет, позволяет просматривать и быстро переходить к последним
 ;; открытым файлам
 (use-package recentf
+  :defer t
   :custom
   (recentf-max-saved-items 100 "Помнить последние 100 файлов")
   (recentf-save-file (locate-user-emacs-file "recentf") "Хранить список в файле .emacs.d/recentf")
@@ -896,6 +892,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 REPEAT-MODE
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
+  :defer t
   :hook
   (after-init . repeat-mode))
 
@@ -930,6 +927,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 SAVEPLACE
 ;; Запоминание позиции курсора в посещённых файлах.
 (use-package saveplace
+  :defer t
   :custom
   (save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
   :hook
@@ -939,7 +937,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 SAVEHIST
 ;; Встроенный пакет для запоминания истории команд
 (use-package savehist
-  :defer nil
+  :defer t
   :custom
   (savehist-additional-variables
     '(compile-history
@@ -977,6 +975,7 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет.
 ;; Разные настройки управления элементарным редактированием текста.
 (use-package simple
+  :defer t
   :init
   ;; Создадим каталог для файлов автосохранения
   (let ((saves-dir (expand-file-name "saves" user-emacs-directory)))
@@ -1023,12 +1022,14 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'svg package-alist)
-    (package-upgrade 'svg)))
+    (with-demoted-errors "Ошибка обновления `svg': %s"
+      (package-upgrade 'svg))))
 
 
 ;; 📦 TAB-BAR-MODE
 ;; Встроенный пакет для управления вкладками
 (use-package tab-bar
+  :defer t
   :bind
   (:map global-map
     ("C-<tab>" . tab-bar-switch-to-next-tab)
@@ -1076,7 +1077,8 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :init
   (unless (alist-get 'track-changes package-alist)
-    (package-upgrade 'track-changes)))
+    (with-demoted-errors "Ошибка обновления `track-changes': %s"
+      (package-upgrade 'track-changes))))
 
 
 ;; 📦 TRAMP
@@ -1086,7 +1088,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'tramp package-alist)
-    (package-upgrade 'tramp)))
+    (with-demoted-errors "Ошибка обновления `tramp': %s"
+      (package-upgrade 'tramp))))
 
 
 ;; 📦 TRANSIENT
@@ -1095,7 +1098,8 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :init
   (unless (alist-get 'transient package-alist)
-    (package-upgrade 'transient)))
+    (with-demoted-errors "Ошибка обновления `transient': %s"
+      (package-upgrade 'transient))))
 
 
 ;; 📦 UNIQUIFY
@@ -1112,7 +1116,8 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :init
   (unless (alist-get 'verilog-mode package-alist)
-    (package-upgrade 'verilog-mode)))
+    (with-demoted-errors "Ошибка обновления `verilog-mode': %s"
+      (package-upgrade 'verilog-mode))))
 
 
 ;; 📦 WHITESPACE MODE
@@ -1173,7 +1178,8 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :init
   (unless (alist-get 'window-tool-bar package-alist)
-    (package-upgrade 'window-tool-bar)))
+    (with-demoted-errors "Ошибка обновления `window-tool-bar': %s"
+      (package-upgrade 'window-tool-bar))))
 
 
 ;; 📦 XREF
@@ -1183,7 +1189,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'xref package-alist)
-    (package-upgrade 'xref)))
+    (with-demoted-errors "Ошибка обновления `xref': %s"
+      (package-upgrade 'xref))))
 
 
 ;; 📦 YAML-TS-MODE
@@ -1268,7 +1275,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'bind-key package-alist)
-    (package-upgrade 'bind-key)))
+    (with-demoted-errors "Ошибка обновления `bind-key': %s"
+      (package-upgrade 'bind-key))))
 
 
 ;; 📦 BREADCRUMB
@@ -1277,6 +1285,7 @@ FRAME — название настраиваемого фрейма."
 (use-package breadcrumb
   :pin gnu
   :ensure t
+  :defer t
   :hook
   (after-init . breadcrumb-mode))
 
@@ -1403,6 +1412,7 @@ FRAME — название настраиваемого фрейма."
 (use-package diff-hl
   :pin gnu
   :ensure t
+  :defer t
   :custom
   (diff-hl-update-async t "Асинхронное обновление состояния.")
   :hook
@@ -1435,9 +1445,11 @@ FRAME — название настраиваемого фрейма."
 (use-package editorconfig
   :pin gnu
   :ensure t
+  :defer t
   :init
   (unless (alist-get 'editorconfig package-alist)
-    (package-upgrade 'editorconfig))
+    (with-demoted-errors "Ошибка обновления `editorconfig': %s"
+      (package-upgrade 'editorconfig)))
   :mode
   ("\\.editorconfig\\'" . editorconfig-conf-mode)
   :hook
@@ -1473,7 +1485,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'eglot package-alist)
-    (package-upgrade 'eglot))
+    (with-demoted-errors "Ошибка обновления `eglot': %s"
+      (package-upgrade 'eglot)))
   :defer t
   :custom
   (eglot-autoshutdown t "Автоматически выключить сервер при закрытии последнего буфера")
@@ -1513,7 +1526,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'eldoc package-alist)
-    (package-upgrade 'eldoc))
+    (with-demoted-errors "Ошибка обновления `eldoc-mode': %s"
+      (package-upgrade 'eldoc)))
   :config
   (global-eldoc-mode nil)
   :custom
@@ -1529,6 +1543,7 @@ FRAME — название настраиваемого фрейма."
 (use-package flycheck
   :pin nongnu
   :ensure t
+  :defer t
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")

@@ -42,4 +42,5 @@
   inhibit-startup-screen t       ;; Не показывать приветственный экран
   load-prefer-newer t)           ;; Если есть файл elc, но el новее, загрузить el-файл.
 
+(provide 'early-init)
 ;;; early-init.el ends here

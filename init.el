@@ -23,39 +23,35 @@
 ;;; По этой же причине здесь нет ничего, что могло бы сломаться.
 
 
-;; Настройки, специфичные для графического режима
+(defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
+
+
+(defconst init-el-preferred-fonts
+  '(
+     "Lilex"
+     "SauceCodePro NFP"
+     "FiraCode Nerd Font Mono"
+     "Fira Code"
+     "DejaVu Sans Mono Nerd"
+     "DejaVu Sans Mono"
+     "Source Code Pro"
+     "Consolas"))
+
+
 (defun init-el-set-fonts (&optional frame)
-  "Настройки, необходимые при запуске EMACS в графической среде.
+  "Настройки для работы Emacs  в графическом режиме.
 FRAME — название настраиваемого фрейма."
-  (when (display-graphic-p frame) ;; Фрейм графический
-    ;; Получаем список шрифтов
-    (let ((font-families (font-family-list))
-           (lilex "Lilex")
-           (sauce-code-pro "SauceCodePro NFP")
-           (fira-code-nerd-font-mono "FiraCode Nerd Font Mono")
-           (fira-code "Fira Code")
-           (dejavu-sans-mono-nerd "DejaVu Sans Mono Nerd")
-           (dejavu-sans-mono "DejaVu Sans Mono")
-           (source-code-pro "Source Code Pro")
-           (consolas "Consolas"))
-      ;; Мои любимые шрифты, от самого любимого к менее любимому
-      (let ((preferred-font-family
-              (cond
-                ((member lilex font-families) lilex)
-                ((member sauce-code-pro font-families) sauce-code-pro)
-                ((member fira-code-nerd-font-mono font-families) fira-code-nerd-font-mono)
-                ((member fira-code font-families) fira-code)
-                ((member dejavu-sans-mono-nerd font-families) dejavu-sans-mono-nerd)
-                ((member dejavu-sans-mono font-families) dejavu-sans-mono)
-                ((member source-code-pro font-families) source-code-pro)
-                ((member consolas font-families) consolas)
-                (t nil))))
-        (set-face-attribute
-          'default ;; Font Face по умолчанию
-          nil      ;; Применить ко всем фреймам
-          ;; Атрибуты шрифта
-          :family preferred-font-family
-          :height (* init-el-font-height 10))))))
+  (when (display-graphic-p frame)
+    (let* ((font-families (font-family-list))
+            (preferred-font-family
+              (seq-find (lambda (font)(member font font-families))
+                init-el-preferred-fonts)))
+      (set-face-attribute
+        'default  ;; Font Face по умолчанию
+        nil       ;; Применить ко всем фреймам
+        :family preferred-font-family
+        :height (* init-el-font-height 10)))))
+
 
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:

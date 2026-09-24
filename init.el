@@ -271,8 +271,7 @@ FRAME — название настраиваемого фрейма."
 ;; определённой последовательности символов заменяются на другую.
 (use-package abbrev
   :hook
-  ((asciidoc-mode
-     asciidoc-ts-mode
+  ((asciidoc-ts-mode
      markdown-mode
      rst-mode) . abbrev-mode))
 
@@ -281,8 +280,8 @@ FRAME — название настраиваемого фрейма."
 (use-package ansi-color
   :custom
   (ansi-color-for-compilation-mode t "Расцветка буфера *compile*")
-  :config
-  (add-hook 'compilation-filter-hook #'ansi-color-compilation-filter))
+  :hook
+  (compilation-filter . ansi-color-compilation-filter))
 
 
 ;; 📦 AUTOREVERT
@@ -292,9 +291,9 @@ FRAME — название настраиваемого фрейма."
 ;; По умолчанию `global-auto-revert-mode' работает только с файловыми
 ;; буферами.
 (use-package autorevert
-  :defer t
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку при использовании VCS")
+  (global-auto-revert-non-file-buffers t "Не только файловые буферы, но и IBuffer, Dired и т. д.")
   :hook
   (after-init . global-auto-revert-mode))
 
@@ -312,7 +311,7 @@ FRAME — название настраиваемого фрейма."
   :custom
   (checkdoc-minor-mode-string " CheckDoc")
   :hook
-  (emacs-lisp-mode . checkdoc-minor-mode))
+  (lisp-data-mode . checkdoc-minor-mode))
 
 
 ;; 📦 COMP-RUN
@@ -326,7 +325,6 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет, реализующий новый API для старых версий Emacs
 (use-package compat
   :pin gnu
-  :ensure t
   :init
   (unless (alist-get 'compat package-alist)
     (with-demoted-errors "Ошибка обновления пакета `compat': %s"
@@ -343,15 +341,9 @@ FRAME — название настраиваемого фрейма."
 
 ;; 📦 COMPLETION-PREVIEW
 ;; Встроенный пакет, показывающий вариант автозавершения прямо в строке
-(use-package completion-preview
-  :hook
-  (css-ts-mode . completion-preview-mode)
-  (dockerfile-ts-mode . completion-preview-mode)
-  (emacs-lisp-mode . completion-preview-mode)
-  (js-ts-mode . completion-preview-mode)
-  (python-ts-mode . completion-preview-mode)
-  (ruby-ts-mode . completion-preview-mode)
-  (rust-mode . completion-preview-mode))
+(when (package-installed-p 'completion-preview) ;; В старых версиях этого пакета ещё нет
+  (use-package completion-preview
+    :hook (after-init . global-completion-preview-mode)))
 
 
 ;; 📦 CONF-MODE
@@ -365,18 +357,23 @@ FRAME — название настраиваемого фрейма."
   ("\\inventory\\'" . conf-mode))
 
 
+;; 📦 CUS-EDIT
+;; Встроенный пакет для управления настройками кастомизации
+(use-package cus-edit
+  :custom
+  (custom-buffer-done-kill t "Закрывать буферы customize при выходе из них"))
+
+
 ;; 📦 CUSTOM
 ;; Встроенный пакет для управления настройками кастомизации
 (use-package custom
   :custom
-  (custom-buffer-done-kill t "Закрывать буферы customize при выходе из них")
   (custom-safe-themes t "Все темы считаем безопасными"))
 
 
 ;; 📦 DELSEL
 ;; Встроенный пакет для управления удалением выделенного текста.
 (use-package delsel
-  :defer t
   :hook
   (after-init . delete-selection-mode)) ;; Удалять выделенный фрагмент при вводе текста
 
@@ -385,11 +382,8 @@ FRAME — название настраиваемого фрейма."
 ;; Сохранение состояния Emacs между сессиями.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
 (use-package desktop
-  :defer t
   :custom
-  (desktop-dirname user-emacs-directory "Каталог для хранения файла .desktop.")
   (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
-  (desktop-restore-frames t "Восстанавливать фреймы.")
   (desktop-save t "Сохранять список открытых буферов, файлов и т. д. без лишних вопросов.")
   :config
   ;; Буферы с этими режимами мы сохранять не будем
@@ -404,7 +398,7 @@ FRAME — название настраиваемого фрейма."
 (use-package dired
   :custom
   (dired-auto-revert-buffer t "Обновлять содержимое при повторном переходе в каталог")
-  (dired-free-space nil "Информация о занятом и свободном месте в отдельной строке")
+  (dired-free-space 'separate "Информация о занятом и свободном месте в отдельной строке")
   ;; Без этой настройки при каждой смене каталога Dired будет создавать новый буфер
   (dired-kill-when-opening-new-dired-buffer t "Удалять буфер при переходе в другой каталог")
   ;; Дополнительные параметры вызова команды ls
@@ -422,32 +416,25 @@ FRAME — название настраиваемого фрейма."
   ((asciidoc-ts-mode
      c-mode
      conf-mode
-     conf-toml-mode
-     css-mode
+     css-base-mode
      csv-mode
      dockerfile-ts-mode
-     emacs-lisp-mode
      haml-mode
-     html-mode
-     javascript-mode
-     js-ts-mode
+     js-base-mode
      json-ts-mode
-     latex-mode
      lisp-data-mode
      makefile-mode
      markdown-mode
-     mhtml-mode
-     nxml-mode
+     nxml-mode ;; xml-mode and other
      po-mode
-     python-mode
+     python-base-mode
      rst-mode
-     ruby-mode
-     ruby-ts-mode
+     ruby-base-mode
      rust-mode
      sed-mode
-     sh-mode
-     tex-mode
-     xml-mode
+     sgml-mode ;; html-mode, mhtml-mode and other
+     sh-base-mode
+     tex-mode ;; latex-mode and other
      yaml-ts-mode) . display-line-numbers-mode))
 
 
@@ -464,15 +451,14 @@ FRAME — название настраиваемого фрейма."
 ;; В основном только мешает, лучше выключить.
 (use-package electric
   :hook
-  ((emacs-lisp-mode
+  ((lisp-data-mode
      markdown-mode
-     mhtml-mode
      nxml-mode
-     python-mode
+     python-base-mode
      rst-mode
-     ruby-mode
-     ruby-ts-mode
-     rust-mode) . electric-indent-local-mode))
+     ruby-base-mode
+     rust-mode
+     sgml-mode) . electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -490,25 +476,19 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”)
   :hook
   ((conf-mode
-     css-mode
-     emacs-lisp-data-mode
-     emacs-lisp-mode
-     html-mode
-     js-ts-mode
+     css-base-mode
+     js-base-mode
      json-ts-mode
      lisp-data-mode
      markdown-mode
-     mhtml-mode
      nxml-mode
      org-mode
-     python-mode
-     ruby-mode
-     ruby-ts-mode
+     python-base-mode
+     ruby-base-mode
      rust-mode
      sed-mode
+     sgml-mode
      tex-mode
-     text-mode
-     conf-toml-mode
      yaml-ts-mode) . electric-pair-local-mode))
 
 
@@ -535,7 +515,7 @@ FRAME — название настраиваемого фрейма."
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
   :config
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(javascript-mode . js-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
   (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
   (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
@@ -556,8 +536,8 @@ FRAME — название настраиваемого фрейма."
   :custom
   (fill-column 120 "По умолчанию 70, что мало")
   :hook
-  ((emacs-lisp-mode
-     js-ts-mode
+  ((js-base-mode
+     lisp-data-mode
      yaml-ts-mode) . display-fill-column-indicator-mode))
 
 
@@ -565,7 +545,6 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет для работы со статическими анализаторами.
 (use-package flymake
   :pin gnu
-  :ensure t
   :init
   (unless (alist-get 'flymake package-alist)
     (with-demoted-errors "Ошибка обновления Flymake: %s"
@@ -575,13 +554,12 @@ FRAME — название настраиваемого фрейма."
     ("M-n" . flymake-goto-next-error)
     ("M-p" . flymake-goto-prev-error))
   :hook
-  (emacs-lisp-mode . flymake-mode))
+  (lisp-data-mode . flymake-mode))
 
 
 ;; 📦 FRAME
 ;; Встроенный пакет для управления фреймами.
 (use-package frame
-  :defer t
   :custom
   (window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
   (window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон")
@@ -603,12 +581,11 @@ FRAME — название настраиваемого фрейма."
 ;; Возможны варианты (зависит от основного режима).
 (use-package goto-addr
   :hook
-  ((asciidoc-mode
-     asciidoc-ts-mode
-     emacs-lisp-mode
-     html-mode
+  ((asciidoc-ts-mode
+     lisp-data-mode
      markdown-mode
-     rst-mode) . goto-address-mode))
+     rst-mode
+     sgml-mode) . goto-address-mode))
 
 
 ;; 📦 GREP
@@ -623,7 +600,6 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 HL-LINE-MODE
 ;; Подсветка активной строки.
 (use-package hl-line
-  :defer t
   :hook
   (after-init . global-hl-line-mode))
 
@@ -794,7 +770,6 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 PAREN
 ;; Подсветка парных скобок.
 (use-package paren
-  :defer t
   :hook
   (after-init . show-paren-mode))
 
@@ -803,19 +778,17 @@ FRAME — название настраиваемого фрейма."
 ;; Управление видимостью блоков кода
 (use-package outline
   :hook
-  ((asciidoc-mode
-     asciidoc-ts-mode
-     bash-ts-mode
-     emacs-lisp-mode
+  ((asciidoc-ts-mode
+     lisp-data-mode
      markdown-mode
-     rst-mode) . outline-minor-mode))
+     rst-mode
+     sh-base-mode) . outline-minor-mode))
 
 
 ;; 📦 PEG
 ;; Встроенный пакет, который мы просто обновим из GNU ELPA
 (use-package peg
   :pin gnu
-  :ensure t
   :init
   (unless (alist-get 'peg package-alist)
     (with-demoted-errors "Ошибка обновления `peg': %s"
@@ -824,12 +797,9 @@ FRAME — название настраиваемого фрейма."
 
 ;; 📦 PIXEL-SCROLL
 ;; Встроенный пакет, позволяет плавно прокручивать текст
-(when (package-installed-p 'pixel-scroll)
-  (use-package pixel-scroll
-    :defer t
-    :hook
-    (after-init . pixel-scroll-mode)
-    (after-init . pixel-scroll-precision-mode)))
+(use-package pixel-scroll
+  :hook
+  (after-init . pixel-scroll-precision-mode))
 
 
 ;; 📦 PROG-MODE
@@ -837,8 +807,8 @@ FRAME — название настраиваемого фрейма."
 (use-package prog-mode
   :hook
   ;; Будем показывать глифы вместо некоторых конструкций
-  (emacs-lisp-mode . prettify-symbols-mode)
-  (js-ts-mode . prettify-symbols-mode)
+  (js-base-mode . prettify-symbols-mode)
+  (lisp-data-mode . prettify-symbols-mode)
   (rust-mode . prettify-symbols-mode))
 
 
@@ -856,7 +826,6 @@ FRAME — название настраиваемого фрейма."
 ;; [C-x p e] — EShell в текущем проекте.
 (use-package project
   :pin gnu
-  :ensure t
   :init
   (unless (alist-get 'project package-alist)
     (with-demoted-errors "Ошибка обновления `project': %s"
@@ -881,7 +850,6 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет, позволяет просматривать и быстро переходить к последним
 ;; открытым файлам
 (use-package recentf
-  :defer t
   :custom
   (recentf-max-saved-items 100 "Помнить последние 100 файлов")
   (recentf-save-file (locate-user-emacs-file "recentf") "Хранить список в файле .emacs.d/recentf")
@@ -892,7 +860,6 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 REPEAT-MODE
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
-  :defer t
   :hook
   (after-init . repeat-mode))
 
@@ -927,7 +894,6 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 SAVEPLACE
 ;; Запоминание позиции курсора в посещённых файлах.
 (use-package saveplace
-  :defer t
   :custom
   (save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
   :hook
@@ -937,7 +903,6 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 SAVEHIST
 ;; Встроенный пакет для запоминания истории команд
 (use-package savehist
-  :defer t
   :custom
   (savehist-additional-variables
     '(compile-history
@@ -975,7 +940,6 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет.
 ;; Разные настройки управления элементарным редактированием текста.
 (use-package simple
-  :defer t
   :init
   ;; Создадим каталог для файлов автосохранения
   (let ((saves-dir (expand-file-name "saves" user-emacs-directory)))
@@ -1019,7 +983,6 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет, который мы просто обновим из GNU ELPA
 (use-package svg
   :pin gnu
-  :ensure t
   :init
   (unless (alist-get 'svg package-alist)
     (with-demoted-errors "Ошибка обновления `svg': %s"
@@ -1029,7 +992,6 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 TAB-BAR-MODE
 ;; Встроенный пакет для управления вкладками
 (use-package tab-bar
-  :defer t
   :bind
   (:map global-map
     ("C-<tab>" . tab-bar-switch-to-next-tab)
@@ -1085,7 +1047,6 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет, который мы просто обновим из GNU ELPA
 (use-package tramp
   :pin gnu
-  :ensure t
   :init
   (unless (alist-get 'tramp package-alist)
     (with-demoted-errors "Ошибка обновления `tramp': %s"
@@ -1132,16 +1093,16 @@ FRAME — название настраиваемого фрейма."
        (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
   (whitespace-line-column nil "Используем значение fill-column")
   :hook
-  ((asciidoc-mode
+  ((
      asciidoc-ts-mode
-     bash-ts-mode
+     sh-base-mode
      conf-mode
-     css-mode
+     css-base-mode
      dockerfile-ts-mode
-     emacs-lisp-mode
+     lisp-data-mode
      haml-mode
-     html-mode
-     js-ts-mode
+     sgml-mode
+     js-base-mode
      json-ts-mode
      latex-mode
      lisp-data-mode
@@ -1151,10 +1112,9 @@ FRAME — название настраиваемого фрейма."
      nxml-mode
      org-mode
      po-mode
-     python-mode
+     python-base-mode
      rst-mode
-     ruby-mode
-     ruby-ts-mode
+     ruby-base-mode
      rust-mode
      sed-mode
      sh-mode
@@ -1186,7 +1146,6 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет, который просто обновим из GNU ELPA
 (use-package xref
   :pin gnu
-  :ensure t
   :init
   (unless (alist-get 'xref package-alist)
     (with-demoted-errors "Ошибка обновления `xref': %s"
@@ -1220,12 +1179,10 @@ FRAME — название настраиваемого фрейма."
   (:map global-map
     ("<f12>" . apheleia-format-buffer))
   :hook
-  ((emacs-lisp-mode
+  ((lisp-data-mode
      json-ts-mode
-     python-mode
-     python-ts-mode
-     ruby-mode
-     ruby-ts-mode
+     python-base-mode
+     ruby-base-mode
      yaml-ts-mode) . apheleia-mode))
 
 
@@ -1285,7 +1242,6 @@ FRAME — название настраиваемого фрейма."
 (use-package breadcrumb
   :pin gnu
   :ensure t
-  :defer t
   :hook
   (after-init . breadcrumb-mode))
 
@@ -1301,26 +1257,26 @@ FRAME — название настраиваемого фрейма."
   (comint-mode-hook . buffer-env-update))
 
 
-;; 📦 CAPE
-;; https://github.com/minad/cape
-;; Бэкенды для CORFU
-(use-package cape
-  :pin gnu
-  :ensure t
-  :custom
-  ;; TODO: добавить код, определяющий наличие словарей.
-  (cape-dict-file '("/usr/share/doc/hunspell/en_US.dic"
-                     "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
-  :config
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-dict)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
-  (add-to-list 'completion-at-point-functions #'cape-emoji)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-history)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  (add-to-list 'completion-at-point-functions #'cape-rfc1345))
+;; ;; 📦 CAPE
+;; ;; https://github.com/minad/cape
+;; ;; Бэкенды для CORFU
+;; (use-package cape
+;;   :pin gnu
+;;   :ensure t
+;;   :custom
+;;   ;; TODO: добавить код, определяющий наличие словарей.
+;;   (cape-dict-file '("/usr/share/doc/hunspell/en_US.dic"
+;;                      "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
+;;   :config
+;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+;;   (add-to-list 'completion-at-point-functions #'cape-dict)
+;;   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+;;   (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
+;;   (add-to-list 'completion-at-point-functions #'cape-emoji)
+;;   (add-to-list 'completion-at-point-functions #'cape-file)
+;;   (add-to-list 'completion-at-point-functions #'cape-history)
+;;   (add-to-list 'completion-at-point-functions #'cape-keyword)
+;;   (add-to-list 'completion-at-point-functions #'cape-rfc1345))
 
 
 ;; 📦 COLORFUL-MODE
@@ -1330,12 +1286,11 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :hook
-  ((css-mode
-     css-ts-mode
-     emacs-lisp-mode
+  ((css-base-mode
      haml-mode
-     html-mode
      json-ts-mode
+     lisp-data-mode
+     sgml-mode
      yaml-ts-mode) . colorful-mode))
 
 
@@ -1352,7 +1307,7 @@ FRAME — название настраиваемого фрейма."
     ("C-c h" . consult-history)
     ("C-c i" . consult-info)
     ("C-c m" . consult-man)
-    ("C-s" . consult-line)
+    ;; ("C-s" . consult-line)
     ("C-x 4 b" . consult-buffer-other-window)
     ("C-x 5 b" . consult-buffer-other-frame)
     ("C-x b" . consult-buffer)
@@ -1369,18 +1324,18 @@ FRAME — название настраиваемого фрейма."
   (consult-after-jump . pulsar-pulse-line))
 
 
-;; 📦 CORFU
-;; https://elpa.gnu.org/packages/corfu.html
-;; Расширение для автодополнения в буфере.
-(use-package corfu
-  :pin gnu
-  :ensure t
-  :custom
-  (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
-  (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
-  :hook
-  (after-init . global-corfu-mode) ;; Включим глобально
-  (corfu-mode . corfu-indexed-mode)) ;; Номера возле вариантов завершения
+;; ;; 📦 CORFU
+;; ;; https://elpa.gnu.org/packages/corfu.html
+;; ;; Расширение для автодополнения в буфере.
+;; (use-package corfu
+;;   :pin gnu
+;;   :ensure t
+;;   :custom
+;;   (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
+;;   (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
+;;   :hook
+;;   (after-init . global-corfu-mode) ;; Включим глобально
+;;   (corfu-mode . corfu-indexed-mode)) ;; Номера возле вариантов завершения
 
 
 ;; 📦 CSV-MODE
@@ -1412,7 +1367,6 @@ FRAME — название настраиваемого фрейма."
 (use-package diff-hl
   :pin gnu
   :ensure t
-  :defer t
   :custom
   (diff-hl-update-async t "Асинхронное обновление состояния.")
   :hook
@@ -1445,7 +1399,6 @@ FRAME — название настраиваемого фрейма."
 (use-package editorconfig
   :pin gnu
   :ensure t
-  :defer t
   :init
   (unless (alist-get 'editorconfig package-alist)
     (with-demoted-errors "Ошибка обновления `editorconfig': %s"
@@ -1487,7 +1440,6 @@ FRAME — название настраиваемого фрейма."
   (unless (alist-get 'eglot package-alist)
     (with-demoted-errors "Ошибка обновления `eglot': %s"
       (package-upgrade 'eglot)))
-  :defer t
   :custom
   (eglot-autoshutdown t "Автоматически выключить сервер при закрытии последнего буфера")
   (eglot-events-buffer-config '(
@@ -1499,8 +1451,7 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
   ;; (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
-  (add-to-list 'eglot-server-programs '(python-mode . ("jedi-language-server")))
-  (add-to-list 'eglot-server-programs '(python-ts-mode . ("jedi-language-server")))
+  (add-to-list 'eglot-server-programs '(python-base-mode . ("jedi-language-server")))
   (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
   :bind
   (:map eglot-mode-map
@@ -1510,10 +1461,8 @@ FRAME — название настраиваемого фрейма."
   :hook
   ((ansible-mode
      dockerfile-ts-mode
-     python-mode
-     python-ts-mode
-     ruby-mode
-     ruby-ts-mode
+     python-base-mode
+     ruby-base-mode
      rust-mode
      yaml-ts-mode) . eglot-ensure))
 
@@ -1533,7 +1482,7 @@ FRAME — название настраиваемого фрейма."
   :custom
   (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
   :hook
-  (emacs-lisp-mode . eldoc-mode)
+  (lisp-data-mode . eldoc-mode)
   (lisp-interaction-mode . eldoc-mode))
 
 
@@ -1543,7 +1492,6 @@ FRAME — название настраиваемого фрейма."
 (use-package flycheck
   :pin nongnu
   :ensure t
-  :defer t
   :custom
   (flycheck-check-syntax-automatically '(mode-enabled save new-line))
   (flycheck-highlighting-mode 'lines "Стиль отображения проблемных мест — вся строка")
@@ -1551,26 +1499,23 @@ FRAME — название настраиваемого фрейма."
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
-  ((bash-ts-mode
+  ((
      conf-mode
-     css-mode
-     css-ts-mode
+     css-base-mode
      dockerfile-ts-mode
-     emacs-lisp-mode
      haml-mode
-     html-mode
-     js-ts-mode
+     js-base-mode
      json-ts-mode
      latex-mode
      lisp-data-mode
      makefile-mode
      nxml-mode
-     python-mode
+     python-base-mode
      rst-mode
-     ruby-mode
-     ruby-ts-mode
+     ruby-base-mode
      rust-mode
-     sh-mode
+     sgml-mode
+     sh-base-mode
      sql-mode
      yaml-ts-mode) . flycheck-mode)
   :hook
@@ -1586,18 +1531,15 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :hook
-  ((css-mode
-     css-ts-mode
-     emacs-lisp-mode
+  ((css-base-mode
      haml-mode
-     javascript-mode
-     js-ts-mode
+     js-base-mode
+     lisp-data-mode
      makefile-mode
      markdown-mode
-     python-mode
+     python-base-mode
      rst-mode
-     ruby-mode
-     ruby-ts-mode
+     ruby-base-mode
      rust-mode
      yaml-ts-mode) . indent-bars-mode))
 
@@ -1626,7 +1568,7 @@ FRAME — название настраиваемого фрейма."
   :hook
   ((asciidoc-ts-mode
      dockerfile-ts-mode
-     emacs-lisp-mode
+     lisp-data-mode
      markdown-mode
      rst-mode) . jinx-mode)
   :bind
@@ -1644,7 +1586,6 @@ FRAME — название настраиваемого фрейма."
 (use-package magit
   :pin nongnu
   :ensure t
-  :defer nil
   :after magit-section
   :custom
   (magit-auto-revert-mode t "Автоматическое обновление буферов при смене ветки.")
@@ -1698,11 +1639,11 @@ FRAME — название настраиваемого фрейма."
 (use-package org
   :pin gnu
   :ensure t
+  :defer t
   :init
   (unless (alist-get 'org package-alist)
     (with-demoted-errors "Ошибка обновления ORG: %s"
       (package-upgrade 'org)))
-  :defer t
   :custom
   (org-agenda-files '("~/Документы/Notes/")))
 
@@ -1723,12 +1664,11 @@ FRAME — название настраиваемого фрейма."
 (use-package pulsar
   :pin gnu
   :ensure t
-  :defer t
   :custom
   (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
   :hook
   (after-init . pulsar-global-mode)
-  (next-error . pulsar-pulse-line)
+  (next-error . pulsar-pulse-line-red)
   :config
   (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
   (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error))
@@ -1764,6 +1704,8 @@ FRAME — название настраиваемого фрейма."
 (use-package rust-mode
   :pin nongnu
   :ensure t
+  :custom
+  (rust-mode-treesitter-derive t "Наследование от `rust-ts-mode'.")
   :mode ("\\.rs\\'" . rust-mode))
 
 
@@ -1825,7 +1767,6 @@ FRAME — название настраиваемого фрейма."
 (use-package vertico
   :pin gnu
   :ensure t
-  :defer t
   :custom
   (completion-in-region-function #'consult-completion-in-region)
   (compoletion-styles '(basic substring partial-completion flex))
@@ -1867,7 +1808,6 @@ FRAME — название настраиваемого фрейма."
 (use-package which-key
   :pin gnu
   :ensure t
-  :defer t
   :init
   (unless (alist-get 'which-key package-alist)
     (with-demoted-errors "Ошибка обновления `which-key': %s"

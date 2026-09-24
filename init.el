@@ -106,17 +106,12 @@ FRAME — название настраиваемого фрейма."
   default-input-method "russian-computer"           ;; Метод ввода по умолчанию
   default-transient-input-method "russian-computer" ;; Временный метод ввода
   delete-by-moving-to-trash t                       ;; Удалять файлы в Корзину
-  gc-cons-threshold (* 800000 2)                    ;; Удвоим размер памяти для сборщика мусора
   highlight-nonselected-windows nil                 ;; Не подсвечивать неактивные окна
   inhibit-compacting-font-caches t                  ;; Не сжимать шрифты в памяти
-  inhibit-splash-screen t                           ;; Не показывать заставку
-  inhibit-startup-buffer-menu t                     ;; Выключить меню буферов при запуске
   inhibit-startup-echo-area-message user-login-name
-  inhibit-startup-screen t                          ;; Не показывать приветственный экран
   initial-scratch-message nil                       ;; Пустой буфер *scratch*
   initial-major-mode 'text-mode                     ;; Режим по умолчанию
   kill-buffer-delete-auto-save-files t              ;; Удалять файлы автосохранения при закрытии буфера
-  load-prefer-newer t                               ;; Если есть файл elc, но el новее, загрузить el-файл.
   long-line-threshold (* 50000 2)                   ;; Вдвое увеличим порог, 50000 — это по умолчанию
   major-mode 'text-mode                             ;; Текстовый режим для новых буферов по умолчанию.
   read-answer-short t                               ;; Быстрый ввод ответов на вопросы (не аналог yes-or-no-p
@@ -145,18 +140,6 @@ FRAME — название настраиваемого фрейма."
 (add-hook 'after-init-hook 'init-kill-scratch)
 (add-hook 'server-after-make-frame-hook 'init-kill-scratch)
 
-;; Меню не нужно
-(when (fboundp 'menu-bar-mode)
-  (setopt menu-bar-mode nil))
-
-;; Полосы прокрутки не нужны
-(when (fboundp 'scroll-bar-mode)
-  (setopt scroll-bar-mode nil))
-
-;; Панель инструментов не нужна
-(when (fboundp 'tool-bar-mode)
-  (setopt tool-bar-mode nil))
-
 
 ;; Изменим некоторые привязки клавиш по умолчанию
 (require 'keymap)
@@ -177,21 +160,6 @@ FRAME — название настраиваемого фрейма."
 
 ;; Вставка длинного тире по нажатию [M--]
 (keymap-global-set "M--" (lambda() (interactive) (insert "—")))
-
-
-;; 📦 PACKAGE
-;; Настроим архивы:
-(require 'package)
-(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
-(package-initialize)
-
-(setopt package-archive-priorities ;; Приоритеты архивов: чем выше, тем лучше.
-  '(("gnu" . 2)
-     ("nongnu" . 1))
-  package-native-compile t ;; Компиляция пакетов в нативный код при установке
-  package-vc-register-as-project nil) ;; Не надо регистрировать как проекты пакеты,
-;; установленные с помощью `package-vc-install'.
 
 
 (defun init-el-check-archive-contents ()
@@ -218,16 +186,18 @@ FRAME — название настраиваемого фрейма."
 
 ;; Если `use-package' встроенный, обновим из архива GNU ELPA.
 (unless (alist-get 'use-package package-alist)
-  (package-upgrade 'use-package))
+  (with-demoted-errors "Ошибка обновления `use-package': %s"
+    (package-upgrade 'use-package)))
 
 (require 'use-package)
 
 ;; Настройки отладочного режима
 (when init-file-debug
-  (setopt debug-on-error t ;; Автоматически перейти в режим отладки при ошибках.
+  (setopt
+    debug-on-error t                 ;; Автоматически перейти в режим отладки при ошибках.
     use-package-compute-statistics t ;; Сбор статистики `use-package'
-    use-package-expand-minimally t ;; Минимальное раскрытие кода.
-    use-package-verbose t)) ;; Подробный режим работы `use-package'.
+    use-package-expand-minimally t   ;; Минимальное раскрытие кода.
+    use-package-verbose t))          ;; Подробный режим работы `use-package'.
 
 
 ;; 📦 TREESIT
@@ -336,6 +306,7 @@ FRAME — название настраиваемого фрейма."
 ;; По умолчанию `global-auto-revert-mode' работает только с файловыми
 ;; буферами.
 (use-package autorevert
+  :defer t
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку при использовании VCS")
   :hook
@@ -372,7 +343,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'compat package-alist)
-    (package-upgrade 'compat)))
+    (with-demoted-errors "Ошибка обновления пакета `compat': %s"
+      (package-upgrade 'compat))))
 
 
 ;; 📦 COMPILE
@@ -418,6 +390,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 DELSEL
 ;; Встроенный пакет для управления удалением выделенного текста.
 (use-package delsel
+  :defer t
   :hook
   (after-init . delete-selection-mode)) ;; Удалять выделенный фрагмент при вводе текста
 
@@ -426,6 +399,7 @@ FRAME — название настраиваемого фрейма."
 ;; Сохранение состояния Emacs между сессиями.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Saving-Emacs-Sessions.html
 (use-package desktop
+  :defer t
   :custom
   (desktop-dirname user-emacs-directory "Каталог для хранения файла .desktop.")
   (desktop-load-locked-desktop t "Загрузка файла .desktop даже если он заблокирован.")
@@ -608,7 +582,8 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :init
   (unless (alist-get 'flymake package-alist)
-    (package-upgrade 'flymake))
+    (with-demoted-errors "Ошибка обновления Flymake: %s"
+      (package-upgrade 'flymake)))
   :bind
   (:map emacs-lisp-mode-map
     ("M-n" . flymake-goto-next-error)
@@ -620,6 +595,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 FRAME
 ;; Встроенный пакет для управления фреймами.
 (use-package frame
+  :defer t
   :custom
   (window-divider-default-places 't "Разделители окон со всех сторон (по умолчанию только справа)")
   (window-divider-default-right-width 3  "Ширина в пикселях для линии-разделителя окон")
@@ -661,6 +637,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 HL-LINE-MODE
 ;; Подсветка активной строки.
 (use-package hl-line
+  :defer t
   :hook
   (after-init . global-hl-line-mode))
 

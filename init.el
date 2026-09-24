@@ -1692,26 +1692,16 @@ FRAME — название настраиваемого фрейма."
   (text-mode . nano-modeline-text-mode))
 
 
-;; ORDERLESS
-;; https://github.com/oantolin/orderless
-;; Поиск по частичному совпадению
-(use-package orderless
-  :pin gnu
-  :ensure t
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion))))
-  (completion-pcm-leading-wildcard t))
-
-
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
 (use-package org
   :pin gnu
+  :ensure t
   :init
   (unless (alist-get 'org package-alist)
-    (package-upgrade 'org))
+    (with-demoted-errors "Ошибка обновления ORG: %s"
+      (package-upgrade 'org)))
   :defer t
   :custom
   (org-agenda-files '("~/Документы/Notes/")))
@@ -1733,6 +1723,7 @@ FRAME — название настраиваемого фрейма."
 (use-package pulsar
   :pin gnu
   :ensure t
+  :defer t
   :custom
   (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
   :hook
@@ -1834,6 +1825,7 @@ FRAME — название настраиваемого фрейма."
 (use-package vertico
   :pin gnu
   :ensure t
+  :defer t
   :custom
   (completion-in-region-function #'consult-completion-in-region)
   (compoletion-styles '(basic substring partial-completion flex))
@@ -1875,9 +1867,11 @@ FRAME — название настраиваемого фрейма."
 (use-package which-key
   :pin gnu
   :ensure t
+  :defer t
   :init
   (unless (alist-get 'which-key package-alist)
-    (package-upgrade 'which-key))
+    (with-demoted-errors "Ошибка обновления `which-key': %s"
+      (package-upgrade 'which-key)))
   :custom
   (which-key-use-C-h-commands t "Страницы which-key вместо describe-prefix-bindings.")
   (which-key-popup-type 'minibuffer "Будем показывать подсказки прямо в минибуфере")

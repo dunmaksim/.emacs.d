@@ -1674,24 +1674,6 @@ FRAME — название настраиваемого фрейма."
     ("M-." . markdown-follow-thing-at-point)))
 
 
-;; 📦 MULTIPLE CURSORS
-;; https://github.com/magnars/multiple-cursors.el
-;; Позволяет использовать мультикурсорность.
-(use-package multiple-cursors
-  :pin nongnu
-  :ensure t
-  :custom (mc/always-run-for-all t "Не задавать лишних вопросов.")
-  :init
-  (keymap-global-unset "M-<down-mouse-1>")
-  :bind
-  (:map global-map
-    ("C-S-c C-S-c" . mc/edit-lines)
-    ("C->" . mc/mark-next-like-this)
-    ("C-<" . mc/mark-previous-like-this)
-    ("C-c C-<" . mc/mark-all-like-this)
-    ("M-<mouse-1>" . mc/add-cursor-on-click)))
-
-
 ;; NANO-MODELINE
 ;; https://elpa.gnu.org/packages/nano-modeline.html
 ;; Минималистичная строка статуса

@@ -475,7 +475,8 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
   (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”)
   :hook
-  ((conf-mode
+  ((asciidoc-ts-mode
+     conf-mode
      css-base-mode
      js-base-mode
      json-ts-mode
@@ -514,11 +515,12 @@ FRAME — название настраиваемого фрейма."
   (require-final-newline t "Требовать новую строку в конце файлов")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
   :config
+  (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
   (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
   (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(sh-mode . bash-ts-mode))
   (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   (add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
   (add-to-list 'safe-local-variable-values '(electric-pair-preserve-balance . t))
@@ -711,10 +713,10 @@ FRAME — название настраиваемого фрейма."
   (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
   (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case.")
   :mode
-  ("\\.js\\'" . js-ts-mode)
-  ("\\.jsm\\'" . js-ts-mode)
-  ("\\.jsx\\'" . js-ts-mode)
-  ("\\.har\\'" . js-ts-mode))
+  ("\\.js\\'" . js-mode)
+  ("\\.jsm\\'" . js-mode)
+  ("\\.jsx\\'" . js-mode)
+  ("\\.har\\'" . js-mode))
 
 
 ;; 📦 JSONRPC
@@ -840,6 +842,8 @@ FRAME — название настраиваемого фрейма."
   (unless (alist-get 'python package-alist)
     (with-demoted-errors "Ошибка обновления `python': %s"
       (package-upgrade 'python)))
+  :interpreter
+  ("python[0-9]" . python-mode)
   :custom
   (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
@@ -886,6 +890,9 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 RUBY-TS-MODE
 ;; Встроенный пакет для работы с Ruby.
 (use-package ruby-ts-mode
+  :interpreter
+  ("bundler" . ruby-ts-mode)
+  ("ruby" . ruby-ts-mode)
   :mode
   ("\\.rb\\'" . ruby-ts-mode)
   ("\\Vagrantfile\\'" . ruby-ts-mode))
@@ -920,12 +927,15 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 SHELL-SCRIPT-MODE
 ;; Встроенный пакет для работы со скриптами Shell.
 (use-package sh-script
+  :interpreter
+  ("sh" . sh-mode)
+  ("bash" . bash-mode)
   :mode
-  ("\\.bash_aliases\\'" . bash-ts-mode)
-  ("\\.bashrc\\'" . bash-ts-mode)
-  ("\\.envrc\\'" . bash-ts-mode)
-  ("\\.profile\\'" . bash-ts-mode)
-  ("\\.sh\\'" . bash-ts-mode))
+  ("\\.bash_aliases\\'" . bash-mode)
+  ("\\.bashrc\\'" . bash-mode)
+  ("\\.envrc\\'" . bash-mode)
+  ("\\.profile\\'" . bash-mode)
+  ("\\.sh\\'" . sh-mode))
 
 
 ;; 📦 SHELL-MODE
@@ -1499,8 +1509,7 @@ FRAME — название настраиваемого фрейма."
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
-  ((
-     conf-mode
+  ((conf-mode
      css-base-mode
      dockerfile-ts-mode
      haml-mode

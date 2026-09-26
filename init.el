@@ -198,7 +198,6 @@ FRAME — название настраиваемого фрейма."
          "https://github.com/cathaysia/tree-sitter-asciidoc.git"
          "v0.3.0"
          "tree-sitter-asciidoc/src/")
-       ;; ASCIIDOC-INLINE
        (asciidoc-inline
          "https://github.com/cathaysia/tree-sitter-asciidoc.git"
          "v0.3.0"
@@ -235,17 +234,14 @@ FRAME — название настраиваемого фрейма."
          "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
          "v0.4.1"
          "tree-sitter-markdown-inline/src")
-       ;; PYTHON
        (python
          "https://github.com/tree-sitter/tree-sitter-python.git"
          "v0.23.6"
          "src/")
-       ;; RUBY
        (ruby
          "https://github.com/tree-sitter/tree-sitter-ruby.git"
          "v0.23.1"
          "src/")
-       ;; RUST
        (rust
          "https://github.com/tree-sitter/tree-sitter-rust.git"
          "v0.23.3")
@@ -262,7 +258,14 @@ FRAME — название настраиваемого фрейма."
     (let ((lang (car source)))
       (unless (treesit-ready-p lang t)
         (with-demoted-errors "Treesit: ошибка установки грамматики: %s"
-          (treesit-install-language-grammar lang))))))
+          (treesit-install-language-grammar lang)))))
+  (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
 
 
 ;; 📦 ABBREV-MODE
@@ -515,13 +518,6 @@ FRAME — название настраиваемого фрейма."
   (require-final-newline t "Требовать новую строку в конце файлов")
   (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
   :config
-  (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
   (add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
   (add-to-list 'safe-local-variable-values '(electric-pair-preserve-balance . t))
   (add-to-list 'safe-local-variable-values '(emacs-lisp-docstring-fill-column . 80))
@@ -919,7 +915,7 @@ FRAME — название настраиваемого фрейма."
   (after-init . savehist-mode))
 
 
-;; 📦 SHELL-SCRIPT-MODE
+;; 📦 SH-SCRIPT
 ;; Встроенный пакет для работы со скриптами Shell.
 (use-package sh-script
   :interpreter

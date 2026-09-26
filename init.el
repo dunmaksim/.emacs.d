@@ -746,11 +746,6 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет для управления поведением минибуфера.
 (use-package minibuffer
   :custom
-  (completion-category-overrides ;; Расширим список методов работы с автодополнением
-    '(
-       (buffer (styles . (basic substring flex)))
-       )
-    )
   (completions-detailed t "Подробные подсказки в минибуфере")
   (completions-format 'one-column "Вертикальные подсказки в одну колонку"))
 
@@ -1317,7 +1312,7 @@ FRAME — название настраиваемого фрейма."
     ("C-c h" . consult-history)
     ("C-c i" . consult-info)
     ("C-c m" . consult-man)
-    ;; ("C-s" . consult-line)
+    ("C-s" . consult-line)
     ("C-x 4 b" . consult-buffer-other-window)
     ("C-x 5 b" . consult-buffer-other-frame)
     ("C-x b" . consult-buffer)
@@ -1642,6 +1637,19 @@ FRAME — название настраиваемого фрейма."
   (text-mode . nano-modeline-text-mode))
 
 
+;; 📦 ORDERLESS
+;; https://github.com/oantolin/orderless
+;; Добавляет собственный стиль автодополнения, при котором части шаблона
+;; делятся на части, а в результатах выводятся все варианты, в которых
+;; они могут идти в любом порядке
+(use-package orderless
+  :pin gnu
+  :ensure t
+  :after minibuffer
+  :config
+  (add-to-list 'completion-styles 'orderless))
+
+
 ;; 📦 ORG-MODE
 ;; https://orgmode.org/
 ;; Органайзер, заметки и так далее
@@ -1776,9 +1784,6 @@ FRAME — название настраиваемого фрейма."
 (use-package vertico
   :pin gnu
   :ensure t
-  :custom
-  (completion-in-region-function #'consult-completion-in-region)
-  (compoletion-styles '(basic substring partial-completion flex))
   :hook
   (after-init . vertico-mode))
 

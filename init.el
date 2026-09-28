@@ -39,7 +39,6 @@ FRAME — название настраиваемого фрейма."
         :height (* init-el-font-height 10)))))
 
 
-
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 ;; Настройка шрифтов для обычного режима
@@ -147,14 +146,13 @@ FRAME — название настраиваемого фрейма."
 ;; Вставка длинного тире по нажатию [M--]
 (keymap-global-set "M--" (lambda() (interactive) (insert "—")))
 
-
-(defun init-el-check-archive-contents ()
-  "Проверим наличие списка пакетов в архивах.
-Если списка нет, то создадим его."
-  (unless package-archive-contents
+;; Проверим наличие списка пакетов. Если его нет, то обновим.
+(require 'package)
+(unless package--initialized
+  (package-initialize))
+(unless package-archive-contents
+  (with-demoted-errors "Ошибка обновления списка пакетов: %s."
     (package-refresh-contents)))
-
-(init-el-check-archive-contents)
 
 
 ;; Проверим наличие пакета `gnu-elpa-keyring-update'.
@@ -168,7 +166,8 @@ FRAME — название настраиваемого фрейма."
 ;; Проверяем наличие пакета `use-package'.
 ;; В новых версиях Emacs он встроенный, но в старых его может не быть.
 (unless (package-installed-p 'use-package)
-  (package-install 'use-package t))
+  (with-demoted-errors "Ошибка установки `use-package': %s"
+    (package-install 'use-package t)))
 
 ;; Если `use-package' встроенный, обновим из архива GNU ELPA.
 (unless (alist-get 'use-package package-alist)
@@ -184,88 +183,6 @@ FRAME — название настраиваемого фрейма."
     use-package-compute-statistics t ;; Сбор статистики `use-package'
     use-package-expand-minimally t   ;; Минимальное раскрытие кода.
     use-package-verbose t))          ;; Подробный режим работы `use-package'.
-
-
-;; 📦 TREESIT
-;; Встроенный пакет для работы с TreeSitter
-(use-package treesit
-  :config
-  ;; Грамматики
-  ;; ASCIIDOC
-  (setq treesit-language-source-alist
-    '(
-       (asciidoc
-         "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-         "v0.3.0"
-         "tree-sitter-asciidoc/src/")
-       (asciidoc-inline
-         "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-         "v0.3.0"
-         "tree-sitter-asciidoc_inline/src/")
-       (bash
-         "https://github.com/tree-sitter/tree-sitter-bash.git"
-         ;; "v0.25.1" ;; ABI v15
-         ;; "v0.25.0" ;; ABI v15
-         "v0.23.3")
-       (dockerfile
-         "https://github.com/camdencheek/tree-sitter-dockerfile.git"
-         "v0.2.0"
-         "src/")
-       (javascript
-         "https://github.com/tree-sitter/tree-sitter-javascript.git"
-         "v0.23.1"
-         "src/")
-       (jsdoc
-         "https://github.com/tree-sitter/tree-sitter-jsdoc.git"
-         "v0.23.1"
-         "src/")
-       (json
-         "https://github.com/tree-sitter/tree-sitter-json.git"
-         "v0.24.8")
-       (make
-         "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
-         "v1.1.1"
-         "src/")
-       (markdown
-         "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
-         "v0.4.1"
-         "tree-sitter-markdown/src")
-       (markdown-inline
-         "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
-         "v0.4.1"
-         "tree-sitter-markdown-inline/src")
-       (python
-         "https://github.com/tree-sitter/tree-sitter-python.git"
-         "v0.23.6"
-         "src/")
-       (ruby
-         "https://github.com/tree-sitter/tree-sitter-ruby.git"
-         "v0.23.1"
-         "src/")
-       (rust
-         "https://github.com/tree-sitter/tree-sitter-rust.git"
-         "v0.23.3")
-       (typst
-         "https://github.com/uben0/tree-sitter-typst.git"
-         "0.11"
-         "src/")
-       (yaml
-         "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
-         "v0.7.2"
-         "src/")))
-  ;; Сборка и установка грамматик
-  (dolist (source treesit-language-source-alist)
-    (let ((lang (car source)))
-      (unless (treesit-ready-p lang t)
-        (with-demoted-errors "Treesit: ошибка установки грамматики: %s"
-          (treesit-install-language-grammar lang)))))
-  (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
 
 
 ;; 📦 ABBREV-MODE
@@ -461,7 +378,8 @@ FRAME — название настраиваемого фрейма."
      rst-mode
      ruby-base-mode
      rust-mode
-     sgml-mode) . electric-indent-local-mode))
+     sgml-mode
+     typescript-base-mode) . electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -1064,6 +982,109 @@ FRAME — название настраиваемого фрейма."
       (package-upgrade 'transient))))
 
 
+;; 📦 TREESIT
+;; Встроенный пакет для работы с TreeSitter
+(use-package treesit
+  :config
+  ;; Грамматики
+  ;; ASCIIDOC
+  (setq treesit-language-source-alist
+    '(
+       (asciidoc
+         "https://github.com/cathaysia/tree-sitter-asciidoc.git"
+         "v0.3.0"
+         "tree-sitter-asciidoc/src/")
+       (asciidoc-inline
+         "https://github.com/cathaysia/tree-sitter-asciidoc.git"
+         "v0.3.0"
+         "tree-sitter-asciidoc_inline/src/")
+       (bash
+         "https://github.com/tree-sitter/tree-sitter-bash.git"
+         ;; "v0.25.1" ;; ABI v15
+         ;; "v0.25.0" ;; ABI v15
+         "v0.23.3")
+       (css
+         "https://github.com/tree-sitter/tree-sitter-css.git"
+         ;; "v0.25.0" ;; ABI v15
+         "v0.23.2")
+       (dockerfile
+         "https://github.com/camdencheek/tree-sitter-dockerfile.git"
+         "v0.2.0"
+         "src/")
+       (javascript
+         "https://github.com/tree-sitter/tree-sitter-javascript.git"
+         "v0.23.1"
+         "src/")
+       (json
+         "https://github.com/tree-sitter/tree-sitter-json.git"
+         "v0.24.8")
+       (make
+         "https://github.com/tree-sitter-grammars/tree-sitter-make.git"
+         "v1.1.1"
+         "src/")
+       (markdown
+         "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+         "v0.4.1"
+         "tree-sitter-markdown/src")
+       (markdown-inline
+         "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+         "v0.4.1"
+         "tree-sitter-markdown-inline/src")
+       (python
+         "https://github.com/tree-sitter/tree-sitter-python.git"
+         "v0.23.6"
+         "src/")
+       (ruby
+         "https://github.com/tree-sitter/tree-sitter-ruby.git"
+         "v0.23.1"
+         "src/")
+       (rust
+         "https://github.com/tree-sitter/tree-sitter-rust.git"
+         "v0.23.3")
+       (tsx
+         "https://github.com/tree-sitter/tree-sitter-typescript.git"
+         "v0.23.2"
+         "tsx/src/")
+       (typescript
+         "https://github.com/tree-sitter/tree-sitter-typescript.git"
+         "v0.23.2"
+         "typescript/src/")
+       (typst
+         "https://github.com/uben0/tree-sitter-typst.git"
+         "0.11"
+         "src/")
+       (yaml
+         "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
+         "v0.7.2"
+         "src/")))
+  ;; Сборка и установка грамматик
+  (dolist (source treesit-language-source-alist)
+    (let ((lang (car source)))
+      (unless (treesit-ready-p lang t)
+        (with-demoted-errors "Treesit: ошибка установки грамматики: %s"
+          (treesit-install-language-grammar lang)))))
+  (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode)))
+
+
+;; 📦 TSX-TS-MODE
+;; Встроенный пакет для работы с TSX
+(use-package tsx-ts-mode
+  :defer t)
+
+
+;; 📦 TYPESCRIPT-TS-MODE
+;; Встроенный пакет для работы с TypeScript
+(use-package typescript-ts-mode
+  :defer t)
+
+
 ;; 📦 UNIQUIFY
 ;; Встроенный пакет для поддержания уникальности названий буферов, путей и т. д.
 (use-package uniquify
@@ -1325,18 +1346,18 @@ FRAME — название настраиваемого фрейма."
   (consult-after-jump . pulsar-pulse-line))
 
 
-;; ;; 📦 CORFU
-;; ;; https://elpa.gnu.org/packages/corfu.html
-;; ;; Расширение для автодополнения в буфере.
-;; (use-package corfu
-;;   :pin gnu
-;;   :ensure t
-;;   :custom
-;;   (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
-;;   (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
-;;   :hook
-;;   (after-init . global-corfu-mode) ;; Включим глобально
-;;   (corfu-mode . corfu-indexed-mode)) ;; Номера возле вариантов завершения
+;; 📦 CORFU
+;; https://elpa.gnu.org/packages/corfu.html
+;; Расширение для автодополнения в буфере.
+(use-package corfu
+  :pin gnu
+  :ensure t
+  :custom
+  (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
+  (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
+  :hook
+  (after-init . global-corfu-mode) ;; Включим глобально
+  (corfu-mode . corfu-indexed-mode)) ;; Номера возле вариантов завершения
 
 
 ;; 📦 CSV-MODE
@@ -1506,7 +1527,6 @@ FRAME — название настраиваемого фрейма."
      haml-mode
      js-base-mode
      json-ts-mode
-     latex-mode
      lisp-data-mode
      makefile-mode
      nxml-mode
@@ -1517,6 +1537,8 @@ FRAME — название настраиваемого фрейма."
      sgml-mode
      sh-base-mode
      sql-mode
+     tex-mode
+     typescript-ts-base-mode
      yaml-ts-mode) . flycheck-mode)
   :hook
   (after-init . global-flycheck-eglot-mode)
@@ -1541,6 +1563,7 @@ FRAME — название настраиваемого фрейма."
      rst-mode
      ruby-base-mode
      rust-mode
+     typescript-ts-base-mode
      yaml-ts-mode) . indent-bars-mode))
 
 

@@ -218,11 +218,23 @@ FRAME — название настраиваемого фрейма."
   (after-init . global-auto-revert-mode))
 
 
+;; 📦 C-MODE
+;; Встроенный пакет для работы с языком C.
+(use-package cc-mode
+  :defer t)
+
+
+;; 📦 C-SHARP
+;; Встроенный пакет для работы с языком C#
+(use-package csharp-mode
+  :defer t)
+
+
 ;; 📦 CALENDAR
 ;; Встроенный пакет
 (use-package calendar
   :custom
-  (calendar-week-start-day 1 "Начнём неделю с понедельника."))
+  (setopt calendar-week-start-day 1 "Начнём неделю с понедельника."))
 
 
 ;; 📦 CHECKDOC
@@ -491,6 +503,12 @@ FRAME — название настраиваемого фрейма."
   (after-init . undelete-frame-mode))
 
 
+;; 📦 GO-TS-MODE
+;; Встроенный пакет для поддержки языка Golang
+(use-package go-ts-mode
+  :defer t)
+
+
 ;; 📦 GOTO-ADDRESS-MODE
 ;; Встроенный пакет.
 ;; Подсвечивает ссылки и позволяет переходить по ним с помощью [C-c RET].
@@ -520,12 +538,10 @@ FRAME — название настраиваемого фрейма."
   (after-init . global-hl-line-mode))
 
 
-;; 📦 HTML-MODE
+;; 📦 HTML-TS-MODE
 ;; Встроенный пакет для работы с HTML и SGML.
-(use-package html-mode
-  :mode
-  ("\\.hbs\\'" . html-mode)
-  ("\\.html\\'" . html-mode))
+(use-package html-ts-mode
+  :defer t)
 
 
 ;; 📦 IBUFFER
@@ -617,6 +633,12 @@ FRAME — название настраиваемого фрейма."
 (use-package imenu
   :custom
   (imenu-auto-rescan t))
+
+
+;; 📦 JAVA
+;; Встроенный пакет для работы с Java.
+(use-package java-ts-mode
+  :defer t)
 
 
 ;; 📦 JS-MODE
@@ -1001,8 +1023,18 @@ FRAME — название настраиваемого фрейма."
        (bash
          "https://github.com/tree-sitter/tree-sitter-bash.git"
          ;; "v0.25.1" ;; ABI v15
-         ;; "v0.25.0" ;; ABI v15
          "v0.23.3")
+       (c
+         "https://github.com/tree-sitter/tree-sitter-c.git"
+         ;; "v0.24.1" ;; ABI v15
+         "v0.23.5")
+       (cpp
+         "https://github.com/tree-sitter/tree-sitter-cpp.git"
+         "v0.23.4")
+       (c-sharp
+         "https://github.com/tree-sitter/tree-sitter-c-sharp.git"
+         ;; "v0.23.5" ;; ABI v15
+	 "v0.23.1")    ;; ABI v14
        (css
          "https://github.com/tree-sitter/tree-sitter-css.git"
          ;; "v0.25.0" ;; ABI v15
@@ -1011,6 +1043,19 @@ FRAME — название настраиваемого фрейма."
          "https://github.com/camdencheek/tree-sitter-dockerfile.git"
          "v0.2.0"
          "src/")
+       (go
+         "https://github.com/tree-sitter/tree-sitter-go.git"
+         ;; "v0.25.0" ;; ABI v15
+         "v0.23.4")
+       (gomod
+         "https://github.com/camdencheek/tree-sitter-go-mod.git"
+         "v1.1.0")
+       (html
+         "https://github.com/tree-sitter/tree-sitter-html.git"
+         "v0.23.2")
+       (java
+         "https://github.com/tree-sitter/tree-sitter-java.git"
+         "v0.23.5")
        (javascript
          "https://github.com/tree-sitter/tree-sitter-javascript.git"
          "v0.23.1"
@@ -1052,8 +1097,7 @@ FRAME — название настраиваемого фрейма."
        (typst
          "https://github.com/uben0/tree-sitter-typst.git"
          "0.11"
-         "src/")
-       (yaml
+         "src/")       (yaml
          "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
          "v0.7.2"
          "src/")))
@@ -1064,8 +1108,13 @@ FRAME — название настраиваемого фрейма."
         (with-demoted-errors "Treesit: ошибка установки грамматики: %s"
           (treesit-install-language-grammar lang)))))
   (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode))
   (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
   (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
   (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
   (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
@@ -1858,4 +1907,9 @@ FRAME — название настраиваемого фрейма."
 (load-theme 'ef-autumn t)
 
 (provide 'init.el)
+
+;; Local Variables:
+;; indent-tabs-mode: t
+;; tab-width: 8
+;; End:
 ;;; init.el ends here

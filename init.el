@@ -33,10 +33,10 @@ FRAME — название настраиваемого фрейма."
               (seq-find (lambda (font)(member font font-families))
                 init-el-preferred-fonts)))
       (set-face-attribute
-        'default  ;; Font Face по умолчанию
-        nil       ;; Применить ко всем фреймам
-        :family preferred-font-family
-        :height (* init-el-font-height 10)))))
+	'default  ;; Font Face по умолчанию
+	nil       ;; Применить ко всем фреймам
+	:family preferred-font-family
+	:height (* init-el-font-height 10)))))
 
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
@@ -60,8 +60,8 @@ FRAME — название настраиваемого фрейма."
   ;; Поищем исходный код в /usr/share/emacs/X.Y/src/, где X и Y мажорная и
   ;; минорная версия Emacs соответственно.
   (let ((emacs-source-path (format "/usr/share/emacs/%d.%d/src/"
-                             emacs-major-version
-                             emacs-minor-version)))
+			     emacs-major-version
+			     emacs-minor-version)))
     ;; Проверим, существует ли каталог
     (if (file-directory-p emacs-source-path)
       ;; Проверяем, пуст ли каталог
@@ -136,8 +136,6 @@ FRAME — название настраиваемого фрейма."
 ;; Включим переключение буферов по Ctrl+PgUp и Ctrl+PgDn
 (keymap-global-unset "C-<next>")
 (keymap-global-unset "C-<prior>")
-(keymap-global-set "C-<next>" 'next-buffer) ;;
-(keymap-global-set "C-<prior>" 'previous-buffer)
 
 
 ;; Включим вставку знаков через C-x C-8.
@@ -321,6 +319,7 @@ FRAME — название настраиваемого фрейма."
   ;; Буферы с этими режимами мы сохранять не будем
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
   (add-to-list 'desktop-modes-not-to-save 'image-mode)
+  (add-to-list 'desktop-modes-not-to-save 'treesit-explore-mode)
   :hook
   (after-init . desktop-save-mode))
 
@@ -373,9 +372,8 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 DOCKERFILE-TS-MODE
 ;; Встроенный пакет на базе TreeSitter для работы с Dockerfile.
 (use-package dockerfile-ts-mode
-  :mode
-  ("\\Containerfile\\'" . dockerfile-ts-mode)
-  ("\\Dockerfile\\'" . dockerfile-ts-mode))
+  :defer t
+  :mode ("Containerfile\\'" . dockerfile-ts-mode))
 
 
 ;; 📦 ELECTRIC-INDENT MODE
@@ -466,6 +464,8 @@ FRAME — название настраиваемого фрейма."
   :hook
   ((js-base-mode
      lisp-data-mode
+     python-base-mode
+     rust-mode
      yaml-ts-mode) . display-fill-column-indicator-mode))
 
 
@@ -562,10 +562,10 @@ FRAME — название настраиваемого фрейма."
                        filename-and-process)     ;; Имя файла и процесс
                       ;; Сокращённый формат
                       (mark      ;; Отметка?
-                        " "
-                        (name 30 -1) ;; Имя буфера: 30 знака, при необходимости — расширить на сколько нужно
-                        " "
-                        filename)))  ;; Имя файла
+			" "
+			(name 30 -1) ;; Имя буфера: 30 знака, при необходимости — расширить на сколько нужно
+			" "
+			filename)))  ;; Имя файла
   (ibuffer-default-sorting-mode 'major-mode "Сортировать файлы по основному режиму")
   (ibuffer-display-summary nil "Не показывать строку ИТОГО")
   (ibuffer-eliding-string "…" "Если строка не уместилась, показать этот знак")
@@ -585,38 +585,38 @@ FRAME — название настраиваемого фрейма."
   :custom
   (ibuffer-saved-filter-groups ;; Группы по умолчанию
     '(("default"
-        ("Dired" (mode . dired-mode))
-        ("Emacs Lisp" (derived-mode . lisp-data-mode))
-        ("Org" (mode . org-mode))
-        ("AsciiDoc" (mode . asciidoc-ts-mode))
-        ("Markdown" (derived-mode . markdown-mode))
-        ("ReStructured Text" (mode . rst-mode))
-        ("CONF / INI" (derived-mode . conf-mode))
-        ("XML" (mode . nxml-mode))
-        ("YAML" (mode . yaml-ts-mode))
-        ("Makefile" (derived-mode . makefile-mode))
-        ("Python" (derived-mode . python-base-mode))
-        ("Ruby" (derived-mode . ruby-base-mode))
-        ("Rust" (derived-mode . rust-mode))
-        ("SSH keys" (name . "\\.pub\\'"))
-        ("Shell-script" (derived-mode . sh-base-mode))
-        ("SQL" (mode . sql-mode))
-        ("Web" (or
-                 (derived-mode . sgml-mode)
-                 (mode . json-ts-mode)
-                 (derived-mode . js-base-mode)))
-        ("Magit" (or
+	("Dired" (mode . dired-mode))
+	("Emacs Lisp" (derived-mode . lisp-data-mode))
+	("Org" (mode . org-mode))
+	("AsciiDoc" (mode . asciidoc-ts-mode))
+	("Markdown" (derived-mode . markdown-mode))
+	("ReStructured Text" (mode . rst-mode))
+	("CONF / INI" (derived-mode . conf-mode))
+	("XML" (mode . nxml-mode))
+	("YAML" (mode . yaml-ts-mode))
+	("Makefile" (derived-mode . makefile-mode))
+	("Python" (derived-mode . python-base-mode))
+	("Ruby" (derived-mode . ruby-base-mode))
+	("Rust" (derived-mode . rust-mode))
+	("SSH keys" (name . "\\.pub\\'"))
+	("Shell-script" (derived-mode . sh-base-mode))
+	("SQL" (mode . sql-mode))
+	("Web" (or
+		 (derived-mode . sgml-mode)
+		 (mode . json-ts-mode)
+		 (derived-mode . js-base-mode)))
+	("Magit" (or
                    (mode . magit-diff-mode)
                    (mode . magit-log-mode)
                    (mode . magit-status-mode)
                    (name . "\\*magit\\*")
                    (name . "git-monitor")))
-        ("Commands" (or
+	("Commands" (or
                       (derived-mode . compilation-mode)
                       (mode . eshell-mode)
                       (mode . shell-mode)
                       (mode . term-mode)))
-        ("Emacs" (or
+	("Emacs" (or
                    (name . "\\*scratch\\*")
                    (name . "\\*Messages\\*")
                    (name . "\\*Customize\\*")
@@ -644,15 +644,11 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 JS-MODE
 ;; Встроенный пакет для работы с JavaScript.
 (use-package js
+  :defer t
   :custom
   (js-chain-indent t "Выравнивание при цепочке вызовов через точку.")
   (js-indent-level 2 "Отступ в 2 пробела, а не 4 (по умолчанию).")
-  (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case.")
-  :mode
-  ("\\.js\\'" . js-mode)
-  ("\\.jsm\\'" . js-mode)
-  ("\\.jsx\\'" . js-mode)
-  ("\\.har\\'" . js-mode))
+  (js-switch-indent-offset 2 "Отступ в 2 пробела для switch/case."))
 
 
 ;; 📦 JSONRPC
@@ -669,7 +665,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 JSON-TS-MODE
 ;; Встроенный пакет для работы с JSON через TreeSitter
 (use-package json-ts-mode
-  :mode ("\\.json\\'" . json-ts-mode))
+  :defer t)
 
 
 ;; 📦 MAKEFILE
@@ -933,10 +929,6 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 TAB-BAR-MODE
 ;; Встроенный пакет для управления вкладками
 (use-package tab-bar
-  :bind
-  (:map global-map
-    ("C-<tab>" . tab-bar-switch-to-next-tab)
-    ("C-S-<tab>" . tab-bar-switch-to-prev-tab))
   :hook
   (after-init . tab-bar-mode))
 
@@ -955,6 +947,11 @@ FRAME — название настраиваемого фрейма."
   (text-mode-ispell-word-completion nil "Конфликтует с CORFU, поэтому выключаем.")
   :mode
   ("\\Jenkinsfile\\'" . text-mode))
+
+
+;; TOML-TS-MODE
+;; Встроенный пакет на базе TreeSitter для работы с TOML-файлами
+(use-package toml-ts-mode)
 
 
 ;; 📦 TOOLBAR
@@ -1069,10 +1066,18 @@ FRAME — название настраиваемого фрейма."
          "src/")
        (markdown
          "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+	 ;; "v0.5.3"
+	 ;; "v0.5.2"
+	 ;; "v0.5.1"
+	 ;; "v0.5.0" ;; ABI 15
          "v0.4.1"
          "tree-sitter-markdown/src")
        (markdown-inline
          "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+	 ;; "v0.5.3"
+	 ;; "v0.5.2"
+	 ;; "v0.5.1"
+	 ;; "v0.5.0" ;; ABI 15
          "v0.4.1"
          "tree-sitter-markdown-inline/src")
        (python
@@ -1086,6 +1091,9 @@ FRAME — название настраиваемого фрейма."
        (rust
          "https://github.com/tree-sitter/tree-sitter-rust.git"
          "v0.23.3")
+       (toml
+	 "https://github.com/tree-sitter-grammars/tree-sitter-toml.git"
+	 "v0.7.0")
        (tsx
          "https://github.com/tree-sitter/tree-sitter-typescript.git"
          "v0.23.2"
@@ -1113,6 +1121,7 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'major-mode-remap-alist '(csharp-mode . csharp-ts-mode))
   (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
   (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
   (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
   (add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
   (add-to-list 'major-mode-remap-alist '(js-mode . js-ts-mode))
@@ -1242,8 +1251,8 @@ FRAME — название настраиваемого фрейма."
 ;; Автоформат буфера перед сохранением.
 (use-package apheleia
   :vc (
-        :url "https://github.com/radian-software/apheleia.git"
-        :rev "v4.5.0")
+	:url "https://github.com/radian-software/apheleia.git"
+	:rev "v4.5.0")
   :custom
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
   :bind
@@ -1275,7 +1284,7 @@ FRAME — название настраиваемого фрейма."
   :pin gnu)
 
 
-;; 📦 ASCIIDOC-TS
+;; 📦 ASCIIDOC-TS-MODE
 (let ((asciidoc-repo-dir (format "/home/%s/repo/asciidoc-ts-mode" user-login-name)))
   (when (file-directory-p asciidoc-repo-dir)
     (add-to-list 'load-path asciidoc-repo-dir)
@@ -1415,7 +1424,6 @@ FRAME — название настраиваемого фрейма."
 (use-package csv-mode
   :pin gnu
   :ensure t
-  :mode ("\\.csv\\'" . csv-mode)
   :hook
   (csv-mode . csv-guess-set-separator)) ;; Попытаемся угадать `csv-separator' на основе содержимого файла.
 
@@ -1474,8 +1482,6 @@ FRAME — название настраиваемого фрейма."
   (unless (alist-get 'editorconfig package-alist)
     (with-demoted-errors "Ошибка обновления `editorconfig': %s"
       (package-upgrade 'editorconfig)))
-  :mode
-  ("\\.editorconfig\\'" . editorconfig-conf-mode)
   :hook
   (after-init . editorconfig-mode))
 
@@ -1622,9 +1628,7 @@ FRAME — название настраиваемого фрейма."
 (use-package jinja2-mode
   :pin nongnu
   :ensure t
-  :mode
-  ("\\.j2\\'" . jinja2-mode)
-  ("\\.jinja\\'" . jinja2-mode))
+  :defer t)
 
 
 ;; 📦 JINX
@@ -1739,7 +1743,7 @@ FRAME — название настраиваемого фрейма."
 (use-package po-mode
   :pin gnu
   :ensure t
-  :mode ("\\.po\\'" . po-mode))
+  :defer t)
 
 
 ;; 📦 PULSAR
@@ -1776,8 +1780,8 @@ FRAME — название настраиваемого фрейма."
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
   :vc (
-        :url "https://github.com/dunmaksim/emacs-russian-techwriter-input-method.git"
-        :rev :newest)
+	:url "https://github.com/dunmaksim/emacs-russian-techwriter-input-method.git"
+	:rev :newest)
   :custom
   (default-input-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
@@ -1800,15 +1804,21 @@ FRAME — название настраиваемого фрейма."
 (use-package sass-mode
   :pin nongnu
   :ensure t
-  :mode ("\\.sass\\'" . haml-mode))
+  :defer t)
 
 
 ;; 📦 SED-MODE
 ;; Режим для работы с файлами команд `sed'.
 (use-package sed-mode
   :pin gnu
-  :ensure t
-  :mode ("\\.sed\\'" . sed-mode))
+  :ensure t)
+
+
+;; 📦 SENDAI-THEME'
+;; Синяя тема
+(use-package sendai-theme
+  :pin gnu
+  :ensure t)
 
 
 ;; 📦 STANDARD THEMES
@@ -1842,8 +1852,7 @@ FRAME — название настраиваемого фрейма."
 (use-package typst-ts-mode
   :pin nongnu
   :ensure t
-  :mode
-  ("\\.typ\\'" . typst-ts-mode))
+  :defer t)
 
 
 ;; VERTICO
@@ -1884,7 +1893,7 @@ FRAME — название настраиваемого фрейма."
     ("C-z" . vundo)))
 
 
-;; 📦 WHICH-KEY MODE
+;; 📦 WHICH-KEY
 ;; https://elpa.gnu.org/packages/which-key.html
 ;; Показывает подсказки к сочетаниям клавиш.
 (use-package which-key
@@ -1904,7 +1913,8 @@ FRAME — название настраиваемого фрейма."
   :hook
   (after-init . which-key-mode))
 
-(load-theme 'ef-autumn t)
+;; (load-theme 'ef-autumn t)
+(load-theme 'sendai t)
 
 (provide 'init.el)
 

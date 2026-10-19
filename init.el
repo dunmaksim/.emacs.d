@@ -1665,7 +1665,10 @@ FRAME — название настраиваемого фрейма."
   :after magit-section
   :custom
   (magit-auto-revert-mode t "Автоматическое обновление буферов при смене ветки.")
-  (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit."))
+  (magit-define-global-key-bindings 'default "Включить глобальные сочетания Magit.")
+  :config
+  ;; Добавим Magit в список действий Project
+  (add-to-list 'project-switch-commands '(magit-project-status "Magit" ?m) t))
 
 
 ;; 📦 MAGIT-SECTION
@@ -1913,8 +1916,9 @@ FRAME — название настраиваемого фрейма."
   :hook
   (after-init . which-key-mode))
 
-;; (load-theme 'ef-autumn t)
-(load-theme 'sendai t)
+(load-theme 'ef-autumn t)
+;; (load-theme 'sendai t)
+;; (load-theme 'ef-duo-dark t)
 
 (provide 'init.el)
 

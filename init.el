@@ -1011,11 +1011,13 @@ FRAME — название настраиваемого фрейма."
     '(
        (asciidoc
          "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-         "v0.3.0"
+	 ;; "v0.7.0" ;; ABI v15
+	 "v0.6.0" ;; ABI v14
          "tree-sitter-asciidoc/src/")
        (asciidoc-inline
          "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-         "v0.3.0"
+	 ;; "v0.7.0" ;; ABI v15
+	 "v0.6.0" ;; ABI v14
          "tree-sitter-asciidoc_inline/src/")
        (bash
          "https://github.com/tree-sitter/tree-sitter-bash.git"
@@ -1817,7 +1819,7 @@ FRAME — название настраиваемого фрейма."
   :ensure t)
 
 
-;; 📦 SENDAI-THEME'
+;; 📦 SENDAI-THEME
 ;; Синяя тема
 (use-package sendai-theme
   :pin gnu

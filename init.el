@@ -1186,7 +1186,6 @@ FRAME — название настраиваемого фрейма."
      sgml-mode
      js-base-mode
      json-ts-mode
-     latex-mode
      lisp-data-mode
      makefile-gmake-mode
      makefile-mode
@@ -1648,7 +1647,8 @@ FRAME — название настраиваемого фрейма."
      dockerfile-ts-mode
      lisp-data-mode
      markdown-mode
-     rst-mode) . jinx-mode)
+     rst-mode
+     tex-mode) . jinx-mode)
   :bind
   (:map global-map
     ("M-$" . jinx-correct)

@@ -1509,6 +1509,7 @@ FRAME — название настраиваемого фрейма."
 ;;               Создать в корне проекта файл .dir-locals.el и задать значение
 ;;               переменной `eglot-workspace-configuration'.
 ;; - Ruby:       sudo gem install ruby-lsp
+;;               sudo gem install solargraph
 ;; - Rust:       rustup component add rust-analyzer
 ;; - YAML:       sudo npm -g install yaml-language-server
 (use-package eglot
@@ -1530,6 +1531,8 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
   ;; (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
   (add-to-list 'eglot-server-programs '(python-base-mode . ("jedi-language-server")))
+  (add-to-list 'eglot-server-programs '(ruby-base-mode . ("bundle" "exec" "solargraph" "stdio")))
+  ;; (add-to-list 'eglot-server-programs '(ruby-base-mode . ("bundle" "exec" "ruby-lsp")))
   (add-to-list 'eglot-server-programs '(yaml-ts-mode . ("yaml-language-server" "--stdio")))
   :bind
   (:map eglot-mode-map

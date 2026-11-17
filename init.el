@@ -42,14 +42,14 @@ FRAME — название настраиваемого фрейма."
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
 ;; Настройка шрифтов для обычного режима
-(add-hook 'after-init-hook (lambda ()(init-el-set-fonts (selected-frame))))
+;; (add-hook 'after-init-hook (lambda ()(init-el-set-fonts (selected-frame))))
 ;; настройка шрифтов при работе в режиме сервера
-(add-hook 'server-after-make-frame-hook (lambda ()(init-el-set-fonts (selected-frame))))
+;; (add-hook 'server-after-make-frame-hook (lambda ()(init-el-set-fonts (selected-frame))))
 ;; настройка шрифтов в новых фреймах в любом режиме
 (add-to-list 'after-make-frame-functions 'init-el-set-fonts)
 
 ;; Отображать шрифты красиво, используя Font Face's
-(add-hook 'after-init-hook global-font-lock-mode)
+(global-font-lock-mode t)
 
 
 ;; Определение пути к каталогу с исходным кодом
@@ -122,7 +122,7 @@ FRAME — название настраиваемого фрейма."
   "Закрыть буфер *scratch* при запуске редактора или подключении клиента."
   (when (get-buffer "*scratch*")
     (kill-buffer "*scratch*")))
-(add-hook 'after-init-hook 'init-kill-scratch)
+;; (add-hook 'after-init-hook 'init-kill-scratch)
 (add-hook 'server-after-make-frame-hook 'init-kill-scratch)
 
 
@@ -232,7 +232,7 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет
 (use-package calendar
   :custom
-  (setopt calendar-week-start-day 1 "Начнём неделю с понедельника."))
+  (calendar-week-start-day 1 "Начнём неделю с понедельника."))
 
 
 ;; 📦 CHECKDOC
@@ -283,8 +283,7 @@ FRAME — название настраиваемого фрейма."
   :mode
   ("\\.env\\'" . conf-mode)
   ("\\.flake8\\'" . conf-mode)
-  ("\\.pylintrc\\'" . conf-mode)
-  ("\\inventory\\'" . conf-mode))
+  ("\\.pylintrc\\'" . conf-mode))
 
 
 ;; 📦 CUS-EDIT
@@ -320,8 +319,7 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'desktop-modes-not-to-save 'dired-mode)
   (add-to-list 'desktop-modes-not-to-save 'image-mode)
   (add-to-list 'desktop-modes-not-to-save 'treesit-explore-mode)
-  :hook
-  (after-init . desktop-save-mode))
+  (desktop-save-mode t))
 
 
 ;; 📦 DIRED
@@ -344,29 +342,29 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет для показа номеров строк
 (use-package display-line-numbers
   :hook
-  ((asciidoc-ts-mode
-     c-mode
-     conf-mode
-     css-base-mode
-     csv-mode
-     dockerfile-ts-mode
-     haml-mode
-     js-base-mode
-     json-ts-mode
-     lisp-data-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode ;; xml-mode and other
-     po-mode
-     python-base-mode
-     rst-mode
-     ruby-base-mode
-     rust-mode
-     sed-mode
-     sgml-mode ;; html-mode, mhtml-mode and other
-     sh-base-mode
-     tex-mode ;; latex-mode and other
-     yaml-ts-mode) . display-line-numbers-mode))
+  (asciidoc-ts-mode . display-line-numbers-mode)
+  (c-mode . display-line-numbers-mode)
+  (conf-mode . display-line-numbers-mode)
+  (css-base-mode . display-line-numbers-mode)
+  (csv-mode . display-line-numbers-mode)
+  (dockerfile-ts-mode . display-line-numbers-mode)
+  (haml-mode . display-line-numbers-mode)
+  (js-base-mode . display-line-numbers-mode)
+  (json-ts-mode . display-line-numbers-mode)
+  (lisp-data-mode . display-line-numbers-mode)
+  (makefile-mode . display-line-numbers-mode)
+  (markdown-mode . display-line-numbers-mode)
+  (nxml-mode . display-line-numbers-mode)
+  (po-mode . display-line-numbers-mode)
+  (python-base-mode . display-line-numbers-mode)
+  (rst-mode . display-line-numbers-mode)
+  (ruby-base-mode . display-line-numbers-mode)
+  (rust-mode . display-line-numbers-mode)
+  (sed-mode . display-line-numbers-mode)
+  (sgml-mode . display-line-numbers-mode)
+  (sh-base-mode . display-line-numbers-mode)
+  (tex-mode . display-line-numbers-mode)
+  (yaml-ts-mode . display-line-numbers-mode))
 
 
 ;; 📦 DOCKERFILE-TS-MODE
@@ -381,15 +379,15 @@ FRAME — название настраиваемого фрейма."
 ;; В основном только мешает, лучше выключить.
 (use-package electric
   :hook
-  ((lisp-data-mode
-     markdown-mode
-     nxml-mode
-     python-base-mode
-     rst-mode
-     ruby-base-mode
-     rust-mode
-     sgml-mode
-     typescript-base-mode) . electric-indent-local-mode))
+  (lisp-data-mode . electric-indent-local-mode)
+  (markdown-mode . electric-indent-local-mode)
+  (nxml-mode . electric-indent-local-mode)
+  (python-base-mode . electric-indent-local-mode)
+  (rst-mode . electric-indent-local-mode)
+  (ruby-base-mode . electric-indent-local-mode)
+  (rust-mode . electric-indent-local-mode)
+  (sgml-mode . electric-indent-local-mode)
+  (typescript-base-mode . electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -444,15 +442,7 @@ FRAME — название настраиваемого фрейма."
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть VCS")
   (require-final-newline t "Требовать новую строку в конце файлов")
-  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов")
-  :config
-  (add-to-list 'safe-local-variable-values '(buffer-env-script-name . ".venv/bin/activate"))
-  (add-to-list 'safe-local-variable-values '(electric-pair-preserve-balance . t))
-  (add-to-list 'safe-local-variable-values '(emacs-lisp-docstring-fill-column . 80))
-  (add-to-list 'safe-local-variable-values '(fill-column . 120))
-  (add-to-list 'safe-local-variable-values '(fill-column . 80))
-  (add-to-list 'safe-local-variable-values '(frozen_string_literal . true))
-  (add-to-list 'safe-local-variable-values '(lexical-binding . t)))
+  (save-abbrevs 'silently "Сохранять аббревиатуры без лишних вопросов"))
 
 
 ;; 📦 FILL-COLUMN
@@ -783,16 +773,15 @@ FRAME — название настраиваемого фрейма."
 (use-package recentf
   :custom
   (recentf-max-saved-items 100 "Помнить последние 100 файлов")
-  (recentf-save-file (locate-user-emacs-file "recentf") "Хранить список в файле .emacs.d/recentf")
-  :hook
-  (after-init . recentf-mode))
+  :config
+  (recentf-mode t))
 
 
 ;; 📦 REPEAT-MODE
 ;; Встроенный пакет для повторения типовых действий
 (use-package repeat
-  :hook
-  (after-init . repeat-mode))
+  :config
+  (repeat-mode t))
 
 
 ;; 📦 RST-MODE
@@ -844,11 +833,7 @@ FRAME — название настраиваемого фрейма."
        search-ring
        shell-command-history))
   :config
-  (add-to-list 'delete-frame-functions 'savehist-save)
-  :hook
-  (kill-emacs . savehist-save)
-  (server-done . savehist-save)
-  (after-init . savehist-mode))
+  (savehist-mode t))
 
 
 ;; 📦 SH-SCRIPT
@@ -929,8 +914,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 TAB-BAR-MODE
 ;; Встроенный пакет для управления вкладками
 (use-package tab-bar
-  :hook
-  (after-init . tab-bar-mode))
+  :config (tab-bar-mode t))
 
 
 ;; 📦 TEXINFO
@@ -967,8 +951,7 @@ FRAME — название настраиваемого фрейма."
 ;; Вывод подсказок в графической среде.
 (when (fboundp 'tooltip-mode)
   (use-package tooltip
-    :config
-    (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
+    :config (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
 
 
 ;; 📦 TRACK-CHANGES
@@ -1286,7 +1269,7 @@ FRAME — название настраиваемого фрейма."
 
 
 ;; 📦 ASCIIDOC-TS-MODE
-(let ((asciidoc-repo-dir (format "/home/%s/repo/asciidoc-ts-mode" user-login-name)))
+(let ((asciidoc-repo-dir (expand-file-name "~/repo/asciidoc-ts-mode/")))
   (when (file-directory-p asciidoc-repo-dir)
     (add-to-list 'load-path asciidoc-repo-dir)
     (require 'asciidoc-ts-mode)))
@@ -1338,26 +1321,45 @@ FRAME — название настраиваемого фрейма."
   (comint-mode-hook . buffer-env-update))
 
 
-;; ;; 📦 CAPE
-;; ;; https://github.com/minad/cape
-;; ;; Бэкенды для CORFU
-;; (use-package cape
-;;   :pin gnu
-;;   :ensure t
-;;   :custom
-;;   ;; TODO: добавить код, определяющий наличие словарей.
-;;   (cape-dict-file '("/usr/share/doc/hunspell/en_US.dic"
-;;                      "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
-;;   :config
-;;   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-;;   (add-to-list 'completion-at-point-functions #'cape-dict)
-;;   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-;;   (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
-;;   (add-to-list 'completion-at-point-functions #'cape-emoji)
-;;   (add-to-list 'completion-at-point-functions #'cape-file)
-;;   (add-to-list 'completion-at-point-functions #'cape-history)
-;;   (add-to-list 'completion-at-point-functions #'cape-keyword)
-;;   (add-to-list 'completion-at-point-functions #'cape-rfc1345))
+;; 📦 CAPE
+;; https://github.com/minad/cape
+;; Бэкенды для CORFU
+(use-package cape
+  :pin gnu
+  :ensure t
+  :custom
+  ;; TODO: добавить код, определяющий наличие словарей.
+  (cape-dict-file '(
+		     "/usr/share/doc/hunspell/en_US.dic"
+                     "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+;; (add-to-list 'completion-at-point-functions #'cape-dict)
+;; (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
+;; (add-to-list 'completion-at-point-functions #'cape-emoji)
+;; (add-to-list 'completion-at-point-functions #'cape-history)
+;; (add-to-list 'completion-at-point-functions #'cape-keyword)
+;; (add-to-list 'completion-at-point-functions #'cape-rfc1345))
+
+
+;; 📦 CATPPUCCIN-THEME
+;; https://github.com/catppuccin/emacs
+;; Набор тем
+(use-package catppuccin-theme
+  :vc
+  (
+    :url "https://github.com/catppuccin/emacs.git"
+    :rev :newest)
+  :custom
+  ;; latte
+  ;; frappe
+  ;; macchiato
+  ;; mocha
+  (catppuccin-flavor 'mocha)
+  :config
+  (init-el-set-fonts))
 
 
 ;; 📦 COLORFUL-MODE
@@ -1384,7 +1386,6 @@ FRAME — название настраиваемого фрейма."
   :bind
   (:map global-map
     ("C-c M-x" . consult-mode-command)
-    ("C-c h" . consult-history)
     ("C-c h" . consult-history)
     ("C-c i" . consult-info)
     ("C-c m" . consult-man)
@@ -1599,10 +1600,12 @@ FRAME — название настраиваемого фрейма."
      tex-mode
      typescript-ts-base-mode
      yaml-ts-mode) . flycheck-mode)
-  :hook
-  (after-init . global-flycheck-eglot-mode)
-  (after-init . global-flycheck-lsp-mode)
-  (after-init . global-flycheck-annotate-mode))
+  :config
+  (global-flycheck-eglot-mode t)
+  (when (package-installed-p 'flycheck-lsp-mode)
+    (add-hook 'after-init-hook 'global-flycheck-lsp-mode))
+  (when (package-installed-p 'flycheck-annotate-mode)
+    (add-hook 'after-init-hook 'global-flycheck-annotate-mode)))
 
 
 ;; 📦 INDENT-BARS
@@ -1921,14 +1924,16 @@ FRAME — название настраиваемого фрейма."
   :hook
   (after-init . which-key-mode))
 
-(load-theme 'ef-autumn t)
+;; (load-theme 'ef-autumn t)
 ;; (load-theme 'sendai t)
 ;; (load-theme 'ef-duo-dark t)
+(load-theme 'catppuccin t)
 
 (provide 'init.el)
 
 ;; Local Variables:
-;; indent-tabs-mode: t
-;; tab-width: 8
+;; indent-tabs-mode: nil
+;; lisp-indent-offset: 2
 ;; End:
+
 ;;; init.el ends here

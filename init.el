@@ -33,20 +33,16 @@ FRAME — название настраиваемого фрейма."
               (seq-find (lambda (font)(member font font-families))
                 init-el-preferred-fonts)))
       (set-face-attribute
-	'default  ;; Font Face по умолчанию
-	nil       ;; Применить ко всем фреймам
-	:family preferred-font-family
-	:height (* init-el-font-height 10)))))
+        'default  ;; Font Face по умолчанию
+        nil       ;; Применить ко всем фреймам
+        :family preferred-font-family
+        :height (* init-el-font-height 10)))))
 
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
-;; Настройка шрифтов для обычного режима
-;; (add-hook 'after-init-hook (lambda ()(init-el-set-fonts (selected-frame))))
-;; настройка шрифтов при работе в режиме сервера
-;; (add-hook 'server-after-make-frame-hook (lambda ()(init-el-set-fonts (selected-frame))))
-;; настройка шрифтов в новых фреймах в любом режиме
 (add-to-list 'after-make-frame-functions 'init-el-set-fonts)
+(add-hook 'after-init-hook 'init-el-set-fonts)
 
 ;; Отображать шрифты красиво, используя Font Face's
 (global-font-lock-mode t)
@@ -60,8 +56,8 @@ FRAME — название настраиваемого фрейма."
   ;; Поищем исходный код в /usr/share/emacs/X.Y/src/, где X и Y мажорная и
   ;; минорная версия Emacs соответственно.
   (let ((emacs-source-path (format "/usr/share/emacs/%d.%d/src/"
-			     emacs-major-version
-			     emacs-minor-version)))
+                             emacs-major-version
+                             emacs-minor-version)))
     ;; Проверим, существует ли каталог
     (if (file-directory-p emacs-source-path)
       ;; Проверяем, пуст ли каталог
@@ -212,8 +208,7 @@ FRAME — название настраиваемого фрейма."
   :custom
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку при использовании VCS")
   (global-auto-revert-non-file-buffers t "Не только файловые буферы, но и IBuffer, Dired и т. д.")
-  :hook
-  (after-init . global-auto-revert-mode))
+  :config (global-auto-revert-mode t))
 
 
 ;; 📦 C-MODE
@@ -273,7 +268,7 @@ FRAME — название настраиваемого фрейма."
 ;; Встроенный пакет, показывающий вариант автозавершения прямо в строке
 (when (package-installed-p 'completion-preview) ;; В старых версиях этого пакета ещё нет
   (use-package completion-preview
-    :hook (after-init . global-completion-preview-mode)))
+    :config (global-completion-preview-mode t)))
 
 
 ;; 📦 CONF-MODE
@@ -303,8 +298,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 DELSEL
 ;; Встроенный пакет для управления удалением выделенного текста.
 (use-package delsel
-  :hook
-  (after-init . delete-selection-mode)) ;; Удалять выделенный фрагмент при вводе текста
+  :config (delete-selection-mode t)) ;; Удалять выделенный фрагмент при вводе текста
 
 
 ;; 📦 DESKTOP
@@ -489,8 +483,7 @@ FRAME — название настраиваемого фрейма."
     ("C-x o" . next-window-any-frame)
     ("M-O" . previous-window-any-frame)
     ("M-o" . next-window-any-frame))
-  :hook
-  (after-init . undelete-frame-mode))
+  :config (undelete-frame-mode t))
 
 
 ;; 📦 GO-TS-MODE
@@ -524,8 +517,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 HL-LINE-MODE
 ;; Подсветка активной строки.
 (use-package hl-line
-  :hook
-  (after-init . global-hl-line-mode))
+  :config (global-hl-line-mode t))
 
 
 ;; 📦 HTML-TS-MODE
@@ -552,10 +544,10 @@ FRAME — название настраиваемого фрейма."
                        filename-and-process)     ;; Имя файла и процесс
                       ;; Сокращённый формат
                       (mark      ;; Отметка?
-			" "
-			(name 30 -1) ;; Имя буфера: 30 знака, при необходимости — расширить на сколько нужно
-			" "
-			filename)))  ;; Имя файла
+                        " "
+                        (name 30 -1) ;; Имя буфера: 30 знака, при необходимости — расширить на сколько нужно
+                        " "
+                        filename)))  ;; Имя файла
   (ibuffer-default-sorting-mode 'major-mode "Сортировать файлы по основному режиму")
   (ibuffer-display-summary nil "Не показывать строку ИТОГО")
   (ibuffer-eliding-string "…" "Если строка не уместилась, показать этот знак")
@@ -575,38 +567,38 @@ FRAME — название настраиваемого фрейма."
   :custom
   (ibuffer-saved-filter-groups ;; Группы по умолчанию
     '(("default"
-	("Dired" (mode . dired-mode))
-	("Emacs Lisp" (derived-mode . lisp-data-mode))
-	("Org" (mode . org-mode))
-	("AsciiDoc" (mode . asciidoc-ts-mode))
-	("Markdown" (derived-mode . markdown-mode))
-	("ReStructured Text" (mode . rst-mode))
-	("CONF / INI" (derived-mode . conf-mode))
-	("XML" (mode . nxml-mode))
-	("YAML" (mode . yaml-ts-mode))
-	("Makefile" (derived-mode . makefile-mode))
-	("Python" (derived-mode . python-base-mode))
-	("Ruby" (derived-mode . ruby-base-mode))
-	("Rust" (derived-mode . rust-mode))
-	("SSH keys" (name . "\\.pub\\'"))
-	("Shell-script" (derived-mode . sh-base-mode))
-	("SQL" (mode . sql-mode))
-	("Web" (or
-		 (derived-mode . sgml-mode)
-		 (mode . json-ts-mode)
-		 (derived-mode . js-base-mode)))
-	("Magit" (or
+        ("Dired" (mode . dired-mode))
+        ("Emacs Lisp" (derived-mode . lisp-data-mode))
+        ("Org" (mode . org-mode))
+        ("AsciiDoc" (mode . asciidoc-ts-mode))
+        ("Markdown" (derived-mode . markdown-mode))
+        ("ReStructured Text" (mode . rst-mode))
+        ("CONF / INI" (derived-mode . conf-mode))
+        ("XML" (mode . nxml-mode))
+        ("YAML" (mode . yaml-ts-mode))
+        ("Makefile" (derived-mode . makefile-mode))
+        ("Python" (derived-mode . python-base-mode))
+        ("Ruby" (derived-mode . ruby-base-mode))
+        ("Rust" (derived-mode . rust-mode))
+        ("SSH keys" (name . "\\.pub\\'"))
+        ("Shell-script" (derived-mode . sh-base-mode))
+        ("SQL" (mode . sql-mode))
+        ("Web" (or
+                 (derived-mode . sgml-mode)
+                 (mode . json-ts-mode)
+                 (derived-mode . js-base-mode)))
+        ("Magit" (or
                    (mode . magit-diff-mode)
                    (mode . magit-log-mode)
                    (mode . magit-status-mode)
                    (name . "\\*magit\\*")
                    (name . "git-monitor")))
-	("Commands" (or
+        ("Commands" (or
                       (derived-mode . compilation-mode)
                       (mode . eshell-mode)
                       (mode . shell-mode)
                       (mode . term-mode)))
-	("Emacs" (or
+        ("Emacs" (or
                    (name . "\\*scratch\\*")
                    (name . "\\*Messages\\*")
                    (name . "\\*Customize\\*")
@@ -689,8 +681,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 PAREN
 ;; Подсветка парных скобок.
 (use-package paren
-  :hook
-  (after-init . show-paren-mode))
+  :hook (show-paren-mode t))
 
 
 ;; 📦 OUTLINE
@@ -717,8 +708,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 PIXEL-SCROLL
 ;; Встроенный пакет, позволяет плавно прокручивать текст
 (use-package pixel-scroll
-  :hook
-  (after-init . pixel-scroll-precision-mode))
+  :config (pixel-scroll-precision-mode t))
 
 
 ;; 📦 PROG-MODE
@@ -819,8 +809,7 @@ FRAME — название настраиваемого фрейма."
 (use-package saveplace
   :custom
   (save-place-forget-unreadable-files t "Не запоминать положение в нечитаемых файлах.")
-  :hook
-  (after-init . save-place-mode))
+  :config (save-place-mode t))
 
 
 ;; 📦 SAVEHIST
@@ -832,8 +821,7 @@ FRAME — название настраиваемого фрейма."
        regexp-search-ring
        search-ring
        shell-command-history))
-  :config
-  (savehist-mode t))
+  :config (savehist-mode t))
 
 
 ;; 📦 SH-SCRIPT
@@ -882,15 +870,15 @@ FRAME — название настраиваемого фрейма."
   :bind
   (:map global-map
     ("C-z" . undo)) ;; Отмена на Ctrl+Z
+  :config
+  (auto-save-mode t)     ;; Включим режим автосохранения
+  (column-number-mode t) ;; Номер колонки в mode-line
+  (line-number-mode t)   ;; Номер строки в mode-line
   :hook
-  (after-init . auto-save-mode)     ;; Включим режим автосохранения
-  (after-init . column-number-mode) ;; Номер колонки в mode-line
-  (after-init . line-number-mode)   ;; Номер строки в mode-line
-  ((compilation-mode
-     messages-buffer-mode
-     prog-mode
-     text-mode
-     ) . visual-line-mode))
+  (compilation-mode . visual-line-mode)
+  (messages-buffer-mode . visual-line-mode)
+  (prog-mode . visual-line-mode)
+  (text-mode . visual-line-mode))
 
 
 ;; 📦 SORT
@@ -994,13 +982,13 @@ FRAME — название настраиваемого фрейма."
     '(
        (asciidoc
          "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-	 ;; "v0.7.0" ;; ABI v15
-	 "v0.6.0" ;; ABI v14
+         ;; "v0.7.0" ;; ABI v15
+         "v0.6.0" ;; ABI v14
          "tree-sitter-asciidoc/src/")
        (asciidoc-inline
          "https://github.com/cathaysia/tree-sitter-asciidoc.git"
-	 ;; "v0.7.0" ;; ABI v15
-	 "v0.6.0" ;; ABI v14
+         ;; "v0.7.0" ;; ABI v15
+         "v0.6.0" ;; ABI v14
          "tree-sitter-asciidoc_inline/src/")
        (bash
          "https://github.com/tree-sitter/tree-sitter-bash.git"
@@ -1016,7 +1004,7 @@ FRAME — название настраиваемого фрейма."
        (c-sharp
          "https://github.com/tree-sitter/tree-sitter-c-sharp.git"
          ;; "v0.23.5" ;; ABI v15
-	 "v0.23.1")    ;; ABI v14
+         "v0.23.1")    ;; ABI v14
        (css
          "https://github.com/tree-sitter/tree-sitter-css.git"
          ;; "v0.25.0" ;; ABI v15
@@ -1051,18 +1039,18 @@ FRAME — название настраиваемого фрейма."
          "src/")
        (markdown
          "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
-	 ;; "v0.5.3"
-	 ;; "v0.5.2"
-	 ;; "v0.5.1"
-	 ;; "v0.5.0" ;; ABI 15
+         ;; "v0.5.3"
+         ;; "v0.5.2"
+         ;; "v0.5.1"
+         ;; "v0.5.0" ;; ABI 15
          "v0.4.1"
          "tree-sitter-markdown/src")
        (markdown-inline
          "https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
-	 ;; "v0.5.3"
-	 ;; "v0.5.2"
-	 ;; "v0.5.1"
-	 ;; "v0.5.0" ;; ABI 15
+         ;; "v0.5.3"
+         ;; "v0.5.2"
+         ;; "v0.5.1"
+         ;; "v0.5.0" ;; ABI 15
          "v0.4.1"
          "tree-sitter-markdown-inline/src")
        (python
@@ -1077,8 +1065,8 @@ FRAME — название настраиваемого фрейма."
          "https://github.com/tree-sitter/tree-sitter-rust.git"
          "v0.23.3")
        (toml
-	 "https://github.com/tree-sitter-grammars/tree-sitter-toml.git"
-	 "v0.7.0")
+         "https://github.com/tree-sitter-grammars/tree-sitter-toml.git"
+         "v0.7.0")
        (tsx
          "https://github.com/tree-sitter/tree-sitter-typescript.git"
          "v0.23.2"
@@ -1235,8 +1223,8 @@ FRAME — название настраиваемого фрейма."
 ;; Автоформат буфера перед сохранением.
 (use-package apheleia
   :vc (
-	:url "https://github.com/radian-software/apheleia.git"
-	:rev "v4.5.0")
+        :url "https://github.com/radian-software/apheleia.git"
+        :rev "v4.5.0")
   :custom
   (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
   :bind
@@ -1306,8 +1294,7 @@ FRAME — название настраиваемого фрейма."
 (use-package breadcrumb
   :pin gnu
   :ensure t
-  :hook
-  (after-init . breadcrumb-mode))
+  :config (breadcrumb-mode t))
 
 
 ;; 📦 BUFFER-ENV
@@ -1330,18 +1317,12 @@ FRAME — название настраиваемого фрейма."
   :custom
   ;; TODO: добавить код, определяющий наличие словарей.
   (cape-dict-file '(
-		     "/usr/share/doc/hunspell/en_US.dic"
+                     "/usr/share/doc/hunspell/en_US.dic"
                      "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block))
-;; (add-to-list 'completion-at-point-functions #'cape-dict)
-;; (add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
-;; (add-to-list 'completion-at-point-functions #'cape-emoji)
-;; (add-to-list 'completion-at-point-functions #'cape-history)
-;; (add-to-list 'completion-at-point-functions #'cape-keyword)
-;; (add-to-list 'completion-at-point-functions #'cape-rfc1345))
 
 
 ;; 📦 CATPPUCCIN-THEME
@@ -1353,13 +1334,12 @@ FRAME — название настраиваемого фрейма."
     :url "https://github.com/catppuccin/emacs.git"
     :rev :newest)
   :custom
-  ;; latte
-  ;; frappe
-  ;; macchiato
-  ;; mocha
-  (catppuccin-flavor 'mocha)
-  :config
-  (init-el-set-fonts))
+  ;; Возможные значения:
+  ;; latte — светлая
+  ;; frappe — темнее
+  ;; macchiato — тёмная
+  ;; mocha — самая тёмная
+  (catppuccin-flavor 'mocha))
 
 
 ;; 📦 COLORFUL-MODE
@@ -1415,8 +1395,9 @@ FRAME — название настраиваемого фрейма."
   :custom
   (corfu-auto-prefix 2 "По умолчанию — 3, это много.")
   (corfu-auto-delay 0.3 "Немного увеличим задержку, чтобы не тормозило.")
+  :config
+  (global-corfu-mode t) ;; Включим глобально
   :hook
-  (after-init . global-corfu-mode) ;; Включим глобально
   (corfu-mode . corfu-indexed-mode)) ;; Номера возле вариантов завершения
 
 
@@ -1448,11 +1429,17 @@ FRAME — название настраиваемого фрейма."
 (use-package diff-hl
   :pin gnu
   :ensure t
-  :custom
-  (diff-hl-update-async t "Асинхронное обновление состояния.")
-  :hook
-  (after-init . global-diff-hl-mode)
-  (dired-mode . diff-hl-dired-mode))
+  :custom (diff-hl-update-async t "Асинхронное обновление состояния.")
+  :config (global-diff-hl-mode t)
+  :hook (dired-mode . diff-hl-dired-mode))
+
+
+;; 📦 DORIC-THEMES
+;; https://github.com/protesilaos/doric-themes
+;; Темы от Protesilaos с упором на типографию (что бы это ни значило)
+(use-package doric-themes
+  :pin gnu
+  :ensure t)
 
 
 ;; 📦 EDIT-INDIRECT
@@ -1484,8 +1471,7 @@ FRAME — название настраиваемого фрейма."
   (unless (alist-get 'editorconfig package-alist)
     (with-demoted-errors "Ошибка обновления `editorconfig': %s"
       (package-upgrade 'editorconfig)))
-  :hook
-  (after-init . editorconfig-mode))
+  :config (editorconfig-mode t))
 
 
 ;; 📦 EF-THEMES
@@ -1603,9 +1589,9 @@ FRAME — название настраиваемого фрейма."
   :config
   (global-flycheck-eglot-mode t)
   (when (package-installed-p 'flycheck-lsp-mode)
-    (add-hook 'after-init-hook 'global-flycheck-lsp-mode))
+    (global-flycheck-lsp-mode t))
   (when (package-installed-p 'flycheck-annotate-mode)
-    (add-hook 'after-init-hook 'global-flycheck-annotate-mode)))
+    (global-flycheck-annotate-mode t)))
 
 
 ;; 📦 INDENT-BARS
@@ -1767,9 +1753,9 @@ FRAME — название настраиваемого фрейма."
   :custom
   (ring-bell-function 'pulsar-pulse-line "Вместо звонка подсветить строку")
   :hook
-  (after-init . pulsar-global-mode)
   (next-error . pulsar-pulse-line-red)
   :config
+  (pulsar-global-mode t)
   (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
   (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error))
 
@@ -1791,8 +1777,8 @@ FRAME — название настраиваемого фрейма."
 ;; https://github.com/dunmaksim/emacs-russian-techwriter-input-method
 (use-package russian-techwriter
   :vc (
-	:url "https://github.com/dunmaksim/emacs-russian-techwriter-input-method.git"
-	:rev :newest)
+        :url "https://github.com/dunmaksim/emacs-russian-techwriter-input-method.git"
+        :rev :newest)
   :custom
   (default-input-method "russian-techwriter" "Метод ввода по умолчанию.")
   (default-transient-input-method "russian-techwriter" "Временный метод ввода"))
@@ -1829,6 +1815,14 @@ FRAME — название настраиваемого фрейма."
 ;; Синяя тема
 (use-package sendai-theme
   :pin gnu
+  :ensure t)
+
+
+;; 📦 SOLARIZED-THEME
+;; Набор тем от bbatsov
+;; https://github.com/bbatsov/solarized-emacs
+(use-package solarized-theme
+  :pin nongnu
   :ensure t)
 
 
@@ -1872,8 +1866,7 @@ FRAME — название настраиваемого фрейма."
 (use-package vertico
   :pin gnu
   :ensure t
-  :hook
-  (after-init . vertico-mode))
+  :config (vertico-mode t))
 
 
 ;; VUNDO
@@ -1921,13 +1914,11 @@ FRAME — название настраиваемого фрейма."
   (which-key-dont-use-unicode nil "Используем Unicode")
   (which-key-lighter nil "Справимся и так, не надо ничего показывать в строке статуса.")
   (which-key-separator " → " "Разделитель сочетаний и команд")
-  :hook
-  (after-init . which-key-mode))
+  :config
+  (which-key-mode t))
 
-;; (load-theme 'ef-autumn t)
-;; (load-theme 'sendai t)
-;; (load-theme 'ef-duo-dark t)
-(load-theme 'catppuccin t)
+
+(load-theme 'solarized-gruvbox-dark t)
 
 (provide 'init.el)
 

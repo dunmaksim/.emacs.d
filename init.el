@@ -681,7 +681,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 PAREN
 ;; Подсветка парных скобок.
 (use-package paren
-  :hook (show-paren-mode t))
+  :config (show-paren-mode t))
 
 
 ;; 📦 OUTLINE
@@ -867,13 +867,12 @@ FRAME — название настраиваемого фрейма."
   :config
   (keymap-global-unset "<insert>" t) ;; Режим перезаписи не нужен
   (put 'overwrite-mode 'disabled t) ;; Выключить `overwrite-mode'.
-  :bind
-  (:map global-map
-    ("C-z" . undo)) ;; Отмена на Ctrl+Z
-  :config
   (auto-save-mode t)     ;; Включим режим автосохранения
   (column-number-mode t) ;; Номер колонки в mode-line
   (line-number-mode t)   ;; Номер строки в mode-line
+  :bind
+  (:map global-map
+    ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
   (compilation-mode . visual-line-mode)
   (messages-buffer-mode . visual-line-mode)

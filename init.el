@@ -1076,7 +1076,7 @@ FRAME — название настраиваемого фрейма."
          "typescript/src/")
        (typst
          "https://github.com/uben0/tree-sitter-typst.git"
-         "0.11"
+         "v0.11.0"
          "src/")       (yaml
          "https://github.com/tree-sitter-grammars/tree-sitter-yaml.git"
          "v0.7.2"
@@ -1260,6 +1260,14 @@ FRAME — название настраиваемого фрейма."
   (when (file-directory-p asciidoc-repo-dir)
     (add-to-list 'load-path asciidoc-repo-dir)
     (require 'asciidoc-ts-mode)))
+
+
+;; 📦 AU-THEMES
+;; https://elpa.nongnu.org/nongnu/au-themes.html
+;; Темы на базе `ef-themes' и `modus-themes'.
+(use-package au-themes
+  :pin nongnu
+  :ensure t)
 
 
 ;; 📦 AVY
@@ -1917,7 +1925,7 @@ FRAME — название настраиваемого фрейма."
   (which-key-mode t))
 
 
-(load-theme 'solarized-gruvbox-dark t)
+(load-theme 'au-aurum-night t)
 
 (provide 'init.el)
 

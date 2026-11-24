@@ -185,9 +185,9 @@ FRAME — название настраиваемого фрейма."
 ;; определённой последовательности символов заменяются на другую.
 (use-package abbrev
   :hook
-  ((asciidoc-ts-mode
-     markdown-mode
-     rst-mode) . abbrev-mode))
+  (asciidoc-ts-mode . abbrev-mode)
+  (markdown-mode . abbrev-mode)
+  (rst-mode . abbrev-mode))
 
 
 ;; 📦 ANSI-COLOR
@@ -398,22 +398,22 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
   (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”)
   :hook
-  ((asciidoc-ts-mode
-     conf-mode
-     css-base-mode
-     js-base-mode
-     json-ts-mode
-     lisp-data-mode
-     markdown-mode
-     nxml-mode
-     org-mode
-     python-base-mode
-     ruby-base-mode
-     rust-mode
-     sed-mode
-     sgml-mode
-     tex-mode
-     yaml-ts-mode) . electric-pair-local-mode))
+  (asciidoc-ts-mode . electric-pair-local-mode)
+  (conf-mode . electric-pair-local-mode)
+  (css-base-mode . electric-pair-local-mode)
+  (js-base-mode . electric-pair-local-mode)
+  (json-ts-mode . electric-pair-local-mode)
+  (lisp-data-mode . electric-pair-local-mode)
+  (markdown-mode . electric-pair-local-mode)
+  (nxml-mode . electric-pair-local-mode)
+  (org-mode . electric-pair-local-mode)
+  (python-base-mode . electric-pair-local-mode)
+  (ruby-base-mode . electric-pair-local-mode)
+  (rust-mode . electric-pair-local-mode)
+  (sed-mode . electric-pair-local-mode)
+  (sgml-mode . electric-pair-local-mode)
+  (tex-mode . electric-pair-local-mode)
+  (yaml-ts-mode . electric-pair-local-mode))
 
 
 ;; 📦 FACE-REMAP
@@ -446,11 +446,11 @@ FRAME — название настраиваемого фрейма."
   :custom
   (fill-column 120 "По умолчанию 70, что мало")
   :hook
-  ((js-base-mode
-     lisp-data-mode
-     python-base-mode
-     rust-mode
-     yaml-ts-mode) . display-fill-column-indicator-mode))
+  (js-base-mode . display-fill-column-indicator-mode)
+  (lisp-data-mode . display-fill-column-indicator-mode)
+  (python-base-mode . display-fill-column-indicator-mode)
+  (rust-mode . display-fill-column-indicator-mode)
+  (yaml-ts-mode . display-fill-column-indicator-mode))
 
 
 ;; 📦 FLYMAKE
@@ -498,11 +498,11 @@ FRAME — название настраиваемого фрейма."
 ;; Возможны варианты (зависит от основного режима).
 (use-package goto-addr
   :hook
-  ((asciidoc-ts-mode
-     lisp-data-mode
-     markdown-mode
-     rst-mode
-     sgml-mode) . goto-address-mode))
+  (asciidoc-ts-mode . goto-address-mode)
+  (lisp-data-mode . goto-address-mode)
+  (markdown-mode . goto-address-mode)
+  (rst-mode . goto-address-mode)
+  (sgml-mode . goto-address-mode))
 
 
 ;; 📦 GREP
@@ -688,11 +688,11 @@ FRAME — название настраиваемого фрейма."
 ;; Управление видимостью блоков кода
 (use-package outline
   :hook
-  ((asciidoc-ts-mode
-     lisp-data-mode
-     markdown-mode
-     rst-mode
-     sh-base-mode) . outline-minor-mode))
+  (asciidoc-ts-mode . outline-minor-mode)
+  (lisp-data-mode . outline-minor-mode)
+  (markdown-mode . outline-minor-mode)
+  (rst-mode . outline-minor-mode)
+  (sh-base-mode . outline-minor-mode))
 
 
 ;; 📦 PEG
@@ -765,6 +765,17 @@ FRAME — название настраиваемого фрейма."
   (recentf-max-saved-items 100 "Помнить последние 100 файлов")
   :config
   (recentf-mode t))
+
+
+;; 📦 RAINBOW-MODE
+;; https://elpa.gnu.org/packages/rainbow-mode.html
+;; Подсветка цветов в буфере.
+;; TODO: выяснить чем это лучше `colorful-mode', помимо рейтинга в GNU ELPA
+(use-package rainbow-mode
+  :pin gnu
+  :ensure t
+  :hook
+  (css-base-mode . rainbow-mode))
 
 
 ;; 📦 REPEAT-MODE
@@ -1145,35 +1156,34 @@ FRAME — название настраиваемого фрейма."
        (tab-mark     ?\t   [?\xBB ?\t] [?\\ ?\t]))) ;; TAB
   (whitespace-line-column nil "Используем значение fill-column")
   :hook
-  ((
-     asciidoc-ts-mode
-     sh-base-mode
-     conf-mode
-     css-base-mode
-     dockerfile-ts-mode
-     lisp-data-mode
-     haml-mode
-     sgml-mode
-     js-base-mode
-     json-ts-mode
-     lisp-data-mode
-     makefile-gmake-mode
-     makefile-mode
-     markdown-mode
-     nxml-mode
-     org-mode
-     po-mode
-     python-base-mode
-     rst-mode
-     ruby-base-mode
-     rust-mode
-     sed-mode
-     sh-mode
-     snippet-mode ;; Yasnippet
-     sql-mode
-     tex-mode
-     texinfo-mode
-     yaml-ts-mode) . whitespace-mode))
+  (asciidoc-ts-mode . whitespace-mode)
+  (sh-base-mode . whitespace-mode)
+  (conf-mode . whitespace-mode)
+  (css-base-mode . whitespace-mode)
+  (dockerfile-ts-mode . whitespace-mode)
+  (lisp-data-mode . whitespace-mode)
+  (haml-mode . whitespace-mode)
+  (sgml-mode . whitespace-mode)
+  (js-base-mode . whitespace-mode)
+  (json-ts-mode . whitespace-mode)
+  (lisp-data-mode . whitespace-mode)
+  (makefile-gmake-mode . whitespace-mode)
+  (makefile-mode . whitespace-mode)
+  (markdown-mode . whitespace-mode)
+  (nxml-mode . whitespace-mode)
+  (org-mode . whitespace-mode)
+  (po-mode . whitespace-mode)
+  (python-base-mode . whitespace-mode)
+  (rst-mode . whitespace-mode)
+  (ruby-base-mode . whitespace-mode)
+  (rust-mode . whitespace-mode)
+  (sed-mode . whitespace-mode)
+  (sh-mode . whitespace-mode)
+  (snippet-mode . whitespace-mode)
+  (sql-mode . whitespace-mode)
+  (tex-mode . whitespace-mode)
+  (texinfo-mode . whitespace-mode)
+  (yaml-ts-mode . whitespace-mode))
 
 
 ;; 📦 WINDOW
@@ -1217,25 +1227,6 @@ FRAME — название настраиваемого фрейма."
 ;;;;;; Здесь заканчиваются настройки встроенных пакетов и начинаются
 ;;;;;; настройки пакетов, полученных от чертей из интернета.
 
-;; 📦 APHELEIA
-;; https://github.com/radian-software/apheleia
-;; Автоформат буфера перед сохранением.
-(use-package apheleia
-  :vc (
-        :url "https://github.com/radian-software/apheleia.git"
-        :rev "v4.5.0")
-  :custom
-  (apheleia-mode-lighter " ɑ" "Вместо длинного Apheleia")
-  :bind
-  (:map global-map
-    ("<f12>" . apheleia-format-buffer))
-  :hook
-  ((lisp-data-mode
-     json-ts-mode
-     python-base-mode
-     ruby-base-mode
-     yaml-ts-mode) . apheleia-mode))
-
 
 ;; 📦 AUCTEX
 ;; IDE для работы с TeX
@@ -1260,14 +1251,6 @@ FRAME — название настраиваемого фрейма."
   (when (file-directory-p asciidoc-repo-dir)
     (add-to-list 'load-path asciidoc-repo-dir)
     (require 'asciidoc-ts-mode)))
-
-
-;; 📦 AU-THEMES
-;; https://elpa.nongnu.org/nongnu/au-themes.html
-;; Темы на базе `ef-themes' и `modus-themes'.
-(use-package au-themes
-  :pin nongnu
-  :ensure t)
 
 
 ;; 📦 AVY
@@ -1352,16 +1335,16 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 COLORFUL-MODE
 ;; https://github.com/DevelopmentCool2449/colorful-mode
 ;; Отображение цветов прямо в буфере. Наследник `raibow-mode.el'.
+;; TODO: выбрать что-то одно: `rainbow-mode' или этот пакет.
 (use-package colorful-mode
   :pin gnu
   :ensure t
   :hook
-  ((css-base-mode
-     haml-mode
-     json-ts-mode
-     lisp-data-mode
-     sgml-mode
-     yaml-ts-mode) . colorful-mode))
+  (haml-mode . colorful-mode)
+  (json-ts-mode . colorful-mode)
+  (lisp-data-mode . colorful-mode)
+  (sgml-mode . colorful-mode)
+  (yaml-ts-mode . colorful-mode))
 
 
 ;; 📦 CONSULT
@@ -1534,12 +1517,12 @@ FRAME — название настраиваемого фрейма."
     ("C-c C-r" . eglot-rename)
     ("C-c C-f" . eglot-format-buffer))
   :hook
-  ((ansible-mode
-     dockerfile-ts-mode
-     python-base-mode
-     ruby-base-mode
-     rust-mode
-     yaml-ts-mode) . eglot-ensure))
+  (ansible-mode . eglot-ensure)
+  (dockerfile-ts-mode . eglot-ensure)
+  (python-base-mode . eglot-ensure)
+  (ruby-base-mode . eglot-ensure)
+  (rust-mode . eglot-ensure)
+  (yaml-ts-mode . eglot-ensure))
 
 
 ;; 📦 ELDOC-MODE
@@ -1574,25 +1557,25 @@ FRAME — название настраиваемого фрейма."
   (flycheck-sphinx-warn-on-missing-references t "Предупреждать о некорректных ссылках в Sphinx")
   (flycheck-textlint-config ".textlintrc.yaml" "Файл настроек Textlint")
   :hook
-  ((conf-mode
-     css-base-mode
-     dockerfile-ts-mode
-     haml-mode
-     js-base-mode
-     json-ts-mode
-     lisp-data-mode
-     makefile-mode
-     nxml-mode
-     python-base-mode
-     rst-mode
-     ruby-base-mode
-     rust-mode
-     sgml-mode
-     sh-base-mode
-     sql-mode
-     tex-mode
-     typescript-ts-base-mode
-     yaml-ts-mode) . flycheck-mode)
+  (conf-mode . flycheck-mode)
+  (css-base-mode . flycheck-mode)
+  (dockerfile-ts-mode . flycheck-mode)
+  (haml-mode . flycheck-mode)
+  (js-base-mode . flycheck-mode)
+  (json-ts-mode . flycheck-mode)
+  (lisp-data-mode . flycheck-mode)
+  (makefile-mode . flycheck-mode)
+  (nxml-mode . flycheck-mode)
+  (python-base-mode . flycheck-mode)
+  (rst-mode . flycheck-mode)
+  (ruby-base-mode . flycheck-mode)
+  (rust-mode . flycheck-mode)
+  (sgml-mode . flycheck-mode)
+  (sh-base-mode . flycheck-mode)
+  (sql-mode . flycheck-mode)
+  (tex-mode . flycheck-mode)
+  (typescript-ts-base-mode . flycheck-mode)
+  (yaml-ts-mode . flycheck-mode)
   :config
   (global-flycheck-eglot-mode t)
   (when (package-installed-p 'flycheck-lsp-mode)
@@ -1608,18 +1591,18 @@ FRAME — название настраиваемого фрейма."
   :pin gnu
   :ensure t
   :hook
-  ((css-base-mode
-     haml-mode
-     js-base-mode
-     lisp-data-mode
-     makefile-mode
-     markdown-mode
-     python-base-mode
-     rst-mode
-     ruby-base-mode
-     rust-mode
-     typescript-ts-base-mode
-     yaml-ts-mode) . indent-bars-mode))
+  (css-base-mode . indent-bars-mode)
+  (haml-mode . indent-bars-mode)
+  (js-base-mode . indent-bars-mode)
+  (lisp-data-mode . indent-bars-mode)
+  (makefile-mode . indent-bars-mode)
+  (markdown-mode . indent-bars-mode)
+  (python-base-mode . indent-bars-mode)
+  (rst-mode . indent-bars-mode)
+  (ruby-base-mode . indent-bars-mode)
+  (rust-mode . indent-bars-mode)
+  (typescript-ts-base-mode . indent-bars-mode)
+  (yaml-ts-mode . indent-bars-mode))
 
 
 ;; 📦 JINJA2-MODE
@@ -1642,12 +1625,12 @@ FRAME — название настраиваемого фрейма."
   :custom
   (jinx-languages "ru_RU en_US")
   :hook
-  ((asciidoc-ts-mode
-     dockerfile-ts-mode
-     lisp-data-mode
-     markdown-mode
-     rst-mode
-     tex-mode) . jinx-mode)
+  (asciidoc-ts-mode . jinx-mode)
+  (dockerfile-ts-mode . jinx-mode)
+  (lisp-data-mode . jinx-mode)
+  (markdown-mode . jinx-mode)
+  (rst-mode . jinx-mode)
+  (tex-mode . jinx-mode)
   :bind
   (:map global-map
     ("M-$" . jinx-correct)
@@ -1774,8 +1757,8 @@ FRAME — название настраиваемого фрейма."
   :pin nongnu
   :ensure t
   :hook
-  ((prog-mode
-     text-mode) . rainbow-delimiters-mode))
+  (prog-mode . rainbow-delimiters-mode)
+  (text-mode . rainbow-delimiters-mode))
 
 
 ;; 📦 RUSSIAN-TECHWRITER
@@ -1925,7 +1908,7 @@ FRAME — название настраиваемого фрейма."
   (which-key-mode t))
 
 
-(load-theme 'au-aurum-night t)
+(load-theme 'ef-autumn t)
 
 (provide 'init.el)
 

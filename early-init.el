@@ -25,6 +25,10 @@
 (when (fboundp 'tool-bar-mode)
   (setopt tool-bar-mode nil))
 
+;; Вывод подсказок в графической среде не нужен
+(when (fboundp 'tooltip-mode)
+  (setopt tooltip-mode nil)) ;; Отключить использование GUI для вывода подсказок
+
 ;; Настроим архивы:
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
@@ -39,11 +43,12 @@
 
 ;; Всякое разное
 (setopt
-  gc-cons-threshold (* 800000 2) ;; Удвоим размер памяти для сборщика мусора)
-  inhibit-splash-screen t        ;; Не показывать заставку
-  inhibit-startup-buffer-menu t  ;; Выключить меню буферов при запуске
-  inhibit-startup-screen t       ;; Не показывать приветственный экран
-  load-prefer-newer t)           ;; Если есть файл elc, но el новее, загрузить el-файл.
+  gc-cons-threshold (* 800000 10)        ;; Увеличим размер памяти для сборщика мусора в 10 раз
+  inhibit-splash-screen t                ;; Не показывать заставку
+  inhibit-startup-buffer-menu t          ;; Выключить меню буферов при запуске
+  inhibit-startup-screen t               ;; Не показывать приветственный экран
+  load-prefer-newer t                    ;; Если есть файл elc, но el новее, загрузить el-файл.
+  read-process-output-max (* 1024 1024)) ;; 1 МБ для LSP, по умолчанию 65536 байт
 
 (provide 'early-init)
 ;;; early-init.el ends here

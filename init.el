@@ -122,6 +122,9 @@ FRAME — название настраиваемого фрейма."
 (add-hook 'after-init-hook 'init-el-kill-scratch)
 (add-hook 'server-after-make-frame-hook 'init-el-kill-scratch)
 
+;; Восстановим значение памяти для сборщика мусора
+(add-hook 'after-init-hook (lambda ()(setopt gc-cons-threshold 800000)))
+
 
 ;; Изменим некоторые привязки клавиш по умолчанию
 (require 'keymap)
@@ -130,16 +133,16 @@ FRAME — название настраиваемого фрейма."
 (keymap-global-unset "C-x C-z") ;; `suspend-emacs' тоже не нужен
 (keymap-global-unset "C-x C-p") ;; `mark-page' не нужна, часто конфликтует с Projectile
 
-;; Включим переключение буферов по Ctrl+PgUp и Ctrl+PgDn
-(keymap-global-unset "C-<next>")
-(keymap-global-unset "C-<prior>")
+;; Отключим Ctrl+PgUp и Ctrl+PgDn
+;; (keymap-global-unset "C-<next>")
+;; (keymap-global-unset "C-<prior>")
 
 
 ;; Включим вставку знаков через C-x C-8.
 (keymap-global-set "C-x C-8" 'insert-char)
+;; Вставка длинного тире по нажатию [C-x 8 d] (dash)
+(keymap-global-set "C-x 8 d" (lambda() (interactive) (insert "—")))
 
-;; Вставка длинного тире по нажатию [M--]
-(keymap-global-set "M--" (lambda() (interactive) (insert "—")))
 
 ;; Проверим наличие списка пакетов. Если его нет, то обновим.
 (require 'package)
@@ -393,9 +396,9 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'electric-pair-pairs '(?\[ . ?\])) ;; []
   (add-to-list 'electric-pair-pairs '(?{ . ?}))   ;; {}
   (add-to-list 'electric-pair-pairs '(?« . ?»))   ;; «»
-  (add-to-list 'electric-pair-pairs '(?‘ . ’?))   ;; ‘’
-  (add-to-list 'electric-pair-pairs '(?‚ . ‘?))   ;; ‚‘
-  (add-to-list 'electric-pair-pairs '(?“ . ”?))   ;; “”)
+  (add-to-list 'electric-pair-pairs '(?‘ . ?’))   ;; ‘’
+  (add-to-list 'electric-pair-pairs '(?‚ . ?‘))   ;; ‚‘
+  (add-to-list 'electric-pair-pairs '(?“ . ?”))   ;; “”)
   :hook
   (asciidoc-ts-mode . electric-pair-local-mode)
   (conf-mode . electric-pair-local-mode)
@@ -430,7 +433,6 @@ FRAME — название настраиваемого фрейма."
   (backup-inhibited t "Отключить создание резервных копий на уровне буфера.")
   (confirm-kill-processes nil "Прерывать процессы без лишних вопросов.")
   (delete-old-versions t "Удалять старые резервные копии файлов без лишних вопросов")
-  (enable-local-eval t "Разрешить вызов `eval' в `.dir-locals.el'")
   (enable-local-variables :all "Считать все переменные из файлов `.dir-locals.el' безопасными")
   (large-file-warning-threshold (* 100 1024 1024) "Предупреждение при открытии файлов больше 100 МБ (по умолчанию — 10 МБ)")
   (make-backup-files nil "Резервные копии не нужны, у нас есть VCS")
@@ -877,7 +879,6 @@ FRAME — название настраиваемого фрейма."
   :config
   (keymap-global-unset "<insert>" t) ;; Режим перезаписи не нужен
   (put 'overwrite-mode 'disabled t) ;; Выключить `overwrite-mode'.
-  (auto-save-mode t)     ;; Включим режим автосохранения
   (column-number-mode t) ;; Номер колонки в mode-line
   (line-number-mode t)   ;; Номер строки в mode-line
   :hook
@@ -930,22 +931,6 @@ FRAME — название настраиваемого фрейма."
 ;; TOML-TS-MODE
 ;; Встроенный пакет на базе TreeSitter для работы с TOML-файлами
 (use-package toml-ts-mode)
-
-
-;; 📦 TOOLBAR
-;; Встроенный пакет, недоступный в Emacs NOX
-(when (fboundp 'tool-bar-mode)
-  (use-package tool-bar
-    :custom
-    (tool-bar-mode nil "Выключить панель инструментов.")))
-
-
-;; 📦 TOOLTIP
-;; Встроенный пакет.
-;; Вывод подсказок в графической среде.
-(when (fboundp 'tooltip-mode)
-  (use-package tooltip
-    :config (tooltip-mode -1))) ;; Отключить использование GUI для вывода подсказок
 
 
 ;; 📦 TRACK-CHANGES
@@ -1244,7 +1229,7 @@ FRAME — название настраиваемого фрейма."
 (let ((asciidoc-repo-dir (expand-file-name "~/repo/asciidoc-ts-mode/")))
   (when (file-directory-p asciidoc-repo-dir)
     (add-to-list 'load-path asciidoc-repo-dir)
-    (require 'asciidoc-ts-mode)))
+    (require 'asciidoc-ts-mode nil t))) ;; Загрузка без ошибок
 
 
 ;; 📦 AVY
@@ -1449,7 +1434,7 @@ FRAME — название настраиваемого фрейма."
 ;; Поддержка https://editorconfig.org/
 ;; https://github.com/editorconfig/editorconfig-emacs
 (use-package editorconfig
-  :pin gnu
+  :pin nongnu
   :ensure t
   :init
   (unless (alist-get 'editorconfig package-alist)
@@ -1494,11 +1479,10 @@ FRAME — название настраиваемого фрейма."
   (eglot-autoshutdown t "Автоматически выключить сервер при закрытии последнего буфера")
   (eglot-events-buffer-config '(
                                  :size 0 ;; Выключить ведение буфера событий
-                                 :format 'lisp ;; Формат Lisp для логов
+                                 :format lisp ;; Формат Lisp для логов
                                  )
     "Настройки буфера событий Eglot")
   :config
-  (add-to-list 'eglot-server-programs '(ansible-mode . ("ansible-language-server" "--stdio")))
   (add-to-list 'eglot-server-programs '(dockerfile-ts-mode . ("docker-langserver" "--stdio")))
   ;; (add-to-list 'eglot-server-programs '(markdown-mode . ("marksman")))
   (add-to-list 'eglot-server-programs '(python-base-mode . ("jedi-language-server")))
@@ -1511,7 +1495,6 @@ FRAME — название настраиваемого фрейма."
     ("C-c C-r" . eglot-rename)
     ("C-c C-f" . eglot-format-buffer))
   :hook
-  (ansible-mode . eglot-ensure)
   (dockerfile-ts-mode . eglot-ensure)
   (python-base-mode . eglot-ensure)
   (ruby-base-mode . eglot-ensure)
@@ -1571,11 +1554,7 @@ FRAME — название настраиваемого фрейма."
   (typescript-ts-base-mode . flycheck-mode)
   (yaml-ts-mode . flycheck-mode)
   :config
-  (global-flycheck-eglot-mode t)
-  (when (package-installed-p 'flycheck-lsp-mode)
-    (global-flycheck-lsp-mode t))
-  (when (package-installed-p 'flycheck-annotate-mode)
-    (global-flycheck-annotate-mode t)))
+  (global-flycheck-eglot-mode t))
 
 
 ;; 📦 INDENT-BARS
@@ -1902,7 +1881,7 @@ FRAME — название настраиваемого фрейма."
 
 (load-theme 'ef-autumn t)
 
-(provide 'init.el)
+(provide 'init)
 
 ;; Local Variables:
 ;; indent-tabs-mode: nil

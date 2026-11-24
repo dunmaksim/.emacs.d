@@ -114,12 +114,13 @@ FRAME — название настраиваемого фрейма."
 
 
 ;; Буфер *scratch* не нужен, если вы не программист Emacs Lisp
-(defun init-kill-scratch ()
-  "Закрыть буфер *scratch* при запуске редактора или подключении клиента."
+(defun init-el-kill-scratch (&optional frame)
+  "Закрыть буфер FRAME при запуске редактора или подключении клиента.
+На самом деле всё равно есть FRAME или нет: мы будем убивать *scratch*."
   (when (get-buffer "*scratch*")
     (kill-buffer "*scratch*")))
-;; (add-hook 'after-init-hook 'init-kill-scratch)
-(add-hook 'server-after-make-frame-hook 'init-kill-scratch)
+(add-hook 'after-init-hook 'init-el-kill-scratch)
+(add-hook 'server-after-make-frame-hook 'init-el-kill-scratch)
 
 
 ;; Изменим некоторые привязки клавиш по умолчанию
@@ -142,8 +143,6 @@ FRAME — название настраиваемого фрейма."
 
 ;; Проверим наличие списка пакетов. Если его нет, то обновим.
 (require 'package)
-(unless package--initialized
-  (package-initialize))
 (unless package-archive-contents
   (with-demoted-errors "Ошибка обновления списка пакетов: %s."
     (package-refresh-contents)))
@@ -373,15 +372,15 @@ FRAME — название настраиваемого фрейма."
 ;; В основном только мешает, лучше выключить.
 (use-package electric
   :hook
-  (lisp-data-mode . electric-indent-local-mode)
-  (markdown-mode . electric-indent-local-mode)
-  (nxml-mode . electric-indent-local-mode)
-  (python-base-mode . electric-indent-local-mode)
-  (rst-mode . electric-indent-local-mode)
-  (ruby-base-mode . electric-indent-local-mode)
-  (rust-mode . electric-indent-local-mode)
-  (sgml-mode . electric-indent-local-mode)
-  (typescript-base-mode . electric-indent-local-mode))
+  (lisp-data-mode . (lambda () (electric-indent-local-mode t)))
+  (markdown-mode . (lambda () (electric-indent-local-mode t)))
+  (nxml-mode . (lambda () (electric-indent-local-mode t)))
+  (python-base-mode . (lambda () (electric-indent-local-mode t)))
+  (rst-mode . (lambda () (electric-indent-local-mode t)))
+  (ruby-base-mode . (lambda () (electric-indent-local-mode t)))
+  (rust-mode . (lambda () (electric-indent-local-mode t)))
+  (sgml-mode . (lambda () (electric-indent-local-mode t)))
+  (typescript-base-mode . (lambda () (electric-indent-local-mode t))))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -881,9 +880,6 @@ FRAME — название настраиваемого фрейма."
   (auto-save-mode t)     ;; Включим режим автосохранения
   (column-number-mode t) ;; Номер колонки в mode-line
   (line-number-mode t)   ;; Номер строки в mode-line
-  :bind
-  (:map global-map
-    ("C-z" . undo)) ;; Отмена на Ctrl+Z
   :hook
   (compilation-mode . visual-line-mode)
   (messages-buffer-mode . visual-line-mode)
@@ -949,7 +945,7 @@ FRAME — название настраиваемого фрейма."
 ;; Вывод подсказок в графической среде.
 (when (fboundp 'tooltip-mode)
   (use-package tooltip
-    :config (tooltip-mode nil))) ;; Отключить использование GUI для вывода подсказок
+    :config (tooltip-mode -1))) ;; Отключить использование GUI для вывода подсказок
 
 
 ;; 📦 TRACK-CHANGES
@@ -1093,11 +1089,12 @@ FRAME — название настраиваемого фрейма."
          "v0.7.2"
          "src/")))
   ;; Сборка и установка грамматик
-  (dolist (source treesit-language-source-alist)
-    (let ((lang (car source)))
-      (unless (treesit-ready-p lang t)
-        (with-demoted-errors "Treesit: ошибка установки грамматики: %s"
-          (treesit-install-language-grammar lang)))))
+  (defun init-el-install-treesit-grammars ()
+    (dolist (source treesit-language-source-alist)
+      (let ((lang (car source)))
+        (unless (treesit-ready-p lang t)
+          (with-demoted-errors "Treesit: ошибка установки грамматики: %s"
+            (treesit-install-language-grammar lang))))))
   (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
   (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
   (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
@@ -1157,17 +1154,13 @@ FRAME — название настраиваемого фрейма."
   (whitespace-line-column nil "Используем значение fill-column")
   :hook
   (asciidoc-ts-mode . whitespace-mode)
-  (sh-base-mode . whitespace-mode)
   (conf-mode . whitespace-mode)
   (css-base-mode . whitespace-mode)
   (dockerfile-ts-mode . whitespace-mode)
-  (lisp-data-mode . whitespace-mode)
   (haml-mode . whitespace-mode)
-  (sgml-mode . whitespace-mode)
   (js-base-mode . whitespace-mode)
   (json-ts-mode . whitespace-mode)
   (lisp-data-mode . whitespace-mode)
-  (makefile-gmake-mode . whitespace-mode)
   (makefile-mode . whitespace-mode)
   (markdown-mode . whitespace-mode)
   (nxml-mode . whitespace-mode)
@@ -1178,6 +1171,7 @@ FRAME — название настраиваемого фрейма."
   (ruby-base-mode . whitespace-mode)
   (rust-mode . whitespace-mode)
   (sed-mode . whitespace-mode)
+  (sgml-mode . whitespace-mode)
   (sh-mode . whitespace-mode)
   (snippet-mode . whitespace-mode)
   (sql-mode . whitespace-mode)
@@ -1295,7 +1289,7 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :hook
   (hack-local-variables . buffer-env-update)
-  (comint-mode-hook . buffer-env-update))
+  (comint-mode . buffer-env-update))
 
 
 ;; 📦 CAPE
@@ -1746,8 +1740,8 @@ FRAME — название настраиваемого фрейма."
   (next-error . pulsar-pulse-line-red)
   :config
   (pulsar-global-mode t)
-  (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)
-  (add-to-list 'pulsar-pulse-functions 'flyspell-goto-next-error))
+  (when (fboundp 'flycheck-next-error)
+    (add-to-list 'pulsar-pulse-functions 'flycheck-next-error)))
 
 
 ;; 📦 RAINBOW-DELIMITERS
@@ -1880,8 +1874,6 @@ FRAME — название настраиваемого фрейма."
 (use-package vundo
   :pin gnu
   :ensure t
-  :init
-  (keymap-global-unset "C-z")
   :bind
   (:map global-map
     ("C-z" . vundo)))

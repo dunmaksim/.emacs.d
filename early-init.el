@@ -16,11 +16,14 @@
   (load custom-file))
 
 ;; Меню не нужно
-(when (fboundp 'menu-bar-mode) (setopt menu-bar-mode nil))
+(setopt menu-bar-mode nil)
+
 ;; Полосы прокрутки не нужны
-(when (fboundp 'scroll-bar-mode) (setopt scroll-bar-mode nil))
+(setopt scroll-bar-mode nil)
+
 ;; Панель инструментов не нужна
-(when (fboundp 'tool-bar-mode) (setopt tool-bar-mode nil))
+(when (fboundp 'tool-bar-mode)
+  (setopt tool-bar-mode nil))
 
 ;; Настроим архивы:
 (require 'package)

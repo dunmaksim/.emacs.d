@@ -13,15 +13,14 @@
 (defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
 
 (defconst init-el-preferred-fonts
-  '(
-     "Lilex"
-     "SauceCodePro NFP"
-     "FiraCode Nerd Font Mono"
-     "Fira Code"
-     "DejaVu Sans Mono Nerd"
-     "DejaVu Sans Mono"
-     "Source Code Pro"
-     "Consolas"))
+  '("Lilex"
+    "SauceCodePro NFP"
+    "FiraCode Nerd Font Mono"
+    "Fira Code"
+    "DejaVu Sans Mono Nerd"
+    "DejaVu Sans Mono"
+    "Source Code Pro"
+    "Consolas"))
 
 
 (defun init-el-set-fonts (&optional frame)
@@ -134,12 +133,13 @@ FRAME — название настраиваемого фрейма."
 (keymap-global-unset "C-x C-p") ;; `mark-page' не нужна, часто конфликтует с Projectile
 
 ;; Отключим Ctrl+PgUp и Ctrl+PgDn
-;; (keymap-global-unset "C-<next>")
-;; (keymap-global-unset "C-<prior>")
+(keymap-global-unset "C-<next>")
+(keymap-global-unset "C-<prior>")
 
 
 ;; Включим вставку знаков через C-x C-8.
 (keymap-global-set "C-x C-8" 'insert-char)
+
 ;; Вставка длинного тире по нажатию [C-x 8 d] (dash)
 (keymap-global-set "C-x 8 d" (lambda() (interactive) (insert "—")))
 
@@ -372,18 +372,31 @@ FRAME — название настраиваемого фрейма."
 
 ;; 📦 ELECTRIC-INDENT MODE
 ;; Встроенный пакет для управления автоматическими отступами.
-;; В основном только мешает, лучше выключить.
+;; ЖЫЗНЬ БЕЗ ELECTRIC-INDENT-MODE:
+;; (use-package name
+;; :ensure t
+;; :pin gnu)
+;;
+;; ЖЫЗНЬ С ELECTRIC-INDENT-MODE:
+;; (use-package name
+;;   :ensure t
+;;   :pin gnu)
+;;
+;; Примечание: локальный режим нужно включать с аргументом
 (use-package electric
+  :config
+  (defun init-el-electric-indent-local-mode ()
+    (electric-indent-local-mode t))
   :hook
-  (lisp-data-mode . (lambda () (electric-indent-local-mode t)))
-  (markdown-mode . (lambda () (electric-indent-local-mode t)))
-  (nxml-mode . (lambda () (electric-indent-local-mode t)))
-  (python-base-mode . (lambda () (electric-indent-local-mode t)))
-  (rst-mode . (lambda () (electric-indent-local-mode t)))
-  (ruby-base-mode . (lambda () (electric-indent-local-mode t)))
-  (rust-mode . (lambda () (electric-indent-local-mode t)))
-  (sgml-mode . (lambda () (electric-indent-local-mode t)))
-  (typescript-base-mode . (lambda () (electric-indent-local-mode t))))
+  (lisp-data-mode . init-el-electric-indent-local-mode)
+  (markdown-mode . init-el-electric-indent-local-mode)
+  (nxml-mode . init-el-electric-indent-local-mode)
+  (python-base-mode . init-el-electric-indent-local-mode)
+  (rst-mode . init-el-electric-indent-local-mode)
+  (ruby-base-mode . init-el-electric-indent-local-mode)
+  (rust-mode . init-el-electric-indent-local-mode)
+  (sgml-mode . init-el-electric-indent-local-mode)
+  (typescript-base-mode . init-el-electric-indent-local-mode))
 
 
 ;; 📦 ELEC-PAIR MODE
@@ -399,23 +412,25 @@ FRAME — название настраиваемого фрейма."
   (add-to-list 'electric-pair-pairs '(?‘ . ?’))   ;; ‘’
   (add-to-list 'electric-pair-pairs '(?‚ . ?‘))   ;; ‚‘
   (add-to-list 'electric-pair-pairs '(?“ . ?”))   ;; “”)
+  (defun init-el-electric-pair-local-mode ()
+    (electric-pair-local-mode t))
   :hook
-  (asciidoc-ts-mode . electric-pair-local-mode)
-  (conf-mode . electric-pair-local-mode)
-  (css-base-mode . electric-pair-local-mode)
-  (js-base-mode . electric-pair-local-mode)
-  (json-ts-mode . electric-pair-local-mode)
-  (lisp-data-mode . electric-pair-local-mode)
-  (markdown-mode . electric-pair-local-mode)
-  (nxml-mode . electric-pair-local-mode)
-  (org-mode . electric-pair-local-mode)
-  (python-base-mode . electric-pair-local-mode)
-  (ruby-base-mode . electric-pair-local-mode)
-  (rust-mode . electric-pair-local-mode)
-  (sed-mode . electric-pair-local-mode)
-  (sgml-mode . electric-pair-local-mode)
-  (tex-mode . electric-pair-local-mode)
-  (yaml-ts-mode . electric-pair-local-mode))
+  (asciidoc-ts-mode . init-el-electric-pair-local-mode)
+  (conf-mode . init-el-electric-pair-local-mode)
+  (css-base-mode . init-el-electric-pair-local-mode)
+  (js-base-mode . init-el-electric-pair-local-mode)
+  (json-ts-mode . init-el-electric-pair-local-mode)
+  (lisp-data-mode . init-el-electric-pair-local-mode)
+  (markdown-mode . init-el-electric-pair-local-mode)
+  (nxml-mode . init-el-electric-pair-local-mode)
+  (org-mode . init-el-electric-pair-local-mode)
+  (python-base-mode . init-el-electric-pair-local-mode)
+  (ruby-base-mode . init-el-electric-pair-local-mode)
+  (rust-mode . init-el-electric-pair-local-mode)
+  (sed-mode . init-el-electric-pair-local-mode)
+  (sgml-mode . init-el-electric-pair-local-mode)
+  (tex-mode . init-el-electric-pair-local-mode)
+  (yaml-ts-mode . init-el-electric-pair-local-mode))
 
 
 ;; 📦 FACE-REMAP
@@ -1649,6 +1664,14 @@ FRAME — название настраиваемого фрейма."
   :bind
   (:map markdown-mode-map
     ("M-." . markdown-follow-thing-at-point)))
+
+
+;; 📦 MINIMAP
+;; https://elpa.gnu.org/packages/minimap.html
+;; Мини-карта с содержимым буфера
+(use-package minimap
+  :pin gnu
+  :ensure t)
 
 
 ;; NANO-MODELINE

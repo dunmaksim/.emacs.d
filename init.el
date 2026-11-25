@@ -10,7 +10,9 @@
 ;;; По этой же причине здесь нет ничего, что могло бы сломаться.
 
 
-(defconst init-el-font-height 18 "Размер шрифта по умолчанию.")
+(defconst init-el-font-height 180 "Размер шрифта в типографских пунктах.")
+
+(set-face-attribute 'default nil :height 180) ;; Размер шрифта в типографских пунктах
 
 (defconst init-el-preferred-fonts
   '("Lilex"
@@ -24,19 +26,18 @@
 
 
 (defun init-el-set-fonts (&optional frame)
-  "Настройки для работы Emacs  в графическом режиме.
+  "Настройки для работы Emacs в графическом режиме.
 FRAME — название настраиваемого фрейма."
   (when (display-graphic-p frame)
     (let* ((font-families (font-family-list))
             (preferred-font-family
-              (seq-find (lambda (font)(member font font-families))
+              (seq-find (lambda (font) (member font font-families))
                 init-el-preferred-fonts)))
-      (set-face-attribute
-        'default  ;; Font Face по умолчанию
-        nil       ;; Применить ко всем фреймам
-        :family preferred-font-family
-        :height (* init-el-font-height 10)))))
-
+      (when preferred-font-family
+        (set-face-attribute
+          'default  ;; Font Face по умолчанию
+          nil       ;; Применить ко всем фреймам
+          :family preferred-font-family)))))
 
 ;; Правильный способ определить, что EMACS запущен в графическом режиме. Подробнее здесь:
 ;; https://emacsredux.com/blog/2022/06/03/detecting-whether-emacs-is-running-in-terminal-or-gui-mode/
@@ -62,13 +63,13 @@ FRAME — название настраиваемого фрейма."
       ;; Проверяем, пуст ли каталог
       (if (directory-empty-p emacs-source-path)
         ;; Каталог пуст
-        (message (format "Каталог %s пуст." emacs-source-path))
+        (message "Каталог %s пуст." emacs-source-path)
         ;; Каталог не пуст
         (progn
           (setopt source-directory emacs-source-path)
-          (message (format "Исходный код обнаружен в каталоге %s" emacs-source-path))))
+          (message "Исходный код обнаружен в каталоге %s" emacs-source-path)))
       ;; Каталог не существует
-      (message (format "Каталог %s не существует." emacs-source-path)))))
+      (message "Каталог %s не существует." emacs-source-path))))
 
 ;; Настраиваем порядок выравнивания для текста слева направо
 ;; Это должно увеличить производительность на больших буферах.
@@ -108,12 +109,11 @@ FRAME — название настраиваемого фрейма."
   use-short-answers t                               ;; Краткие ответы вместо длинных
   user-full-name "Dunaevsky Maxim"                  ;; Имя пользователя
   user-mail-address "dunmaksim@yandex.ru"           ;; Адрес электронной почты
-  vc-follow-symlinks t                              ;; Переходить по ссылкам без лишних вопросов
-  visible-bell t)                                   ;; Мигать буфером при переходе в него
+  vc-follow-symlinks t)                             ;; Переходить по ссылкам без лишних вопросов
 
 
 ;; Буфер *scratch* не нужен, если вы не программист Emacs Lisp
-(defun init-el-kill-scratch (&optional frame)
+(defun init-el-kill-scratch (&optional _frame)
   "Закрыть буфер FRAME при запуске редактора или подключении клиента.
 На самом деле всё равно есть FRAME или нет: мы будем убивать *scratch*."
   (when (get-buffer "*scratch*")
@@ -150,14 +150,6 @@ FRAME — название настраиваемого фрейма."
   (with-demoted-errors "Ошибка обновления списка пакетов: %s."
     (package-refresh-contents)))
 
-
-;; Проверим наличие пакета `gnu-elpa-keyring-update'.
-;; В некоторых случаях без него Emacs не может проверить цифровые
-;; подписи пакетов.
-(unless (package-installed-p 'gnu-elpa-keyring-update)
-  (progn
-    (message "Обновление ключей для проверки цифровой подписи.")
-    (package-install 'gnu-elpa-keyring-update t)))
 
 ;; Проверяем наличие пакета `use-package'.
 ;; В новых версиях Emacs он встроенный, но в старых его может не быть.
@@ -211,18 +203,6 @@ FRAME — название настраиваемого фрейма."
   (auto-revert-check-vc-info t "Автоматически обновлять статусную строку при использовании VCS")
   (global-auto-revert-non-file-buffers t "Не только файловые буферы, но и IBuffer, Dired и т. д.")
   :config (global-auto-revert-mode t))
-
-
-;; 📦 C-MODE
-;; Встроенный пакет для работы с языком C.
-(use-package cc-mode
-  :defer t)
-
-
-;; 📦 C-SHARP
-;; Встроенный пакет для работы с языком C#
-(use-package csharp-mode
-  :defer t)
 
 
 ;; 📦 CALENDAR
@@ -580,6 +560,7 @@ FRAME — название настраиваемого фрейма."
 ;; 📦 IBUF-EXT
 ;; Встроенный пакет с дополнительными настройками `ibuffer'.
 (use-package ibuf-ext
+  :functions ibuffer-switch-to-saved-filter-groups
   :custom
   (ibuffer-saved-filter-groups ;; Группы по умолчанию
     '(("default"
@@ -768,7 +749,6 @@ FRAME — название настраиваемого фрейма."
   :interpreter
   ("python[0-9]" . python-mode)
   :custom
-  (py-pylint-command-args "--max-line-length 120" "Дополнительные параметры, передаваемые pylint")
   (python-indent-guess-indent-offset-verbose nil "Выключить уведомления")
   (python-indent-offset 4 "Отступ по умолчанию — 4 пробела"))
 
@@ -828,7 +808,7 @@ FRAME — название настраиваемого фрейма."
   ("ruby" . ruby-ts-mode)
   :mode
   ("\\.rb\\'" . ruby-ts-mode)
-  ("\\Vagrantfile\\'" . ruby-ts-mode))
+  ("Vagrantfile\\'" . ruby-ts-mode))
 
 
 ;; 📦 SAVEPLACE
@@ -856,7 +836,7 @@ FRAME — название настраиваемого фрейма."
 (use-package sh-script
   :interpreter
   ("sh" . sh-mode)
-  ("bash" . bash-mode)
+  ("bash" . sh-mode)
   :mode
   ("\\.bash_aliases\\'" . bash-mode)
   ("\\.bashrc\\'" . bash-mode)
@@ -940,7 +920,7 @@ FRAME — название настраиваемого фрейма."
   :custom
   (text-mode-ispell-word-completion nil "Конфликтует с CORFU, поэтому выключаем.")
   :mode
-  ("\\Jenkinsfile\\'" . text-mode))
+  ("Jenkinsfile\\'" . text-mode))
 
 
 ;; TOML-TS-MODE
@@ -1090,6 +1070,7 @@ FRAME — название настраиваемого фрейма."
          "src/")))
   ;; Сборка и установка грамматик
   (defun init-el-install-treesit-grammars ()
+    (interactive)
     (dolist (source treesit-language-source-alist)
       (let ((lang (car source)))
         (unless (treesit-ready-p lang t)
@@ -1300,12 +1281,12 @@ FRAME — название настраиваемого фрейма."
   :ensure t
   :custom
   ;; TODO: добавить код, определяющий наличие словарей.
-  (cape-dict-file '(
-                     "/usr/share/doc/hunspell/en_US.dic"
-                     "/usr/share/doc/hunspell/ru_RU.dic") "Словари для CAPE.")
+  (cape-dict-file '("/usr/share/hunspell/en_US.dic"
+                    "/usr/share/hunspell/ru_RU.dic") "Словари для CAPE.")
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dict)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
 
@@ -1507,7 +1488,7 @@ FRAME — название настраиваемого фрейма."
   :bind
   (:map eglot-mode-map
     ;; ("C-c C-d" . eldoc)
-    ("C-c C-r" . eglot-rename)
+    ("C-c C-r" . refactor-rename)
     ("C-c C-f" . eglot-format-buffer))
   :hook
   (dockerfile-ts-mode . eglot-ensure)
@@ -1527,8 +1508,6 @@ FRAME — название настраиваемого фрейма."
   (unless (alist-get 'eldoc package-alist)
     (with-demoted-errors "Ошибка обновления `eldoc-mode': %s"
       (package-upgrade 'eldoc)))
-  :config
-  (global-eldoc-mode nil)
   :custom
   (eldoc-minor-mode-string "" "Не надо показывать ничего в строке статуса.")
   :hook
@@ -1567,9 +1546,7 @@ FRAME — название настраиваемого фрейма."
   (sql-mode . flycheck-mode)
   (tex-mode . flycheck-mode)
   (typescript-ts-base-mode . flycheck-mode)
-  (yaml-ts-mode . flycheck-mode)
-  :config
-  (global-flycheck-eglot-mode t))
+  (yaml-ts-mode . flycheck-mode))
 
 
 ;; 📦 INDENT-BARS
